@@ -8,10 +8,18 @@ import java.io.ByteArrayInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.eclipse.sapphire.modeling.ByteArrayResourceStore;
 import org.xml.sax.InputSource;
@@ -56,15 +64,26 @@ public abstract class AbstractTestCase extends XMLTestCase {
 		@SuppressWarnings( "rawtypes" )
 		List allDifferences = myDiff.getAllDifferences();
 		if ( !allDifferences.isEmpty() ) {
-			printDiffs( allDifferences );
+			try {
+				printDocument( new ByteArrayInputStream( byteArrayResourceStore.getContents() ), System.out );
+			}
+			catch ( TransformerException e ) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		assertEquals( myDiff.toString(), 0, allDifferences.size() );
 	}
 
-	private void printDiffs( List allDifferences ) {
-		for ( Object object : allDifferences ) {
-			System.out.println( ( (Difference) object ).getDescription() );
-		}
+	private void printDocument( InputStream bin, OutputStream out ) throws IOException, TransformerException {
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer();
+		transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "no" );
+		transformer.setOutputProperty( OutputKeys.METHOD, "xml" );
+		transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+		transformer.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
+		transformer.setOutputProperty( "{http://xml.apache.org/xslt}indent-amount", "4" );
 
+		transformer.transform( new StreamSource( bin ), new StreamResult( new OutputStreamWriter( out, "UTF-8" ) ) );
 	}
 }

@@ -8,7 +8,8 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.liferay.ide.eclipse.tests.modeling.xml.portlet.portletapp.portlets.PortletModelTestSuite;
 
 @RunWith( Suite.class )
-@SuiteClasses( { PortletAppTest.class, PortletEventDefinitionTest.class, PortletModelTestSuite.class } )
+@SuiteClasses( { PortletAppTest.class, PortletEventDefinitionTest.class, PortletPublicRenderParameterTest.class,
+	PortletModelTestSuite.class } )
 public class PortletAppTestSuite {
 
 }
