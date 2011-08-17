@@ -18,19 +18,19 @@ import com.liferay.ide.eclipse.portlet.core.model.internal.QNameLocalPartValueBi
 import com.liferay.ide.eclipse.portlet.core.model.internal.QNamespaceValueBinding;
 
 /**
- * @author kamesh.sampath
+ * @author kamesh
  */
 @GenerateImpl
-public interface IQNamed extends IModelElement {
+public interface IAliasQName extends IModelElement {
 
-	ModelElementType TYPE = new ModelElementType( IQNamed.class );
+	ModelElementType TYPE = new ModelElementType( IAliasQName.class );
 
 	// *** NamespaceURI ***
 
 	@Label( standard = "Namespace URI" )
 	@DefaultValue( text = "NAMESPACE_URI" )
-	@XmlBinding( path = "qname" )
-	@CustomXmlValueBinding( impl = QNamespaceValueBinding.class, params = { "qname" } )
+	@XmlBinding( path = "alias" )
+	@CustomXmlValueBinding( impl = QNamespaceValueBinding.class, params = { "alias" } )
 	ValueProperty PROP_NAMESPACE_URI = new ValueProperty( TYPE, "NamespaceURI" );
 
 	Value<String> getNamespaceURI();
@@ -41,12 +41,11 @@ public interface IQNamed extends IModelElement {
 
 	@Label( standard = "Local Part" )
 	@DefaultValue( text = "LOCAL_PART" )
-	@XmlBinding( path = "qname" )
-	@CustomXmlValueBinding( impl = QNameLocalPartValueBinding.class, params = { "qname" } )
+	@XmlBinding( path = "alias" )
+	@CustomXmlValueBinding( impl = QNameLocalPartValueBinding.class, params = { "alias" } )
 	ValueProperty PROP_LOCAL_PART = new ValueProperty( TYPE, "LocalPart" );
 
 	Value<String> getLocalPart();
 
 	void setLocalPart( String value );
-
 }
