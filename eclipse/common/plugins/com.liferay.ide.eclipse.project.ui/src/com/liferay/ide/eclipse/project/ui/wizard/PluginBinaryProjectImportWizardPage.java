@@ -19,6 +19,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -55,13 +56,13 @@ import org.eclipse.wst.web.ui.internal.wizards.DataModelFacetCreationWizardPage;
 
 import com.liferay.ide.eclipse.core.util.CoreUtil;
 import com.liferay.ide.eclipse.project.core.ISDKProjectsImportDataModelProperties;
-import com.liferay.ide.eclipse.project.core.ProjectRecord;
+import com.liferay.ide.eclipse.project.core.PluginBinaryRecord;
 import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 import com.liferay.ide.eclipse.project.ui.ProjectUIPlugin;
 import com.liferay.ide.eclipse.ui.util.SWTUtil;
 
 /**
- * @author Greg Amerson
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
 @SuppressWarnings( { "restriction" } )
 public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationWizardPage
@@ -75,11 +76,15 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 
 		@Override
 		public String getText( Object element ) {
-			return ( (File) element ).getAbsolutePath();
+			return ( (PluginBinaryRecord) element ).getLabel();
 		}
 
 		public Color getForeground( Object element ) {
-			// TODO Auto-generated method stub
+			PluginBinaryRecord pluginBinaryRecord = (PluginBinaryRecord) element;
+
+			if ( pluginBinaryRecord.isConflicts() ) {
+				return getShell().getDisplay().getSystemColor( SWT.COLOR_GRAY );
+			}
 			return null;
 		}
 	}
@@ -94,9 +99,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 
 	protected Text sdkVersion;
 
-	protected ProjectRecord[] selectedProjects = new ProjectRecord[0];
-
-	protected File[] selectedBinaries = new File[0];
+	protected PluginBinaryRecord[] selectedBinaries = new PluginBinaryRecord[0];
 
 	protected Combo serverTargetCombo;
 
@@ -111,8 +114,17 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 		setDescription( "Select a Liferay Plugin SDK and import existing binary in to it." );
 	}
 
-	public File[] getProjectBinaries() {
-		return selectedBinaries;
+	public PluginBinaryRecord[] getPluginBinaryRecords() {
+		List<PluginBinaryRecord> binaryProjectRecords = new ArrayList<PluginBinaryRecord>();
+
+		for ( int i = 0; i < selectedBinaries.length; i++ ) {
+			if ( isProjectInWorkspace( selectedBinaries[i].getDisplayName() ) ) {
+				selectedBinaries[i].setConflicts( true );
+			}
+
+			binaryProjectRecords.add( selectedBinaries[i] );
+		}
+		return binaryProjectRecords.toArray( new PluginBinaryRecord[binaryProjectRecords.size()] );
 	}
 
 	public void updateBinariesList( final String path ) {
@@ -120,7 +132,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 		if ( path == null || path.length() == 0 ) {
 			setMessage( DataTransferMessages.WizardProjectsImportPage_ImportProjectsDescription );
 
-			selectedBinaries = new File[0];
+			selectedBinaries = new PluginBinaryRecord[0];
 
 			binaryList.refresh( true );
 
@@ -161,7 +173,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 
 					monitor.beginTask( DataTransferMessages.WizardProjectsImportPage_SearchingMessage, 100 );
 
-					selectedBinaries = new File[0];
+					selectedBinaries = new PluginBinaryRecord[0];
 
 					Collection<File> projectBinaries = new ArrayList<File>();
 
@@ -172,7 +184,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 							return;
 						}
 
-						selectedBinaries = new File[projectBinaries.size()];
+						selectedBinaries = new PluginBinaryRecord[projectBinaries.size()];
 
 						int index = 0;
 
@@ -180,8 +192,8 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 
 						monitor.subTask( DataTransferMessages.WizardProjectsImportPage_ProcessingMessage );
 
-						for ( File binaryProjectFile : projectBinaries ) {
-							selectedBinaries[index++] = binaryProjectFile;
+						for ( File binaryFile : projectBinaries ) {
+							selectedBinaries[index++] = new PluginBinaryRecord( binaryFile );
 						}
 
 						// for ( File liferayProjectDir : liferayProjectDirs ) {
@@ -211,20 +223,14 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 		if ( selectedBinaries.length == 0 ) {
 			setMessage( DataTransferMessages.WizardProjectsImportPage_noProjectsToImport, WARNING );
 		}
-		// else {
-		// if (!sdkLocation.isDisposed()) {
-		// ProjectUIPlugin.getDefault().getPreferenceStore().setValue(
-		// ProjectUIPlugin.LAST_SDK_IMPORT_LOCATION_PREF, sdkLocation.getText());
-		// }
-		// }
 
 		Object[] checkedBinaries = binaryList.getCheckedElements();
 
 		if ( checkedBinaries != null && checkedBinaries.length > 0 ) {
-			selectedBinaries = new File[checkedBinaries.length];
+			selectedBinaries = new PluginBinaryRecord[checkedBinaries.length];
 
 			for ( int i = 0; i < checkedBinaries.length; i++ ) {
-				selectedBinaries[i] = (File) checkedBinaries[i];
+				selectedBinaries[i] = (PluginBinaryRecord) checkedBinaries[i];
 			}
 			getDataModel().setProperty( SELECTED_PROJECTS, selectedBinaries );
 		}
@@ -315,7 +321,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 			}
 
 			public Object[] getElements( Object inputElement ) {
-				return getProjectBinaries();
+				return getPluginBinaryRecords();
 			}
 
 			public Object getParent( Object element ) {
@@ -400,16 +406,16 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 
 			@Override
 			public void widgetSelected( SelectionEvent e ) {
-				for ( int i = 0; i < selectedProjects.length; i++ ) {
-					if ( selectedProjects[i].hasConflicts() ) {
-						binaryList.setChecked( selectedProjects[i], false );
+				for ( int i = 0; i < selectedBinaries.length; i++ ) {
+					if ( selectedBinaries[i].isConflicts() ) {
+						binaryList.setChecked( selectedBinaries[i], false );
 					}
 					else {
-						binaryList.setChecked( selectedProjects[i], true );
+						binaryList.setChecked( selectedBinaries[i], true );
 					}
 				}
 
-				getDataModel().setProperty( SELECTED_PROJECTS, binaryList.getCheckedElements() );
+				getDataModel().setProperty( SELECTED_PROJECTS, new Object[] { binaryList.getCheckedElements() } );
 
 				validatePage( true );
 				// setPageComplete(binaryList.getCheckedElements().length >
