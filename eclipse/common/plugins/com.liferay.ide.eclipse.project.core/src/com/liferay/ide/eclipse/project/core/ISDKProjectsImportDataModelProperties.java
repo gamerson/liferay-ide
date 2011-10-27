@@ -30,4 +30,5 @@ public interface ISDKProjectsImportDataModelProperties extends IFacetProjectCrea
 
 	public static final String SELECTED_PROJECTS = "ISDKProjectsImportDataModelProperties.SELECTED_PROJECTS";
 
+	final String[] PLUGIN_BINARIES_EXTENSIONS = { "*.war", "*.jar" };
 }
