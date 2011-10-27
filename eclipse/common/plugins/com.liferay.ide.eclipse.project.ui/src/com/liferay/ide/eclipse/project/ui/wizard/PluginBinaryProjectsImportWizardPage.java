@@ -65,7 +65,7 @@ import com.liferay.ide.eclipse.ui.util.SWTUtil;
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
 @SuppressWarnings( { "restriction" } )
-public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationWizardPage
+public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreationWizardPage
 	implements ISDKProjectsImportDataModelProperties {
 
 	protected final class BinaryLabelProvider extends LabelProvider implements IColorProvider {
@@ -105,9 +105,9 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 
 	protected IProject[] wsProjects;
 
-	protected Text location;
+	protected Text binariesLocation;
 
-	public PluginBinaryProjectImportWizardPage( IDataModel model, String pageName ) {
+	public PluginBinaryProjectsImportWizardPage( IDataModel model, String pageName ) {
 		super( model, pageName );
 
 		setTitle( "Import from Liferay Project binary" );
@@ -118,7 +118,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 		List<PluginBinaryRecord> binaryProjectRecords = new ArrayList<PluginBinaryRecord>();
 
 		for ( int i = 0; i < selectedBinaries.length; i++ ) {
-			if ( isProjectInWorkspace( selectedBinaries[i].getDisplayName() ) ) {
+			if ( isProjectInWorkspace( selectedBinaries[i].getLiferayPluginName() ) ) {
 				selectedBinaries[i].setConflicts( true );
 			}
 
@@ -241,7 +241,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 
 			@Override
 			public void widgetSelected( SelectionEvent e ) {
-				PluginBinaryProjectImportWizardPage.this.synchHelper.synchAllUIWithModel();
+				PluginBinaryProjectsImportWizardPage.this.synchHelper.synchAllUIWithModel();
 				validatePage( true );
 			}
 
@@ -256,7 +256,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 		label.setText( "Import from:" );
 		label.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_BEGINNING ) );
 
-		location = SWTUtil.createSingleText( parent, 1 );
+		binariesLocation = SWTUtil.createSingleText( parent, 1 );
 
 		Button browse = SWTUtil.createButton( parent, "Browse" );
 		browse.addSelectionListener( new SelectionAdapter() {
@@ -276,7 +276,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 	protected void doBrowse() {
 		DirectoryDialog dd = new DirectoryDialog( this.getShell(), SWT.OPEN );
 
-		String filterPath = location.getText();
+		String filterPath = binariesLocation.getText();
 		if ( filterPath != null ) {
 			dd.setFilterPath( filterPath );
 			dd.setText( "Select Liferay Plugin binaries folder - " + filterPath );
@@ -285,14 +285,14 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 			dd.setText( "Select Liferay Plugin binaries folder" );
 		}
 
-		if ( CoreUtil.isNullOrEmpty( location.getText() ) ) {
-			dd.setFilterPath( location.getText() );
+		if ( CoreUtil.isNullOrEmpty( binariesLocation.getText() ) ) {
+			dd.setFilterPath( binariesLocation.getText() );
 		}
 
 		String dir = dd.open();
 
 		if ( !CoreUtil.isNullOrEmpty( dir ) ) {
-			location.setText( dir );
+			binariesLocation.setText( dir );
 			updateBinariesList( dir );
 
 		}
@@ -450,6 +450,7 @@ public class PluginBinaryProjectImportWizardPage extends DataModelFacetCreationW
 			public void widgetSelected( SelectionEvent e ) {
 				// force a project refresh
 				lastModified = -1;
+				updateBinariesList( binariesLocation.getText() );
 			}
 		} );
 
