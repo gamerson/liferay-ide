@@ -33,17 +33,16 @@ import com.liferay.ide.eclipse.sdk.SDKManager;
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
-public class PluginBinaryProjectsImportOperation extends SDKProjectsImportOperation {
+public class PluginBinaryProjectImportOperation extends SDKProjectsImportOperation {
 
-	public PluginBinaryProjectsImportOperation( IDataModel model ) {
+	public PluginBinaryProjectImportOperation( IDataModel model ) {
 		super( model );
-
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * com.liferay.ide.eclipse.project.core.SDKProjectsImportOperation#execute(org.eclipse.core.runtime.IProgressMonitor
+	 * com.liferay.ide.eclipse.project.core.LiferayProjectImportOperation#execute(org.eclipse.core.runtime.IProgressMonitor
 	 * , org.eclipse.core.runtime.IAdaptable)
 	 */
 	@Override
@@ -57,13 +56,12 @@ public class PluginBinaryProjectsImportOperation extends SDKProjectsImportOperat
 				(String) getDataModel().getProperty( ISDKProjectsImportDataModelProperties.SDK_LOCATION );
 			SDK liferaySDK = sdkManager.getSDK( new Path( sdklocation ) );
 			Object[] seleBinaryRecords = (Object[]) selectedProjects;
-			ProjectRecord[] projectRecords = new ProjectRecord[seleBinaryRecords.length];
-			int i = 0;
-			for ( Object object : seleBinaryRecords ) {
-				PluginBinaryRecord pluginBinaryRecord = (PluginBinaryRecord) object;
+			ProjectRecord[] projectRecords = new ProjectRecord[1];
+			if ( seleBinaryRecords != null ) {
+				PluginBinaryRecord pluginBinaryRecord = (PluginBinaryRecord) seleBinaryRecords[0];
 				// TODO: Verify the version and alert the user
 				try {
-					projectRecords[i++] =
+					projectRecords[0] =
 						ProjectImportUtil.createPluginProject( getDataModel(), pluginBinaryRecord, liferaySDK );
 				}
 				catch ( IOException e ) {
@@ -71,10 +69,9 @@ public class PluginBinaryProjectsImportOperation extends SDKProjectsImportOperat
 						"Error while importing Binary:" + pluginBinaryRecord.getBinaryName(), e );
 				}
 
+				getDataModel().setProperty( SELECTED_PROJECTS, projectRecords );
 			}
-			getDataModel().setProperty( SELECTED_PROJECTS, projectRecords );
 		}
 		return super.execute( monitor, info );
 	}
-
 }
