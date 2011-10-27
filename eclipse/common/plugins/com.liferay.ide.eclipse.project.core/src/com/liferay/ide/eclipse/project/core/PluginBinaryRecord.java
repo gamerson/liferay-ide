@@ -194,7 +194,7 @@ public class PluginBinaryRecord {
 			return getDisplayName() + "-hook";
 		}
 		else if ( isLayoutTpl ) {
-			return getDisplayName() + "-layputtpl";
+			return getDisplayName() + "-layouttpl";
 		}
 		else if ( isPortlet ) {
 			return getDisplayName() + "-portlet";

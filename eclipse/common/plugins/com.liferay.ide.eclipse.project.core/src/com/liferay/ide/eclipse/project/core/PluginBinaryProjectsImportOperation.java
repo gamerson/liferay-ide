@@ -67,6 +67,7 @@ public class PluginBinaryProjectsImportOperation extends SDKProjectsImportOperat
 						ProjectImportUtil.createPluginProject( getDataModel(), pluginBinaryRecord, liferaySDK );
 				}
 				catch ( IOException e ) {
+					e.printStackTrace();
 					throw new ExecutionException(
 						"Error while importing Binary:" + pluginBinaryRecord.getBinaryName(), e );
 				}
