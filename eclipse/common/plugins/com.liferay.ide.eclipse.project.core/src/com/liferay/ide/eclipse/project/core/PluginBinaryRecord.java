@@ -19,8 +19,6 @@ package com.liferay.ide.eclipse.project.core;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IProject;
-
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
@@ -30,7 +28,6 @@ public class PluginBinaryRecord {
 	private File binaryFile;
 	private String displayName;
 	private String label;
-	private IProject pluginProject;
 	private String liferayVersion;
 	boolean conflicts;
 	boolean isHook;
@@ -143,21 +140,6 @@ public class PluginBinaryRecord {
 	}
 
 	/**
-	 * @return the pluginProject
-	 */
-	public IProject getPluginProject() {
-		return pluginProject;
-	}
-
-	/**
-	 * @param pluginProject
-	 *            the pluginProject to set
-	 */
-	public void setPluginProject( IProject pluginProject ) {
-		this.pluginProject = pluginProject;
-	}
-
-	/**
 	 * @return the conflicts
 	 */
 	public boolean isConflicts() {
@@ -205,6 +187,22 @@ public class PluginBinaryRecord {
 	 */
 	public boolean isLayoutTpl() {
 		return isLayoutTpl;
+	}
+
+	public String getLiferayPluginName() {
+		if ( isHook ) {
+			return getDisplayName() + "-hook";
+		}
+		else if ( isLayoutTpl ) {
+			return getDisplayName() + "-layputtpl";
+		}
+		else if ( isPortlet ) {
+			return getDisplayName() + "-portlet";
+		}
+		else if ( isTheme ) {
+			return getDisplayName() + "-theme";
+		}
+		return null;
 	}
 
 }
