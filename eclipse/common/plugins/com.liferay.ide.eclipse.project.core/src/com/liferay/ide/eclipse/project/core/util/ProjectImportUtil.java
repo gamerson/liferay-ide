@@ -76,11 +76,11 @@ public class ProjectImportUtil {
 				sdkPluginProjectFolder = sdkPluginProjectFolder.append( "themes" );
 			}
 			else if ( pluginBinaryRecord.isLayoutTpl() ) {
-				projectPath = liferaySDK.createNewPortletProject( displayName, displayName, appServerProperties );
+				projectPath = liferaySDK.createNewLayoutTplProject( displayName, displayName, appServerProperties );
 				sdkPluginProjectFolder = sdkPluginProjectFolder.append( "layouttpl" );
 			}
-			// System.out.println( "Project path:" + projectPath );
-			// System.out.println( "SDK Project Folder :" + sdkPluginProjectFolder.toOSString() );
+			System.out.println( "Project path:" + projectPath );
+			System.out.println( "SDK Project Folder :" + sdkPluginProjectFolder.toOSString() );
 
 			// Move the porject to Liferay SDK location
 			File tempProjectDir = projectPath.append( liferayPluginName ).toFile();
