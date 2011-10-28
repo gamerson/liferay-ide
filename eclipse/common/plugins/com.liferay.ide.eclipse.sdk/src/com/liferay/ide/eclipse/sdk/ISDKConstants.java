@@ -25,43 +25,43 @@ import org.osgi.framework.Version;
 public interface ISDKConstants {
 
 	@SuppressWarnings( "deprecation" )
-	public static final IEclipsePreferences _defaultPrefs = new DefaultScope().getNode(SDKPlugin.PLUGIN_ID);
-	
-	public static final String[] ANT_LIBRARIES = _defaultPrefs.get("ant.libraries", "").split(",");
+	public static final IEclipsePreferences _defaultPrefs = new DefaultScope().getNode( SDKPlugin.PLUGIN_ID );
 
-	public static final String EXT_PLUGIN_ANT_BUILD = _defaultPrefs.get("ext.plugin.ant.build", null);
+	public static final String[] ANT_LIBRARIES = _defaultPrefs.get( "ant.libraries", "" ).split( "," );
+
+	public static final String EXT_PLUGIN_ANT_BUILD = _defaultPrefs.get( "ext.plugin.ant.build", null );
 
 	public static final String EXT_PLUGIN_PROJECT_FOLDER = "ext";
 
 	public static final String EXT_PLUGIN_PROJECT_SUFFIX = "-ext";
 
-	public static final String HOOK_PLUGIN_ANT_BUILD = _defaultPrefs.get("hook.plugin.ant.build", null);
+	public static final String HOOK_PLUGIN_ANT_BUILD = _defaultPrefs.get( "hook.plugin.ant.build", null );
 
 	public static final String HOOK_PLUGIN_PROJECT_FOLDER = "hooks";
 
 	public static final String HOOK_PLUGIN_PROJECT_SUFFIX = "-hook";
 
 	public static final String LAYOUT_TEMPLATE_PLUGIN_ANT_BUILD =
-		_defaultPrefs.get("layouttpl.plugin.ant.build", null);
+		_defaultPrefs.get( "layouttpl.plugin.ant.build", null );
 
-	public static final String LAYOUTTPL_PLUGIN_ANT_BUILD = _defaultPrefs.get("layouttpl.plugin.ant.build", null);
+	public static final String LAYOUTTPL_PLUGIN_ANT_BUILD = _defaultPrefs.get( "layouttpl.plugin.ant.build", null );
 
 	public static final String LAYOUTTPL_PLUGIN_PROJECT_FOLDER = "layouttpl";
 
 	public static final String LAYOUTTPL_PLUGIN_PROJECT_SUFFIX = "-layouttpl";
 
-	public static final Version LEAST_SUPPORTED_SDK_VERSION = new Version(6, 0, 1);
+	public static final Version LEAST_SUPPORTED_SDK_VERSION = new Version( 6, 0, 1 );
 
-	public static final String PORTLET_PLUGIN_ANT_BUILD = _defaultPrefs.get("portlet.plugin.ant.build", null);
+	public static final String PORTLET_PLUGIN_ANT_BUILD = _defaultPrefs.get( "portlet.plugin.ant.build", null );
 
 	public static final String PORTLET_PLUGIN_PROJECT_FOLDER = "portlets";
 
 	public static final String PORTLET_PLUGIN_PROJECT_SUFFIX = "-portlet";
 
-	public static final String[] PORTLET_PLUGIN_ZIP_IGNORE_FILES =
-		_defaultPrefs.get("portlet.plugin.zip.ignore.files", "").split(",");
+	public static final String[] PORTLET_PLUGIN_ZIP_IGNORE_FILES = _defaultPrefs.get(
+		"portlet.plugin.zip.ignore.files", "" ).split( "," );
 
-	public static final String PORTLET_PLUGIN_ZIP_PATH = _defaultPrefs.get("portlet.plugin.zip.path", null);
+	public static final String PORTLET_PLUGIN_ZIP_PATH = _defaultPrefs.get( "portlet.plugin.zip.path", null );
 
 	public static final String PROJECT_BUILD_XML = _defaultPrefs.get( "project.build.xml", null );
 
@@ -165,10 +165,12 @@ public interface ISDKConstants {
 
 	public static final String TARGET_WAR = "war";
 
-	public static final String THEME_PLUGIN_ANT_BUILD = _defaultPrefs.get("theme.plugin.ant.build", null);
+	public static final String THEME_PLUGIN_ANT_BUILD = _defaultPrefs.get( "theme.plugin.ant.build", null );
 
 	public static final String THEME_PLUGIN_PROJECT_FOLDER = "themes";
 
 	public static final String THEME_PLUGIN_PROJECT_SUFFIX = "-theme";
+
+	public static final String DEFAULT_WEBCONTENT_FOLDER = "docroot";
 
 }
