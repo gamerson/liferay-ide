@@ -17,6 +17,11 @@
 
 package com.liferay.ide.eclipse.project.core;
 
+import static com.liferay.ide.eclipse.sdk.ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX;
+import static com.liferay.ide.eclipse.sdk.ISDKConstants.LAYOUTTPL_PLUGIN_PROJECT_SUFFIX;
+import static com.liferay.ide.eclipse.sdk.ISDKConstants.PORTLET_PLUGIN_PROJECT_SUFFIX;
+import static com.liferay.ide.eclipse.sdk.ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX;
+
 import java.io.File;
 
 /**
@@ -52,20 +57,20 @@ public class PluginBinaryRecord {
 	private void setPluginProperties() {
 		if ( binaryName != null ) {
 			int index = -1;
-			if ( binaryName.contains( "-hook" ) ) {
-				index = binaryName.indexOf( "-hook" );
+			if ( binaryName.contains( HOOK_PLUGIN_PROJECT_SUFFIX ) ) {
+				index = binaryName.indexOf( HOOK_PLUGIN_PROJECT_SUFFIX );
 				isHook = index != -1 ? true : false;
 			}
-			else if ( binaryName.contains( "-theme" ) ) {
-				index = binaryName.indexOf( "-theme" );
+			else if ( binaryName.contains( THEME_PLUGIN_PROJECT_SUFFIX ) ) {
+				index = binaryName.indexOf( THEME_PLUGIN_PROJECT_SUFFIX );
 				isTheme = index != -1 ? true : false;
 			}
-			else if ( binaryName.contains( "-portlet" ) ) {
-				index = binaryName.indexOf( "-portlet" );
+			else if ( binaryName.contains( PORTLET_PLUGIN_PROJECT_SUFFIX ) ) {
+				index = binaryName.indexOf( PORTLET_PLUGIN_PROJECT_SUFFIX );
 				isPortlet = index != -1 ? true : false;
 			}
-			else if ( binaryName.contains( "-layouttpl" ) ) {
-				index = binaryName.indexOf( "-layouttpl" );
+			else if ( binaryName.contains( LAYOUTTPL_PLUGIN_PROJECT_SUFFIX ) ) {
+				index = binaryName.indexOf( LAYOUTTPL_PLUGIN_PROJECT_SUFFIX );
 				isLayoutTpl = index != -1 ? true : false;
 			}
 			if ( index != -1 ) {
@@ -191,16 +196,16 @@ public class PluginBinaryRecord {
 
 	public String getLiferayPluginName() {
 		if ( isHook ) {
-			return getDisplayName() + "-hook";
+			return getDisplayName() + HOOK_PLUGIN_PROJECT_SUFFIX;
 		}
 		else if ( isLayoutTpl ) {
-			return getDisplayName() + "-layouttpl";
+			return getDisplayName() + LAYOUTTPL_PLUGIN_PROJECT_SUFFIX;
 		}
 		else if ( isPortlet ) {
-			return getDisplayName() + "-portlet";
+			return getDisplayName() + PORTLET_PLUGIN_PROJECT_SUFFIX;
 		}
 		else if ( isTheme ) {
-			return getDisplayName() + "-theme";
+			return getDisplayName() + THEME_PLUGIN_PROJECT_SUFFIX;
 		}
 		return null;
 	}

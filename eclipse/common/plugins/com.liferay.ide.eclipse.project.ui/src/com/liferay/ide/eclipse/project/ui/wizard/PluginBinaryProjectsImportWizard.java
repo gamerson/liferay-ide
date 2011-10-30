@@ -15,17 +15,20 @@
 
 package com.liferay.ide.eclipse.project.ui.wizard;
 
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizard_Wizard_Banner_Img;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizard_Wizard_Title;
+
+import com.liferay.ide.eclipse.project.core.PluginBinariesImportDataModelProvider;
+import com.liferay.ide.eclipse.project.core.SDKProjectsImportDataModelProvider;
+import com.liferay.ide.eclipse.project.ui.ProjectUIPlugin;
+import com.liferay.ide.eclipse.sdk.SDK;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
-
-import com.liferay.ide.eclipse.project.core.PluginBinariesImportDataModelProvider;
-import com.liferay.ide.eclipse.project.core.SDKProjectsImportDataModelProvider;
-import com.liferay.ide.eclipse.project.ui.ProjectUIPlugin;
-import com.liferay.ide.eclipse.sdk.SDK;
 
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
@@ -44,10 +47,10 @@ public class PluginBinaryProjectsImportWizard extends DataModelWizard implements
 	public PluginBinaryProjectsImportWizard( IDataModel dataModel ) {
 		super( dataModel );
 
-		setWindowTitle( "Import Projects" );
+		setWindowTitle( PluginBinaryProjectsImportWizard_Wizard_Title );
 
 		setDefaultPageImageDescriptor( ProjectUIPlugin.imageDescriptorFromPlugin(
-			ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/import_wiz.png" ) );
+			ProjectUIPlugin.PLUGIN_ID, PluginBinaryProjectsImportWizard_Wizard_Banner_Img ) );
 	}
 
 	public PluginBinaryProjectsImportWizard( SDK sdk ) {
@@ -71,7 +74,7 @@ public class PluginBinaryProjectsImportWizard extends DataModelWizard implements
 			model.setStringProperty( SDKProjectsImportDataModelProvider.LIFERAY_SDK_NAME, sdk.getName() );
 		}
 
-		pluginBinaryProjectsImportWizardPage = new PluginBinaryProjectsImportWizardPage( getDataModel(), "pageOne" );
+		pluginBinaryProjectsImportWizardPage = new PluginBinaryProjectsImportWizardPage( getDataModel(), PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizard_Wizard_PageOne_ID );
 
 		addPage( pluginBinaryProjectsImportWizardPage );
 	}

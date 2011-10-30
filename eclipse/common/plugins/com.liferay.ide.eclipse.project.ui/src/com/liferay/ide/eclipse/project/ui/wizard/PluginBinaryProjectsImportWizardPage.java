@@ -15,6 +15,30 @@
 
 package com.liferay.ide.eclipse.project.ui.wizard;
 
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Dlg_Liferay_Plugin_Binaries_Folder;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Dlg_Select_Liferay_SDK_Folder_Title;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_EMPTY;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Binaries_To_Import;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Browse;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_DeSelect_All;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Import_From;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Liferay_SDK_Loc;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Liferay_SDK_Version;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Liferay_Target_Runtime;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_New;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Refresh;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Label_Select_All;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Liferay_Server_Wizard_ID;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Wizard_Page_Description;
+import static com.liferay.ide.eclipse.project.ui.wizard.PluginBinaryProjectsImportWizardMessages.PluginBinaryProjectsImportWizardPage_Wizard_Page_Title;
+
+import com.liferay.ide.eclipse.core.util.CoreUtil;
+import com.liferay.ide.eclipse.project.core.ISDKProjectsImportDataModelProperties;
+import com.liferay.ide.eclipse.project.core.PluginBinaryRecord;
+import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
+import com.liferay.ide.eclipse.project.ui.ProjectUIPlugin;
+import com.liferay.ide.eclipse.ui.util.SWTUtil;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -48,19 +72,10 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
-import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.ui.ServerUIUtil;
 import org.eclipse.wst.web.ui.internal.wizards.DataModelFacetCreationWizardPage;
-
-import com.liferay.ide.eclipse.core.util.CoreUtil;
-import com.liferay.ide.eclipse.project.core.ISDKProjectsImportDataModelProperties;
-import com.liferay.ide.eclipse.project.core.PluginBinaryRecord;
-import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
-import com.liferay.ide.eclipse.project.ui.ProjectUIPlugin;
-import com.liferay.ide.eclipse.ui.util.SWTUtil;
-
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
@@ -110,8 +125,8 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 	public PluginBinaryProjectsImportWizardPage( IDataModel model, String pageName ) {
 		super( model, pageName );
 
-		setTitle( "Import from Liferay Project binary" );
-		setDescription( "Select a Liferay Plugin SDK and import existing binary in to it." );
+		setTitle( PluginBinaryProjectsImportWizardPage_Wizard_Page_Title );
+		setDescription( PluginBinaryProjectsImportWizardPage_Wizard_Page_Description );
 	}
 
 	public PluginBinaryRecord[] getPluginBinaryRecords() {
@@ -130,7 +145,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 	public void updateBinariesList( final String path ) {
 		// on an empty path empty selectedProjects
 		if ( path == null || path.length() == 0 ) {
-			setMessage( DataTransferMessages.WizardProjectsImportPage_ImportProjectsDescription );
+			setMessage( "" ); //$NON-NLS-1$
 
 			selectedBinaries = new PluginBinaryRecord[0];
 
@@ -171,7 +186,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 				 */
 				public void run( IProgressMonitor monitor ) {
 
-					monitor.beginTask( DataTransferMessages.WizardProjectsImportPage_SearchingMessage, 100 );
+					monitor.beginTask( "", 100 ); //$NON-NLS-1$
 
 					selectedBinaries = new PluginBinaryRecord[0];
 
@@ -190,7 +205,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 
 						monitor.worked( 50 );
 
-						monitor.subTask( DataTransferMessages.WizardProjectsImportPage_ProcessingMessage );
+						monitor.subTask( "" ); //$NON-NLS-1$
 
 						for ( File binaryFile : projectBinaries ) {
 							selectedBinaries[index++] = new PluginBinaryRecord( binaryFile );
@@ -221,7 +236,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 		setPageComplete( binaryList.getCheckedElements().length > 0 );
 
 		if ( selectedBinaries.length == 0 ) {
-			setMessage( DataTransferMessages.WizardProjectsImportPage_noProjectsToImport, WARNING );
+			setMessage( "", WARNING ); //$NON-NLS-1$
 		}
 
 		Object[] checkedBinaries = binaryList.getCheckedElements();
@@ -253,12 +268,12 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 	protected void createBinaryLocationField( Composite parent ) {
 
 		Label label = new Label( parent, SWT.NONE );
-		label.setText( "Import from:" );
+		label.setText( PluginBinaryProjectsImportWizardPage_Label_Import_From );
 		label.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_BEGINNING ) );
 
 		binariesLocation = SWTUtil.createSingleText( parent, 1 );
 
-		Button browse = SWTUtil.createButton( parent, "Browse" );
+		Button browse = SWTUtil.createButton( parent, PluginBinaryProjectsImportWizardPage_Label_Browse );
 		browse.addSelectionListener( new SelectionAdapter() {
 
 			@Override
@@ -279,10 +294,10 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 		String filterPath = binariesLocation.getText();
 		if ( filterPath != null ) {
 			dd.setFilterPath( filterPath );
-			dd.setText( "Select Liferay Plugin binaries folder - " + filterPath );
+			dd.setText( PluginBinaryProjectsImportWizardPage_Dlg_Liferay_Plugin_Binaries_Folder+" - " + filterPath ); //$NON-NLS-1$
 		}
 		else {
-			dd.setText( "Select Liferay Plugin binaries folder" );
+			dd.setText( PluginBinaryProjectsImportWizardPage_Dlg_Liferay_Plugin_Binaries_Folder );
 		}
 
 		if ( CoreUtil.isNullOrEmpty( binariesLocation.getText() ) ) {
@@ -301,7 +316,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 	protected void createProjectsList( Composite workArea ) {
 
 		Label title = new Label( workArea, SWT.NONE );
-		title.setText( "Binaries to import:" );
+		title.setText( PluginBinaryProjectsImportWizardPage_Label_Binaries_To_Import );
 		title.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, false, false, 3, 1 ) );
 
 		binaryList = new CheckboxTreeViewer( workArea, SWT.BORDER );
@@ -366,22 +381,22 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 	}
 
 	protected void createSDKLocationField( Composite topComposite ) {
-		SWTUtil.createLabel( topComposite, SWT.LEAD, "Liferay Plugin SDK Location:", 1 );
+		SWTUtil.createLabel( topComposite, SWT.LEAD, PluginBinaryProjectsImportWizardPage_Label_Liferay_SDK_Loc, 1 );
 
 		sdkLocation = SWTUtil.createText( topComposite, 1 );
 		( (GridData) sdkLocation.getLayoutData() ).widthHint = 300;
 		this.synchHelper.synchText( sdkLocation, SDK_LOCATION, null );
 
-		SWTUtil.createLabel( topComposite, SWT.LEAD, "", 1 );
+		SWTUtil.createLabel( topComposite, SWT.LEAD, PluginBinaryProjectsImportWizardPage_EMPTY, 1 );
 	}
 
 	protected void createSDKVersionField( Composite topComposite ) {
-		SWTUtil.createLabel( topComposite, SWT.LEAD, "Liferay Plugin SDK Version:", 1 );
+		SWTUtil.createLabel( topComposite, SWT.LEAD, PluginBinaryProjectsImportWizardPage_Label_Liferay_SDK_Version, 1 );
 
 		sdkVersion = SWTUtil.createText( topComposite, 1 );
 		this.synchHelper.synchText( sdkVersion, SDK_VERSION, null );
 
-		SWTUtil.createLabel( topComposite, "", 1 );
+		SWTUtil.createLabel( topComposite, "", 1 ); //$NON-NLS-1$
 	}
 
 	/**
@@ -401,7 +416,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 		buttonsComposite.setLayoutData( new GridData( GridData.VERTICAL_ALIGN_BEGINNING ) );
 
 		Button selectAll = new Button( buttonsComposite, SWT.PUSH );
-		selectAll.setText( "Select All" );
+		selectAll.setText( PluginBinaryProjectsImportWizardPage_Label_Select_All );
 		selectAll.addSelectionListener( new SelectionAdapter() {
 
 			@Override
@@ -428,7 +443,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 		setButtonLayoutData( selectAll );
 
 		Button deselectAll = new Button( buttonsComposite, SWT.PUSH );
-		deselectAll.setText( "Deselect All" );
+		deselectAll.setText( PluginBinaryProjectsImportWizardPage_Label_DeSelect_All );
 		deselectAll.addSelectionListener( new SelectionAdapter() {
 
 			@Override
@@ -443,7 +458,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 		setButtonLayoutData( deselectAll );
 
 		Button refresh = new Button( buttonsComposite, SWT.PUSH );
-		refresh.setText( "Refresh" );
+		refresh.setText( PluginBinaryProjectsImportWizardPage_Label_Refresh );
 		refresh.addSelectionListener( new SelectionAdapter() {
 
 			@Override
@@ -461,14 +476,14 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 
 	protected void createTargetRuntimeGroup( Composite parent ) {
 		Label label = new Label( parent, SWT.NONE );
-		label.setText( "Liferay target runtime:" );
+		label.setText( PluginBinaryProjectsImportWizardPage_Label_Liferay_Target_Runtime );
 		label.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_BEGINNING ) );
 
 		serverTargetCombo = new Combo( parent, SWT.BORDER | SWT.READ_ONLY );
 		serverTargetCombo.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
 
 		Button newServerTargetButton = new Button( parent, SWT.NONE );
-		newServerTargetButton.setText( "New..." );
+		newServerTargetButton.setText( PluginBinaryProjectsImportWizardPage_Label_New );
 		newServerTargetButton.addSelectionListener( new SelectionAdapter() {
 
 			@Override
@@ -478,7 +493,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 
 				boolean isOK =
 					ServerUIUtil.showNewRuntimeWizard(
-						getShell(), getModuleTypeID(), null, "com.liferay.ide.eclipse.server" );
+						getShell(), getModuleTypeID(), null, PluginBinaryProjectsImportWizardPage_Liferay_Server_Wizard_ID );
 
 				if ( isOK ) {
 					DataModelPropertyDescriptor[] postAdditionDescriptors =
@@ -556,7 +571,7 @@ public class PluginBinaryProjectsImportWizardPage extends DataModelFacetCreation
 	protected void handleFileBrowseButton( final Text text ) {
 		DirectoryDialog dd = new DirectoryDialog( this.getShell(), SWT.OPEN );
 
-		dd.setText( "Select Liferay Plugin SDK folder" );
+		dd.setText( PluginBinaryProjectsImportWizardPage_Dlg_Select_Liferay_SDK_Folder_Title );
 
 		if ( !CoreUtil.isNullOrEmpty( sdkLocation.getText() ) ) {
 			dd.setFilterPath( sdkLocation.getText() );
