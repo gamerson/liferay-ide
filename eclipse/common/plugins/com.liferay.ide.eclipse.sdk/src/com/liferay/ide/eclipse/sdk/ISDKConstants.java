@@ -21,6 +21,7 @@ import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
+ * @author kamesh.sampath - [IDE-381]
  */
 public interface ISDKConstants {
 
@@ -30,6 +31,8 @@ public interface ISDKConstants {
 	public static final String[] ANT_LIBRARIES = _defaultPrefs.get("ant.libraries", "").split(",");
 
 	public static final String EXT_PLUGIN_ANT_BUILD = _defaultPrefs.get("ext.plugin.ant.build", null);
+	
+	public static final String DEFAULT_WEBCONTENT_FOLDER="docroot";
 
 	public static final String EXT_PLUGIN_PROJECT_FOLDER = "ext";
 
