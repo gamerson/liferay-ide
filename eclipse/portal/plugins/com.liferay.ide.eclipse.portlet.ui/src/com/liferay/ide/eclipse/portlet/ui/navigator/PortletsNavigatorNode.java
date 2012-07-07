@@ -13,29 +13,30 @@
  *   
  *******************************************************************************/
 
-
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
+import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.core.model.IPortletApp;
-import com.liferay.ide.eclipse.ui.navigator.AbstractPortletNavigatorNode;
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode;
+import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.sapphire.modeling.IModelElement;
+import org.eclipse.sapphire.modeling.ModelElementList;
 import org.eclipse.sapphire.modeling.ModelElementType;
 import org.eclipse.sapphire.modeling.ResourceStoreException;
 
 /**
  * @author kamesh
  */
-public class PortletsNavigatorNode extends AbstractPortletNavigatorNode
+public class PortletsNavigatorNode extends AbstractPortletsNavigatorNode
 {
 
     private final ModelElementType portletAppModelElementType = IPortletApp.TYPE;
 
     private final IPortletApp portletApp;
 
-    public PortletsNavigatorNode( LiferayIDENavigatorParentNode parent, IFile portletXmlPath ) throws ResourceStoreException,
+    public PortletsNavigatorNode( LiferayIDENavigatorNode parent, IFile portletXmlPath ) throws ResourceStoreException,
         CoreException
     {
         super( parent, portletXmlPath );
@@ -43,24 +44,48 @@ public class PortletsNavigatorNode extends AbstractPortletNavigatorNode
         portletApp = portletAppModelElementType.instantiate( rootXmlResource );
     }
 
-    /**
-     * @return the portletApp
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.portlet.ui.navigator.AbstractPortletsNavigatorNode#getModel()
      */
-    public IPortletApp getPortletApp()
+    @Override
+    public IModelElement getModel()
     {
         return portletApp;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.liferay.ide.eclipse.portlet.ui.navigator.AbstractPortletsNavigatorNode#setModel(org.eclipse.sapphire.modeling
+     * .IModelElement)
+     */
+    @Override
+    public void setModel( IModelElement model )
+    {
+
+    }
+
     public Object[] getChildren()
     {
-        System.out.println( "PortletsNavigatorNode.getPortlets()" );
-
         if( this.portletApp != null )
         {
-            return portletApp.getPortlets().toArray();
+            ModelElementList<IPortlet> portlets = portletApp.getPortlets();
+
+            PortletNavigatorNode[] portletNodes = new PortletNavigatorNode[portlets.size()];
+
+            int i = 0;
+            for( IPortlet iPortlet : portlets )
+            {
+                PortletNavigatorNode portletNode = new PortletNavigatorNode( this );
+                portletNode.setModel( iPortlet );
+                portletNodes[i] = portletNode;
+                i++;
+            }
+
+            return portletNodes;
         }
         return EMPTY;
     }
-
 
 }

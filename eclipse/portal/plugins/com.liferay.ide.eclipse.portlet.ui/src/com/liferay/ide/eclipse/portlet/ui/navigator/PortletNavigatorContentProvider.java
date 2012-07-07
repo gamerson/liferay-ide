@@ -19,7 +19,6 @@ import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorContentProvider;
 import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode;
 
 import java.util.Set;
 
@@ -41,7 +40,8 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
 {
 
     protected final static Object[] EMPTY = new Object[] {};
-    private LiferayIDENavigatorParentNode parentNode;
+
+    private LiferayIDENavigatorNode parentNode;
 
     public boolean hasPipelinedChildren( Object anInput, boolean currentHasChildren )
     {
@@ -61,6 +61,7 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
 
     public Object[] getChildren( Object parentElement )
     {
+
         try
         {
             if( parentElement instanceof IProject )
@@ -106,12 +107,12 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
             else if( parentElement instanceof PortletsRootNode )
             {
                 PortletsRootNode portletRootContextNode = (PortletsRootNode) parentElement;
-                return portletRootContextNode.getNodes();
+                return portletRootContextNode.getChildren();
             }
-            else if( parentElement instanceof LiferayIDENavigatorNode )
+            else if( parentElement instanceof AbstractPortletsNavigatorNode )
             {
-                LiferayIDENavigatorNode liferayIDENavigatorNode = (LiferayIDENavigatorNode) parentElement;
-                return liferayIDENavigatorNode.getChildren();
+                AbstractPortletsNavigatorNode portletsNavigatorNode = (AbstractPortletsNavigatorNode) parentElement;
+                return portletsNavigatorNode.getChildren();
             }
 
         }
@@ -137,11 +138,7 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
 
     public boolean hasChildren( Object element )
     {
-        if( element instanceof LiferayIDENavigatorParentNode )
-        {
-            return ( (LiferayIDENavigatorParentNode) element ).getNodes().length > 0;
-        }
-        else if( element instanceof LiferayIDENavigatorNode )
+        if( element instanceof LiferayIDENavigatorNode )
         {
             return ( (LiferayIDENavigatorNode) element ).getChildren().length > 0;
         }

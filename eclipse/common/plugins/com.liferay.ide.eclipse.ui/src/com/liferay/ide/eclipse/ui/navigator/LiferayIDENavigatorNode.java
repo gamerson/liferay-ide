@@ -16,6 +16,7 @@
 package com.liferay.ide.eclipse.ui.navigator;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.sapphire.modeling.IModelElement;
 
 /**
  * @author kamesh
@@ -23,12 +24,22 @@ import org.eclipse.core.resources.IFile;
 public interface LiferayIDENavigatorNode
 {
 
-    public LiferayIDENavigatorParentNode getParent();
+    public LiferayIDENavigatorNode getParent();
 
     public Object[] getChildren();
 
     public IFile getResource();
 
     public boolean hasChildren();
+
+    /**
+     * @param portletsNavigatorNode
+     * @param liferayPortletsNavigatorNode
+     */
+    public void addNodes( LiferayIDENavigatorNode... ideNavigatorNodes );
+
+    public IModelElement getModel();
+
+    public void setModel( IModelElement model );
 
 }

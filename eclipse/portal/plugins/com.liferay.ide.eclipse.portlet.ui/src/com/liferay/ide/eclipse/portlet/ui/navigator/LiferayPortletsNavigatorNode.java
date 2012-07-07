@@ -16,22 +16,23 @@
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.ui.navigator.AbstractPortletNavigatorNode;
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode;
+import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.sapphire.modeling.IModelElement;
 import org.eclipse.sapphire.modeling.ResourceStoreException;
 
 /**
  * @author kamesh
  */
-public class LiferayPortletsNavigatorNode extends AbstractPortletNavigatorNode
+public class LiferayPortletsNavigatorNode extends AbstractPortletsNavigatorNode
 {
 
     private final static Object[] EMPTY = new Object[] {};
 
-    public LiferayPortletsNavigatorNode( LiferayIDENavigatorParentNode parent, IFile portletXml ) throws ResourceStoreException,
+    public LiferayPortletsNavigatorNode( LiferayIDENavigatorNode parent, IFile portletXml )
+        throws ResourceStoreException,
         CoreException
     {
 
@@ -41,6 +42,28 @@ public class LiferayPortletsNavigatorNode extends AbstractPortletNavigatorNode
     public Object[] getChildren()
     {
         return EMPTY;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getModel()
+     */
+    public IModelElement getModel()
+    {
+        // TODO this needs to be updated when we have the Liferay Portlet xml editor
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#setModel(org.eclipse.sapphire.modeling.IModelElement
+     * )
+     */
+    public void setModel( IModelElement model )
+    {
+        // TODO Auto-generated method stub
+
     }
 
 }

@@ -318,18 +318,36 @@
                   </test>
                </adapt>
                <instanceof
-                     value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode">
+                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletsRootNode">
                </instanceof>
                <instanceof
-                     value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode">
+                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletsRootNode">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNavigatorNode">
                </instanceof></or></triggerPoints>
          <possibleChildren>
-            <instanceof
-                  value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode">
-            </instanceof>
-            <instanceof
-                  value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode">
-            </instanceof></possibleChildren>
+            <or>
+               <instanceof
+                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletsRootNode">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletsRootNode">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNavigatorNode">
+               </instanceof></or></possibleChildren>
+         <actionProvider
+               class="com.liferay.ide.eclipse.portlet.ui.navigator.actions.PortletNavigatorActionProvider"
+               id="com.liferay.ide.eclipse.ui.navigator.content.portlets.actionProvider"
+               priority="normal">
+            <enablement>
+               <or>
+                  <instanceof
+                        value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode">
+                  </instanceof></or>
+            </enablement>
+         </actionProvider>
       </navigatorContent>
    </extension>
    <extension

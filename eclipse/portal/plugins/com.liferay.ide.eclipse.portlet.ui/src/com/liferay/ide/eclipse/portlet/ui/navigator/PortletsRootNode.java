@@ -16,14 +16,15 @@
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
 import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.sapphire.modeling.IModelElement;
 
 /**
  * @author kamesh
  */
-public class PortletsRootNode implements LiferayIDENavigatorParentNode
+public class PortletsRootNode implements LiferayIDENavigatorNode
 {
 
     private final IProject liferayPlugin;
@@ -44,19 +45,16 @@ public class PortletsRootNode implements LiferayIDENavigatorParentNode
 
     }
 
-    /**
-     * @return the nodes
-     */
-    public LiferayIDENavigatorNode[] getNodes()
-    {
-        return nodes;
-    }
-
     public IProject getProject()
     {
         return liferayPlugin;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
+     * LiferayIDENavigatorNode[])
+     */
     public void addNodes( LiferayIDENavigatorNode... navigatorNodes )
     {
         if( navigatorNodes != null )
@@ -65,14 +63,64 @@ public class PortletsRootNode implements LiferayIDENavigatorParentNode
         }
         else
         {
-            this.nodes = new LiferayIDENavigatorNode[0];
+            this.nodes = new AbstractPortletsNavigatorNode[0];
         }
 
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#hasChildren()
+     */
     public boolean hasChildren()
     {
         return nodes.length > 0;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getParent()
+     */
+    public LiferayIDENavigatorNode getParent()
+    {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getChildren()
+     */
+    public Object[] getChildren()
+    {
+        return this.nodes;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getResource()
+     */
+    public IFile getResource()
+    {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getModel()
+     */
+    public IModelElement getModel()
+    {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#setModel(org.eclipse.sapphire.modeling.IModelElement
+     * )
+     */
+    public void setModel( IModelElement model )
+    {
     }
 
 }

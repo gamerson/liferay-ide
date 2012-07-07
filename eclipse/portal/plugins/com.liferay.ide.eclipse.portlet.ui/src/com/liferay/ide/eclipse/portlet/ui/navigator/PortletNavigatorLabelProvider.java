@@ -17,9 +17,10 @@ package com.liferay.ide.eclipse.portlet.ui.navigator;
 
 import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
 
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.sapphire.modeling.CapitalizationType;
+import org.eclipse.sapphire.modeling.Value;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -40,11 +41,11 @@ public class PortletNavigatorLabelProvider extends LabelProvider
         {
             return PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay.png" ).createImage();
         }
-        else if( element instanceof LiferayIDENavigatorNode )
+        else if( element instanceof AbstractPortletsNavigatorNode )
         {
             return PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlets_16x16.png" ).createImage();
         }
-        else if( element instanceof IPortlet )
+        else if( element instanceof PortletNavigatorNode )
         {
             return PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlet_16x16.png" ).createImage();
         }
@@ -70,10 +71,19 @@ public class PortletNavigatorLabelProvider extends LabelProvider
         {
             return "Liferay Portlets";
         }
-        else if( element instanceof IPortlet )
+        else if( element instanceof PortletNavigatorNode )
         {
-            IPortlet portlet = (IPortlet) element;
-            return portlet.getPortletName().getContent();
+            Value<String> label = null;
+            PortletNavigatorNode leaf = (PortletNavigatorNode) element;
+
+            if( leaf.getModel() != null && leaf.getModel() instanceof IPortlet )
+            {
+                IPortlet portlet = (IPortlet) leaf.getModel();
+
+                label = portlet.getPortletName();
+            } // TODO check for Liferay Portlet
+
+            return label.getLocalizedText( CapitalizationType.TITLE_STYLE, false );
         }
 
         return null;

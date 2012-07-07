@@ -13,12 +13,13 @@
  *   
  *******************************************************************************/
 
+package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-
-package com.liferay.ide.eclipse.ui.navigator;
+import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.sapphire.modeling.IModelElement;
 import org.eclipse.sapphire.modeling.ResourceStoreException;
 import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
@@ -26,17 +27,17 @@ import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
 /**
  * @author kamesh
  */
-public abstract class AbstractPortletNavigatorNode implements LiferayIDENavigatorNode
+public abstract class AbstractPortletsNavigatorNode implements LiferayIDENavigatorNode
 {
 
     protected final static Object[] EMPTY = new Object[] {};
 
-    protected final LiferayIDENavigatorParentNode parent;
+    protected final LiferayIDENavigatorNode parent;
     protected final IFile resource;
     protected RootXmlResource rootXmlResource;
 
-    public AbstractPortletNavigatorNode( LiferayIDENavigatorParentNode parent, IFile resource ) throws ResourceStoreException,
-        CoreException
+    public AbstractPortletsNavigatorNode( LiferayIDENavigatorNode parent, IFile resource )
+        throws ResourceStoreException, CoreException
     {
         this.parent = parent;
         this.resource = resource;
@@ -69,9 +70,38 @@ public abstract class AbstractPortletNavigatorNode implements LiferayIDENavigato
      * (non-Javadoc)
      * @see com.liferay.ide.eclipse.portlet.ui.navigator.LiferayIDENavigatorNode#getParent()
      */
-    public final LiferayIDENavigatorParentNode getParent()
+    public final LiferayIDENavigatorNode getParent()
     {
         return this.parent;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
+     * LiferayIDENavigatorNode[])
+     */
+    public void addNodes( LiferayIDENavigatorNode... ideNavigatorNodes )
+    {
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getModel()
+     */
+    public IModelElement getModel()
+    {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#setModel(org.eclipse.sapphire.modeling.IModelElement
+     * )
+     */
+    public void setModel( IModelElement model )
+    {
     }
 
 }
