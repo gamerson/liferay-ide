@@ -299,36 +299,48 @@
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
+            activeByDefault="true"
+            appearsBefore="org.eclipse.jst.servlet.ui.EnhancedJavaRendering"
             contentProvider="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNavigatorContentProvider"
-            icon="icons/e16/portlet.png"
-            id="com.liferay.ide.eclipse.portlet.ui.navigatorContent"
+            icon="src/images/portlets_16x16.png"
+            id="com.liferay.ide.eclipse.ui.navigator.content.portlets"
             labelProvider="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNavigatorLabelProvider"
-            name="Portal Resources">
+            name="Liferay Portal Descriptors"
+            priority="highest">
          <triggerPoints>
-            <adapt
-                  type="org.eclipse.core.resources.IProject">
-               <or>
+            <or>
+               <adapt
+                     type="org.eclipse.core.resources.IProject">
                   <test
                         forcePluginActivation="true"
                         property="org.eclipse.wst.common.project.facet.core.projectFacet"
                         value="liferay.portlet">
                   </test>
-                  <test
-                        forcePluginActivation="true"
-                        property="org.eclipse.wst.common.project.facet.core.projectFacet"
-                        value="liferay.plugins">
-                  </test>
-               </or>
-            </adapt>
-         </triggerPoints>
-         <possibleChildren>
-            <or>
+               </adapt>
                <instanceof
-                     value="com.liferay.ide.eclipse.portlet.core.model.IPortletApp">
+                     value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode">
                </instanceof>
                <instanceof
-                     value="com.liferay.ide.eclipse.portlet.core.model.IPortlet">
-               </instanceof></or></possibleChildren>
+                     value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode">
+               </instanceof></or></triggerPoints>
+         <possibleChildren>
+            <instanceof
+                  value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode">
+            </instanceof>
+            <instanceof
+                  value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorParentNode">
+            </instanceof></possibleChildren>
       </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  pattern="com.liferay.ide.eclipse.ui.navigator.content.*">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
    </extension>
 </plugin>
