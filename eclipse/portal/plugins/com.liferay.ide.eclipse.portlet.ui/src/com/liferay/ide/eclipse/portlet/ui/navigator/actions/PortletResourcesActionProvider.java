@@ -27,7 +27,7 @@ import org.eclipse.ui.navigator.ICommonMenuConstants;
 /**
  * @author kamesh
  */
-public class PortletNavigatorActionProvider extends CommonActionProvider
+public class PortletResourcesActionProvider extends CommonActionProvider
 {
 
     private OpenPortletResourceAction openAction;

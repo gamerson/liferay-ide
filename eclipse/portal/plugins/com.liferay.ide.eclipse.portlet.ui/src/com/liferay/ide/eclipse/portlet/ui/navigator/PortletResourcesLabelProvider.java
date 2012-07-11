@@ -21,6 +21,7 @@ package com.liferay.ide.eclipse.portlet.ui.navigator;
 import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.sapphire.modeling.CapitalizationType;
 import org.eclipse.sapphire.modeling.Value;
@@ -30,83 +31,64 @@ import org.eclipse.swt.graphics.Image;
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  * @author Gregory Amerson
  */
-public class PortletNavigatorLabelProvider extends LabelProvider
+public class PortletResourcesLabelProvider extends LabelProvider
 {
-    private final Image liferayImage;
-    private final Image portletsImage;
-    private final Image portletImage;
-    private final Image liferayModulesImage;
+    private final static String PORTLETS = "PORTLETS";
+    private final static String PORTLET = "PORTLET";
+    private final static String MODULES = "MODULES";
+    private final ImageRegistry imageRegistry;
 
-    public PortletNavigatorLabelProvider()
+    public PortletResourcesLabelProvider()
     {
         super();
         
-        this.liferayImage =
-            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay.png" ).createImage();
-        this.liferayModulesImage =
-            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay_modules.png" ).createImage();
-        this.portletsImage =
-            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlets_16x16.png" ).createImage();
-        this.portletImage =
-            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlet_16x16.png" ).createImage();
+        this.imageRegistry = new ImageRegistry();
+        
+        imageRegistry.put( PORTLETS, PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlets_16x16.png" ) );
+        imageRegistry.put( PORTLET, PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlet_16x16.png" ) );
+        imageRegistry.put( MODULES, PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay_modules.png" ) );
     }
 
     @Override
     public void dispose()
     {
-        if( this.liferayImage != null && this.liferayImage.isDisposed() )
-        {
-            this.liferayImage.dispose();
-        }
-        
-        if( this.portletsImage != null && this.portletsImage.isDisposed() )
-        {
-            this.portletsImage.dispose();
-        }
-        
-        if( this.portletImage != null && this.portletImage.isDisposed() )
-        {
-            this.portletImage.dispose();
-        }
+        this.imageRegistry.dispose();
     }
     
     @Override
     public Image getImage( Object element )
     {
-        if( element instanceof PortletsRootNode )
+        if( element instanceof PortletResourcesRootNode )
         {
-            return liferayModulesImage;
+            return this.imageRegistry.get( MODULES );
         }
-        else if( element instanceof AbstractPortletsNavigatorNode )
+        else if( element instanceof AbstractPortletsNode )
         {
-            return this.portletsImage;
+            return this.imageRegistry.get( PORTLETS );
         }
-        else if( element instanceof PortletNavigatorNode )
+        else if( element instanceof PortletNode )
         {
-            return this.portletImage;
+            return this.imageRegistry.get( PORTLET );
         }
+        
         return null;
     }
 
     @Override
     public String getText( Object element )
     {
-        if( element instanceof PortletsRootNode )
+        if( element instanceof PortletResourcesRootNode )
         {
-            return "Liferay Portal Resources";
+            return "Liferay Portlet Resources";
         }
-        else if( element instanceof PortletsNavigatorNode )
+        else if( element instanceof PortletsNode )
         {
             return "Portlets";
         }
-        else if( element instanceof LiferayPortletsNavigatorNode )
-        {
-            return "Liferay Portlets";
-        }
-        else if( element instanceof PortletNavigatorNode )
+        else if( element instanceof PortletNode )
         {
             Value<String> label = null;
-            PortletNavigatorNode leaf = (PortletNavigatorNode) element;
+            PortletNode leaf = (PortletNode) element;
 
             if( leaf.getModel() != null && leaf.getModel() instanceof IPortlet )
             {

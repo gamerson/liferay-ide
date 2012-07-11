@@ -11,6 +11,9 @@
  *    FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  *    details.
  *   
+ *   Contributors:
+ *      Kamesh Sampath - initial implementation
+ *      Gregory Amerson - initial implementation review and ongoing maintenance
  *******************************************************************************/
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
@@ -24,21 +27,18 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
-import org.eclipse.sapphire.modeling.ResourceStoreException;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 /**
- * @author kamesh
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
+ * @author Gregory Amerson
  */
-
 @SuppressWarnings( "rawtypes" )
-public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentProvider
+public class PortletResourcesContentProvider extends LiferayIDENavigatorContentProvider
 {
-
     protected final static Object[] EMPTY = new Object[] {};
 
     private LiferayIDENavigatorNode parentNode;
@@ -50,18 +50,15 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
 
     public void getPipelinedChildren( Object aParent, Set theCurrentChildren )
     {
-
     }
 
     public Object getPipelinedParent( Object anObject, Object aSuggestedParent )
     {
-
         return null;
     }
 
     public Object[] getChildren( Object parentElement )
     {
-
         try
         {
             if( parentElement instanceof IProject )
@@ -78,7 +75,7 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
 
                         final IPath webInfPath = rootPath.append( "WEB-INF" );
 
-                        parentNode = new PortletsRootNode( project );
+                        parentNode = new PortletResourcesRootNode( project );
 
                         final IPath portletXmlPath = webInfPath.append( "portlet.xml" );
 
@@ -86,44 +83,32 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
 
                         if( portletXmlFile != null )
                         {
+                            PortletsNode portletsNavigatorNode =
+                                new PortletsNode( parentNode, portletXmlFile );
 
-                            PortletsNavigatorNode portletsNavigatorNode =
-                                new PortletsNavigatorNode( parentNode, portletXmlFile );
-
-                            final IPath liferayPortletXmlPath = webInfPath.append( "liferay-portlet.xml" );
-
-                            IFile liferayPortletXmlFile = (IFile) project.findMember( liferayPortletXmlPath );
-
-                            LiferayPortletsNavigatorNode liferayPortletsNavigatorNode =
-                                new LiferayPortletsNavigatorNode( parentNode, liferayPortletXmlFile );
-
-                            parentNode.addNodes( portletsNavigatorNode, liferayPortletsNavigatorNode );
+                            parentNode.addNodes( portletsNavigatorNode );
 
                             return new Object[] { parentNode };
                         }
                     }
                 }
             }
-            else if( parentElement instanceof PortletsRootNode )
+            else if( parentElement instanceof PortletResourcesRootNode )
             {
-                PortletsRootNode portletRootContextNode = (PortletsRootNode) parentElement;
+                PortletResourcesRootNode portletRootContextNode = (PortletResourcesRootNode) parentElement;
                 return portletRootContextNode.getChildren();
             }
-            else if( parentElement instanceof AbstractPortletsNavigatorNode )
+            else if( parentElement instanceof AbstractPortletsNode )
             {
-                AbstractPortletsNavigatorNode portletsNavigatorNode = (AbstractPortletsNavigatorNode) parentElement;
+                AbstractPortletsNode portletsNavigatorNode = (AbstractPortletsNode) parentElement;
                 return portletsNavigatorNode.getChildren();
             }
-
         }
-        catch( ResourceStoreException e )
+        catch( Exception e )
         {
             PortletUIPlugin.logError( e );
         }
-        catch( CoreException e )
-        {
-            PortletUIPlugin.logError( e );
-        }
+        
         return EMPTY;
     }
 
@@ -133,6 +118,7 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
         {
             return parentNode;
         }
+        
         return null;
     }
 
@@ -142,6 +128,7 @@ public class PortletNavigatorContentProvider extends LiferayIDENavigatorContentP
         {
             return ( (LiferayIDENavigatorNode) element ).getChildren().length > 0;
         }
+        
         return false;
     }
 

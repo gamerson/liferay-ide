@@ -29,14 +29,14 @@ import org.eclipse.sapphire.modeling.ResourceStoreException;
 /**
  * @author kamesh
  */
-public class PortletsNavigatorNode extends AbstractPortletsNavigatorNode
+public class PortletsNode extends AbstractPortletsNode
 {
 
     private final ModelElementType portletAppModelElementType = IPortletApp.TYPE;
 
     private final IPortletApp portletApp;
 
-    public PortletsNavigatorNode( LiferayIDENavigatorNode parent, IFile portletXmlPath ) throws ResourceStoreException,
+    public PortletsNode( LiferayIDENavigatorNode parent, IFile portletXmlPath ) throws ResourceStoreException,
         CoreException
     {
         super( parent, portletXmlPath );
@@ -72,12 +72,12 @@ public class PortletsNavigatorNode extends AbstractPortletsNavigatorNode
         {
             ModelElementList<IPortlet> portlets = portletApp.getPortlets();
 
-            PortletNavigatorNode[] portletNodes = new PortletNavigatorNode[portlets.size()];
+            PortletNode[] portletNodes = new PortletNode[portlets.size()];
 
             int i = 0;
             for( IPortlet iPortlet : portlets )
             {
-                PortletNavigatorNode portletNode = new PortletNavigatorNode( this );
+                PortletNode portletNode = new PortletNode( this );
                 portletNode.setModel( iPortlet );
                 portletNodes[i] = portletNode;
                 i++;

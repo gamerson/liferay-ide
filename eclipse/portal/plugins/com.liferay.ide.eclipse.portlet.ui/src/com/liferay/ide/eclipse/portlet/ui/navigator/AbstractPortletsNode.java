@@ -18,36 +18,61 @@ package com.liferay.ide.eclipse.portlet.ui.navigator;
 import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.sapphire.modeling.IModelElement;
+import org.eclipse.sapphire.modeling.ResourceStoreException;
+import org.eclipse.sapphire.modeling.xml.RootXmlResource;
+import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
 
 /**
  * @author kamesh
  */
-public class PortletsRootNode implements LiferayIDENavigatorNode
+public abstract class AbstractPortletsNode implements LiferayIDENavigatorNode
 {
 
-    private final IProject liferayPlugin;
+    protected final static Object[] EMPTY = new Object[] {};
 
-    private LiferayIDENavigatorNode[] nodes;
+    protected final LiferayIDENavigatorNode parent;
+    protected final IFile resource;
+    protected RootXmlResource rootXmlResource;
 
-    public PortletsRootNode( IProject liferayPlugin, LiferayIDENavigatorNode... nodes )
+    public AbstractPortletsNode( LiferayIDENavigatorNode parent, IFile resource )
+        throws ResourceStoreException, CoreException
     {
-        this.liferayPlugin = liferayPlugin;
-        if( nodes != null )
-        {
-            this.nodes = nodes;
-        }
-        else
-        {
-            this.nodes = new LiferayIDENavigatorNode[0];
-        }
+        this.parent = parent;
+        this.resource = resource;
+
+        XmlResourceStore store = new XmlResourceStore( resource.getContents() );
+
+        rootXmlResource = new RootXmlResource( store );
 
     }
 
-    public IProject getProject()
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.portlet.ui.navigator.LiferayIDENavigatorNode#getResource()
+     */
+    public final IFile getResource()
     {
-        return liferayPlugin;
+        return resource;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.portlet.ui.navigator.LiferayIDENavigatorNode#hasChildren()
+     */
+    public final boolean hasChildren()
+    {
+        return getChildren().length > 0;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.liferay.ide.eclipse.portlet.ui.navigator.LiferayIDENavigatorNode#getParent()
+     */
+    public final LiferayIDENavigatorNode getParent()
+    {
+        return this.parent;
     }
 
     /*
@@ -55,53 +80,9 @@ public class PortletsRootNode implements LiferayIDENavigatorNode
      * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
      * LiferayIDENavigatorNode[])
      */
-    public void addNodes( LiferayIDENavigatorNode... navigatorNodes )
+    public void addNodes( LiferayIDENavigatorNode... ideNavigatorNodes )
     {
-        if( navigatorNodes != null )
-        {
-            this.nodes = navigatorNodes;
-        }
-        else
-        {
-            this.nodes = new AbstractPortletsNavigatorNode[0];
-        }
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#hasChildren()
-     */
-    public boolean hasChildren()
-    {
-        return nodes.length > 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getParent()
-     */
-    public LiferayIDENavigatorNode getParent()
-    {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getChildren()
-     */
-    public Object[] getChildren()
-    {
-        return this.nodes;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getResource()
-     */
-    public IFile getResource()
-    {
-        return null;
     }
 
     /*

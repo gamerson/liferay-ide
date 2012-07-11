@@ -23,7 +23,7 @@ import org.eclipse.sapphire.modeling.IModelElement;
 /**
  * @author kamesh
  */
-public class PortletNavigatorNode implements LiferayIDENavigatorNode
+public class PortletNode implements LiferayIDENavigatorNode
 {
 
     protected final static Object[] EMPTY = new Object[] {};
@@ -32,7 +32,7 @@ public class PortletNavigatorNode implements LiferayIDENavigatorNode
 
     private IModelElement model;
 
-    public PortletNavigatorNode( LiferayIDENavigatorNode parent )
+    public PortletNode( LiferayIDENavigatorNode parent )
     {
         this.parent = parent;
     }
