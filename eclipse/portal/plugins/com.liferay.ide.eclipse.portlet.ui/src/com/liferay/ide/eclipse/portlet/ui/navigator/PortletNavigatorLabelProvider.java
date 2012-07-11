@@ -32,9 +32,10 @@ import org.eclipse.swt.graphics.Image;
  */
 public class PortletNavigatorLabelProvider extends LabelProvider
 {
-    private Image liferayImage;
-    private Image portletsImage;
-    private Image portletImage;
+    private final Image liferayImage;
+    private final Image portletsImage;
+    private final Image portletImage;
+    private final Image liferayModulesImage;
 
     public PortletNavigatorLabelProvider()
     {
@@ -42,6 +43,8 @@ public class PortletNavigatorLabelProvider extends LabelProvider
         
         this.liferayImage =
             PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay.png" ).createImage();
+        this.liferayModulesImage =
+            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay_modules.png" ).createImage();
         this.portletsImage =
             PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlets_16x16.png" ).createImage();
         this.portletImage =
@@ -72,7 +75,7 @@ public class PortletNavigatorLabelProvider extends LabelProvider
     {
         if( element instanceof PortletsRootNode )
         {
-            return this.liferayImage;
+            return liferayModulesImage;
         }
         else if( element instanceof AbstractPortletsNavigatorNode )
         {
@@ -90,7 +93,7 @@ public class PortletNavigatorLabelProvider extends LabelProvider
     {
         if( element instanceof PortletsRootNode )
         {
-            return "Liferay Portlet Resources";
+            return "Liferay Portal Resources";
         }
         else if( element instanceof PortletsNavigatorNode )
         {
