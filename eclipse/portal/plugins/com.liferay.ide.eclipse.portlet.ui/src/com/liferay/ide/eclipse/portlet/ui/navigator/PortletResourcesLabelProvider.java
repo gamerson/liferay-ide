@@ -33,20 +33,23 @@ import org.eclipse.swt.graphics.Image;
  */
 public class PortletResourcesLabelProvider extends LabelProvider
 {
-    private final static String PORTLETS = "PORTLETS";
-    private final static String PORTLET = "PORTLET";
-    private final static String MODULES = "MODULES";
-    private final ImageRegistry imageRegistry;
+    private final Image liferayImage;
+    private final Image portletsImage;
+    private final Image portletImage;
+    private final Image liferayModulesImage;
 
     public PortletResourcesLabelProvider()
     {
         super();
         
-        this.imageRegistry = new ImageRegistry();
-        
-        imageRegistry.put( PORTLETS, PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlets_16x16.png" ) );
-        imageRegistry.put( PORTLET, PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlet_16x16.png" ) );
-        imageRegistry.put( MODULES, PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay_modules.png" ) );
+        this.liferayImage =
+            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay.png" ).createImage();
+        this.liferayModulesImage =
+            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/liferay_modules.png" ).createImage();
+        this.portletsImage =
+            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlets_16x16.png" ).createImage();
+        this.portletImage =
+            PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "icons/e16/portlet_16x16.png" ).createImage();
     }
 
     @Override
@@ -60,7 +63,7 @@ public class PortletResourcesLabelProvider extends LabelProvider
     {
         if( element instanceof PortletResourcesRootNode )
         {
-            return this.imageRegistry.get( MODULES );
+            return liferayModulesImage;
         }
         else if( element instanceof AbstractPortletsNode )
         {
@@ -79,7 +82,7 @@ public class PortletResourcesLabelProvider extends LabelProvider
     {
         if( element instanceof PortletResourcesRootNode )
         {
-            return "Liferay Portlet Resources";
+            return "Liferay Portal Resources";
         }
         else if( element instanceof PortletsNode )
         {

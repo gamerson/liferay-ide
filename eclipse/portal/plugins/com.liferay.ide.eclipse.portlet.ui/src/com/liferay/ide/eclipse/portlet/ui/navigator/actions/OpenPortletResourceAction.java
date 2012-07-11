@@ -16,8 +16,7 @@
 package com.liferay.ide.eclipse.portlet.ui.navigator.actions;
 
 import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
-import com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode;
-import com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesRootNode;
+import com.liferay.ide.eclipse.portlet.ui.navigator.PortletNavigatorNode;
 import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
 
 import org.eclipse.core.resources.IFile;
@@ -45,6 +44,11 @@ import org.eclipse.ui.part.FileEditorInput;
  */
 public class OpenPortletResourceAction extends BaseSelectionListenerAction
 {
+    private static final String PORTLETS_NODE_LABEL = "Portlets";
+
+    /**
+     * 
+     */
     private static final String PORTLETS_NODE_LABEL = "Portlets";
 
     private static final String ACTION_MESSAGE = "Open";
@@ -80,7 +84,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
                 initEditorPart();
             }
 
-            if( editorPart != null && this.selectedNode instanceof PortletNode )
+            if( editorPart != null && this.selectedNode instanceof PortletNavigatorNode )
             {
                 selectAndRevealItem( editorPart );
             }
@@ -106,7 +110,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
             {
                 editorPart = openEditor( file );
 
-                if( editorPart != null && this.selectedNode instanceof PortletNode )
+                if( editorPart != null && this.selectedNode instanceof PortletNavigatorNode )
                 {
                     selectAndRevealItem( editorPart );
                 }
@@ -126,7 +130,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
 
             SapphireEditorForXml editor = (SapphireEditorForXml) editorPart;
 
-            PortletNode portletNavigatorNode = (PortletNode) this.selectedNode;
+            PortletNavigatorNode portletNavigatorNode = (PortletNavigatorNode) this.selectedNode;
             IModelElement selectedModelElement = portletNavigatorNode.getModel();
 
             if( selectedModelElement != null )
@@ -187,10 +191,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
 
         if( this.selectedNode.getResource() == null )
         {
-            if( ! ( this.selectedNode instanceof PortletResourcesRootNode ) )
-            {
-                file = this.selectedNode.getParent().getResource();
-            }
+            file = this.selectedNode.getParent().getResource();
         }
         else
         {
