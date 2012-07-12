@@ -16,20 +16,28 @@
 package com.liferay.ide.eclipse.portlet.ui.navigator.actions;
 
 import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
+import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode;
 import com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesRootNode;
 import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.sapphire.java.JavaTypeName;
 import org.eclipse.sapphire.modeling.IModelElement;
 import org.eclipse.sapphire.ui.SapphireEditor;
 import org.eclipse.sapphire.ui.form.editors.masterdetails.MasterDetailsContentNode;
 import org.eclipse.sapphire.ui.form.editors.masterdetails.MasterDetailsContentOutline;
 import org.eclipse.sapphire.ui.form.editors.masterdetails.MasterDetailsEditorPage;
 import org.eclipse.sapphire.ui.swt.xml.editor.SapphireEditorForXml;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -45,9 +53,10 @@ import org.eclipse.ui.part.FileEditorInput;
  */
 public class OpenPortletResourceAction extends BaseSelectionListenerAction
 {
+
     private static final String PORTLETS_NODE_LABEL = "Portlets";
 
-    private static final String ACTION_MESSAGE = "Open";
+    private static final String ACTION_MESSAGE = "Open portlet.xml";
 
     protected LiferayIDENavigatorNode selectedNode;
 
@@ -100,7 +109,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
     {
         if( isEnabled() )
         {
-            IFile file = initEditorPart();
+            final IFile file = initEditorPart();
 
             if( file != null && file.exists() )
             {
@@ -109,8 +118,75 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
                 if( editorPart != null && this.selectedNode instanceof PortletNode )
                 {
                     selectAndRevealItem( editorPart );
+                    openPortletJavaClass( file );
                 }
+
             }
+        }
+    }
+
+    /**
+     * @param file
+     */
+    protected void openPortletJavaClass( final IFile file )
+    {
+        IModelElement modelElement = ( (PortletNode) this.selectedNode ).getModel();
+        if( modelElement instanceof IPortlet )
+        {
+            final IPortlet portlet = (IPortlet) modelElement;
+            final JavaTypeName portletClassFile = portlet.getPortletClass().getContent();
+            Display.getDefault().asyncExec( new Runnable()
+            {
+
+                public void run()
+                {
+                    IJavaProject project = JavaCore.create( file.getProject() );
+
+                    String fullyQualifiedName = portletClassFile.qualified();
+                    try
+                    {
+                        IType type = project.findType( fullyQualifiedName );
+                        if( type != null && type.exists() )
+                        {
+                            IResource resource = type.getResource();
+                            if( resource instanceof IFile )
+                            {
+                                IFile javaFile = (IFile) resource;
+                                IEditorDescriptor editorDescriptor = findEditor( javaFile );
+                                IEditorPart editorPart = null;
+                                if( editorDescriptor != null )
+                                {
+                                    IWorkbenchPage page =
+                                        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                                    try
+                                    {
+                                        editorPart = page.findEditor( new FileEditorInput( javaFile ) );
+                                        if( editorPart == null )
+                                        {
+                                            editorPart =
+                                                page.openEditor(
+                                                    new FileEditorInput( javaFile ), editorDescriptor.getId() );
+                                        }
+
+                                    }
+                                    catch( Exception e )
+                                    {
+                                        MessageDialog.openError(
+                                            page.getWorkbenchWindow().getShell(), "Error Opening File",
+                                            e.getMessage() );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch( JavaModelException e )
+                    {
+                        PortletUIPlugin.logError( e );
+                    }
+
+                }
+            } );
+
         }
     }
 
@@ -187,7 +263,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
 
         if( this.selectedNode.getResource() == null )
         {
-            if( ! ( this.selectedNode instanceof PortletResourcesRootNode ) )
+            if( !( this.selectedNode instanceof PortletResourcesRootNode ) )
             {
                 file = this.selectedNode.getParent().getResource();
             }
@@ -208,7 +284,6 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
                 {
                     this.editorPart = iEditorReference.getEditor( false );
                 }
-                // TODO check the same for Liferay Portlet XMl Editor
             }
         }
 
@@ -217,6 +292,34 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
 
     protected IEditorPart openEditor( IFile file )
     {
+        IEditorDescriptor editorDescriptor = findEditor( file );
+        IEditorPart editorPart = null;
+        if( editorDescriptor != null )
+        {
+            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+            try
+            {
+                editorPart = page.findEditor( new FileEditorInput( file ) );
+                if( editorPart == null )
+                {
+                    editorPart = page.openEditor( new FileEditorInput( file ), editorDescriptor.getId() );
+                }
+
+            }
+            catch( Exception e )
+            {
+                MessageDialog.openError( page.getWorkbenchWindow().getShell(), "Error Opening File", e.getMessage() );
+            }
+        }
+        return editorPart;
+    }
+
+    /**
+     * @param file
+     * @return
+     */
+    protected IEditorDescriptor findEditor( IFile file )
+    {
         IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
         IContentType contentType = IDE.getContentType( file );
         IEditorDescriptor editorDescriptor = registry.getDefaultEditor( file.getName(), contentType );
@@ -224,23 +327,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
         {
             return null; // no editor associated...
         }
-
-        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        IEditorPart editorPart = null;
-        try
-        {
-            editorPart = page.findEditor( new FileEditorInput( file ) );
-            if( editorPart == null )
-            {
-                editorPart = page.openEditor( new FileEditorInput( file ), editorDescriptor.getId() );
-            }
-
-        }
-        catch( Exception e )
-        {
-            MessageDialog.openError( page.getWorkbenchWindow().getShell(), "Error Opening File", e.getMessage() );
-        }
-        return editorPart;
+        return editorDescriptor;
     }
 
 }
