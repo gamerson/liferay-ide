@@ -342,12 +342,41 @@
                id="com.liferay.ide.eclipse.ui.navigator.content.portlets.actionProvider"
                priority="normal">
             <enablement>
-               <or>
+               <and>
                   <instanceof
-                        value="com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode">
-                  </instanceof></or>
+                        value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode">
+                  </instanceof>
+               </and>
             </enablement>
          </actionProvider>
+         <commonWizard
+               menuGroupId="com.liferay.ide.eclipse.plugins.ui"
+               type="new"
+               wizardId="com.liferay.ide.eclipse.portlet.ui.wizard.portlet">
+            <enablement>
+               <and>
+                  <or>
+                     <instanceof
+                           value="org.eclipse.core.resources.IProject">
+                     </instanceof>
+                     <instanceof
+                           value="org.eclipse.jdt.core.IPackageFragment">
+                     </instanceof>
+                     <instanceof
+                           value="org.eclipse.jdt.core.IPackageFragmentRoot">
+                     </instanceof>
+                  </or>
+                  <adapt
+                        type="org.eclipse.core.resources.IProject">
+                     <test
+                           forcePluginActivation="true"
+                           property="org.eclipse.wst.common.project.facet.core.projectFacet"
+                           value="liferay.portlet">
+                     </test>
+                  </adapt>
+               </and>
+            </enablement>
+         </commonWizard>
       </navigatorContent>
    </extension>
    <extension
