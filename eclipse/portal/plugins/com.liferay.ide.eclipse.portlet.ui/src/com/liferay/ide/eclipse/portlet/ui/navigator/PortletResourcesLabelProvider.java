@@ -18,13 +18,10 @@
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.sapphire.modeling.CapitalizationType;
-import org.eclipse.sapphire.modeling.Value;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -62,7 +59,7 @@ public class PortletResourcesLabelProvider extends LabelProvider
         {
             return this.imageRegistry.get( MODULES );
         }
-        else if( element instanceof AbstractPortletsNode )
+        else if( element instanceof PortletsNode )
         {
             return this.imageRegistry.get( PORTLETS );
         }
@@ -87,17 +84,9 @@ public class PortletResourcesLabelProvider extends LabelProvider
         }
         else if( element instanceof PortletNode )
         {
-            Value<String> label = null;
-            PortletNode leaf = (PortletNode) element;
-
-            if( leaf.getModel() != null && leaf.getModel() instanceof IPortlet )
-            {
-                IPortlet portlet = (IPortlet) leaf.getModel();
-
-                label = portlet.getPortletName();
-            }
-
-            return label.getLocalizedText( CapitalizationType.TITLE_STYLE, false );
+            PortletNode portletNode = (PortletNode) element;
+            
+            return portletNode.getName();
         }
 
         return null;

@@ -18,21 +18,15 @@
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.core.util.CoreUtil;
-import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 import com.liferay.ide.eclipse.ui.navigator.AbstractNavigatorContentProvider;
-import com.liferay.ide.eclipse.ui.navigator.NavigatorTreeNode;
-
-import java.util.Set;
+import com.liferay.ide.eclipse.ui.util.UIUtil;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
-import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.ui.internal.navigator.NavigatorContentService;
+import org.eclipse.ui.navigator.CommonViewer;
 
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
@@ -57,105 +51,28 @@ public class PortletResourcesContentProvider extends AbstractNavigatorContentPro
             
             if( ProjectUtil.isLiferayProject( project ) )
             {
-                return new Object[] { new PortletResourcesRootNode( project ) };
+                return new Object[] { new PortletResourcesRootNode( this, project ) };
             }
+        }
+        else if( element instanceof PortletResourcesRootNode )
+        {
+            return new Object[] { new PortletsNode( (PortletResourcesRootNode) element ) };
+        }
+        else if( element instanceof PortletsNode )
+        {
+            return ( (PortletsNode) element ).getChildren();
         }
         
         return null;
     }
     
-    @SuppressWarnings( "rawtypes" )
-    public void getPipelinedChildren( final Object parent, final Set currentChildren )
-    {
-        try
-        {
-            if( parent instanceof IProject )
-            {
-                IProject project = (IProject) parent;
-
-                if( ProjectUtil.isLiferayProject( project ) )
-                {
-                    final IFolder docroot = CoreUtil.getDocroot( project );
-                    
-                    if( docroot != null )
-                    {
-                        final IFile portletXmlFile = docroot.getFile( "WEB-INF/portlet.xml" );                        
-                        
-                    }
-                    
-                    
-                    final IVirtualComponent component = ComponentCore.createComponent( project );
-
-                    if( component != null && JavaEEProjectUtilities.isDynamicWebComponent( component ) )
-                    {
-                        final IPath rootPath = component.getRootFolder().getProjectRelativePath();
-
-                        final IPath webInfPath = rootPath.append( "WEB-INF" );
-
-                        PortletResourcesRootNode rootNode = new PortletResourcesRootNode( project );
-
-                        final IPath portletXmlPath = webInfPath.append( "portlet.xml" );
-
-                        IFile portletXmlFile = project.getFile( portletXmlPath );
-
-                        if( portletXmlFile != null )
-                        {
-                            PortletsNode portletsNavigatorNode =
-                                new PortletsNode( rootNode, portletXmlFile );
-
-                            rootNode.addNodes( portletsNavigatorNode );
-
-//                            return new Object[] { rootNode };
-                        }
-                    }
-                }
-            }
-            else if( parent instanceof PortletResourcesRootNode )
-            {
-                PortletResourcesRootNode portletRootContextNode = (PortletResourcesRootNode) parent;
-//                return portletRootContextNode.getChildren();
-            }
-            else if( parent instanceof AbstractPortletsNode )
-            {
-                AbstractPortletsNode portletsNavigatorNode = (AbstractPortletsNode) parent;
-//                return  null;
-            }
-        }
-        catch( Exception e )
-        {
-            PortletUIPlugin.logError( e );
-        }
-    }
-
-    public Object getParent( Object element )
-    {
-        if( element instanceof NavigatorTreeNode )
-        {
-            return null;
-        }
-        
-        return null;
-    }
-    
-    @Override
-    public Object getPipelinedParent( Object anObject, Object aSuggestedParent )
-    {
-        return super.getPipelinedParent( anObject, aSuggestedParent );
-    }
-
-    @Override
-    public boolean hasPipelinedChildren( Object element, boolean currentHasChildren )
-    {
-        return hasChildren( element );
-    }
-
     public boolean hasChildren( Object element )
     {
         if( element instanceof IProject )
         {
             final IProject project = (IProject) element;
             
-            final IFile portletXmlFile = getPortletXmlFile( project );                    
+            final IFile portletXmlFile = ProjectUtil.getPortletXmlFile( project );                    
                  
             if( portletXmlFile.exists() )
             {
@@ -166,27 +83,43 @@ public class PortletResourcesContentProvider extends AbstractNavigatorContentPro
         {
             final PortletResourcesRootNode rootNode = (PortletResourcesRootNode) element;
             
-            return rootNode.hasChildren( element );
+            return rootNode.hasChildren();
+        }
+        else if( element instanceof PortletsNode )
+        {
+            final PortletsNode portletsNode = (PortletsNode) element;
+            
+            return portletsNode.hasChildren();
         }
         
         return false;
     }
-    
-    private IFile getPortletXmlFile( IProject project )
+
+    @SuppressWarnings( "restriction" )
+    public void refresh()
     {
-        IFile retval = null;
-        
-        if( project != null && ProjectUtil.isLiferayProject( project ) )
-        {
-            final IFolder docroot = CoreUtil.getDocroot( project );
-            
-            if( docroot != null )
+        final NavigatorContentService s = (NavigatorContentService) getConfig().getService();
+
+        UIUtil.sync
+        (
+            new Runnable()
             {
-                retval = docroot.getFile( "WEB-INF/portlet.xml" );
+                public void run()
+                {
+                    try
+                    {
+                        final CommonViewer viewer = (CommonViewer) s.getViewer();
+                        TreePath[] paths = viewer.getExpandedTreePaths();
+                        viewer.refresh( true );
+                        viewer.setExpandedTreePaths( paths );
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                }
             }
-        }
+        );
         
-        return retval;
     }
 
 }

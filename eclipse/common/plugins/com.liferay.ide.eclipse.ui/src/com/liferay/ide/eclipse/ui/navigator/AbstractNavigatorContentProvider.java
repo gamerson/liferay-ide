@@ -45,6 +45,11 @@ public abstract class AbstractNavigatorContentProvider implements IPipelinedTree
         return null;
     }
     
+    public Object getParent( Object element )
+    {
+        return null;
+    }
+    
     @SuppressWarnings( "rawtypes" )
     public void getPipelinedChildren( Object aParent, Set theCurrentChildren )
     {

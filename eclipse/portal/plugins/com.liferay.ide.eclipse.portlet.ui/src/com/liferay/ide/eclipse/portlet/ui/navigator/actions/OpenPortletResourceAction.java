@@ -23,7 +23,7 @@ import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode;
 import com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesRootNode;
-import com.liferay.ide.eclipse.ui.navigator.NavigatorTreeNode;
+import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -62,7 +62,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
     private static final String PORTLETS_NODE_LABEL = "Portlets";
 
     protected IEditorPart editorPart;
-    protected NavigatorTreeNode selectedNode;
+    protected Object selectedNode;
 
     public OpenPortletResourceAction()
     {
@@ -90,17 +90,12 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
     protected IFile initEditorPart()
     {
         IFile file = null;
-
-        if( this.selectedNode.getResource() == null )
+        
+        if( this.selectedNode instanceof PortletNode )
         {
-            if( !( this.selectedNode instanceof PortletResourcesRootNode ) )
-            {
-                file = ( (PortletNode) this.selectedNode.getParent() ).getResource();
-            }
-        }
-        else
-        {
-            file = (IFile) this.selectedNode.getResource();
+            PortletNode portletNode = (PortletNode) this.selectedNode;
+            PortletResourcesRootNode rootNode = portletNode.getParent().getParent();
+            file = ProjectUtil.getPortletXmlFile( rootNode.getProject() );
         }
 
         // Check to see if the editor part is already open
@@ -300,7 +295,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
     {
         if( selection.size() == 1 )
         {
-            this.selectedNode = (NavigatorTreeNode) selection.getFirstElement();
+            this.selectedNode = selection.getFirstElement();
 
             if( editorPart == null )
             {

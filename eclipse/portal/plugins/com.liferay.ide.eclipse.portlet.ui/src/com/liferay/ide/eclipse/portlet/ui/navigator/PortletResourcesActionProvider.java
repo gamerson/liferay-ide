@@ -13,7 +13,9 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.eclipse.portlet.ui.navigator.actions;
+package com.liferay.ide.eclipse.portlet.ui.navigator;
+
+import com.liferay.ide.eclipse.portlet.ui.navigator.actions.OpenPortletResourceAction;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;

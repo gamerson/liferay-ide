@@ -94,6 +94,23 @@ public class ProjectUtil
 {
 
 	public static final String METADATA_FOLDER = ".metadata";
+    
+	public static IFile getPortletXmlFile( IProject project )
+    {
+        IFile retval = null;
+        
+        if( project != null && ProjectUtil.isLiferayProject( project ) )
+        {
+            final IFolder docroot = CoreUtil.getDocroot( project );
+            
+            if( docroot != null )
+            {
+                retval = docroot.getFile( "WEB-INF/portlet.xml" );
+            }
+        }
+        
+        return retval;
+    }
 
 	public static void addLiferayPortletTldToWebXML( final IProject project )
 	{
