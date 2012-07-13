@@ -15,39 +15,36 @@
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
+import com.liferay.ide.eclipse.ui.navigator.NavigatorTreeNode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.sapphire.modeling.IModelElement;
 
 /**
- * @author kamesh
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
-public class PortletResourcesRootNode implements LiferayIDENavigatorNode
+public class PortletResourcesRootNode
 {
+    private final IProject liferayProject;
 
-    private final IProject liferayPlugin;
+    private NavigatorTreeNode[] nodes;
 
-    private LiferayIDENavigatorNode[] nodes;
+    private IFile portletXmlFile;
 
-    public PortletResourcesRootNode( IProject liferayPlugin, LiferayIDENavigatorNode... nodes )
+    public PortletResourcesRootNode( IProject project )
     {
-        this.liferayPlugin = liferayPlugin;
-        if( nodes != null )
-        {
-            this.nodes = nodes;
-        }
-        else
-        {
-            this.nodes = new LiferayIDENavigatorNode[0];
-        }
-
+        this.liferayProject = project;
+    }
+    
+    public IFile getPortletXmlFile()
+    {
+        return this.portletXmlFile;
     }
 
     public IProject getProject()
     {
-        return liferayPlugin;
+        return this.liferayProject;
     }
 
     /*
@@ -55,7 +52,7 @@ public class PortletResourcesRootNode implements LiferayIDENavigatorNode
      * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
      * LiferayIDENavigatorNode[])
      */
-    public void addNodes( LiferayIDENavigatorNode... navigatorNodes )
+    public void addNodes( NavigatorTreeNode... navigatorNodes )
     {
         if( navigatorNodes != null )
         {
@@ -81,7 +78,7 @@ public class PortletResourcesRootNode implements LiferayIDENavigatorNode
      * (non-Javadoc)
      * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getParent()
      */
-    public LiferayIDENavigatorNode getParent()
+    public NavigatorTreeNode getParent()
     {
         return null;
     }
@@ -121,6 +118,16 @@ public class PortletResourcesRootNode implements LiferayIDENavigatorNode
      */
     public void setModel( IModelElement model )
     {
+    }
+
+    public boolean hasChildren( Object element )
+    {
+        if( this.portletXmlFile != null && this.portletXmlFile.exists() )
+        {
+            return true;
+        }
+        
+        return false;
     }
 
 }

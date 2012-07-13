@@ -17,7 +17,7 @@ package com.liferay.ide.eclipse.portlet.ui.navigator;
 
 import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.core.model.IPortletApp;
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
+import com.liferay.ide.eclipse.ui.navigator.NavigatorTreeNode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -27,7 +27,7 @@ import org.eclipse.sapphire.modeling.ModelElementType;
 import org.eclipse.sapphire.modeling.ResourceStoreException;
 
 /**
- * @author kamesh
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
 public class PortletsNode extends AbstractPortletsNode
 {
@@ -36,12 +36,17 @@ public class PortletsNode extends AbstractPortletsNode
 
     private final IPortletApp portletApp;
 
-    public PortletsNode( LiferayIDENavigatorNode parent, IFile portletXmlPath ) throws ResourceStoreException,
+    public PortletsNode( NavigatorTreeNode parent, IFile portletXmlPath ) throws ResourceStoreException,
         CoreException
     {
         super( parent, portletXmlPath );
 
         portletApp = portletAppModelElementType.instantiate( rootXmlResource );
+    }
+
+    public PortletsNode( PortletResourcesRootNode rootNode, IFile portletXmlFile ) throws ResourceStoreException, CoreException
+    {
+        this( (NavigatorTreeNode) null, (IFile)null );
     }
 
     /*

@@ -15,7 +15,7 @@
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
+import com.liferay.ide.eclipse.ui.navigator.NavigatorTreeNode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -25,18 +25,18 @@ import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
 
 /**
- * @author kamesh
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
-public abstract class AbstractPortletsNode implements LiferayIDENavigatorNode
+public abstract class AbstractPortletsNode implements NavigatorTreeNode
 {
 
     protected final static Object[] EMPTY = new Object[] {};
 
-    protected final LiferayIDENavigatorNode parent;
+    protected final NavigatorTreeNode parent;
     protected final IFile resource;
     protected RootXmlResource rootXmlResource;
 
-    public AbstractPortletsNode( LiferayIDENavigatorNode parent, IFile resource )
+    public AbstractPortletsNode( NavigatorTreeNode parent, IFile resource )
         throws ResourceStoreException, CoreException
     {
         this.parent = parent;
@@ -63,14 +63,14 @@ public abstract class AbstractPortletsNode implements LiferayIDENavigatorNode
      */
     public final boolean hasChildren()
     {
-        return getChildren().length > 0;
+        return ((Object[])getChildren()).length > 0;
     }
 
     /*
      * (non-Javadoc)
      * @see com.liferay.ide.eclipse.portlet.ui.navigator.LiferayIDENavigatorNode#getParent()
      */
-    public final LiferayIDENavigatorNode getParent()
+    public final NavigatorTreeNode getParent()
     {
         return this.parent;
     }
@@ -80,7 +80,7 @@ public abstract class AbstractPortletsNode implements LiferayIDENavigatorNode
      * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
      * LiferayIDENavigatorNode[])
      */
-    public void addNodes( LiferayIDENavigatorNode... ideNavigatorNodes )
+    public void addNodes( NavigatorTreeNode... ideNavigatorNodes )
     {
 
     }

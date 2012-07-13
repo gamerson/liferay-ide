@@ -15,24 +15,24 @@
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
+import com.liferay.ide.eclipse.ui.navigator.NavigatorTreeNode;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.sapphire.modeling.IModelElement;
 
 /**
- * @author kamesh
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  */
-public class PortletNode implements LiferayIDENavigatorNode
+public class PortletNode implements NavigatorTreeNode
 {
 
     protected final static Object[] EMPTY = new Object[] {};
 
-    private final LiferayIDENavigatorNode parent;
+    private final NavigatorTreeNode parent;
 
     private IModelElement model;
 
-    public PortletNode( LiferayIDENavigatorNode parent )
+    public PortletNode( NavigatorTreeNode parent )
     {
         this.parent = parent;
     }
@@ -41,7 +41,7 @@ public class PortletNode implements LiferayIDENavigatorNode
      * (non-Javadoc)
      * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getParent()
      */
-    public LiferayIDENavigatorNode getParent()
+    public NavigatorTreeNode getParent()
     {
         // TODO Auto-generated method stub
         return parent;
@@ -62,7 +62,7 @@ public class PortletNode implements LiferayIDENavigatorNode
      */
     public IFile getResource()
     {
-        return parent.getResource();
+        return (IFile) parent.getResource();
     }
 
     /*
@@ -79,7 +79,7 @@ public class PortletNode implements LiferayIDENavigatorNode
      * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
      * LiferayIDENavigatorNode[])
      */
-    public void addNodes( LiferayIDENavigatorNode... ideNavigatorNodes )
+    public void addNodes( NavigatorTreeNode... ideNavigatorNodes )
     {
 
     }
