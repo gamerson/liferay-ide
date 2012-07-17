@@ -11,97 +11,58 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  *
+ * Contributors:
+ * 		Kamesh Sampath - initial implementation
+ * 		Gregory Amerson - initial implementation review and ongoing maintenance
  *******************************************************************************/
+
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
+import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.sapphire.modeling.CapitalizationType;
 import org.eclipse.sapphire.modeling.IModelElement;
+import org.eclipse.sapphire.modeling.Value;
+
 
 /**
- * @author kamesh
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
+ * @author Gregory Amerson
  */
-public class PortletNode implements LiferayIDENavigatorNode
+public class PortletNode
 {
+    final private PortletsNode parent;
+    final private IPortlet portlet;
 
-    protected final static Object[] EMPTY = new Object[] {};
-
-    private final LiferayIDENavigatorNode parent;
-
-    private IModelElement model;
-
-    public PortletNode( LiferayIDENavigatorNode parent )
+    public PortletNode( PortletsNode portletsNode, IPortlet portlet )
     {
-        this.parent = parent;
+        this.parent = portletsNode;
+        this.portlet = portlet;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getParent()
-     */
-    public LiferayIDENavigatorNode getParent()
+    public PortletsNode getParent()
     {
-        // TODO Auto-generated method stub
-        return parent;
+        return this.parent;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getChildren()
-     */
-    public Object[] getChildren()
+    public String getName()
     {
-        return EMPTY;
+        String retval = "";
+        
+        if( this.portlet != null )
+        {
+            final Value<String> label = this.portlet.getPortletName();
+            
+            retval = label.getLocalizedText( CapitalizationType.TITLE_STYLE, false );
+        }
+        
+        return retval;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getResource()
-     */
-    public IFile getResource()
-    {
-        return parent.getResource();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#hasChildren()
-     */
-    public boolean hasChildren()
-    {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
-     * LiferayIDENavigatorNode[])
-     */
-    public void addNodes( LiferayIDENavigatorNode... ideNavigatorNodes )
-    {
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getModel()
-     */
     public IModelElement getModel()
     {
-        return this.model;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#setModel(org.eclipse.sapphire.modeling.IModelElement
-     * )
-     */
-    public void setModel( IModelElement model )
-    {
-        this.model = model;
+        return this.portlet;
     }
 
 }

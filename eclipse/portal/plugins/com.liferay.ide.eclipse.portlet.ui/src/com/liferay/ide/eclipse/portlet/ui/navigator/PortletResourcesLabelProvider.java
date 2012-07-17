@@ -1,30 +1,27 @@
 /*******************************************************************************
- *    Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
- *   
- *    This library is free software; you can redistribute it and/or modify it under
- *    the terms of the GNU Lesser General Public License as published by the Free
- *    Software Foundation; either version 2.1 of the License, or (at your option)
- *    any later version.
- *  
- *    This library is distributed in the hope that it will be useful, but WITHOUT
- *    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- *    FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- *    details.
- *   
- *   Contributors:
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * Contributors:
  *      Kamesh Sampath - initial implementation
  *      Gregory Amerson - initial implementation review and ongoing maintenance
  *******************************************************************************/
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.sapphire.modeling.CapitalizationType;
-import org.eclipse.sapphire.modeling.Value;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -62,7 +59,7 @@ public class PortletResourcesLabelProvider extends LabelProvider
         {
             return this.imageRegistry.get( MODULES );
         }
-        else if( element instanceof AbstractPortletsNode )
+        else if( element instanceof PortletsNode )
         {
             return this.imageRegistry.get( PORTLETS );
         }
@@ -87,17 +84,9 @@ public class PortletResourcesLabelProvider extends LabelProvider
         }
         else if( element instanceof PortletNode )
         {
-            Value<String> label = null;
-            PortletNode leaf = (PortletNode) element;
-
-            if( leaf.getModel() != null && leaf.getModel() instanceof IPortlet )
-            {
-                IPortlet portlet = (IPortlet) leaf.getModel();
-
-                label = portlet.getPortletName();
-            }
-
-            return label.getLocalizedText( CapitalizationType.TITLE_STYLE, false );
+            PortletNode portletNode = (PortletNode) element;
+            
+            return portletNode.getName();
         }
 
         return null;

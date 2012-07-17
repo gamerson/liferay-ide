@@ -1,126 +1,66 @@
 /*******************************************************************************
- *    Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
- *   
- *    This library is free software; you can redistribute it and/or modify it under
- *    the terms of the GNU Lesser General Public License as published by the Free
- *    Software Foundation; either version 2.1 of the License, or (at your option)
- *    any later version.
+ * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
  *  
- *    This library is distributed in the hope that it will be useful, but WITHOUT
- *    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- *    FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- *    details.
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *   
+ * Contributors:
+ *      Kamesh Sampath - initial implementation
+ *      Gregory Amerson - initial implementation review and ongoing maintenance
  *******************************************************************************/
 
 package com.liferay.ide.eclipse.portlet.ui.navigator;
 
-import com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode;
+import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.sapphire.modeling.IModelElement;
 
 /**
- * @author kamesh
+ * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
+ * @author Gregory Amerson
  */
-public class PortletResourcesRootNode implements LiferayIDENavigatorNode
+public class PortletResourcesRootNode
 {
+    private final IProject liferayProject;
+    private final PortletResourcesContentProvider provider;
 
-    private final IProject liferayPlugin;
-
-    private LiferayIDENavigatorNode[] nodes;
-
-    public PortletResourcesRootNode( IProject liferayPlugin, LiferayIDENavigatorNode... nodes )
+    public PortletResourcesRootNode( PortletResourcesContentProvider provider, IProject project )
     {
-        this.liferayPlugin = liferayPlugin;
-        if( nodes != null )
-        {
-            this.nodes = nodes;
-        }
-        else
-        {
-            this.nodes = new LiferayIDENavigatorNode[0];
-        }
-
+        this.provider = provider;
+        this.liferayProject = project;
     }
-
+    
     public IProject getProject()
     {
-        return liferayPlugin;
+        return this.liferayProject;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#addNodes(com.liferay.ide.eclipse.ui.navigator.
-     * LiferayIDENavigatorNode[])
-     */
-    public void addNodes( LiferayIDENavigatorNode... navigatorNodes )
-    {
-        if( navigatorNodes != null )
-        {
-            this.nodes = navigatorNodes;
-        }
-        else
-        {
-            this.nodes = new AbstractPortletsNode[0];
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#hasChildren()
-     */
     public boolean hasChildren()
     {
-        return nodes.length > 0;
+        if( this.liferayProject != null )
+        {
+            IFile portletXml = ProjectUtil.getPortletXmlFile( this.liferayProject );
+            
+            if( portletXml != null && portletXml.exists() )
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getParent()
-     */
-    public LiferayIDENavigatorNode getParent()
+    public void refresh()
     {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getChildren()
-     */
-    public Object[] getChildren()
-    {
-        return this.nodes;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getResource()
-     */
-    public IFile getResource()
-    {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#getModel()
-     */
-    public IModelElement getModel()
-    {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * com.liferay.ide.eclipse.ui.navigator.LiferayIDENavigatorNode#setModel(org.eclipse.sapphire.modeling.IModelElement
-     * )
-     */
-    public void setModel( IModelElement model )
-    {
+        this.provider.refresh();
     }
 
 }

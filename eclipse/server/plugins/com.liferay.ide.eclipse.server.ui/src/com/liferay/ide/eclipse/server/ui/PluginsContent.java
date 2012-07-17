@@ -25,6 +25,7 @@ import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 /**
  * @author Greg Amerson
  */
+@SuppressWarnings( "restriction" )
 public class PluginsContent {
 
 	private Object parent;

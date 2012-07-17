@@ -332,13 +332,13 @@
                      value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesRootNode">
                </instanceof>
                <instanceof
-                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesRootNode">
+                     value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletsNode">
                </instanceof>
                <instanceof
                      value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode">
                </instanceof></or></possibleChildren>
          <actionProvider
-               class="com.liferay.ide.eclipse.portlet.ui.navigator.actions.PortletResourcesActionProvider"
+               class="com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesActionProvider"
                id="com.liferay.ide.eclipse.ui.navigator.content.portlets.actionProvider"
                priority="normal">
             <enablement>
