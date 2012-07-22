@@ -51,7 +51,7 @@ import org.eclipse.sapphire.ui.SapphirePropertyEditorActionHandler;
 import org.eclipse.sapphire.ui.SapphireRenderingContext;
 
 /**
- * @author <a href="mailto:kamesh.sampath@accenture.com">Kamesh Sampath</a>
+ * @author Kamesh Sampath
  */
 public abstract class AbstractResourceBundleActionHandler extends SapphirePropertyEditorActionHandler {
 

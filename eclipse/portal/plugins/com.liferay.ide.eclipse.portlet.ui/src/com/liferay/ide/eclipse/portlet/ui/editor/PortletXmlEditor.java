@@ -17,12 +17,12 @@
 
 package com.liferay.ide.eclipse.portlet.ui.editor;
 
-import org.eclipse.sapphire.ui.swt.xml.editor.SapphireEditorForXml;
-
 import com.liferay.ide.eclipse.portlet.core.model.IPortletApp;
 
+import org.eclipse.sapphire.ui.swt.xml.editor.SapphireEditorForXml;
+
 /**
- * @author <a href="mailto:kamesh.sampath@accenture.com">Kamesh Sampath</a>
+ * @author Kamesh Sampath
  */
 public class PortletXmlEditor extends SapphireEditorForXml {
 

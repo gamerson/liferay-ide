@@ -23,6 +23,7 @@ import com.liferay.ide.eclipse.portlet.core.model.IPortlet;
 import com.liferay.ide.eclipse.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode;
 import com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesRootNode;
+import com.liferay.ide.eclipse.portlet.ui.navigator.PortletsNode;
 import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -58,6 +59,7 @@ import org.eclipse.ui.part.FileEditorInput;
  */
 public class OpenPortletResourceAction extends BaseSelectionListenerAction
 {
+
     private static final String ACTION_MESSAGE = "Open portlet.xml";
     private static final String PORTLETS_NODE_LABEL = "Portlets";
 
@@ -78,20 +80,26 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
         IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
         IContentType contentType = IDE.getContentType( file );
         IEditorDescriptor editorDescriptor = registry.getDefaultEditor( file.getName(), contentType );
-        
+
         if( editorDescriptor == null )
         {
             return null; // no editor associated...
         }
-        
+
         return editorDescriptor;
     }
 
     protected IFile initEditorPart()
     {
         IFile file = null;
-        
-        if( this.selectedNode instanceof PortletNode )
+
+        if( this.selectedNode instanceof PortletsNode )
+        {
+            PortletsNode portletsNode = (PortletsNode) this.selectedNode;
+            PortletResourcesRootNode rootNode = portletsNode.getParent();
+            file = ProjectUtil.getPortletXmlFile( rootNode.getProject() );
+        }
+        else if( this.selectedNode instanceof PortletNode )
         {
             PortletNode portletNode = (PortletNode) this.selectedNode;
             PortletResourcesRootNode rootNode = portletNode.getParent().getParent();
@@ -119,11 +127,11 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
     {
         IEditorDescriptor editorDescriptor = findEditor( file );
         IEditorPart editorPart = null;
-        
+
         if( editorDescriptor != null )
         {
             IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-            
+
             try
             {
                 editorPart = page.findEditor( new FileEditorInput( file ) );
@@ -138,7 +146,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
                 MessageDialog.openError( page.getWorkbenchWindow().getShell(), "Error Opening File", e.getMessage() );
             }
         }
-        
+
         return editorPart;
     }
 
@@ -148,14 +156,15 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
     protected void openPortletJavaClass( final IFile file )
     {
         IModelElement modelElement = ( (PortletNode) this.selectedNode ).getModel();
-        
+
         if( modelElement instanceof IPortlet )
         {
             final IPortlet portlet = (IPortlet) modelElement;
             final JavaTypeName portletClassFile = portlet.getPortletClass().getContent();
-            
+
             Display.getDefault().asyncExec( new Runnable()
             {
+
                 public void run()
                 {
                     IJavaProject project = JavaCore.create( file.getProject() );
@@ -172,7 +181,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
                                 IFile javaFile = (IFile) resource;
                                 IEditorDescriptor editorDescriptor = findEditor( javaFile );
                                 IEditorPart editorPart = null;
-                                
+
                                 if( editorDescriptor != null )
                                 {
                                     IWorkbenchPage page =
@@ -191,8 +200,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
                                     catch( Exception e )
                                     {
                                         MessageDialog.openError(
-                                            page.getWorkbenchWindow().getShell(), "Error Opening File",
-                                            e.getMessage() );
+                                            page.getWorkbenchWindow().getShell(), "Error Opening File", e.getMessage() );
                                     }
                                 }
                             }

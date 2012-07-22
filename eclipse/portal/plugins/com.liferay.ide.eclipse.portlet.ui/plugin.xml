@@ -339,12 +339,27 @@
                </instanceof></or></possibleChildren>
          <actionProvider
                class="com.liferay.ide.eclipse.portlet.ui.navigator.PortletResourcesActionProvider"
-               id="com.liferay.ide.eclipse.ui.navigator.content.portlets.actionProvider"
+               id="com.liferay.ide.eclipse.ui.navigator.content.portlets.portletResourcesActionProvider"
+               priority="normal">
+            <enablement>
+               <or>
+                  <instanceof
+                        value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletsNode">
+                  </instanceof>
+                  <instanceof
+                        value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode">
+                  </instanceof>
+               </or>
+            </enablement>
+         </actionProvider>
+         <actionProvider
+               class="com.liferay.ide.eclipse.portlet.ui.navigator.actions.NewPortletActionProvider"
+               id="com.liferay.ide.eclipse.ui.navigator.content.portlets.newPortletWizardDelgateActionProvider"
                priority="normal">
             <enablement>
                <and>
                   <instanceof
-                        value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletNode">
+                        value="com.liferay.ide.eclipse.portlet.ui.navigator.PortletsNode">
                   </instanceof>
                </and>
             </enablement>
