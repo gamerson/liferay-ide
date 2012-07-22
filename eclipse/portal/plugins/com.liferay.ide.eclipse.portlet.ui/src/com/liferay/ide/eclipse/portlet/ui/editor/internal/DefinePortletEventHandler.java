@@ -27,7 +27,7 @@ import org.eclipse.sapphire.ui.form.editors.masterdetails.MasterDetailsContentNo
 import org.eclipse.sapphire.ui.form.editors.masterdetails.MasterDetailsEditorPagePart;
 
 /**
- * @author <a href="mailto:kamesh.sampath@accenture.com">Kamesh Sampath</a>
+ * @author Kamesh Sampath
  */
 public class DefinePortletEventHandler extends SapphireActionHandler {
 

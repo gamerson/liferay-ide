@@ -44,7 +44,7 @@ import org.eclipse.sapphire.ui.SapphireRenderingContext;
 import org.eclipse.sapphire.ui.def.ActionHandlerDef;
 
 /**
- * @author <a href="mailto:kamesh.sampath@accenture.com">Kamesh Sampath</a>
+ * @author Kamesh Sampath
  * @author Gregory Amerson
  */
 public class CreatePortletResourceBundleActionHandler extends AbstractResourceBundleActionHandler {

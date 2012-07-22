@@ -42,7 +42,7 @@ import org.eclipse.sapphire.ui.form.editors.masterdetails.MasterDetailsEditorPag
 
 
 /**
- * @author <a href="mailto:kamesh.sampath@accenture.com">Kamesh Sampath</a>
+ * @author Kamesh Sampath
  * @author Gregory Amerson
  */
 public class QuickActionsHandlerFactory extends SapphireActionHandlerFactory {
@@ -96,9 +96,9 @@ public class QuickActionsHandlerFactory extends SapphireActionHandlerFactory {
 		return editor != null && ProjectUtil.isLiferayProject( editor.getProject() );
 	}
 
-	/**
-	 * @author <a href="mailto:kamesh.sampath@accenture.com">Kamesh Sampath</a>
-	 */
+	    /**
+     * @author Kamesh Sampath
+     */
 	private static final class Handler extends SapphireActionHandler {
 
 		private final String strModelProperty;
