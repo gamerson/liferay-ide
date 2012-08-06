@@ -447,7 +447,7 @@ public class LiferayTomcatRuntime extends TomcatRuntime implements ILiferayTomca
 				while (entry != null && !foundTomcat) {
 					String entryName = entry.getName();
 
-					if (entryName.startsWith(rootEntryName + "/tomcat-")) {
+					if (entryName.matches(rootEntryName + "/[^/]*tomcat.*") ){
 						foundTomcat = true;
 					}
 
