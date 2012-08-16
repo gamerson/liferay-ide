@@ -90,6 +90,10 @@ public class CreatePortletTemplateModel extends CreateWebClassTemplateModel {
 		this.generateGenericInclude = include;
 	}
 
+	public String getInitParameterName() {
+        return dataModel.getStringProperty( INewPortletClassDataModelProperties.INIT_PARAMETER_NAME);
+	}
+
 	public boolean shouldGenerateGenericInclude() {
 		return this.generateGenericInclude;
 	}

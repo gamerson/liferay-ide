@@ -205,5 +205,7 @@ public interface INewPortletClassDataModelProperties extends INewJavaClassDataMo
 	public static final String VIEW_MODE = "INewPortletClassDataModelProperties.VIEW_MODE";
 
 	public static final String VIEW_MODE_TEMPLATE = "com.liferay.ide.eclipse.templates.portlet.viewjsp";
+	
+	public static final String INIT_PARAMETER_NAME = "INewPortletClassDataModelProperties.INIT_PARAMETER_NAME";
 
 }
