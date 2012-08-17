@@ -260,7 +260,23 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		else if ( PROJECT_NAME.equals( propertyName ) && initialProject != null ) {
 			return initialProject.getName();
 		}
+		else if ( INIT_PARAMETER_NAME.equals( propertyName ) ) {
+		    String initParameterName = new String( "template" );
+		    try
+            {
+                ILiferayRuntime portalRuntime = getLiferayRuntime();
+                String version = portalRuntime.getPortalVersion();
+                Version portalVersion = Version.parseVersion( version );
 
+                if( CoreUtil.compareVersions( portalVersion, new Version( 6, 1, 0 ) ) < 0 )
+                    initParameterName = "jsp";
+            }
+            catch( Exception e )
+            {
+            }
+		    return initParameterName;
+		}
+		
 		return super.getDefaultProperty(propertyName);
 	}
 
@@ -402,6 +418,8 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		propertyNames.add( SHOW_NEW_CLASS_OPTION );
 		propertyNames.add( CREATE_NEW_PORTLET_CLASS );
 		propertyNames.add( USE_DEFAULT_PORTLET_CLASS );
+		
+		propertyNames.add(INIT_PARAMETER_NAME);
 
 		return propertyNames;
 	}
