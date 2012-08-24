@@ -61,6 +61,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 	implements INewPortletClassDataModelProperties, IPluginWizardFragmentProperties {
 
 	protected Properties categories;
+	protected Properties entryCategories;
 	protected TemplateContextType contextType;
 	protected boolean fragment;
 	protected IProject initialProject;
@@ -164,6 +165,25 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 
 		return categories;
 	}
+	
+   protected Properties getEntryCategories() {
+        if (entryCategories == null) {
+            IProject project = (IProject) getProperty(PROJECT);
+
+            if (project != null) {
+                try {
+                    ILiferayRuntime portalRuntime = getLiferayRuntime();
+
+                    entryCategories = portalRuntime.getPortletEntryCategories();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return entryCategories;
+    }
 
 	@Override
 	public IDataModelOperation getDefaultOperation() {
@@ -243,6 +263,15 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		}
 		else if (CATEGORY.equals(propertyName)) {
 			return "category.sample";
+		}
+		else if (ENTRY_CATEGORY.equals(propertyName)) {
+		    return "category.my";
+		}
+		else if (ENTRY_CLASS_WRAPPER.equals( propertyName )) {
+		    return "ControlPanel";
+		}
+		else if (PACKAGE_FILE.equals( propertyName )) {
+		        return "/com.test";
 		}
 		else if ( SHOW_NEW_CLASS_OPTION.equals( propertyName ) ) {
 			return true;
@@ -357,6 +386,11 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 				return new DataModelPropertyDescriptor("category.sample", "Sample");
 			}
 		}
+		else if (ENTRY_CATEGORY.equals(propertyName)) {
+		    if (getProperty(ENTRY_CATEGORY).equals("category.my")) {
+		        return new DataModelPropertyDescriptor("category.my", "MyAccountSection");
+		    }
+		}
 
 		return super.getPropertyDescriptor(propertyName);
 	}
@@ -416,6 +450,10 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		propertyNames.add(CSS_CLASS_WRAPPER);
 		propertyNames.add(ID);
 		propertyNames.add(CATEGORY);
+		propertyNames.add(ENTRY_CATEGORY);
+		propertyNames.add(ADD_TO_CONTROL_PANEL);
+		propertyNames.add(ENTRY_CLASS_WRAPPER);
+		propertyNames.add( PACKAGE_FILE );
 
 		propertyNames.add(FACET_RUNTIME);
 		propertyNames.add(REMOVE_EXISTING_ARTIFACTS);
@@ -444,6 +482,14 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 					categories.keySet().toArray(new Object[0]), categories.values().toArray(new String[0]));
 			}
 		}
+		else if (ENTRY_CATEGORY.equals(propertyName)) {
+            Properties entryCategories = getEntryCategories();
+
+            if (entryCategories != null && entryCategories.size() > 0) {
+                return DataModelPropertyDescriptor.createDescriptors(
+                    entryCategories.keySet().toArray(new Object[0]), entryCategories.values().toArray(new String[0]));
+            }
+        }
 
 		return super.getValidPropertyDescriptors(propertyName);
 	}

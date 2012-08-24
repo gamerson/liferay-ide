@@ -149,6 +149,39 @@ public class LiferayTomcatUtil {
 
 		return retval;
 	}
+	
+	public static Properties getEntryCategories(IPath runtimeLocation, IPath portalDir) {
+        Properties retval = null;
+
+        File implJar = portalDir.append("WEB-INF/lib/portal-impl.jar").toFile();
+
+        if (implJar.exists()) {
+            try {
+                JarFile jar = new JarFile(implJar);
+                Properties categories = new Properties();
+                Properties props = new Properties();
+                props.load(jar.getInputStream(jar.getEntry("content/Language.properties")));
+                Enumeration<?> names = props.propertyNames();
+
+                while (names.hasMoreElements()) {
+                    String name = names.nextElement().toString();
+                    if (name.matches("category\\.(content)|(portal)|(server)")) {
+                        categories.put(name, props.getProperty(name)+"Section");
+                    }
+                    if (name.matches("category\\.my")) {
+                        categories.put(name, props.getProperty(name)+"AccountSection");
+                    }
+                }
+                retval = categories;
+
+            }
+            catch (IOException e) {
+                LiferayTomcatPlugin.logError(e);
+            }
+        }
+
+        return retval;
+    }
 
 	public static ILiferayTomcatRuntime getLiferayTomcatRuntime(IRuntime runtime) {
 		if (runtime != null) {

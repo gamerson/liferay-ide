@@ -226,6 +226,10 @@ public class PortletDescriptorHelper extends DescriptorHelper implements INewPor
 		appendChildElement(newPortletElement, "portlet-name", model.getStringProperty(LIFERAY_PORTLET_NAME));
 
 		appendChildElement(newPortletElement, "icon", model.getStringProperty(ICON_FILE));
+		
+		appendChildElement(newPortletElement, "control-panel-entry-category", model.getStringProperty(ENTRY_CATEGORY));
+		
+		appendChildElement(newPortletElement, "control-panel-entry-weight", model.getStringProperty(ENTRY_WEIGHT));
 
 		appendChildElement(
 			newPortletElement, "instanceable", Boolean.toString(model.getBooleanProperty(ALLOW_MULTIPLE)));
