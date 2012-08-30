@@ -22,11 +22,17 @@ import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 import com.liferay.ide.eclipse.ui.util.SWTUtil;
 import com.liferay.ide.eclipse.ui.wizard.LiferayDataModelWizardPage;
 
+import org.eclipse.core.internal.resources.refresh.win32.Convert;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -34,9 +40,11 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties;
+import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -46,6 +54,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -82,11 +91,11 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
     
 	protected Combo entryCategory;
 	
-	protected Spinner entryWeight;
+	protected Text entryWeight;
 	
 	protected Button createEntryClassButton;
 	
-	protected Text entryClassWrapper;  /////////////////what does wrapper mean?
+	protected Text entryClassWrapper;
 	
 	protected Text packageFile;	
 
@@ -115,12 +124,10 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 		this.synchHelper.synchCombo(category, CATEGORY, null);
 
 		SWTUtil.createLabel(group, "", 1);
-
         SWTUtil.createLabel(group, "", 1);
         
-		this.addToControlPanelButton = SWTUtil.createCheckButton(group, "Add to Control Panel", null, false, 2);//check control panel
+		this.addToControlPanelButton = SWTUtil.createCheckButton(group, "Add to Control Panel", null, false, 2);
         this.synchHelper.synchCheckbox(this.addToControlPanelButton, ADD_TO_CONTROL_PANEL, null);
-
 
         final Label entryCategoryLabel = SWTUtil.createLabel(group, "Entry Catagory:", 1);
         
@@ -131,15 +138,15 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
         SWTUtil.createLabel(group, "", 1);
         
         final Label entryWeightLabel = SWTUtil.createLabel(group, "Entry Weight:", 1);
-               
-        this.entryWeight = new Spinner( group, NONE );
-        this.entryWeight.setValues( 15, 10, 20, 1, 1, 5 );
-
-
+        
+        this.entryWeight = SWTUtil.createText(group, 1);
+        this.synchHelper.synchText(entryWeight, ENTRY_WEIGHT, null);
+        
         SWTUtil.createLabel(group, "", 1);
         SWTUtil.createLabel(group, "", 1);
         
-        this.createEntryClassButton = SWTUtil.createCheckButton(group, "Create Entry Class", null, false, 2);//check entry class
+        this.createEntryClassButton = SWTUtil.createCheckButton(group, "Create Entry Class", null, false, 2);
+        this.synchHelper.synchCheckbox(createEntryClassButton, CREATE_ENTRY_CLASS, null);
         
         final Label entryClassLabel = SWTUtil.createLabel(group, "Entry Class:", 1);
         
@@ -154,21 +161,19 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
         this.synchHelper.synchText(packageFile, PACKAGE_FILE, null);
 
         if (this.fragment) {
-            SWTUtil.createLabel(group, "", 1);
-        }
-        else {
-            Button packageFileBrowse = SWTUtil.createPushButton(group, "Browse...", null);
-            packageFileBrowse.addSelectionListener(new SelectionAdapter() {
+			SWTUtil.createLabel(group, "", 1);
+		}
+		else {
+			Button packageFileBrowse = SWTUtil.createPushButton(group, "Browse...", null);
+			packageFileBrowse.addSelectionListener(new SelectionAdapter() {
 
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    handleFileBrowseButton(
-                        NewLiferayPortletWizardPage.this.packageFile, "Package Selection", "Choose a package: ");
-                }
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					handlePackageButtonPressed();
+				}
 
-            });
-        }
-        
+			});
+		}
         
         addToControlPanelButton.addSelectionListener(new SelectionAdapter() {
 
@@ -408,26 +413,67 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 	protected boolean isProjectValid(IProject project) {
 		return ProjectUtil.isPortletProject(project);
 	}
-	
-	   @Override
-	    protected void enter() {
-	        super.enter();
 
-	        if (entryCategory != null && !entryCategory.isDisposed()) {
-                entryCategory.setEnabled(addToControlPanelButton.getSelection());
-	        }
-	        if (entryWeight != null && !entryWeight.isDisposed()) {
-                entryWeight.setEnabled(addToControlPanelButton.getSelection());
-	        }
-	        if (entryClassWrapper != null && !entryClassWrapper.isDisposed()) {
-	            entryClassWrapper.setEnabled( createEntryClassButton.getSelection() );
-	        }
-	        if (packageFile != null && !packageFile.isDisposed()) {
-	            packageFile.setEnabled( createEntryClassButton.getSelection() );
-	        }
-	        if (createEntryClassButton != null && !createEntryClassButton.isDisposed()) {
-	            createEntryClassButton.setEnabled( addToControlPanelButton.getSelection() );
-	        }
-	    }
+	protected void handlePackageButtonPressed() {
+		IPackageFragmentRoot packRoot =
+			(IPackageFragmentRoot) model.getProperty(INewJavaClassDataModelProperties.JAVA_PACKAGE_FRAGMENT_ROOT);
+
+		if (packRoot == null) {
+			return;
+		}
+
+		IJavaElement[] packages = null;
+
+		try {
+			packages = packRoot.getChildren();
+		}
+		catch (JavaModelException e) {
+			// Do nothing
+		}
+
+		if (packages == null) {
+			packages = new IJavaElement[0];
+		}
+
+		ElementListSelectionDialog dialog =
+			new ElementListSelectionDialog(getShell(), new JavaElementLabelProvider(
+				JavaElementLabelProvider.SHOW_DEFAULT));
+		dialog.setTitle(J2EEUIMessages.PACKAGE_SELECTION_DIALOG_TITLE);
+		dialog.setMessage(J2EEUIMessages.PACKAGE_SELECTION_DIALOG_DESC);
+		dialog.setEmptyListMessage(J2EEUIMessages.PACKAGE_SELECTION_DIALOG_MSG_NONE);
+		dialog.setElements(packages);
+
+		if (dialog.open() == Window.OK) {
+			IPackageFragment fragment = (IPackageFragment) dialog.getFirstResult();
+
+			if (fragment != null) {
+				packageFile.setText(fragment.getElementName());
+			}
+			else {
+				packageFile.setText(J2EEUIMessages.EMPTY_STRING);
+			}
+		}
+	}
+
+    @Override
+    protected void enter() {
+        super.enter();
+
+        if (entryCategory != null && !entryCategory.isDisposed()) {
+            entryCategory.setEnabled(addToControlPanelButton.getSelection());
+        }
+        if (entryWeight != null && !entryWeight.isDisposed()) {
+            entryWeight.setEnabled(addToControlPanelButton.getSelection());
+        }
+        if (createEntryClassButton != null && !createEntryClassButton.isDisposed()) {
+            createEntryClassButton.setEnabled( addToControlPanelButton.getSelection() );
+        }
+        if (entryClassWrapper != null && !entryClassWrapper.isDisposed()) {
+            entryClassWrapper.setEnabled( createEntryClassButton.getSelection() && createEntryClassButton.getEnabled() );
+        }
+        if (packageFile != null && !packageFile.isDisposed()) {
+            packageFile.setEnabled( createEntryClassButton.getSelection() && createEntryClassButton.getEnabled() );
+        }
+    }
 
 }

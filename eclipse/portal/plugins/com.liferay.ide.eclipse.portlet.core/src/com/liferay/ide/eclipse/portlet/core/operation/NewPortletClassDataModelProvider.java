@@ -267,11 +267,14 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		else if (ENTRY_CATEGORY.equals(propertyName)) {
 		    return "category.my";
 		}
+		else if (ENTRY_WEIGHT.equals(propertyName)) {
+			return "1.5";
+		}
 		else if (ENTRY_CLASS_WRAPPER.equals( propertyName )) {
 		    return "ControlPanel";
 		}
 		else if (PACKAGE_FILE.equals( propertyName )) {
-		        return "/com.test";
+		        return getProperty(JAVA_PACKAGE);
 		}
 		else if ( SHOW_NEW_CLASS_OPTION.equals( propertyName ) ) {
 			return true;
@@ -450,10 +453,12 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		propertyNames.add(CSS_CLASS_WRAPPER);
 		propertyNames.add(ID);
 		propertyNames.add(CATEGORY);
-		propertyNames.add(ENTRY_CATEGORY);
 		propertyNames.add(ADD_TO_CONTROL_PANEL);
+		propertyNames.add(ENTRY_CATEGORY);
+		propertyNames.add(ENTRY_WEIGHT);
+		propertyNames.add(CREATE_ENTRY_CLASS);
 		propertyNames.add(ENTRY_CLASS_WRAPPER);
-		propertyNames.add( PACKAGE_FILE );
+		propertyNames.add(PACKAGE_FILE);
 
 		propertyNames.add(FACET_RUNTIME);
 		propertyNames.add(REMOVE_EXISTING_ARTIFACTS);
