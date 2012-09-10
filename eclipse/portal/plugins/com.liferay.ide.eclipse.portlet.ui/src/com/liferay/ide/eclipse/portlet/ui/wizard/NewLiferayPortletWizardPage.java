@@ -143,8 +143,8 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
         SWTUtil.createLabel(group, "", 1);
         
         this.createEntryClassButton = SWTUtil.createCheckButton(group, "Create Entry Class", null, false, 2);
-        this.createEntryClassButton.setToolTipText( "The control-panel-entry-class value must be a class that implements com.liferay.portlet.ControlPanelEntry"
-        +" and is called by the Control Panel to decide whether the portlet should be shown to a specific user in a specific context." );
+        this.createEntryClassButton.setToolTipText( "The control-panel-entry-class value must be a class that implements\n com.liferay.portlet.ControlPanelEntry"
+        +" and is called by the Control Panel to\n decide whether the portlet should be shown to a specific user in a specific\n context." );
         this.synchHelper.synchCheckbox(createEntryClassButton, CREATE_ENTRY_CLASS, null);
         
         final Label entryClassLabel = SWTUtil.createLabel(group, "Entry Class:", 1);
