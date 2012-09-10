@@ -39,17 +39,18 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jst.j2ee.common.CommonFactory;
 import org.eclipse.jst.j2ee.common.ParamValue;
+import org.eclipse.jst.j2ee.internal.common.J2EECommonMessages;
 import org.eclipse.jst.j2ee.internal.web.operations.NewWebClassDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.server.core.IRuntime;
 import org.osgi.framework.Version;
-
 /**
  * @author Greg Amerson
  * @author Cindy Li
@@ -271,7 +272,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 			return "1.5";
 		}
 		else if (ENTRY_CLASS_WRAPPER.equals( propertyName )) {
-		    return "ControlPanel";
+		    return getProperty(CLASS_NAME).toString()+"ControlPanelEntry";
 		}
 		else if (PACKAGE_FILE.equals( propertyName )) {
 		        return getProperty(JAVA_PACKAGE);
@@ -391,7 +392,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		}
 		else if (ENTRY_CATEGORY.equals(propertyName)) {
 		    if (getProperty(ENTRY_CATEGORY).equals("category.my")) {
-		        return new DataModelPropertyDescriptor("category.my", "MyAccountSection");
+		        return new DataModelPropertyDescriptor("category.my", "My Account Section");
 		    }
 		}
 
@@ -710,8 +711,45 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		        return Status.OK_STATUS;
 		    }
 		}
+		else if( ENTRY_WEIGHT.equals( propertyName )) {
+		    String entryweight = getStringProperty( propertyName );
+		    if ( !CoreUtil.isNumeric( entryweight ) ) {
+		        return PortletCore.createErrorStatus( "Must specify a numeric for entry weight." );
+		    }
+		    
+		    return Status.OK_STATUS;
+		}
+		else if( ENTRY_CLASS_WRAPPER.equals( propertyName )) {
+		    String entryclasswrapper = getStringProperty( propertyName );
+	            if (validateJavaClassName(entryclasswrapper).getSeverity() != IStatus.ERROR) {
+	                IStatus existsStatus = canCreateTypeInClasspath( entryclasswrapper );
+	                if (existsStatus.matches(IStatus.ERROR | IStatus.WARNING))
+	                    return existsStatus;
+	            }
+	            return validateJavaClassName( entryclasswrapper );
+		}
+		else if( PACKAGE_FILE.equals( propertyName )) {
+		    String packagefile = getStringProperty( propertyName );
+		    return validateJavaPackage( packagefile );
+	    }
 
 		return super.validate(propertyName);
 	}
-
+	
+    private IStatus validateJavaPackage(String packName) {
+        if (packName != null && packName.trim().length() > 0) {
+            // Use standard java conventions to validate the package name
+            IStatus javaStatus = JavaConventions.validatePackageName( packName, "1.5", "1.5" );
+            if (javaStatus.getSeverity() == IStatus.ERROR) {
+                String msg = J2EECommonMessages.ERR_JAVA_PACAKGE_NAME_INVALID + javaStatus.getMessage();
+                return PortletCore.createErrorStatus( msg );
+            }
+            else if (javaStatus.getSeverity() == IStatus.WARNING) {
+                String msg = J2EECommonMessages.ERR_JAVA_PACKAGE_NAME_WARNING + javaStatus.getMessage();
+                return PortletCore.createErrorStatus( msg );
+            }
+        }
+        // java package name is valid
+        return Status.OK_STATUS;
+    }
 }

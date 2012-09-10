@@ -22,7 +22,6 @@ import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 import com.liferay.ide.eclipse.ui.util.SWTUtil;
 import com.liferay.ide.eclipse.ui.wizard.LiferayDataModelWizardPage;
 
-import org.eclipse.core.internal.resources.refresh.win32.Convert;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -44,14 +43,12 @@ import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
@@ -146,6 +143,8 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
         SWTUtil.createLabel(group, "", 1);
         
         this.createEntryClassButton = SWTUtil.createCheckButton(group, "Create Entry Class", null, false, 2);
+        this.createEntryClassButton.setToolTipText( "The control-panel-entry-class value must be a class that implements com.liferay.portlet.ControlPanelEntry"
+        +" and is called by the Control Panel to decide whether the portlet should be shown to a specific user in a specific context." );
         this.synchHelper.synchCheckbox(createEntryClassButton, CREATE_ENTRY_CLASS, null);
         
         final Label entryClassLabel = SWTUtil.createLabel(group, "Entry Class:", 1);
@@ -367,7 +366,8 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 	@Override
 	protected String[] getValidationPropertyNames() {
 		return new String[] {
-			LIFERAY_PORTLET_NAME, ICON_FILE, ALLOW_MULTIPLE, CSS_FILE, JAVASCRIPT_FILE, CSS_CLASS_WRAPPER, CATEGORY
+			LIFERAY_PORTLET_NAME, ICON_FILE, ALLOW_MULTIPLE, CSS_FILE, JAVASCRIPT_FILE, CSS_CLASS_WRAPPER, CATEGORY, ENTRY_WEIGHT, ENTRY_CLASS_WRAPPER,
+			PACKAGE_FILE
 		};
 	}
 

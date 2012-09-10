@@ -230,7 +230,8 @@ public class PortletDescriptorHelper extends DescriptorHelper implements INewPor
 		if(model.getBooleanProperty(ADD_TO_CONTROL_PANEL)) {
 			String entry_category=model.getStringProperty(ENTRY_CATEGORY).replaceAll("^category\\.", "");
 			appendChildElement(newPortletElement, "control-panel-entry-category", entry_category);
-			appendChildElement(newPortletElement, "control-panel-entry-weight", model.getStringProperty(ENTRY_WEIGHT));	
+			appendChildElement(newPortletElement, "control-panel-entry-weight", model.getStringProperty(ENTRY_WEIGHT));
+			appendChildElement(newPortletElement, "control-panel-entry-class" , model.getStringProperty( ENTRY_CLASS_WRAPPER ));
 		}
 
 		appendChildElement(

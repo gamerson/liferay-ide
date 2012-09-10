@@ -166,10 +166,10 @@ public class LiferayTomcatUtil {
                 while (names.hasMoreElements()) {
                     String name = names.nextElement().toString();
                     if (name.matches("category\\.(content)|(portal)|(server)")) {
-                        categories.put(name, props.getProperty(name)+"Section");
+                        categories.put(name, props.getProperty(name)+" Section");
                     }
                     if (name.matches("category\\.my")) {
-                        categories.put(name, props.getProperty(name)+"AccountSection");
+                        categories.put(name, props.getProperty(name)+" Account Section");
                     }
                 }
                 retval = categories;
