@@ -22,7 +22,6 @@ import com.liferay.ide.eclipse.project.core.IPluginWizardFragmentProperties;
 import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 
 import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -93,13 +92,15 @@ public class AddPortletOperation extends AddJavaEEArtifactOperation
 			}
 		}
 
-		if (getDataModel().getBooleanProperty(CREATE_ENTRY_CLASS)) {
-			try {
-				createDefaultJavaFile(getDataModel().getStringProperty(PACKAGE_FILE).replace(".", "/")+"/"+getDataModel().getStringProperty(ENTRY_CLASS_WRAPPER)+".java");
-			}
-			catch (CoreException e) {
-				status = PortletCore.createErrorStatus(e);
-			}
+		if (getDataModel().getBooleanProperty( CREATE_ENTRY_CLASS )) {
+
+            try {
+                NewEntryClassOperation entryClassOperation = new NewEntryClassOperation(getDataModel());
+    		    entryClassOperation.execute( monitor, info );
+		    }
+		    catch (ExecutionException e) {
+                status = PortletCore.createErrorStatus( e );
+            }
 		}
 		
 		if (getDataModel().getBooleanProperty(CREATE_JSPS)) {
@@ -155,33 +156,6 @@ public class AddPortletOperation extends AddJavaEEArtifactOperation
 				CoreUtil.prepareFolder(parent);
 
 				projectFile.create(new ByteArrayInputStream(new byte[0]), IResource.FORCE, null);
-			}
-		}
-	}
-
-	protected void createDefaultJavaFile(String filePath)
-		throws CoreException {
-
-		IFolder[] sourceFolders = ProjectUtil.getSourceFolders(getTargetProject());
-
-		if (sourceFolders != null && sourceFolders.length > 0) {
-			IFile projectFile = sourceFolders[0].getFile(filePath);
-
-			if (!projectFile.exists()) {
-				IFolder parent = (IFolder) projectFile.getParent();
-
-				CoreUtil.prepareFolder(parent);
-				
-				String input = new String("package "+getDataModel().getStringProperty(PACKAGE_FILE)+";\n\npublic class "+getDataModel().getStringProperty(ENTRY_CLASS_WRAPPER)+" {\n\n}");
-				if(getDataModel().getStringProperty(PACKAGE_FILE)=="") {
-					input = "\npublic class "+getDataModel().getStringProperty(ENTRY_CLASS_WRAPPER)+" {\n\n}";
-				}
-				try {
-					projectFile.create(new ByteArrayInputStream(input.getBytes("UTF-8")), IResource.FORCE, null);
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		}
 	}

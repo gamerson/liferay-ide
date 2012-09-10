@@ -89,8 +89,6 @@ public interface INewPortletClassDataModelProperties extends INewJavaClassDataMo
 
 	// public static final boolean DEFAULT_CREATE_CUSTOM_PORTLET_CLASS = false;
 	
-	public static final String PACKAGE_FILE = "INewPortletClassDataModelProperties.PACKAGE_FILE";
-	
 	public static final String ENTRY_CLASS_WRAPPER = "INewPortletClassDataModelProperties.ENTRY_CLASS_WRAPPER";
 	
 	public static final String CREATE_ENTRY_CLASS = "INewPortletClassDataModelProperties.CREATE_ENTRY_CLASS";

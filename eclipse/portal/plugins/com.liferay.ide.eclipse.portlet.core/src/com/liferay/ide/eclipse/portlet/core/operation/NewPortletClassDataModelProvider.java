@@ -39,12 +39,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jst.j2ee.common.CommonFactory;
 import org.eclipse.jst.j2ee.common.ParamValue;
-import org.eclipse.jst.j2ee.internal.common.J2EECommonMessages;
 import org.eclipse.jst.j2ee.internal.web.operations.NewWebClassDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -274,9 +272,6 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		else if (ENTRY_CLASS_WRAPPER.equals( propertyName )) {
 		    return getProperty(CLASS_NAME).toString()+"ControlPanelEntry";
 		}
-		else if (PACKAGE_FILE.equals( propertyName )) {
-		        return getProperty(JAVA_PACKAGE);
-		}
 		else if ( SHOW_NEW_CLASS_OPTION.equals( propertyName ) ) {
 			return true;
 		}
@@ -459,7 +454,6 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		propertyNames.add(ENTRY_WEIGHT);
 		propertyNames.add(CREATE_ENTRY_CLASS);
 		propertyNames.add(ENTRY_CLASS_WRAPPER);
-		propertyNames.add(PACKAGE_FILE);
 
 		propertyNames.add(FACET_RUNTIME);
 		propertyNames.add(REMOVE_EXISTING_ARTIFACTS);
@@ -728,28 +722,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 	            }
 	            return validateJavaClassName( entryclasswrapper );
 		}
-		else if( PACKAGE_FILE.equals( propertyName )) {
-		    String packagefile = getStringProperty( propertyName );
-		    return validateJavaPackage( packagefile );
-	    }
 
 		return super.validate(propertyName);
 	}
-	
-    private IStatus validateJavaPackage(String packName) {
-        if (packName != null && packName.trim().length() > 0) {
-            // Use standard java conventions to validate the package name
-            IStatus javaStatus = JavaConventions.validatePackageName( packName, "1.5", "1.5" );
-            if (javaStatus.getSeverity() == IStatus.ERROR) {
-                String msg = J2EECommonMessages.ERR_JAVA_PACAKGE_NAME_INVALID + javaStatus.getMessage();
-                return PortletCore.createErrorStatus( msg );
-            }
-            else if (javaStatus.getSeverity() == IStatus.WARNING) {
-                String msg = J2EECommonMessages.ERR_JAVA_PACKAGE_NAME_WARNING + javaStatus.getMessage();
-                return PortletCore.createErrorStatus( msg );
-            }
-        }
-        // java package name is valid
-        return Status.OK_STATUS;
-    }
 }

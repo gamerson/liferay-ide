@@ -27,11 +27,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -39,7 +34,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties;
-import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -51,7 +45,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -93,8 +86,6 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 	protected Button createEntryClassButton;
 	
 	protected Text entryClassWrapper;
-	
-	protected Text packageFile;	
 
 	// protected Text name;
 
@@ -154,26 +145,6 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 
         SWTUtil.createLabel(group, "", 1);
         
-        final Label packageLabel = SWTUtil.createLabel(group, "Package:", 1);
-        
-        this.packageFile = SWTUtil.createText(group, 1);
-        this.synchHelper.synchText(packageFile, PACKAGE_FILE, null);
-
-        if (this.fragment) {
-			SWTUtil.createLabel(group, "", 1);
-		}
-		else {
-			Button packageFileBrowse = SWTUtil.createPushButton(group, "Browse...", null);
-			packageFileBrowse.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					handlePackageButtonPressed();
-				}
-
-			});
-		}
-        
         addToControlPanelButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -189,9 +160,6 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
                 
                 entryClassLabel.setEnabled( addToControlPanelButton.getSelection() && createEntryClassButton.getSelection() );
                 entryClassWrapper.setEnabled( addToControlPanelButton.getSelection() && createEntryClassButton.getSelection() );
-
-                packageLabel.setEnabled( addToControlPanelButton.getSelection() && createEntryClassButton.getSelection() );
-                packageFile.setEnabled( addToControlPanelButton.getSelection() && createEntryClassButton.getSelection() );
                 
             }
         });
@@ -202,9 +170,6 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
             public void widgetSelected(SelectionEvent e) {
                 entryClassLabel.setEnabled(createEntryClassButton.getSelection());
                 entryClassWrapper.setEnabled(createEntryClassButton.getSelection());
-
-                packageLabel.setEnabled(createEntryClassButton.getSelection());
-                packageFile.setEnabled(createEntryClassButton.getSelection());
             }
         });
 	}
@@ -366,8 +331,7 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 	@Override
 	protected String[] getValidationPropertyNames() {
 		return new String[] {
-			LIFERAY_PORTLET_NAME, ICON_FILE, ALLOW_MULTIPLE, CSS_FILE, JAVASCRIPT_FILE, CSS_CLASS_WRAPPER, CATEGORY, ENTRY_WEIGHT, ENTRY_CLASS_WRAPPER,
-			PACKAGE_FILE
+			LIFERAY_PORTLET_NAME, ICON_FILE, ALLOW_MULTIPLE, CSS_FILE, JAVASCRIPT_FILE, CSS_CLASS_WRAPPER, CATEGORY, ENTRY_WEIGHT, ENTRY_CLASS_WRAPPER
 		};
 	}
 
@@ -414,47 +378,6 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 		return ProjectUtil.isPortletProject(project);
 	}
 
-	protected void handlePackageButtonPressed() {
-		IPackageFragmentRoot packRoot =
-			(IPackageFragmentRoot) model.getProperty(INewJavaClassDataModelProperties.JAVA_PACKAGE_FRAGMENT_ROOT);
-
-		if (packRoot == null) {
-			return;
-		}
-
-		IJavaElement[] packages = null;
-
-		try {
-			packages = packRoot.getChildren();
-		}
-		catch (JavaModelException e) {
-			// Do nothing
-		}
-
-		if (packages == null) {
-			packages = new IJavaElement[0];
-		}
-
-		ElementListSelectionDialog dialog =
-			new ElementListSelectionDialog(getShell(), new JavaElementLabelProvider(
-				JavaElementLabelProvider.SHOW_DEFAULT));
-		dialog.setTitle(J2EEUIMessages.PACKAGE_SELECTION_DIALOG_TITLE);
-		dialog.setMessage(J2EEUIMessages.PACKAGE_SELECTION_DIALOG_DESC);
-		dialog.setEmptyListMessage(J2EEUIMessages.PACKAGE_SELECTION_DIALOG_MSG_NONE);
-		dialog.setElements(packages);
-
-		if (dialog.open() == Window.OK) {
-			IPackageFragment fragment = (IPackageFragment) dialog.getFirstResult();
-
-			if (fragment != null) {
-				packageFile.setText(fragment.getElementName());
-			}
-			else {
-				packageFile.setText(J2EEUIMessages.EMPTY_STRING);
-			}
-		}
-	}
-
     @Override
     protected void enter() {
         super.enter();
@@ -470,9 +393,6 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
         }
         if (entryClassWrapper != null && !entryClassWrapper.isDisposed()) {
             entryClassWrapper.setEnabled( createEntryClassButton.getSelection() && createEntryClassButton.getEnabled() );
-        }
-        if (packageFile != null && !packageFile.isDisposed()) {
-            packageFile.setEnabled( createEntryClassButton.getSelection() && createEntryClassButton.getEnabled() );
         }
     }
 

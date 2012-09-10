@@ -59,7 +59,7 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
 
 	protected TemplateStore templateStore;
 
-	public NewServiceBuilderDataModelProvider(TemplateStore templateStore, TemplateContextType contextType) {
+    public NewServiceBuilderDataModelProvider(TemplateStore templateStore, TemplateContextType contextType) {
 		super();
 
 		this.templateStore = templateStore;
