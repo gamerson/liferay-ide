@@ -88,6 +88,16 @@ public interface INewPortletClassDataModelProperties extends INewJavaClassDataMo
 	// "com.liferay.util.bridges.mvc.MVCPortlet";
 
 	// public static final boolean DEFAULT_CREATE_CUSTOM_PORTLET_CLASS = false;
+	
+	public static final String ENTRY_CLASS_WRAPPER = "INewPortletClassDataModelProperties.ENTRY_CLASS_WRAPPER";
+	
+	public static final String CREATE_ENTRY_CLASS = "INewPortletClassDataModelProperties.CREATE_ENTRY_CLASS";
+	
+	public static final String ENTRY_WEIGHT = "INewPortletClassDataModelProperties.ENTRY_WEIGHT";
+
+	public static final String ENTRY_CATEGORY = "INewPortletClassDataModelProperties.ENTRY_CATEGORY";
+	
+	public static final String ADD_TO_CONTROL_PANEL = "INewPortletClassDataModelProperties.ADD_TO_CONTROL_PANEL";
 
 	public static final String CATEGORY = "INewPortletClassDataModelProperties.CATEGORY";
 
