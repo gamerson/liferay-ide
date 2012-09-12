@@ -487,22 +487,25 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 
             if (entryCategories != null && entryCategories.size() > 0) {
                 
-                Object[] keyObjects = new Object[entryCategories.size()];
-                String[] valueObjects = new String[entryCategories.size()];
+                Properties entryCategoriesTmp = new Properties();
+                entryCategoriesTmp = (Properties) entryCategories.clone();
+                
+                Object[] keyObjects = new Object[entryCategoriesTmp.size()];
+                String[] valueObjects = new String[entryCategoriesTmp.size()];
 
                 keyObjects[0] = "category.my";
-                valueObjects[0] = (String) entryCategories.get("category.my");
+                valueObjects[0] = (String) entryCategoriesTmp.get("category.my");
 
-                entryCategories.remove( "category.my");
+                entryCategoriesTmp.remove( "category.my" );
 
-               Object[] o1 = entryCategories.keySet().toArray(new Object[0]);
-               String[] o2 = entryCategories.values().toArray(new String[0]);
+                Object[] o1 = entryCategoriesTmp.keySet().toArray( new Object[0] );
+                String[] o2 = entryCategoriesTmp.values().toArray( new String[0] );
 
                 for (int i = 0; i < o1.length; i++) {
                     keyObjects[i + 1] = o1[i];
                     valueObjects[i + 1] = o2[i];
                 }
-
+                               
                 return DataModelPropertyDescriptor.createDescriptors(keyObjects, valueObjects);
             }
         }
