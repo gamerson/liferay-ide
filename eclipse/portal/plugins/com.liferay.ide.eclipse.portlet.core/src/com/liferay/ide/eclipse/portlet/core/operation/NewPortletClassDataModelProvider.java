@@ -486,8 +486,24 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
             Properties entryCategories = getEntryCategories();
 
             if (entryCategories != null && entryCategories.size() > 0) {
-                return DataModelPropertyDescriptor.createDescriptors(
-                    entryCategories.keySet().toArray(new Object[0]), entryCategories.values().toArray(new String[0]));
+                
+                Object[] keyObjects = new Object[entryCategories.size()];
+                String[] valueObjects = new String[entryCategories.size()];
+
+                keyObjects[0] = "category.my";
+                valueObjects[0] = (String) entryCategories.get("category.my");
+
+                entryCategories.remove( "category.my");
+
+               Object[] o1 = entryCategories.keySet().toArray(new Object[0]);
+               String[] o2 = entryCategories.values().toArray(new String[0]);
+
+                for (int i = 0; i < o1.length; i++) {
+                    keyObjects[i + 1] = o1[i];
+                    valueObjects[i + 1] = o2[i];
+                }
+
+                return DataModelPropertyDescriptor.createDescriptors(keyObjects, valueObjects);
             }
         }
 
@@ -708,7 +724,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		else if( ENTRY_WEIGHT.equals( propertyName )) {
 		    String entryweight = getStringProperty( propertyName );
 		    if ( !CoreUtil.isNumeric( entryweight ) ) {
-		        return PortletCore.createErrorStatus( "Must specify a numeric for entry weight." );
+		        return PortletCore.createErrorStatus( "Must specify a valid double for entry weight." );
 		    }
 		    
 		    return Status.OK_STATUS;

@@ -165,7 +165,7 @@ public class LiferayTomcatUtil {
 
                 while (names.hasMoreElements()) {
                     String name = names.nextElement().toString();
-                    if (name.matches("category\\.(content)|(portal)|(server)")) {
+                    if (name.matches("category\\.(portal|server|content)")) {
                         categories.put(name, props.getProperty(name)+" Section");
                     }
                     if (name.matches("category\\.my")) {

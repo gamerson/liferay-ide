@@ -20,7 +20,7 @@ import org.eclipse.jst.j2ee.internal.web.operations.NewWebClassOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 /**
- * @author Greg Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings("restriction")
 public class NewEntryClassOperation extends NewWebClassOperation {

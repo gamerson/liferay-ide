@@ -142,8 +142,6 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
         
         this.entryClassWrapper = SWTUtil.createText(group, 1);
         this.synchHelper.synchText(entryClassWrapper, ENTRY_CLASS_WRAPPER, null);
-
-        SWTUtil.createLabel(group, "", 1);
         
         addToControlPanelButton.addSelectionListener(new SelectionAdapter() {
 
