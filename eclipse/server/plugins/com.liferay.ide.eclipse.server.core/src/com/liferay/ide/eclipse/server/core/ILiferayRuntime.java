@@ -54,4 +54,6 @@ public interface ILiferayRuntime extends IJavaRuntime {
 
     String[] getSupportedHookProperties();
 
+    Properties getPortletEntryCategories();
+
 }
