@@ -45,10 +45,10 @@ public class ValidationPreferences {
 		"validation-liferay-layouttpl-xml-wap-template-path-not-found";
 
     public static final String LIFERAY_PORTLET_XML_ENTRY_CLASS_NOT_FOUND =
-        "validation-liferay-display-xml-entry-class-not-found";
+        "validation-liferay-portlet-xml-entry-class-not-found";
 
     public static final String LIFERAY_PORTLET_XML_ENTRY_WEIGHT_NOT_VALID =
-        "validation-liferay-display-xml-entry-weight-not-valid";
+        "validation-liferay-portlet-xml-entry-weight-not-valid";
 
 	public static final String LIFERAY_PORTLET_XML_FOOTER_PORTAL_CSS_NOT_FOUND =
 		"validation-liferay-portlet-xml-footer-portal-css-not-found";
