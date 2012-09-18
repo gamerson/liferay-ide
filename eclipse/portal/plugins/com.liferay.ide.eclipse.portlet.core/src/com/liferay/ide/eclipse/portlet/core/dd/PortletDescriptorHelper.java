@@ -234,7 +234,7 @@ public class PortletDescriptorHelper extends DescriptorHelper implements INewPor
             appendChildElement( newPortletElement, "control-panel-entry-weight", model.getStringProperty( ENTRY_WEIGHT ) );
         }
 
-        if( model.getBooleanProperty( CREATE_ENTRY_CLASS ) )
+        if( model.getBooleanProperty( CREATE_ENTRY_CLASS ) && model.getBooleanProperty( ADD_TO_CONTROL_PANEL ) )
         {
             appendChildElement(
                 newPortletElement, "control-panel-entry-class",
