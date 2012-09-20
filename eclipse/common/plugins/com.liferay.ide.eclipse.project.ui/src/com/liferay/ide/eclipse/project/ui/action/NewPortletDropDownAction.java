@@ -15,8 +15,6 @@
 
 package com.liferay.ide.eclipse.project.ui.action;
 
-import com.liferay.ide.eclipse.ui.action.NewWizardAction;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
