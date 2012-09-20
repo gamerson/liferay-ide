@@ -19,7 +19,6 @@ import com.liferay.ide.eclipse.core.util.CoreUtil;
 import com.liferay.ide.eclipse.project.core.IProjectDefinition;
 import com.liferay.ide.eclipse.project.core.ProjectCorePlugin;
 import com.liferay.ide.eclipse.project.ui.ProjectUIPlugin;
-import com.liferay.ide.eclipse.ui.action.NewWizardAction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,10 +90,10 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
 			Platform.getExtensionRegistry().getExtensionPoint(PlatformUI.PLUGIN_ID, PL_NEW);
 
 		if (extensionPoint != null) {
-			IConfigurationElement[] elements = extensionPoint.getConfigurationElements();
+			IConfigurationElement[] elements = extensionPoint.getConfigurationElements();    //获取所有的element
 
 			for (IConfigurationElement element : elements) {
-				if (element.getName().equals(TAG_WIZARD) && isProjectWizard(element, getTypeAttribute())) {
+				if (element.getName().equals(TAG_WIZARD) && isProjectWizard(element, getTypeAttribute())) {     //获取其中wizard的element，而且是liferay project wizard，加到containers里以NewWizardAction的形式
 					containers.add(new NewWizardAction(element));
 
 					IProjectDefinition[] projectDefinitions = ProjectCorePlugin.getProjectDefinitions();
