@@ -59,7 +59,8 @@ import org.osgi.framework.Version;
 public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvider
 	implements INewPortletClassDataModelProperties, IPluginWizardFragmentProperties {
 
-	protected Properties categories;
+	private static final String PORTLET_SUFFIX_PATTERN = "(?<!^)portlet$";
+    protected Properties categories;
 	protected Properties entryCategories;
 	protected TemplateContextType contextType;
 	protected boolean fragment;
@@ -210,7 +211,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 			return "NewPortlet";
 		}
 		else if (PORTLET_NAME.equals(propertyName) || LIFERAY_PORTLET_NAME.equals(propertyName)) {
-			return getProperty(CLASS_NAME).toString().toLowerCase().replaceAll( "(?<!^)portlet$", "" );
+			return getProperty(CLASS_NAME).toString().toLowerCase().replaceAll( PORTLET_SUFFIX_PATTERN, "" );
 		}
 		else if (DISPLAY_NAME.equals(propertyName) || TITLE.equals(propertyName) || SHORT_TITLE.equals(propertyName)) {
 			return getDisplayNameFromClassName( getProperty(CLASS_NAME).toString() );
@@ -229,10 +230,10 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 		}
 		else if (CREATE_JSPS_FOLDER.equals(propertyName)) {
 			if ( getBooleanProperty( CREATE_NEW_PORTLET_CLASS ) ) {
-				return "/html/" + getProperty( CLASS_NAME ).toString().toLowerCase().replaceAll( "(?<!^)portlet$", "" );
+				return "/html/" + getProperty( CLASS_NAME ).toString().toLowerCase().replaceAll( PORTLET_SUFFIX_PATTERN, "" );
 			}
 			else {
-				return "/html/" + getProperty( PORTLET_NAME ).toString().toLowerCase().replaceAll( "(?<!^)portlet$", "" );
+				return "/html/" + getProperty( PORTLET_NAME ).toString().toLowerCase().replaceAll( PORTLET_SUFFIX_PATTERN, "" );
 			}
 
 		}
@@ -352,8 +353,9 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         String[] words = oldName.split("(?<!^)(?=[A-Z])");
         String newName = new String();
         for(int i = 0 ; i < words.length ; i++) {
-            if( i > 0 )
+            if( i > 0 ) {
                 newName = newName.concat(" ");
+            }
             newName = newName.concat( words[i] );
         }
 
