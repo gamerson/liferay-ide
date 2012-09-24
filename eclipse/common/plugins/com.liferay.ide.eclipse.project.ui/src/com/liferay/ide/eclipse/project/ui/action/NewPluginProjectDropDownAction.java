@@ -90,10 +90,10 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
 			Platform.getExtensionRegistry().getExtensionPoint(PlatformUI.PLUGIN_ID, PL_NEW);
 
 		if (extensionPoint != null) {
-			IConfigurationElement[] elements = extensionPoint.getConfigurationElements();    //获取所有的element
+			IConfigurationElement[] elements = extensionPoint.getConfigurationElements();
 
 			for (IConfigurationElement element : elements) {
-				if (element.getName().equals(TAG_WIZARD) && isProjectWizard(element, getTypeAttribute())) {     //获取其中wizard的element，而且是liferay project wizard，加到containers里以NewWizardAction的形式
+				if (element.getName().equals(TAG_WIZARD) && isProjectWizard(element, getTypeAttribute())) {
 					containers.add(new NewWizardAction(element));
 
 					IProjectDefinition[] projectDefinitions = ProjectCorePlugin.getProjectDefinitions();

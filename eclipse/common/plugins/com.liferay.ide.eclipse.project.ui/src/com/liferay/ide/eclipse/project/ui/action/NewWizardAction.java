@@ -113,88 +113,55 @@ public class NewWizardAction extends Action implements Comparable {
 	public String getProjectType() {
 		return projectType;
 	}
-	
+
 	public String getValidProjectTypes() {
 	    return validProjectTypes;
 	}
 
 	public void run() {
-	    
-//	    IStructuredSelection selection = getSelection();
-//        if(selection.equals( null )) {
-//	        runOriginal();
-//	    }
-//	    else {
+	    if(this.getText().equals( "New Liferay Project" )) {
+	        runOriginal();
+	    }
+	    else {
             IProject[] projects = CoreUtil.getAllProjects();
-    
     		boolean hasValidProjectTypes = false;
-    		for( IProject project : projects )
-    		{
-    //		    if( ProjectUtil.isPortletProject( project ) )
-    //		    {
-    		    if(validProjectTypes != null) {
-    		        String[] validTypes = validProjectTypes.split( "," );
-        	        for( String validProjectType : validTypes)
-        	        {
-                        if(project.getName().contains( validProjectType )) {
-        	                hasValidProjectTypes = true;
-        	                break;
-        	            }
-        	        }
-    		    }
-    //		    }
-    		}
-    		
+
+            for( IProject project : projects )
+            {
+                if( validProjectTypes != null )
+                {
+                    String[] validTypes = validProjectTypes.split( "," );
+                    for( String validProjectType : validTypes )
+                    {
+                        if( project.getName().contains( validProjectType ) )
+                        {
+                            hasValidProjectTypes = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if(hasValidProjectTypes) {
         		runOriginal();
             }
             else {
                 Shell shell = getShell();
+                Boolean openNewLiferayProjectWizard = MessageDialog.openQuestion( shell, "New Element",
+                    "There are no suitable Liferay projects for this new element.\nDo you want open the \'New Liferay Project\' wizard now?" );
                 
-                Boolean openNewLiferayProjectWizard = MessageDialog.openConfirm( shell, "New Element", 
-                    "In order to create this element a liferay project needs to be created first.\nDo you want to open the 'New Liferay Project' wizard now?" );
                 if(openNewLiferayProjectWizard) {
-                    
-//                    int a=2;
                     Action[] actions = getNewProjectActions();
 
                     if (actions.length > 0) {
                         actions[0].run();
+                        this.run();
                     }
-
-//                    try {
-//                        INewWizard wizard = createWizard(); ///////////////////////
-//            
-//                        if (wizard instanceof INewProjectWizard && this.projectType != null) 
-//                        {
-//                            ((INewProjectWizard) wizard).setProjectType(projectType);
-//                        }
-//                        
-//                        
-//                        wizard.init(PlatformUI.getWorkbench(), getSelection());
-//            
-//                        WizardDialog dialog = new WizardDialog(shell, wizard);
-//            
-//                        PixelConverter converter = new PixelConverter(JFaceResources.getDialogFont());
-//            
-//                        dialog.setMinimumPageSize(
-//                            converter.convertWidthInCharsToPixels(70), converter.convertHeightInCharsToPixels(20));
-//            
-//                        dialog.create();
-//            
-//                        int res = dialog.open();
-//            
-//    //                    notifyResult(res == Window.OK);
-//                        if(res==0) {
-//                            run();
-//                        }
-//                    }
-//                    catch (CoreException e) {
-//                    }
                 }
             }
 	    }
-//	}
+	}
+
     public NewWizardAction[] getNewProjectActions() {
         ArrayList<NewWizardAction> containers = new ArrayList<NewWizardAction>();
 
@@ -202,17 +169,15 @@ public class NewWizardAction extends Action implements Comparable {
             Platform.getExtensionRegistry().getExtensionPoint(PlatformUI.PLUGIN_ID, "newWizards");
 
         if (extensionPoint != null) {
-            IConfigurationElement[] elements = extensionPoint.getConfigurationElements();    //获取所有的element
+            IConfigurationElement[] elements = extensionPoint.getConfigurationElements();
 
             for (IConfigurationElement element : elements) {
-                if (element.getName().equals("wizard") && isProjectWizard(element, "liferay_project")) {     //获取其中wizard的element，而且是liferay project wizard，加到containers里以NewWizardAction的形式
+                if (element.getName().equals("wizard") && isProjectWizard(element, "liferay_project")) {
                     containers.add(new NewWizardAction(element));
 
                     IProjectDefinition[] projectDefinitions = ProjectCorePlugin.getProjectDefinitions();
 
                     List<IProjectDefinition> projectDefList = Arrays.asList(projectDefinitions);
-
-//                    Collections.sort(projectDefList, new ProjectDefComparator());
 
                     for (IProjectDefinition projectDef : projectDefinitions) {
                         NewWizardAction wizardAction = new NewWizardAction(element);
@@ -237,7 +202,7 @@ public class NewWizardAction extends Action implements Comparable {
 
         return actions;
     }
-    
+
     private boolean isProjectWizard(IConfigurationElement element, String typeAttribute) {
         IConfigurationElement[] classElements = element.getChildren(TAG_CLASS);
 
@@ -260,31 +225,31 @@ public class NewWizardAction extends Action implements Comparable {
 
         return false;
     }
-    
+
     protected void runOriginal()
     {
         Shell shell = getShell();
         try {
         	INewWizard wizard = createWizard();
-   
+
         	if (wizard instanceof INewProjectWizard && this.projectType != null) 
         	{
         		((INewProjectWizard) wizard).setProjectType(projectType);
         	}
-   
+
         	wizard.init(PlatformUI.getWorkbench(), getSelection());
-   
+
         	WizardDialog dialog = new WizardDialog(shell, wizard);
-   
+
         	PixelConverter converter = new PixelConverter(JFaceResources.getDialogFont());
-   
+
         	dialog.setMinimumPageSize(
         		converter.convertWidthInCharsToPixels(70), converter.convertHeightInCharsToPixels(20));
-   
+
         	dialog.create();
-   
+
         	int res = dialog.open();
-   
+
         	notifyResult(res == Window.OK);
         }
         catch (CoreException e) {
@@ -294,7 +259,7 @@ public class NewWizardAction extends Action implements Comparable {
 	public void setMenuIndex(int menuIndex) {
 		this.menuIndex = menuIndex;
 	}
-	
+
 	public void setValidProjectTypes(String validProjectTypes) {
 	    this.validProjectTypes = validProjectTypes;
 	}
