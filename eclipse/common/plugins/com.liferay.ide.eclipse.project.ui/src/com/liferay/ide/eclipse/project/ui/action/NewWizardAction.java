@@ -24,16 +24,16 @@ import com.liferay.ide.eclipse.ui.wizard.INewProjectWizard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.internal.ui.util.CoreUtility;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -52,6 +52,15 @@ import org.eclipse.ui.PlatformUI;
  * @author Greg Amerson
  */
 public class NewWizardAction extends Action implements Comparable {
+    private final class ProjectDefComparator implements Comparator<IProjectDefinition> {
+
+        public int compare(IProjectDefinition o1, IProjectDefinition o2) {
+            int index1 = o1.getMenuIndex();
+            int index2 = o2.getMenuIndex();
+
+            return index1 < index2 ? -1 : index1 > index2 ? 1 : 0;
+        }
+    }
 
 	public final static String ATT_CLASS = "class";//$NON-NLS-1$
 
@@ -118,48 +127,33 @@ public class NewWizardAction extends Action implements Comparable {
 	    return validProjectTypes;
 	}
 
-	public void run() {
-	    if(this.getText().equals( "New Liferay Project" )) {
-	        runOriginal();
-	    }
-	    else {
-            IProject[] projects = CoreUtil.getAllProjects();
-    		boolean hasValidProjectTypes = false;
+	public void run(){
+        Shell shell = getShell();
+        try {
+            INewWizard wizard = createWizard();
 
-            for( IProject project : projects )
+            if (wizard instanceof INewProjectWizard && this.projectType != null)
             {
-                if( validProjectTypes != null )
-                {
-                    String[] validTypes = validProjectTypes.split( "," );
-                    for( String validProjectType : validTypes )
-                    {
-                        if( project.getName().contains( validProjectType ) )
-                        {
-                            hasValidProjectTypes = true;
-                            break;
-                        }
-                    }
-                }
+                ((INewProjectWizard) wizard).setProjectType(projectType);
             }
 
-            if(hasValidProjectTypes) {
-        		runOriginal();
-            }
-            else {
-                Shell shell = getShell();
-                Boolean openNewLiferayProjectWizard = MessageDialog.openQuestion( shell, "New Element",
-                    "There are no suitable Liferay projects for this new element.\nDo you want open the \'New Liferay Project\' wizard now?" );
-                
-                if(openNewLiferayProjectWizard) {
-                    Action[] actions = getNewProjectActions();
+            wizard.init(PlatformUI.getWorkbench(), getSelection());
 
-                    if (actions.length > 0) {
-                        actions[0].run();
-                        this.run();
-                    }
-                }
-            }
-	    }
+            WizardDialog dialog = new WizardDialog(shell, wizard);
+
+            PixelConverter converter = new PixelConverter(JFaceResources.getDialogFont());
+
+            dialog.setMinimumPageSize(
+                converter.convertWidthInCharsToPixels(70), converter.convertHeightInCharsToPixels(20));
+
+            dialog.create();
+
+            int res = dialog.open();
+
+            notifyResult(res == Window.OK);
+        }
+        catch (CoreException e) {
+        }
 	}
 
     public NewWizardAction[] getNewProjectActions() {
@@ -178,6 +172,8 @@ public class NewWizardAction extends Action implements Comparable {
                     IProjectDefinition[] projectDefinitions = ProjectCorePlugin.getProjectDefinitions();
 
                     List<IProjectDefinition> projectDefList = Arrays.asList(projectDefinitions);
+
+                    Collections.sort(projectDefList, new ProjectDefComparator());
 
                     for (IProjectDefinition projectDef : projectDefinitions) {
                         NewWizardAction wizardAction = new NewWizardAction(element);
@@ -224,36 +220,6 @@ public class NewWizardAction extends Action implements Comparable {
         }
 
         return false;
-    }
-
-    protected void runOriginal()
-    {
-        Shell shell = getShell();
-        try {
-        	INewWizard wizard = createWizard();
-
-        	if (wizard instanceof INewProjectWizard && this.projectType != null) 
-        	{
-        		((INewProjectWizard) wizard).setProjectType(projectType);
-        	}
-
-        	wizard.init(PlatformUI.getWorkbench(), getSelection());
-
-        	WizardDialog dialog = new WizardDialog(shell, wizard);
-
-        	PixelConverter converter = new PixelConverter(JFaceResources.getDialogFont());
-
-        	dialog.setMinimumPageSize(
-        		converter.convertWidthInCharsToPixels(70), converter.convertHeightInCharsToPixels(20));
-
-        	dialog.create();
-
-        	int res = dialog.open();
-
-        	notifyResult(res == Window.OK);
-        }
-        catch (CoreException e) {
-        }
     }
 
 	public void setMenuIndex(int menuIndex) {
