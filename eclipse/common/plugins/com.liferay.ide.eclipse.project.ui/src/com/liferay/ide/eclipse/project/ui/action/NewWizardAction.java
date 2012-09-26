@@ -94,8 +94,6 @@ public class NewWizardAction extends Action implements Comparable {
 
 	protected String projectType = null;
 
-	protected String validProjectTypes = null;
-
 	public NewWizardAction(IConfigurationElement element) {
 		fConfigurationElement = element;
 
@@ -106,7 +104,6 @@ public class NewWizardAction extends Action implements Comparable {
 		setToolTipText(description);
 		setImageDescriptor(getIconFromConfig(fConfigurationElement));
 		setMenuIndex(getMenuIndexFromConfig(fConfigurationElement));
-		setValidProjectTypes(getValidProjectTypesFromConfig(fConfigurationElement));
 	}
 
 	public int compareTo(Object o) {
@@ -121,10 +118,6 @@ public class NewWizardAction extends Action implements Comparable {
 
 	public String getProjectType() {
 		return projectType;
-	}
-
-	public String getValidProjectTypes() {
-	    return validProjectTypes;
 	}
 
 	public void run(){
@@ -226,10 +219,6 @@ public class NewWizardAction extends Action implements Comparable {
 		this.menuIndex = menuIndex;
 	}
 
-	public void setValidProjectTypes(String validProjectTypes) {
-	    this.validProjectTypes = validProjectTypes;
-	}
-
 	public void setProjectType(String projectType) {
 		this.projectType = projectType;
 	}
@@ -288,24 +277,6 @@ public class NewWizardAction extends Action implements Comparable {
 		}
 
 		return Integer.MAX_VALUE;
-	}
-
-	private String getValidProjectTypesFromConfig(IConfigurationElement config) {
-	    IConfigurationElement[] classElements = config.getChildren();
-
-        if (classElements.length > 0) {
-            for (IConfigurationElement classElement : classElements) {
-                IConfigurationElement[] paramElements = classElement.getChildren(TAG_PARAMETER);
-
-                for (IConfigurationElement paramElement : paramElements) {
-                    if (ATT_VALID_PROJECT_TYPES.equals(paramElement.getAttribute(TAG_NAME))) {
-                        return paramElement.getAttribute(TAG_VALUE);
-                    }
-                }
-            }
-        }
-
-        return null;
 	}
 
 	private String getProjectTypeFromConfig(IConfigurationElement config) {
