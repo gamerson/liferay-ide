@@ -15,7 +15,7 @@
          <class class="com.liferay.ide.eclipse.portlet.ui.wizard.NewPortletWizard">
          	<parameter name="liferay_artifact" value="true"/>
             <parameter name="menuIndex" value="10" />
-            <parameter name="validProjectTypes" value="portlet,hook" />
+            <parameter name="validProjectTypes" value="portlet" />
          </class>
          <description>
             Create a new Liferay Portlet
@@ -29,7 +29,7 @@
          <class class="com.liferay.ide.eclipse.portlet.ui.wizard.NewHookWizard">
          	<parameter name="liferay_artifact" value="true"/>
             <parameter name="menuIndex" value="20" />
-            <parameter name="validProjectTypes" value="hook" />
+            <parameter name="validProjectTypes" value="portlet,hook" />
          </class>
          <description>
             Create a new Liferay Hook

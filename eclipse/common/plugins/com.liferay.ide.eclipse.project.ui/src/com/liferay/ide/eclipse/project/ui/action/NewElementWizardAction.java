@@ -49,21 +49,22 @@ public class NewElementWizardAction extends NewWizardAction
         IProject[] projects = CoreUtil.getAllProjects();
         boolean hasValidProjectTypes = false;
 
-        for( IProject project : projects )
-        {
-            Set<IProjectFacetVersion> facets = ProjectUtil.getFacetedProject( project ).getProjectFacets();
+        for( IProject project : projects ) {
+            if( ProjectUtil.isLiferayProject( project ) ) {
+                Set<IProjectFacetVersion> facets = ProjectUtil.getFacetedProject( project ).getProjectFacets();
 
-            if( validProjectTypes != null )
-            {
-                String[] validTypes = validProjectTypes.split( "," );
-                for( String validProjectType : validTypes )
+                if( validProjectTypes != null && facets != null)
                 {
-                    for( IProjectFacetVersion facet : facets )
+                    String[] validTypes = validProjectTypes.split( "," );
+                    for( String validProjectType : validTypes )
                     {
-                        String id = facet.getProjectFacet().getId();
-                        if(id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType )) {
-                            hasValidProjectTypes = true;
-                            break;
+                        for( IProjectFacetVersion facet : facets )
+                        {
+                            String id = facet.getProjectFacet().getId();
+                            if(id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType )) {
+                                hasValidProjectTypes = true;
+                                break;
+                            }
                         }
                     }
                 }
