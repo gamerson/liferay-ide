@@ -13,13 +13,25 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.eclipse.ui.action;
+package com.liferay.ide.eclipse.project.ui.action;
 
+import com.liferay.ide.eclipse.core.util.CoreUtil;
+import com.liferay.ide.eclipse.project.core.IProjectDefinition;
+import com.liferay.ide.eclipse.project.core.ProjectCorePlugin;
+import com.liferay.ide.eclipse.project.ui.ProjectUIPlugin;
 import com.liferay.ide.eclipse.ui.LiferayUIPlugin;
 import com.liferay.ide.eclipse.ui.wizard.INewProjectWizard;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.internal.ui.util.CoreUtility;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.layout.PixelConverter;
@@ -35,10 +47,20 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+
 /**
  * @author Greg Amerson
  */
 public class NewWizardAction extends Action implements Comparable {
+    private final class ProjectDefComparator implements Comparator<IProjectDefinition> {
+
+        public int compare(IProjectDefinition o1, IProjectDefinition o2) {
+            int index1 = o1.getMenuIndex();
+            int index2 = o2.getMenuIndex();
+
+            return index1 < index2 ? -1 : index1 > index2 ? 1 : 0;
+        }
+    }
 
 	public final static String ATT_CLASS = "class";//$NON-NLS-1$
 
@@ -59,6 +81,8 @@ public class NewWizardAction extends Action implements Comparable {
 	public final static String TAG_PARAMETER = "parameter";//$NON-NLS-1$
 
 	public final static String TAG_VALUE = "value";//$NON-NLS-1$
+
+	public final static String ATT_VALID_PROJECT_TYPES = "validProjectTypes";
 
 	protected IConfigurationElement fConfigurationElement;
 
@@ -96,33 +120,100 @@ public class NewWizardAction extends Action implements Comparable {
 		return projectType;
 	}
 
-	public void run() {
-		Shell shell = getShell();
-		try {
-			INewWizard wizard = createWizard();
+	public void run(){
+        Shell shell = getShell();
+        try {
+            INewWizard wizard = createWizard();
 
-			if (wizard instanceof INewProjectWizard && this.projectType != null) {
-				((INewProjectWizard) wizard).setProjectType(projectType);
-			}
+            if (wizard instanceof INewProjectWizard && this.projectType != null)
+            {
+                ((INewProjectWizard) wizard).setProjectType(projectType);
+            }
 
-			wizard.init(PlatformUI.getWorkbench(), getSelection());
+            wizard.init(PlatformUI.getWorkbench(), getSelection());
 
-			WizardDialog dialog = new WizardDialog(shell, wizard);
+            WizardDialog dialog = new WizardDialog(shell, wizard);
 
-			PixelConverter converter = new PixelConverter(JFaceResources.getDialogFont());
+            PixelConverter converter = new PixelConverter(JFaceResources.getDialogFont());
 
-			dialog.setMinimumPageSize(
-				converter.convertWidthInCharsToPixels(70), converter.convertHeightInCharsToPixels(20));
+            dialog.setMinimumPageSize(
+                converter.convertWidthInCharsToPixels(70), converter.convertHeightInCharsToPixels(20));
 
-			dialog.create();
+            dialog.create();
 
-			int res = dialog.open();
+            int res = dialog.open();
 
-			notifyResult(res == Window.OK);
-		}
-		catch (CoreException e) {
-		}
+            notifyResult(res == Window.OK);
+        }
+        catch (CoreException e) {
+        }
 	}
+
+    public NewWizardAction[] getNewProjectActions() {
+        ArrayList<NewWizardAction> containers = new ArrayList<NewWizardAction>();
+
+        IExtensionPoint extensionPoint =
+            Platform.getExtensionRegistry().getExtensionPoint(PlatformUI.PLUGIN_ID, "newWizards");
+
+        if (extensionPoint != null) {
+            IConfigurationElement[] elements = extensionPoint.getConfigurationElements();
+
+            for (IConfigurationElement element : elements) {
+                if (element.getName().equals("wizard") && isProjectWizard(element, "liferay_project")) {
+                    containers.add(new NewWizardAction(element));
+
+                    IProjectDefinition[] projectDefinitions = ProjectCorePlugin.getProjectDefinitions();
+
+                    List<IProjectDefinition> projectDefList = Arrays.asList(projectDefinitions);
+
+                    Collections.sort(projectDefList, new ProjectDefComparator());
+
+                    for (IProjectDefinition projectDef : projectDefinitions) {
+                        NewWizardAction wizardAction = new NewWizardAction(element);
+                        wizardAction.setProjectType(projectDef.getFacetId());
+
+                        if (projectDef != null) {
+                            wizardAction.setImageDescriptor(ImageDescriptor.createFromURL(ProjectUIPlugin.getDefault().getBundle().getEntry(
+                                "/icons/n16/" + projectDef.getShortName() + "_new.png")));
+                            wizardAction.setText(wizardAction.getText().replaceAll(
+                                "Liferay Plugin", projectDef.getDisplayName() + " Plugin"));
+                        }
+
+                        containers.add(wizardAction);
+                    }
+                }
+            }
+        }
+
+        NewWizardAction[] actions = (NewWizardAction[]) containers.toArray(new NewWizardAction[containers.size()]);
+
+        Arrays.sort(actions);
+
+        return actions;
+    }
+
+    private boolean isProjectWizard(IConfigurationElement element, String typeAttribute) {
+        IConfigurationElement[] classElements = element.getChildren(TAG_CLASS);
+
+        if ((!CoreUtil.isNullOrEmpty(typeAttribute)) && classElements.length > 0) {
+            for (IConfigurationElement classElement : classElements) {
+                IConfigurationElement[] paramElements = classElement.getChildren(TAG_PARAMETER);
+
+                for (IConfigurationElement paramElement : paramElements) {
+                    if (typeAttribute.equals(paramElement.getAttribute(TAG_NAME))) {
+                        return Boolean.valueOf(paramElement.getAttribute(TAG_VALUE)).booleanValue();
+                    }
+                }
+            }
+        }
+
+        // old way, deprecated
+        if (Boolean.valueOf(element.getAttribute("liferay_project")).booleanValue()) {
+            return true;
+        }
+
+        return false;
+    }
 
 	public void setMenuIndex(int menuIndex) {
 		this.menuIndex = menuIndex;
