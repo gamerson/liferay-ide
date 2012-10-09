@@ -17,8 +17,12 @@
 
 package com.liferay.ide.eclipse.project.core;
 
+import com.liferay.ide.eclipse.server.util.ServerUtil;
+
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime;
 
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
@@ -44,5 +48,20 @@ public class BinaryProjectImportDataModelProvider extends SDKProjectsImportDataM
 		return ProjectCorePlugin.createErrorStatus( "Select a binary to import." );
 
 	}
+
+    @Override
+    public void init() {
+        super.init();
+        DataModelPropertyDescriptor[] validDescriptors = getDataModel().getValidPropertyDescriptors( FACET_RUNTIME );
+
+        for( DataModelPropertyDescriptor desc : validDescriptors ) {
+            Object runtime = desc.getPropertyValue();
+
+            if( runtime instanceof BridgedRuntime && ServerUtil.isLiferayRuntime( (BridgedRuntime) runtime ) ) {
+                getDataModel().setProperty( FACET_RUNTIME, runtime );
+                break;
+            }
+        }
+    }
 
 }
