@@ -19,6 +19,7 @@ import com.liferay.ide.eclipse.project.core.facet.IPluginFacetConstants;
 import com.liferay.ide.eclipse.sdk.SDK;
 import com.liferay.ide.eclipse.sdk.SDKManager;
 import com.liferay.ide.eclipse.sdk.util.SDKUtil;
+import com.liferay.ide.eclipse.server.util.ServerUtil;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -140,6 +141,17 @@ public class SDKProjectsImportDataModelProvider extends FacetProjectCreationData
 		// }
 
 		// facetedProject.setFixedProjectFacets(Collections.unmodifiableSet(fixedFacets));
+
+        DataModelPropertyDescriptor[] validDescriptors = getDataModel().getValidPropertyDescriptors( FACET_RUNTIME );
+
+        for( DataModelPropertyDescriptor desc : validDescriptors ) {
+            Object runtime = desc.getPropertyValue();
+
+            if( runtime instanceof BridgedRuntime && ServerUtil.isLiferayRuntime( (BridgedRuntime) runtime ) ) {
+                getDataModel().setProperty( FACET_RUNTIME, runtime );
+                break;
+            }
+        }
 	}
 
 	@Override
