@@ -17,6 +17,8 @@
 
 package com.liferay.ide.eclipse.project.core;
 
+import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
@@ -44,5 +46,11 @@ public class BinaryProjectImportDataModelProvider extends SDKProjectsImportDataM
 		return ProjectCorePlugin.createErrorStatus( "Select a binary to import." );
 
 	}
+
+    @Override
+    public void init() {
+        super.init();
+        ProjectUtil.setDefaultRuntime(getDataModel());
+    }
 
 }
