@@ -21,7 +21,6 @@ import com.liferay.ide.eclipse.project.core.util.ProjectUtil;
 import com.liferay.ide.eclipse.sdk.SDK;
 import com.liferay.ide.eclipse.sdk.SDKManager;
 import com.liferay.ide.eclipse.sdk.util.SDKUtil;
-import com.liferay.ide.eclipse.server.util.ServerUtil;
 
 import java.io.File;
 import java.util.Collections;
@@ -33,7 +32,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.datamodel.FacetProjectCreationDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -120,16 +118,7 @@ public class LiferayProjectImportDataModelProvider extends FacetProjectCreationD
 
 		// facetedProject.setFixedProjectFacets(Collections.unmodifiableSet(fixedFacets));
 
-        DataModelPropertyDescriptor[] validDescriptors = getDataModel().getValidPropertyDescriptors( FACET_RUNTIME );
-
-        for( DataModelPropertyDescriptor desc : validDescriptors ) {
-            Object runtime = desc.getPropertyValue();
-
-            if( runtime instanceof BridgedRuntime && ServerUtil.isLiferayRuntime( (BridgedRuntime) runtime ) ) {
-                getDataModel().setProperty( FACET_RUNTIME, runtime );
-                break;
-            }
-        }
+		ProjectUtil.setDefaultRuntime(getDataModel());
 	}
 
 	@Override
