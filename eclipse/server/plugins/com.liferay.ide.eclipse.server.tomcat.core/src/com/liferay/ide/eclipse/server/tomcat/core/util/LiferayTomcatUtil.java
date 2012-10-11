@@ -243,7 +243,7 @@ public class LiferayTomcatUtil {
 	public static String getVersion(IPath location, IPath portalDir)
         throws IOException {
 
-	    String versionFromManifest = getVersionFromManifest(location, portalDir);
+	    String versionFromManifest = getConfigInfoFromManifest("version", portalDir);
 
         if (versionFromManifest!=null) {
 	        return versionFromManifest;
@@ -308,10 +308,12 @@ public class LiferayTomcatUtil {
 		return version.toString();
 	}
 
-    public static String getVersionFromManifest(IPath location, IPath portalDir)
+    public static String getConfigInfoFromManifest(String configType, IPath portalDir)
         throws IOException {
 
-        File implJar = location.append("/lib/ext/portal-service.jar").toFile();
+        File implJar = portalDir.append( "WEB-INF/lib/portal-impl.jar").toFile();
+        String version = null;
+        String serverInfo = null;
 
         if (implJar.exists()) {
             try {
@@ -319,17 +321,26 @@ public class LiferayTomcatUtil {
 
                 Manifest manifest = jar.getManifest();
                 Attributes attributes = manifest.getMainAttributes();
-                String version = attributes.getValue( "Liferay-Portal-Version" );
+
+                version = attributes.getValue( "Liferay-Portal-Version" );
+                serverInfo = attributes.getValue( "Liferay-Portal-Server-Info" );
 
                 if(CoreUtil.compareVersions( Version.parseVersion( version ), new Version( 6, 2, 0 ) ) < 0) {
-                    return null;
+                    version = null;
+                    serverInfo = null;
                 }
-
-                return version;
             }
             catch (IOException e) {
                 LiferayTomcatPlugin.logError(e);
             }
+        }
+
+        if(configType.equals( "version" )) {
+            return version;
+        }
+
+        if(configType.equals( "server" )) {
+            return serverInfo;
         }
 
         return null;

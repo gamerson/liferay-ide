@@ -34,9 +34,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -218,7 +215,7 @@ public class LiferayTomcatRuntime extends TomcatRuntime implements ILiferayTomca
 
     public String getServerInfo() {
         try {
-            String serverInfoFromManifest = getServerInfoFromManifest( getRuntimeLocation(), getPortalDir() );
+            String serverInfoFromManifest = LiferayTomcatUtil.getConfigInfoFromManifest( "server", getPortalDir() );
             if(serverInfoFromManifest!=null) {
                 return serverInfoFromManifest;
             }
@@ -282,34 +279,6 @@ public class LiferayTomcatRuntime extends TomcatRuntime implements ILiferayTomca
 
 		return serverInfoString;
 	}
-
-    public String getServerInfoFromManifest( IPath location, IPath portalDir )
-        throws IOException {
-
-        String serverInfo = null;
-
-        File implJar = location.append( "/lib/ext/portal-service.jar" ).toFile();
-
-        if( implJar.exists() ) {
-            try {
-                JarFile jar = new JarFile( implJar );
-
-                Manifest manifest = jar.getManifest();
-                Attributes attributes = manifest.getMainAttributes();
-                serverInfo = attributes.getValue( "Liferay-Portal-Server-Info" );
-            }
-            catch( IOException e ) {
-                LiferayTomcatPlugin.logError( e );
-            }
-        }
-
-        String version = LiferayTomcatUtil.getVersionFromManifest(location, portalDir);
-        if(version==null) {
-            return null;
-        }
-
-        return serverInfo;
-    }
 
 	public String[] getServletFilterNames()
 	{
