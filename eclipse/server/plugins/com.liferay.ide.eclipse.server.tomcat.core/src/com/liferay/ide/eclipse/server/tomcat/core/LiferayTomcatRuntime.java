@@ -34,6 +34,9 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -213,7 +216,23 @@ public class LiferayTomcatRuntime extends TomcatRuntime implements ILiferayTomca
 		return getRuntime().getLocation();
 	}
 
-	public String getServerInfo() {
+    public String getServerInfo() {
+        try {
+            String serverInfoFromManifest = getServerInfoFromManifest( getRuntimeLocation(), getPortalDir() );
+            if(serverInfoFromManifest!=null) {
+                return serverInfoFromManifest;
+            }
+
+            return getServerInfoFromClass();
+        }
+        catch( IOException e ) {
+            LiferayTomcatPlugin.logError(e);
+        }
+
+        return null;
+    }
+
+    public String getServerInfoFromClass() {
 		// check for existing server info
 		IPath location = getRuntime().getLocation();
 
@@ -263,6 +282,34 @@ public class LiferayTomcatRuntime extends TomcatRuntime implements ILiferayTomca
 
 		return serverInfoString;
 	}
+
+    public String getServerInfoFromManifest( IPath location, IPath portalDir )
+        throws IOException {
+
+        String serverInfo = null;
+
+        File implJar = location.append( "/lib/ext/portal-service.jar" ).toFile();
+
+        if( implJar.exists() ) {
+            try {
+                JarFile jar = new JarFile( implJar );
+
+                Manifest manifest = jar.getManifest();
+                Attributes attributes = manifest.getMainAttributes();
+                serverInfo = attributes.getValue( "Liferay-Portal-Server-Info" );
+            }
+            catch( IOException e ) {
+                LiferayTomcatPlugin.logError( e );
+            }
+        }
+
+        String version = LiferayTomcatUtil.getVersionFromManifest(location, portalDir);
+        if(version==null) {
+            return null;
+        }
+
+        return serverInfo;
+    }
 
 	public String[] getServletFilterNames()
 	{

@@ -43,7 +43,9 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -239,6 +241,18 @@ public class LiferayTomcatUtil {
 	}
 
 	public static String getVersion(IPath location, IPath portalDir)
+        throws IOException {
+
+	    String versionFromManifest = getVersionFromManifest(location, portalDir);
+
+        if (versionFromManifest!=null) {
+	        return versionFromManifest;
+	    }
+
+	    return getVersionFromClass(location, portalDir);
+	}
+
+	public static String getVersionFromClass(IPath location, IPath portalDir)
 		throws IOException {
 
 		IPath versionsInfoPath = LiferayTomcatPlugin.getDefault().getStateLocation().append("version.properties");
@@ -293,6 +307,33 @@ public class LiferayTomcatUtil {
 
 		return version.toString();
 	}
+
+    public static String getVersionFromManifest(IPath location, IPath portalDir)
+        throws IOException {
+
+        File implJar = location.append("/lib/ext/portal-service.jar").toFile();
+
+        if (implJar.exists()) {
+            try {
+                JarFile jar = new JarFile(implJar);
+
+                Manifest manifest = jar.getManifest();
+                Attributes attributes = manifest.getMainAttributes();
+                String version = attributes.getValue( "Liferay-Portal-Version" );
+
+                if(CoreUtil.compareVersions( Version.parseVersion( version ), new Version( 6, 2, 0 ) ) < 0) {
+                    return null;
+                }
+
+                return version;
+            }
+            catch (IOException e) {
+                LiferayTomcatPlugin.logError(e);
+            }
+        }
+
+        return null;
+    }
 
 	public static boolean isExtProjectContext(Context context) {
 
