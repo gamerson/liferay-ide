@@ -27,7 +27,6 @@ import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
@@ -249,53 +248,49 @@ public class LiferayTomcatRuntime extends TomcatRuntime implements ILiferayTomca
         return getRuntime().getLocation();
     }
 
-    public String getServerInfo() 
+    public String getServerInfo()
     {
-//        try {
-//            String serverInfoFromManifest = LiferayTomcatUtil.getConfigInfoFromManifest( "server", getPortalDir() );
-// 
-//            if( serverInfoFromManifest!=null ) {
-//                return serverInfoFromManifest;
-//            }
-//
-            return getServerInfoFromClass();
-//        }
-//        catch( IOException e ) {
-//            LiferayTomcatPlugin.logError(e);
-//        }
-//
-//        return null;
+        try
+        {
+            String serverInfoFromCache =
+                LiferayTomcatUtil.getConfigInfoFromCache( LiferayTomcatUtil.CONFIG_TYPE_SERVER, getPortalDir() );
+
+            if( serverInfoFromCache != null )
+            {
+                return serverInfoFromCache;
+            }
+
+            String serverInfoFromManifest =
+                LiferayTomcatUtil.getConfigInfoFromManifest( LiferayTomcatUtil.CONFIG_TYPE_SERVER, getPortalDir() );
+
+            if( serverInfoFromManifest != null )
+            {
+                LiferayTomcatUtil.saveConfigInfoIntoCache(
+                    LiferayTomcatUtil.CONFIG_TYPE_SERVER, serverInfoFromManifest, getPortalDir() );
+
+                return serverInfoFromManifest;
+            }
+
+            String serverInfoFromClass = getServerInfoFromClass();
+
+            LiferayTomcatUtil.saveConfigInfoIntoCache(
+                LiferayTomcatUtil.CONFIG_TYPE_SERVER, serverInfoFromClass, getPortalDir() );
+
+            return serverInfoFromClass;
+
+        }
+        catch( IOException e )
+        {
+            LiferayTomcatPlugin.logError( e );
+        }
+
+        return null;
     }
 
     public String getServerInfoFromClass()
     {
         // check for existing server info
         IPath location = getRuntime().getLocation();
-
-        IPath serverInfosPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "serverInfos.properties" );
-
-        String locationKey = location.toPortableString().replaceAll( "\\/", "_" );
-
-        File serverInfosFile = serverInfosPath.toFile();
-
-        Properties properties = new Properties();
-
-        if( serverInfosFile.exists() )
-        {
-            try
-            {
-                properties.load( new FileInputStream( serverInfosFile ) );
-                String serverInfo = (String) properties.get( locationKey );
-
-                if( !CoreUtil.isNullOrEmpty( serverInfo ) )
-                {
-                    return serverInfo;
-                }
-            }
-            catch( Exception e )
-            {
-            }
-        }
 
         File serverInfoFile = LiferayTomcatPlugin.getDefault().getStateLocation().append( "serverInfo.txt" ).toFile();
 
@@ -311,18 +306,6 @@ public class LiferayTomcatRuntime extends TomcatRuntime implements ILiferayTomca
         loadServerInfoFile( location, serverInfoFile, errorFile );
 
         String serverInfoString = FileUtil.readContents( serverInfoFile );
-
-        if( !CoreUtil.isNullOrEmpty( serverInfoString ) )
-        {
-            properties.put( locationKey, serverInfoString );
-            try
-            {
-                properties.store( new FileOutputStream( serverInfosFile ), "" );
-            }
-            catch( Exception e )
-            {
-            }
-        }
 
         return serverInfoString;
     }
