@@ -38,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -91,6 +92,36 @@ public class LiferayTomcatUtil
     private static String HOST_NAME = "localhost";
     private static String DEFAULT_PORTAL_DIR = "/webapps/ROOT";
     private static String DEFAULT_PORTAL_CONTEXT_FILE = "ROOT.xml";
+
+    public static final String createStringDigest( final String str )
+    {
+        try
+        {
+            final MessageDigest md = MessageDigest.getInstance( "SHA-256" );
+            final byte[] input = str.getBytes( "UTF-8" );
+            final byte[] digest = md.digest( input );
+
+            final StringBuilder buf = new StringBuilder();
+
+            for( int i = 0; i < digest.length; i++ )
+            {
+                String hex = Integer.toHexString( 0xFF & digest[ i ] );
+
+                if( hex.length() == 1 )
+                {
+                    buf.append( '0' );
+                }
+
+                buf.append( hex );
+            }
+
+            return buf.toString();
+        }
+        catch( Exception e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
 
     public static void displayToggleMessage( String msg, String key )
     {
@@ -290,7 +321,7 @@ public class LiferayTomcatUtil
 
         File configInfoFile = configInfoPath.toFile();
 
-        String portalDirKey = Integer.toString( portalDir.toPortableString().hashCode() );
+        String portalDirKey = createStringDigest( portalDir.toPortableString() );
 
         Properties properties = new Properties();
 
@@ -424,8 +455,21 @@ public class LiferayTomcatUtil
 
             if( configInfo != null )
             {
-                String portalDirKey = Integer.toString( portalDir.toPortableString().hashCode() );
+                String portalDirKey = createStringDigest( portalDir.toPortableString() );
                 Properties properties = new Properties();
+                try
+                {
+                    properties.load( new FileInputStream( versionInfoFile ) );
+                }
+                catch( FileNotFoundException e )
+                {
+                    LiferayTomcatPlugin.logError( e );
+                }
+                catch( IOException e )
+                {
+                    LiferayTomcatPlugin.logError( e );
+                }
+
                 properties.put( portalDirKey, configInfo );
                 try
                 {
