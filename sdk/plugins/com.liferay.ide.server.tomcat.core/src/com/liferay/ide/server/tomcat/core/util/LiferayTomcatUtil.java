@@ -38,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -82,11 +83,45 @@ import org.w3c.dom.NodeList;
 public class LiferayTomcatUtil
 {
 
+    public static final String CONFIG_TYPE_SERVER = "server";
+
+    public static final String CONFIG_TYPE_VERSION = "version";
+
     private static String CONFIG_DIR = "conf";
     private static String SERVICE_NAME = "Catalina";
     private static String HOST_NAME = "localhost";
     private static String DEFAULT_PORTAL_DIR = "/webapps/ROOT";
     private static String DEFAULT_PORTAL_CONTEXT_FILE = "ROOT.xml";
+
+    public static final String createStringDigest( final String str )
+    {
+        try
+        {
+            final MessageDigest md = MessageDigest.getInstance( "SHA-256" );
+            final byte[] input = str.getBytes( "UTF-8" );
+            final byte[] digest = md.digest( input );
+
+            final StringBuilder buf = new StringBuilder();
+
+            for( int i = 0; i < digest.length; i++ )
+            {
+                String hex = Integer.toHexString( 0xFF & digest[ i ] );
+
+                if( hex.length() == 1 )
+                {
+                    buf.append( '0' );
+                }
+
+                buf.append( hex );
+            }
+
+            return buf.toString();
+        }
+        catch( Exception e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
 
     public static void displayToggleMessage( String msg, String key )
     {
@@ -264,38 +299,44 @@ public class LiferayTomcatUtil
         return hookProperties;
     }
 
-    public static String getVersion( IPath location, IPath portalDir ) throws IOException
+    public static String getConfigInfoFromCache( String configType, IPath portalDir )
     {
-//        String versionFromManifest = getConfigInfoFromManifest( "version", portalDir );
 
-//        if( versionFromManifest != null )
-//        {
-//            return versionFromManifest;
-//        }
+        IPath configInfoPath = null;
 
-        return getVersionFromClass( location, portalDir );
-    }
+        if( configType.equals( CONFIG_TYPE_VERSION ) )
+        {
+            configInfoPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "version.properties" );
+        }
 
-    public static String getVersionFromClass( IPath location, IPath portalDir ) throws IOException
-    {
-        IPath versionsInfoPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "version.properties" );
+        else if( configType.equals( CONFIG_TYPE_SERVER ) )
+        {
+            configInfoPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "serverInfos.properties" );
+        }
 
-        String locationKey = location.toPortableString().replaceAll( "\\/", "_" );
+        else
+        {
+            return null;
+        }
 
-        File versionInfoFile = versionsInfoPath.toFile();
+        File configInfoFile = configInfoPath.toFile();
+
+        String portalDirKey = createStringDigest( portalDir.toPortableString() );
 
         Properties properties = new Properties();
 
-        if( versionInfoFile.exists() )
+        String configInfo = null;
+
+        if( configInfoFile.exists() )
         {
             try
             {
-                properties.load( new FileInputStream( versionInfoFile ) );
-                String version = (String) properties.get( locationKey );
+                properties.load( new FileInputStream( configInfoFile ) );
+                configInfo = (String) properties.get( portalDirKey );
 
-                if( !CoreUtil.isNullOrEmpty( version ) )
+                if( !CoreUtil.isNullOrEmpty( configInfo ) )
                 {
-                    return version;
+                    return configInfo;
                 }
             }
             catch( Exception e )
@@ -303,46 +344,13 @@ public class LiferayTomcatUtil
             }
         }
 
-        File versionFile = LiferayTomcatPlugin.getDefault().getStateLocation().append( "version.txt" ).toFile();
-
-        if( versionFile.exists() )
-        {
-            FileUtil.clearContents( versionFile );
-        }
-
-        IPath errorPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "versionError.log" );
-
-        File errorFile = errorPath.toFile();
-
-        loadVersionInfoFile( location, portalDir, versionFile, errorFile );
-
-        Version version = CoreUtil.readVersionFile( versionFile );
-
-        if( version.equals( Version.emptyVersion ) )
-        {
-            loadVersionInfoFile( location, portalDir, versionInfoFile, errorFile );
-
-            version = CoreUtil.readVersionFile( versionInfoFile );
-        }
-
-        if( !version.equals( Version.emptyVersion ) )
-        {
-            properties.put( locationKey, version.toString() );
-            try
-            {
-                properties.store( new FileOutputStream( versionInfoFile ), "" );
-            }
-            catch( Exception e )
-            {
-            }
-        }
-
-        return version.toString();
+        return null;
     }
 
     public static String getConfigInfoFromManifest( String configType, IPath portalDir ) throws IOException
     {
         File implJar = portalDir.append( "WEB-INF/lib/portal-impl.jar" ).toFile();
+
         String version = null;
         String serverInfo = null;
 
@@ -353,6 +361,7 @@ public class LiferayTomcatUtil
                 JarFile jar = new JarFile( implJar );
 
                 Manifest manifest = jar.getManifest();
+
                 Attributes attributes = manifest.getMainAttributes();
 
                 version = attributes.getValue( "Liferay-Portal-Version" );
@@ -370,17 +379,107 @@ public class LiferayTomcatUtil
             }
         }
 
-        if( configType.equals( "version" ) )
+        if( configType.equals( CONFIG_TYPE_VERSION ) )
         {
             return version;
         }
 
-        if( configType.equals( "server" ) )
+        if( configType.equals( CONFIG_TYPE_SERVER ) )
         {
             return serverInfo;
         }
 
         return null;
+    }
+
+    public static String getVersion( IPath location, IPath portalDir ) throws IOException
+    {
+        String versionFromCache = getConfigInfoFromCache( CONFIG_TYPE_VERSION, portalDir );
+
+        if( versionFromCache != null )
+        {
+            return versionFromCache;
+        }
+
+        String versionFromManifest = getConfigInfoFromManifest( CONFIG_TYPE_VERSION, portalDir );
+
+        if( versionFromManifest != null )
+        {
+            saveConfigInfoIntoCache( CONFIG_TYPE_VERSION, versionFromManifest, portalDir );
+            return versionFromManifest;
+        }
+
+        String versionFromClass = getVersionFromClass( location, portalDir );
+        saveConfigInfoIntoCache( CONFIG_TYPE_VERSION, versionFromClass, portalDir );
+        return versionFromClass;
+    }
+
+    public static String getVersionFromClass( IPath location, IPath portalDir ) throws IOException
+    {
+        File versionFile = LiferayTomcatPlugin.getDefault().getStateLocation().append( "version.txt" ).toFile();
+
+        if( versionFile.exists() )
+        {
+            FileUtil.clearContents( versionFile );
+        }
+
+        IPath errorPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "versionError.log" );
+
+        File errorFile = errorPath.toFile();
+
+        loadVersionInfoFile( location, portalDir, versionFile, errorFile );
+
+        Version version = CoreUtil.readVersionFile( versionFile );
+
+        return version.toString();
+    }
+
+    public static void saveConfigInfoIntoCache( String configType, String configInfo, IPath portalDir )
+    {
+
+        IPath versionsInfoPath = null;
+        if( configType.equals( CONFIG_TYPE_VERSION ) )
+        {
+            versionsInfoPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "version.properties" );
+        }
+
+        else if( configType.equals( CONFIG_TYPE_SERVER ) )
+        {
+            versionsInfoPath = LiferayTomcatPlugin.getDefault().getStateLocation().append( "serverInfos.properties" );
+        }
+
+        if( versionsInfoPath != null )
+        {
+
+            File versionInfoFile = versionsInfoPath.toFile();
+
+            if( configInfo != null )
+            {
+                String portalDirKey = createStringDigest( portalDir.toPortableString() );
+                Properties properties = new Properties();
+                try
+                {
+                    properties.load( new FileInputStream( versionInfoFile ) );
+                }
+                catch( FileNotFoundException e )
+                {
+                    LiferayTomcatPlugin.logError( e );
+                }
+                catch( IOException e )
+                {
+                    LiferayTomcatPlugin.logError( e );
+                }
+
+                properties.put( portalDirKey, configInfo );
+                try
+                {
+                    properties.store( new FileOutputStream( versionInfoFile ), "" );
+                }
+                catch( Exception e )
+                {
+                }
+            }
+        }
     }
 
     public static boolean isExtProjectContext( Context context )
