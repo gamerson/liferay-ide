@@ -60,6 +60,11 @@ public class WebXMLDescriptorHelper extends DescriptorHelper
         {
             final DOMModelEditOperation op = new DOMModelEditOperation( file )
             {
+                protected void createDefaultFile()
+                {
+                    //never create the file
+                }
+
                 protected IStatus doExecute( IDOMDocument document )
                 {
                     return doAddTagLib( document, tagLibRefType );
@@ -126,6 +131,11 @@ public class WebXMLDescriptorHelper extends DescriptorHelper
         {
             status = new DOMModelEditOperation( file )
             {
+                protected void createDefaultFile()
+                {
+                    //never create the file
+                }
+
                 protected IStatus doExecute( IDOMDocument document )
                 {
                     try

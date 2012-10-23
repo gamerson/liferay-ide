@@ -19,8 +19,8 @@ package com.liferay.ide.layouttpl.core.operation;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.DescriptorHelper;
 import com.liferay.ide.core.util.NodeUtil;
+import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.format.FormatProcessorXML;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,8 +38,27 @@ import org.w3c.dom.NodeList;
  * @author Greg Amerson
  */
 @SuppressWarnings( "restriction" )
-public class LayoutTplDescriptorHelper extends DescriptorHelper implements INewLayoutTplDataModelProperties
+public class LayoutTplDescriptorHelper extends LiferayDescriptorHelper implements INewLayoutTplDataModelProperties
 {
+    private static final String LAYOUT_DESCRIPTOR_TEMPLATE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE "
+        + "layout-templates PUBLIC \"-//Liferay//DTD Layout Templates {0}//EN\" \"http://www.liferay.com/dtd/liferay"
+        + "-layout-templates_{1}.dtd\">\n\n<layout-templates>\n\n</layout-templates>";
+
+    public static Node appendTextNode( Element parentElement, String initialTextContent )
+    {
+        Node newChildElement = null;
+
+        if( parentElement != null )
+        {
+            Document ownerDocument = parentElement.getOwnerDocument();
+
+            newChildElement = ownerDocument.createTextNode( initialTextContent );
+
+            parentElement.appendChild( newChildElement );
+        }
+
+        return newChildElement;
+    }
 
     public LayoutTplDescriptorHelper( IProject project )
     {
@@ -51,6 +71,11 @@ public class LayoutTplDescriptorHelper extends DescriptorHelper implements INewL
         
         final DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
+            protected void createDefaultFile()
+            {
+                createDefaultDescriptor( LAYOUT_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
+            }
+
             protected IStatus doExecute( IDOMDocument document )
             {
                 return doAddLayoutTemplate( document, dm );
@@ -86,6 +111,7 @@ public class LayoutTplDescriptorHelper extends DescriptorHelper implements INewL
 
             customElement = document.createElement( "custom" );
             docRoot.insertBefore( customElement, standardElement );
+            appendTextNode( docRoot, "\n" );
         }
 
         customElement.appendChild( layoutTemplateElement );
