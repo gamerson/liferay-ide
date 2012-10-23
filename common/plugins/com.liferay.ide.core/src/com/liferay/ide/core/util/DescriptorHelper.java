@@ -19,12 +19,15 @@ package com.liferay.ide.core.util;
 
 import com.liferay.ide.core.CorePlugin;
 
+import java.io.ByteArrayInputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -53,13 +56,29 @@ public class DescriptorHelper
             super( descriptorFile );
         }
 
+        public void createDefaultDescriptor( String templateString, String version )
+        {
+            String content = MessageFormat.format( templateString, version, version.replace( '.', '_' ) );
+
+            try
+            {
+                this.file.create( new ByteArrayInputStream( content.getBytes( "UTF-8" ) ), IResource.FORCE, null );
+            }
+            catch( Exception e )
+            {
+                CorePlugin.logError( e );
+            }
+        }
+
+        protected abstract void createDefaultFile();
+
         public IStatus execute()
         {
             IStatus retval = null;
 
             if( !this.file.exists() )
             {
-                return CorePlugin.createErrorStatus( this.file.getName() + " doesn't exist" );
+                createDefaultFile();
             }
 
             IDOMModel domModel = null;
