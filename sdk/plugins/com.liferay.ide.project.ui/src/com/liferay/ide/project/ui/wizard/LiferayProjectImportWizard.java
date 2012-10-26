@@ -17,7 +17,10 @@ package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.LiferayProjectImportDataModelProvider;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
+import com.liferay.ide.ui.util.UIUtil;
 import com.liferay.ide.ui.wizard.INewProjectWizard;
+
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -94,6 +97,13 @@ public class LiferayProjectImportWizard extends DataModelWizard implements IWork
     protected IDataModelProvider getDefaultProvider()
     {
         return new LiferayProjectImportDataModelProvider();
+    }
+
+    @Override
+    protected void postPerformFinish() throws InvocationTargetException
+    {
+        UIUtil.switchToLiferayPerspective();
+        super.postPerformFinish();
     }
 
     @Override
