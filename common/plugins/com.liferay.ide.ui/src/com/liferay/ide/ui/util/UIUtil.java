@@ -48,24 +48,10 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author Greg Amerson
+ * @author Cindy Li
  */
 public class UIUtil
 {
-
-    public static void sync( Runnable runnable )
-    {
-        if( runnable != null )
-        {
-            try
-            {
-                Display.getDefault().syncExec( runnable );
-            }
-            catch( Throwable t )
-            {
-                // ignore
-            }
-        }
-    }
 
     public static void async( Runnable runnable )
     {
@@ -80,6 +66,53 @@ public class UIUtil
                 // ignore
             }
         }
+    }
+
+    private static boolean confirmPerspectiveSwitch(IWorkbenchWindow window,
+            IPerspectiveDescriptor finalPersp) {
+        IPreferenceStore store = IDEWorkbenchPlugin.getDefault()
+                .getPreferenceStore();
+        String pspm = store
+                .getString(IDEInternalPreferences.PROJECT_SWITCH_PERSP_MODE);
+        if (!IDEInternalPreferences.PSPM_PROMPT.equals(pspm)) {
+            // Return whether or not we should always switch
+            return IDEInternalPreferences.PSPM_ALWAYS.equals(pspm);
+        }
+        String desc = finalPersp.getDescription();
+        String message;
+        if (desc == null || desc.length() == 0)
+            message = NLS.bind(ResourceMessages.NewProject_perspSwitchMessage,
+                    finalPersp.getLabel());
+        else
+            message = NLS.bind(
+                    ResourceMessages.NewProject_perspSwitchMessageWithDesc,
+                    new String[] { finalPersp.getLabel(), desc });
+
+        MessageDialogWithToggle dialog = MessageDialogWithToggle
+                .openYesNoQuestion(window.getShell(),
+                        ResourceMessages.NewProject_perspSwitchTitle, message,
+                        null /* use the default message for the toggle */,
+                        false /* toggle is initially unchecked */, store,
+                        IDEInternalPreferences.PROJECT_SWITCH_PERSP_MODE);
+        int result = dialog.getReturnCode();
+
+        // If we are not going to prompt anymore propogate the choice.
+        if (dialog.getToggleState()) {
+            String preferenceValue;
+            if (result == IDialogConstants.YES_ID) {
+                // Doesn't matter if it is replace or new window
+                // as we are going to use the open perspective setting
+                preferenceValue = IWorkbenchPreferenceConstants.OPEN_PERSPECTIVE_REPLACE;
+            } else {
+                preferenceValue = IWorkbenchPreferenceConstants.NO_NEW_PERSPECTIVE;
+            }
+
+            // update PROJECT_OPEN_NEW_PERSPECTIVE to correspond
+            PrefUtil.getAPIPreferenceStore().setValue(
+                    IDE.Preferences.PROJECT_OPEN_NEW_PERSPECTIVE,
+                    preferenceValue);
+        }
+        return result == IDialogConstants.YES_ID;
     }
 
     public static Shell getActiveShell()
@@ -179,6 +212,25 @@ public class UIUtil
         return retval[0];
     }
 
+    private static void replaceCurrentPerspective( IPerspectiveDescriptor persp )
+    {
+
+        // Get the active page.
+        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if( window == null )
+        {
+            return;
+        }
+        IWorkbenchPage page = window.getActivePage();
+        if( page == null )
+        {
+            return;
+        }
+
+        // Set the perspective.
+        page.setPerspective( persp );
+    }
+
     public static IViewPart showView( String viewId )
     {
         try
@@ -237,74 +289,18 @@ public class UIUtil
         replaceCurrentPerspective( finalPersp );
     }
 
-    private static void replaceCurrentPerspective( IPerspectiveDescriptor persp )
+    public static void sync( Runnable runnable )
     {
-
-        // Get the active page.
-        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if( window == null )
+        if( runnable != null )
         {
-            return;
-        }
-        IWorkbenchPage page = window.getActivePage();
-        if( page == null )
-        {
-            return;
-        }
-
-        // Set the perspective.
-        page.setPerspective( persp );
-    }
-
-    private static boolean confirmPerspectiveSwitch( IWorkbenchWindow window, IPerspectiveDescriptor finalPersp )
-    {
-        IPreferenceStore store = IDEWorkbenchPlugin.getDefault().getPreferenceStore();
-        String pspm = store.getString( IDEInternalPreferences.PROJECT_SWITCH_PERSP_MODE );
-        if( !IDEInternalPreferences.PSPM_PROMPT.equals( pspm ) )
-        {
-            // Return whether or not we should always switch
-            return IDEInternalPreferences.PSPM_ALWAYS.equals( pspm );
-        }
-        String desc = finalPersp.getDescription();
-        String message;
-        if( desc == null || desc.length() == 0 )
-            message = NLS.bind( ResourceMessages.NewProject_perspSwitchMessage, finalPersp.getLabel() );
-        else
-            message =
-                NLS.bind( ResourceMessages.NewProject_perspSwitchMessageWithDesc, new String[] { finalPersp.getLabel(),
-                    desc } );
-
-        MessageDialogWithToggle dialog =
-            MessageDialogWithToggle.openYesNoQuestion(
-                window.getShell(), ResourceMessages.NewProject_perspSwitchTitle, message, null /*
-                                                                                                * use the default
-                                                                                                * message for the toggle
-                                                                                                */, false /*
-                                                                                                           * toggle is
-                                                                                                           * initially
-                                                                                                           * unchecked
-                                                                                                           */, store,
-                IDEInternalPreferences.PROJECT_SWITCH_PERSP_MODE );
-        int result = dialog.getReturnCode();
-
-        // If we are not going to prompt anymore propogate the choice.
-        if( dialog.getToggleState() )
-        {
-            String preferenceValue;
-            if( result == IDialogConstants.YES_ID )
+            try
             {
-                // Doesn't matter if it is replace or new window
-                // as we are going to use the open perspective setting
-                preferenceValue = IWorkbenchPreferenceConstants.OPEN_PERSPECTIVE_REPLACE;
+                Display.getDefault().syncExec( runnable );
             }
-            else
+            catch( Throwable t )
             {
-                preferenceValue = IWorkbenchPreferenceConstants.NO_NEW_PERSPECTIVE;
+                // ignore
             }
-
-            // update PROJECT_OPEN_NEW_PERSPECTIVE to correspond
-            PrefUtil.getAPIPreferenceStore().setValue( IDE.Preferences.PROJECT_OPEN_NEW_PERSPECTIVE, preferenceValue );
         }
-        return result == IDialogConstants.YES_ID;
     }
 }
