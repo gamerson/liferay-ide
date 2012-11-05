@@ -60,15 +60,6 @@ public class PortletDescriptorValidator extends BaseValidator
 
     public static final String MARKER_TYPE = "com.liferay.ide.portlet.core.portletDescriptorMarker";
 
-    public static final String MESSAGE_FILTER_CLASS_NOT_FOUND =
-        "The filter class {0} was not found on the Java Build Path";
-
-    public static final String MESSAGE_LISTENER_CLASS_NOT_FOUND =
-        "The listener class {0} was not found on the Java Build Path";
-
-    public static final String MESSAGE_PORTLET_CLASS_NOT_FOUND =
-        "The portlet class {0} was not found on the Java Build Path";
-
     public static final String MESSAGE_RESOURCE_BUNDLE_NOT_FOUND =
         "The resource bundle {0} was not found on the Java Build Path";
 
@@ -81,27 +72,6 @@ public class PortletDescriptorValidator extends BaseValidator
     public PortletDescriptorValidator()
     {
         super();
-    }
-
-    protected void checkClassElements(
-        IDOMDocument document, IJavaProject javaProject, String classElement, String preferenceNodeQualifier,
-        IScopeContext[] preferenceScopes, String preferenceKey, String errorMessage, List<Map<String, Object>> problems )
-    {
-
-        NodeList classes = document.getElementsByTagName( classElement );
-
-        for( int i = 0; i < classes.getLength(); i++ )
-        {
-            Node item = classes.item( i );
-
-            Map<String, Object> problem =
-                checkClass( javaProject, item, preferenceNodeQualifier, preferenceScopes, preferenceKey, errorMessage );
-
-            if( problem != null )
-            {
-                problems.add( problem );
-            }
-        }
     }
 
     protected void checkResourceBundleElements(
@@ -145,19 +115,11 @@ public class PortletDescriptorValidator extends BaseValidator
             {
                 IDOMDocument document = ( (IDOMModel) model ).getDocument();
 
-                checkClassElements(
-                    document, javaProject, PORTLET_CLASS_ELEMENT, PREFERENCE_NODE_QUALIFIER, preferenceScopes,
-                    ValidationPreferences.PORTLET_XML_PORTLET_CLASS_NOT_FOUND, MESSAGE_PORTLET_CLASS_NOT_FOUND,
-                    problems );
-
-                checkClassElements(
-                    document, javaProject, LISTENER_CLASS_ELEMENT, PREFERENCE_NODE_QUALIFIER, preferenceScopes,
-                    ValidationPreferences.PORTLET_XML_LISTENER_CLASS_NOT_FOUND, MESSAGE_LISTENER_CLASS_NOT_FOUND,
-                    problems );
-
-                checkClassElements(
-                    document, javaProject, FILTER_CLASS_ELEMENT, PREFERENCE_NODE_QUALIFIER, preferenceScopes,
-                    ValidationPreferences.PORTLET_XML_FILTER_CLASS_NOT_FOUND, MESSAGE_FILTER_CLASS_NOT_FOUND, problems );
+                checkAllClassElements(
+                    getAllClasseElements( "PortletClassElements.properties" ), javaProject, portletXml,
+                    ValidationPreferences.PORTLET_XML_CLASS_NOT_FOUND,
+                    ValidationPreferences.PORTLET_XML_INCORRECT_CLASS_HIERARCHY, preferenceScopes,
+                    PREFERENCE_NODE_QUALIFIER, problems );
 
                 checkResourceBundleElements( document, javaProject, preferenceScopes, problems );
             }
