@@ -61,3 +61,4 @@ Export-Package: com.liferay.ide.portlet.ui,
  com.liferay.ide.portlet.ui.template,
  com.liferay.ide.portlet.ui.util,
  com.liferay.ide.portlet.ui.wizard
+Import-Package: com.liferay.ide.hook.ui.template

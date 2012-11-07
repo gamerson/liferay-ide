@@ -15,7 +15,7 @@
 
 package com.liferay.ide.portlet.ui;
 
-import com.liferay.ide.portlet.ui.template.HookTemplateContextTypeIds;
+import com.liferay.ide.hook.ui.template.HookTemplateContextTypeIds;
 import com.liferay.ide.portlet.ui.template.PortletTemplateContextTypeIds;
 import com.liferay.ide.portlet.ui.template.ServiceBuilderTemplateContextTypeIds;
 
