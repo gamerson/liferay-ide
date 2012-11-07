@@ -119,3 +119,4 @@ Bundle-ClassPath: .,
  lib/httpclient-4.2.1.jar,
  lib/httpcore-4.2.1.jar,
  lib/httpmime-4.2.1.jar
+Import-Package: org.eclipse.jst.j2ee.internal.project
