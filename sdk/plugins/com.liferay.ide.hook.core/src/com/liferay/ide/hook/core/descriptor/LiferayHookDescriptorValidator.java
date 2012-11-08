@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.portlet.core.descriptor;
+package com.liferay.ide.hook.core.descriptor;
 
 import com.liferay.ide.core.util.NodeUtil;
 import com.liferay.ide.portlet.core.PortletCore;

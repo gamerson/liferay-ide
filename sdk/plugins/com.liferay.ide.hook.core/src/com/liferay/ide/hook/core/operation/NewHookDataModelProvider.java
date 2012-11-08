@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.portlet.core.operation;
+package com.liferay.ide.hook.core.operation;
 
 import static org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties.JAVA_PACKAGE_FRAGMENT_ROOT;
 import static org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties.JAVA_SOURCE_FOLDER;
@@ -21,9 +21,8 @@ import static org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataM
 import static org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties.SOURCE_FOLDER;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.hook.core.dd.HookDescriptorHelper;
 import com.liferay.ide.portlet.core.PortletCore;
-import com.liferay.ide.portlet.core.dd.HookDescriptorHelper;
-import com.liferay.ide.portlet.core.util.PortletUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -39,8 +38,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jem.workbench.utility.JemProjectUtilities;
-import org.eclipse.jface.text.templates.TemplateContextType;
-import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.operation.ArtifactEditOperationDataModelProvider;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
@@ -54,21 +51,15 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
     implements INewHookDataModelProperties
 {
 
-    protected TemplateContextType contextType;
-    protected TemplateStore templateStore;
-
-    public NewHookDataModelProvider( TemplateStore templateStore, TemplateContextType contextType )
+    public NewHookDataModelProvider()
     {
         super();
-
-        this.templateStore = templateStore;
-        this.contextType = contextType;
     }
 
     @Override
     public IDataModelOperation getDefaultOperation()
     {
-        return new AddHookOperation( getDataModel(), this.templateStore, this.contextType );
+        return new AddHookOperation( getDataModel() );
     }
 
     @Override
@@ -119,7 +110,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
 
             if( targetProject != null )
             {
-                return PortletUtil.getFirstSrcFolder( targetProject ).getFullPath().append( "portal.properties" ).toPortableString();
+                return CoreUtil.getFirstSrcFolder( targetProject ).getFullPath().append( "portal.properties" ).toPortableString();
             }
         }
         else if( CONTENT_FOLDER.equals( propertyName ) )
@@ -128,7 +119,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
 
             if( targetProject != null )
             {
-                return PortletUtil.getFirstSrcFolder( targetProject ).getFullPath().append( "content" ).toPortableString();
+                return CoreUtil.getFirstSrcFolder( targetProject ).getFullPath().append( "content" ).toPortableString();
             }
         }
         else if( propertyName.equals( PROJECT ) )
