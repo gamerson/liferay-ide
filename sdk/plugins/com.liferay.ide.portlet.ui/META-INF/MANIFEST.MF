@@ -49,7 +49,8 @@ Require-Bundle: com.liferay.ide.core,
  org.eclipse.sapphire.java;bundle-version="0.3.1",
  org.eclipse.sapphire.java.jdt.ui;bundle-version="0.3.1",
  org.eclipse.sapphire.modeling.xml;bundle-version="0.3.1",
- org.eclipse.ui.navigator
+ org.eclipse.ui.navigator,
+ com.liferay.ide.hook.ui
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.portlet.ui,
@@ -61,4 +62,3 @@ Export-Package: com.liferay.ide.portlet.ui,
  com.liferay.ide.portlet.ui.template,
  com.liferay.ide.portlet.ui.util,
  com.liferay.ide.portlet.ui.wizard
-Import-Package: com.liferay.ide.hook.ui.template

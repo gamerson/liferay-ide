@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ant.core,
  org.eclipse.wst.sse.core;bundle-version="[1.1.402,2.0.0)",
  org.eclipse.wst.xml.core;bundle-version="[1.1.402,2.0.0)",
  org.eclipse.sapphire.modeling;bundle-version="0.4.0",
- org.eclipse.sapphire.modeling.xml;bundle-version="0.4.0"
+ org.eclipse.sapphire.modeling.xml;bundle-version="0.4.0",
+ org.eclipse.jst.j2ee
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.core,
@@ -119,4 +120,3 @@ Bundle-ClassPath: .,
  lib/httpclient-4.2.1.jar,
  lib/httpcore-4.2.1.jar,
  lib/httpmime-4.2.1.jar
-Import-Package: org.eclipse.jst.j2ee.internal.project
