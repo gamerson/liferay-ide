@@ -21,8 +21,8 @@ import static org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataM
 import static org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties.SOURCE_FOLDER;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.hook.core.HookCore;
 import com.liferay.ide.hook.core.dd.HookDescriptorHelper;
-import com.liferay.ide.portlet.core.PortletCore;
 
 import java.util.HashSet;
 import java.util.List;
@@ -201,7 +201,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
 
             if( CoreUtil.isNullOrEmpty( jspFolder ) )
             {
-                return PortletCore.createErrorStatus( "Custom JSPs folder not configured." );
+                return HookCore.createErrorStatus( "Custom JSPs folder not configured." );
             }
         }
         else if( CUSTOM_JSPS_ITEMS.equals( propertyName ) && getBooleanProperty( CREATE_CUSTOM_JSPS ) )
@@ -218,7 +218,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
                 }
             }
 
-            return PortletCore.createErrorStatus( "Need to specify at least one JSP to override." );
+            return HookCore.createErrorStatus( "Need to specify at least one JSP to override." );
         }
         else if( PORTAL_PROPERTIES_FILE.equals( propertyName ) && getBooleanProperty( CREATE_PORTAL_PROPERTIES ) )
         {
@@ -226,7 +226,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
 
             if( CoreUtil.isNullOrEmpty( portalPropertiesFile ) )
             {
-                return PortletCore.createErrorStatus( "portal.properties file not configured." );
+                return HookCore.createErrorStatus( "portal.properties file not configured." );
             }
         }
         else if( PORTAL_PROPERTIES_ACTION_ITEMS.equals( propertyName ) && getBooleanProperty( CREATE_PORTAL_PROPERTIES ) )
@@ -243,7 +243,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
             }
             else
             {
-                return PortletCore.createErrorStatus( "Need to specify at least one Event Action or Property to override." );
+                return HookCore.createErrorStatus( "Need to specify at least one Event Action or Property to override." );
             }
         }
         else if( SERVICES_ITEMS.equals( propertyName ) && getBooleanProperty( CREATE_SERVICES ) )
@@ -256,7 +256,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
             }
             else
             {
-                return PortletCore.createErrorStatus( "Need to specify at least one Service to override." );
+                return HookCore.createErrorStatus( "Need to specify at least one Service to override." );
             }
         }
         else if( CONTENT_FOLDER.equals( propertyName ) && getBooleanProperty( CREATE_LANGUAGE_PROPERTIES ) )
@@ -265,7 +265,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
 
             if( CoreUtil.isNullOrEmpty( contentFolder ) )
             {
-                return PortletCore.createErrorStatus( "Content folder not configured." );
+                return HookCore.createErrorStatus( "Content folder not configured." );
             }
         }
         else if( LANGUAGE_PROPERTIES_ITEMS.equals( propertyName ) && getBooleanProperty( CREATE_LANGUAGE_PROPERTIES ) )
@@ -281,7 +281,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
                     return Status.OK_STATUS;
                 }
             }
-            return PortletCore.createErrorStatus( "Need to specify at least one language property file." );
+            return HookCore.createErrorStatus( "Need to specify at least one language property file." );
         }
 
         return super.validate( propertyName );
@@ -391,6 +391,6 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
             }
         }
 
-        return PortletCore.createErrorStatus( "Need to specify at least one item." );
+        return HookCore.createErrorStatus( "Need to specify at least one item." );
     }
 }
