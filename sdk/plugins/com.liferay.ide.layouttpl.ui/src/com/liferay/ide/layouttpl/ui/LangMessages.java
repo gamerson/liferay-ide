@@ -1,0 +1,56 @@
+package com.liferay.ide.layouttpl.ui;
+
+import org.eclipse.osgi.util.NLS;
+
+public class LangMessages extends NLS {
+	private static final String BUNDLE_NAME = "com.liferay.ide.layouttpl.ui.Language"; //$NON-NLS-1$
+	public static String LayoutTplEditorPaletteFactory_column;
+	public static String LayoutTplEditorPaletteFactory_column_a_single_column;
+	public static String LayoutTplEditorPaletteFactory_create_a_2_column_row_both_at_50percent_width;
+	public static String LayoutTplEditorPaletteFactory_create_a_2_column_row_with_30percent_and_70percent_column_widths;
+	public static String LayoutTplEditorPaletteFactory_create_a_2_column_row_with_70percent_and_30percent_for_column_widths;
+	public static String LayoutTplEditorPaletteFactory_create_a_3_column_row_with_all_widths_at_33percent;
+	public static String LayoutTplEditorPaletteFactory_create_a_single_row;
+	public static String LayoutTplEditorPaletteFactory_layout;
+	public static String LayoutTplEditorPaletteFactory_row;
+	public static String LayoutTplEditorPaletteFactory_templates;
+	public static String LayoutTplEditorPaletteFactory_tools;
+	public static String LayoutTplMultiPageEditor_source;
+	public static String LayoutTplMultiPageEditor_visual_experimental;
+	public static String NewLayoutTplLayoutWizardPage_create_layout_template;
+	public static String NewLayoutTplLayoutWizardPage_select_an_initial_layout_to_use_for_the_new_template;
+	public static String NewLayoutTplLayoutWizardPage_select_initial_template_to_start_designing;
+	public static String NewLayoutTplWizard_new_layout_template;
+	public static String NewLayoutTplWizardPage_browse;
+	public static String NewLayoutTplWizardPage_choose_a_liferay_layout_template;
+	public static String NewLayoutTplWizardPage_choose_a_template_file;
+	public static String NewLayoutTplWizardPage_choose_a_thumbnail_file;
+	public static String NewLayoutTplWizardPage_choose_a_wap_template_file;
+	public static String NewLayoutTplWizardPage_create_layout_template;
+	public static String NewLayoutTplWizardPage_id;
+	public static String NewLayoutTplWizardPage_name;
+	public static String NewLayoutTplWizardPage_template_file;
+	public static String NewLayoutTplWizardPage_template_file_selection;
+	public static String NewLayoutTplWizardPage_thumbnail_file;
+	public static String NewLayoutTplWizardPage_wap_template_file;
+	public static String NewLayoutTplWizardPage_wap_template_file_selection;
+	public static String PortletColumnChangeConstraintCommand_portlet_column_changed;
+	public static String PortletColumnChangeConstraintCommand_undo;
+	public static String PortletColumnCreateCommand_portlet_column_added;
+	public static String PortletColumnCreateCommand_undo_not_supported;
+	public static String PortletColumnDeleteCommand_portlet_column_deleted;
+	public static String PortletLayoutCreateCommand_portlet_row_added;
+	public static String PortletLayoutCreateCommand_undo_not_yet_supported;
+	public static String PortletLayoutDeleteCommand_portlet_row_deleted;
+	public static String PortletLayoutFactory_number_of_columns_must_be_greater_than_zero;
+	public static String PortletLayoutFactory_number_of_weight_args_must_match_number_of_columns;
+	public static String PortletLayoutTemplate_number_of_columns_must_be_greater_than_zero;
+	public static String PortletLayoutTemplate_number_of_weight_args_must_match_number_of_columns;
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, LangMessages.class);
+	}
+
+	private LangMessages() {
+	}
+}

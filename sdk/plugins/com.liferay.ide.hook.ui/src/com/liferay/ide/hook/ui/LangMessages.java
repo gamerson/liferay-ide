@@ -1,0 +1,99 @@
+package com.liferay.ide.hook.ui;
+
+import org.eclipse.osgi.util.NLS;
+
+public class LangMessages extends NLS {
+	private static final String BUNDLE_NAME = "com.liferay.ide.hook.ui.Language"; //$NON-NLS-1$
+	public static String CustomJSPsTableWizardSection_add_from_liferay;
+	public static String CustomJSPsTableWizardSection_add_jsp;
+	public static String CustomJSPsTableWizardSection_could_not_find_portal_root;
+	public static String CustomJSPsTableWizardSection_liferay_custom_jsp;
+	public static String CustomJSPsTableWizardSection_select_a_jsp_to_customize;
+	public static String EventActionsTableWizardSection_event_selection;
+	public static String EventActionsTableWizardSection_new;
+	public static String EventActionsTableWizardSection_please_select_a_property;
+	public static String EventActionsTableWizardSection_property_selection;
+	public static String EventActionsTableWizardSection_select;
+	public static String EventActionsTableWizardSection_select_an_event_action;
+	public static String EventActionsTableWizardSection_select_new;
+	public static String NewCustomJSPsHookWizardPage_add;
+	public static String NewCustomJSPsHookWizardPage_add2;
+	public static String NewCustomJSPsHookWizardPage_browse;
+	public static String NewCustomJSPsHookWizardPage_choose_a_valid_folder_for_custom_jsp;
+	public static String NewCustomJSPsHookWizardPage_create_custom_jsps;
+	public static String NewCustomJSPsHookWizardPage_create_customs_jsp_folder_and_select_jsps_to_override;
+	public static String NewCustomJSPsHookWizardPage_custom_jsp_folder;
+	public static String NewCustomJSPsHookWizardPage_disable_jsp_syntax_validation_for_custom_jsp_folder_recommended;
+	public static String NewCustomJSPsHookWizardPage_edit;
+	public static String NewCustomJSPsHookWizardPage_jsp_file_path;
+	public static String NewCustomJSPsHookWizardPage_jsp_files_to_override;
+	public static String NewCustomJSPsHookWizardPage_remove;
+	public static String NewEventActionClassDialog_classname;
+	public static String NewEventActionClassDialog_create;
+	public static String NewHookTypeWizardPage_create_liferay_hook;
+	public static String NewHookTypeWizardPage_custom_jsps;
+	public static String NewHookTypeWizardPage_define_a_new_hook_plugin;
+	public static String NewHookTypeWizardPage_portal_properties;
+	public static String NewHookTypeWizardPage_select_hook_types_to_create;
+	public static String NewHookTypeWizardPage_services;
+	public static String NewHookWizard_new_liferay_hook;
+	public static String NewLanguagePropertiesHookWizardPage_add;
+	public static String NewLanguagePropertiesHookWizardPage_add2;
+	public static String NewLanguagePropertiesHookWizardPage_browse;
+	public static String NewLanguagePropertiesHookWizardPage_choose_a_valid_folder_for_language_properties_files;
+	public static String NewLanguagePropertiesHookWizardPage_content_folder;
+	public static String NewLanguagePropertiesHookWizardPage_create_language_properties;
+	public static String NewLanguagePropertiesHookWizardPage_create_new_language_properties_files;
+	public static String NewLanguagePropertiesHookWizardPage_edit;
+	public static String NewLanguagePropertiesHookWizardPage_language_property_file;
+	public static String NewLanguagePropertiesHookWizardPage_language_property_file2;
+	public static String NewLanguagePropertiesHookWizardPage_language_property_files;
+	public static String NewLanguagePropertiesHookWizardPage_remove;
+	public static String NewPortalPropertiesHookWizardPage_add;
+	public static String NewPortalPropertiesHookWizardPage_add_event_action;
+	public static String NewPortalPropertiesHookWizardPage_add_property_override;
+	public static String NewPortalPropertiesHookWizardPage_browse;
+	public static String NewPortalPropertiesHookWizardPage_choose_a_valid_file_or_folder_for_portal_properties;
+	public static String NewPortalPropertiesHookWizardPage_class;
+	public static String NewPortalPropertiesHookWizardPage_class2;
+	public static String NewPortalPropertiesHookWizardPage_create_portal_properties;
+	public static String NewPortalPropertiesHookWizardPage_define_actions_to_be_executed_on_portal_events;
+	public static String NewPortalPropertiesHookWizardPage_edit;
+	public static String NewPortalPropertiesHookWizardPage_event;
+	public static String NewPortalPropertiesHookWizardPage_event2;
+	public static String NewPortalPropertiesHookWizardPage_portal_properties_file;
+	public static String NewPortalPropertiesHookWizardPage_portal_properties_file2;
+	public static String NewPortalPropertiesHookWizardPage_property;
+	public static String NewPortalPropertiesHookWizardPage_property2;
+	public static String NewPortalPropertiesHookWizardPage_remove;
+	public static String NewPortalPropertiesHookWizardPage_specify_properties_to_override;
+	public static String NewPortalPropertiesHookWizardPage_specify_which_portal_properties_to_override;
+	public static String NewPortalPropertiesHookWizardPage_value;
+	public static String NewPortalPropertiesHookWizardPage_value2;
+	public static String NewServicesHookWizardPage_add;
+	public static String NewServicesHookWizardPage_add_service_wrapper;
+	public static String NewServicesHookWizardPage_create_service_hook;
+	public static String NewServicesHookWizardPage_define_portal_services_to_extend;
+	public static String NewServicesHookWizardPage_edit;
+	public static String NewServicesHookWizardPage_impl_class;
+	public static String NewServicesHookWizardPage_impl_class2;
+	public static String NewServicesHookWizardPage_remove;
+	public static String NewServicesHookWizardPage_service_type;
+	public static String NewServicesHookWizardPage_service_type2;
+	public static String NewServicesHookWizardPage_specify_which_liferay_service_to_extend;
+	public static String PropertyOverridesTableWizardSection_please_select_a_property;
+	public static String PropertyOverridesTableWizardSection_property_selection;
+	public static String PropertyOverridesTableWizardSection_select;
+	public static String ServicesTableWizardSection_add_service;
+	public static String ServicesTableWizardSection_new;
+	public static String ServicesTableWizardSection_please_specify_a_service_type_first;
+	public static String ServicesTableWizardSection_select;
+	public static String ServicesTableWizardSection_select_new;
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, LangMessages.class);
+	}
+
+	private LangMessages() {
+	}
+}
