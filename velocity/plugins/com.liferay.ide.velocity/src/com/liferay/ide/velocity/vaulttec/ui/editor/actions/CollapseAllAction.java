@@ -20,9 +20,9 @@ public class CollapseAllAction extends Action
     public CollapseAllAction(AbstractTreeViewer aViewer)
     {
         fViewer = aViewer;
-        setText(VelocityPlugin.getMessage("VelocityEditor.CollapseAllAction.label"));
-        setToolTipText(VelocityPlugin.getMessage("VelocityEditor.CollapseAllAction.tooltip"));
-        VelocityPluginImages.setLocalImageDescriptors(this, "collapseall.gif");
+        setText(VelocityPlugin.getMessage("VelocityEditor.CollapseAllAction.label")); //$NON-NLS-1$
+        setToolTipText(VelocityPlugin.getMessage("VelocityEditor.CollapseAllAction.tooltip")); //$NON-NLS-1$
+        VelocityPluginImages.setLocalImageDescriptors(this, "collapseall.gif"); //$NON-NLS-1$
     }
 
     /**

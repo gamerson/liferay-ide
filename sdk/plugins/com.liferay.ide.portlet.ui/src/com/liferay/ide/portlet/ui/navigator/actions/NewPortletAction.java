@@ -15,6 +15,7 @@
 
 package com.liferay.ide.portlet.ui.navigator.actions;
 
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.navigator.PortletsNode;
 import com.liferay.ide.portlet.ui.wizard.NewPortletWizard;
 
@@ -30,7 +31,7 @@ import org.eclipse.ui.actions.BaseSelectionListenerAction;
 public class NewPortletAction extends BaseSelectionListenerAction
 {
 
-    private static final String ACTION_MESSAGE = "New Portlet";
+    private static final String ACTION_MESSAGE = LangMessages.NewPortletAction_new_portlet;
     protected Object selectedNode;
 
     /**

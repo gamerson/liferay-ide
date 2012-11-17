@@ -18,6 +18,7 @@ package com.liferay.ide.project.ui.action;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.IProjectDefinition;
 import com.liferay.ide.project.core.ProjectCorePlugin;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 
 import java.util.ArrayList;
@@ -112,9 +113,9 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
                         if( projectDef != null )
                         {
                             wizardAction.setImageDescriptor( ImageDescriptor.createFromURL( ProjectUIPlugin.getDefault().getBundle().getEntry(
-                                "/icons/n16/" + projectDef.getShortName() + "_new.png" ) ) );
+                                "/icons/n16/" + projectDef.getShortName() + "_new.png" ) ) ); //$NON-NLS-1$ //$NON-NLS-2$
                             wizardAction.setText( wizardAction.getText().replaceAll(
-                                "Liferay Plugin", projectDef.getDisplayName() + " Plugin" ) );
+                                LangMessages.NewPluginProjectDropDownAction_liferay_plugin, projectDef.getDisplayName() + LangMessages.NewPluginProjectDropDownAction_plugin ) );
                         }
 
                         containers.add( wizardAction );
@@ -286,11 +287,11 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
 
     protected static String getExtraTypeAttribute()
     {
-        return "liferay_extra_project";
+        return "liferay_extra_project"; //$NON-NLS-1$
     }
 
     protected static String getTypeAttribute()
     {
-        return "liferay_project";
+        return "liferay_project"; //$NON-NLS-1$
     }
 }

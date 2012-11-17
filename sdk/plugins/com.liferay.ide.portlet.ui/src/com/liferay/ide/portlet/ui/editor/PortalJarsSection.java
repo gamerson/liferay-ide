@@ -15,6 +15,7 @@ import com.liferay.ide.core.model.IModelChangedEvent;
 import com.liferay.ide.core.model.IModelChangedListener;
 import com.liferay.ide.portlet.core.IPluginPackageModel;
 import com.liferay.ide.portlet.core.PluginPackageModel;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.ui.form.DefaultContentProvider;
 import com.liferay.ide.ui.form.FormLayoutFactory;
 import com.liferay.ide.ui.form.IDEFormPage;
@@ -88,7 +89,7 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
         if( portalDir != null )
         {
             for (String portalJar : portalJars) {
-                File jarFile = new File(portalDir.append("WEB-INF/lib").toFile(), portalJar.trim());
+                File jarFile = new File(portalDir.append("WEB-INF/lib").toFile(), portalJar.trim()); //$NON-NLS-1$
 
                 if (jarFile.isFile() && jarFile.exists()) {
                     fJars.add(jarFile);
@@ -109,15 +110,15 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 				File file = (File)element;
 				return file.getName();
 			}
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		
 	}
 
 	public PortalJarsSection(IDEFormPage page, Composite parent, String[] labels) {
 		super(page, parent, Section.DESCRIPTION, labels);
-		getSection().setText("Portal Dependency Jars");
-		getSection().setDescription("Specify which jars the plugin package requires.");
+		getSection().setText(LangMessages.PortalJarsSection_portal_dependency_jars);
+		getSection().setDescription(LangMessages.PortalJarsSection_specify_which_jars_the_plugin_package_requires);
 		getSection().getTextClient().getParent().layout(true);
 		getTablePart().setEditable(true);
 	}
@@ -138,7 +139,7 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 		gd.grabExcessVerticalSpace = true;
 		section.setLayout(FormLayoutFactory.createClearGridLayout(false, 1));
 		section.setLayoutData(gd);
-		section.setText("Portal Dependency Jars");
+		section.setText(LangMessages.PortalJarsSection_portal_dependency_jars);
 		createSectionToolbar(section, toolkit);
 		initialize();
 	}
@@ -306,7 +307,7 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 		{
             ExternalFileSelectionDialog dialog =
                 new ExternalFileSelectionDialog( getPage().getShell(), new PortalJarViewerFilter(
-                    portalDir.toFile(), new String[] { "WEB-INF", "WEB-INF/lib" }, existingJars ), true, false );
+                    portalDir.toFile(), new String[] { "WEB-INF", "WEB-INF/lib" }, existingJars ), true, false ); //$NON-NLS-1$ //$NON-NLS-2$
             dialog.setInput(portalDir.toFile());
 	        dialog.create();
 	        if (dialog.open() == Window.OK) {
@@ -325,8 +326,8 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
         else
         {
             MessageDialog.openInformation(
-                getPage().getShell(), "Liferay Plugin Package Editor",
-                "Can not determine portal directory. Make sure Liferay portal is set as the targeted runtime." );
+                getPage().getShell(), LangMessages.PortalJarsSection_liferay_plugin_package_editor,
+                LangMessages.PortalJarsSection_can_not_determine_portal_direcory_make_sure_liferay_portal_is_set_as_the_targeted_runtime );
         }
 	}
 	
@@ -371,13 +372,13 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 	}
 
 	private void makeActions() {
-		fAddAction = new Action("Add...") {
+		fAddAction = new Action(LangMessages.PortalJarsSection_add) {
 			public void run() {
 				handleAdd();
 			}
 		};
 		
-		fRemoveAction = new Action("Remove") {
+		fRemoveAction = new Action(LangMessages.PortalJarsSection_remove) {
 			public void run() {
 				handleRemove();
 			}

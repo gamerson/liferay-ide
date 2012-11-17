@@ -18,6 +18,8 @@ package com.liferay.ide.ui.snippets.wizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IEditorPart;
 
+import com.liferay.ide.ui.snippets.LangMessages;
+
 /**
  * @author Greg Amerson
  */
@@ -29,7 +31,7 @@ public abstract class AbstractModelWizard extends Wizard
     public AbstractModelWizard( IEditorPart fEditorPart )
     {
         super();
-        setWindowTitle( "Model" );
+        setWindowTitle( LangMessages.AbstractModelWizard_model );
         editorPart = fEditorPart;
     }
 

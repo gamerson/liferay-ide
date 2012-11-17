@@ -15,6 +15,7 @@ import com.liferay.ide.core.model.IModelChangedEvent;
 import com.liferay.ide.core.model.IModelChangedListener;
 import com.liferay.ide.portlet.core.IPluginPackageModel;
 import com.liferay.ide.portlet.core.PluginPackageModel;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.ui.form.DefaultContentProvider;
 import com.liferay.ide.ui.form.FormLayoutFactory;
 import com.liferay.ide.ui.form.IDEFormPage;
@@ -85,7 +86,7 @@ public class PortalTldsSection extends TableSection implements IModelChangedList
 		String[] portalTlds = model.getPortalDependencyTlds();
 		IPath portalDir = ((PluginPackageEditor)getPage().getEditor()).getPortalDir();
 		for (String portalTld : portalTlds) {
-			File tldFile = new File(portalDir.append("WEB-INF/tld").toFile(), portalTld.trim());
+			File tldFile = new File(portalDir.append("WEB-INF/tld").toFile(), portalTld.trim()); //$NON-NLS-1$
 			if (tldFile.isFile() && tldFile.exists()) {
 				fTlds.add(tldFile);
 			}
@@ -103,15 +104,15 @@ public class PortalTldsSection extends TableSection implements IModelChangedList
 				File file = (File)element;
 				return file.getName();
 			}
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		
 	}
 
 	public PortalTldsSection(IDEFormPage page, Composite parent, String[] labels) {
 		super(page, parent, Section.DESCRIPTION, labels);
-		getSection().setText("Portal Dependency Tlds");
-		getSection().setDescription("Specify which TLDs the plugin package requires.");
+		getSection().setText(LangMessages.PortalTldsSection_portal_dependency_tlds);
+		getSection().setDescription(LangMessages.PortalTldsSection_specify_which_tlds_the_plugin_package_requires);
 		getSection().getTextClient().getParent().layout(true);
 		getTablePart().setEditable(true);
 	}
@@ -132,7 +133,7 @@ public class PortalTldsSection extends TableSection implements IModelChangedList
 		gd.grabExcessVerticalSpace = true;
 		section.setLayout(FormLayoutFactory.createClearGridLayout(false, 1));
 		section.setLayoutData(gd);
-		section.setText("Portal Dependency Tlds");
+		section.setText(LangMessages.PortalTldsSection_portal_dependency_tlds);
 		createSectionToolbar(section, toolkit);
 		initialize();
 	}
@@ -300,7 +301,7 @@ public class PortalTldsSection extends TableSection implements IModelChangedList
 		{
 		    ExternalFileSelectionDialog dialog =
                 new ExternalFileSelectionDialog(getPage().getShell(), new PortalTldViewerFilter(
-                    portalDir.toFile(), new String[] { "WEB-INF", "WEB-INF/tld" }, existingTlds), true, false);
+                    portalDir.toFile(), new String[] { "WEB-INF", "WEB-INF/tld" }, existingTlds), true, false); //$NON-NLS-1$ //$NON-NLS-2$
             dialog.setInput(portalDir.toFile());
             dialog.create();
             if (dialog.open() == Window.OK) {
@@ -319,8 +320,8 @@ public class PortalTldsSection extends TableSection implements IModelChangedList
         else
         {
             MessageDialog.openInformation(
-                getPage().getShell(), "Liferay Plugin Package Editor",
-                "Can not determine portal directory. Make sure Liferay portal is set as the targeted runtime." );
+                getPage().getShell(), LangMessages.PortalTldsSection_liferay_plugin_package_editor,
+                LangMessages.PortalTldsSection_can_not_determine_portal_directory_make_sure_liferay_portal_is_set_as_the_targeted_runtime );
         }
 	}
 	
@@ -355,13 +356,13 @@ public class PortalTldsSection extends TableSection implements IModelChangedList
 	}
 
 	private void makeActions() {
-		fAddAction = new Action("Add...") {
+		fAddAction = new Action(LangMessages.PortalTldsSection_add) {
 			public void run() {
 				handleAdd();
 			}
 		};
 		
-		fRemoveAction = new Action("Remove") {
+		fRemoveAction = new Action(LangMessages.PortalTldsSection_remove) {
 			public void run() {
 				handleRemove();
 			}

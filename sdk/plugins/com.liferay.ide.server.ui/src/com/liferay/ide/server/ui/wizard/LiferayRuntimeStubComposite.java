@@ -16,6 +16,7 @@ import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.core.ILiferayRuntimeStub;
 import com.liferay.ide.server.core.LiferayRuntimeStubDelegate;
 import com.liferay.ide.server.core.LiferayServerCorePlugin;
+import com.liferay.ide.server.ui.LangMessages;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -90,7 +91,7 @@ public class LiferayRuntimeStubComposite extends Composite
         setLayoutData( new GridData( GridData.FILL_BOTH ) );
 
         Label lblName = new Label( this, SWT.NONE );
-        lblName.setText( "Name" );
+        lblName.setText( LangMessages.LiferayRuntimeStubComposite_name );
 
         new Label( this, SWT.NONE );
 
@@ -109,7 +110,7 @@ public class LiferayRuntimeStubComposite extends Composite
         createSpacer();
 
         Label lblRuntimeStubType = new Label( this, SWT.NONE );
-        lblRuntimeStubType.setText( "Liferay bundle type" );
+        lblRuntimeStubType.setText( LangMessages.LiferayRuntimeStubComposite_liferay_bundle_type );
 
         createSpacer();
 
@@ -119,7 +120,7 @@ public class LiferayRuntimeStubComposite extends Composite
         createSpacer();
 
         final Label lblInstall = new Label( this, SWT.WRAP );
-        lblInstall.setText( "Liferay bundle directory" );
+        lblInstall.setText( LangMessages.LiferayRuntimeStubComposite_liferay_bundle_directory );
 
         new Label( this, SWT.NONE );
 
@@ -163,14 +164,14 @@ public class LiferayRuntimeStubComposite extends Composite
 
         Button btnBrowse = new Button( this, SWT.NONE );
         btnBrowse.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false, 1, 1 ) );
-        btnBrowse.setText( "Browse..." );
+        btnBrowse.setText( LangMessages.LiferayRuntimeStubComposite_browse );
         btnBrowse.addSelectionListener( new SelectionAdapter()
         {
 
             public void widgetSelected( SelectionEvent se )
             {
                 DirectoryDialog dialog = new DirectoryDialog( LiferayRuntimeStubComposite.this.getShell() );
-                dialog.setMessage( "Select runtime stub directory." );
+                dialog.setMessage( LangMessages.LiferayRuntimeStubComposite_select_runtime_stub_directory );
                 dialog.setFilterPath( textInstallDir.getText() );
                 String selectedDirectory = dialog.open();
 
@@ -244,7 +245,7 @@ public class LiferayRuntimeStubComposite extends Composite
         }
         else
         {
-            textName.setText( "" );
+            textName.setText( "" ); //$NON-NLS-1$
         }
 
         if( runtimeWC.getLocation() != null )
@@ -253,7 +254,7 @@ public class LiferayRuntimeStubComposite extends Composite
         }
         else
         {
-            textInstallDir.setText( "" );
+            textInstallDir.setText( "" ); //$NON-NLS-1$
         }
 
         updateStubs();
@@ -314,7 +315,7 @@ public class LiferayRuntimeStubComposite extends Composite
     {
         if( liferayRuntime == null )
         {
-            wizard.setMessage( "", IMessageProvider.ERROR );
+            wizard.setMessage( "", IMessageProvider.ERROR ); //$NON-NLS-1$
             return Status.OK_STATUS;
         }
 

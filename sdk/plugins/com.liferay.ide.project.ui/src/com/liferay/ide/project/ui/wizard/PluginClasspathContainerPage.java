@@ -11,6 +11,7 @@ package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.PluginClasspathContainerInitializer;
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.ui.LangMessages;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -42,9 +43,9 @@ public class PluginClasspathContainerPage extends NewElementWizardPage
 
     public PluginClasspathContainerPage()
     {
-        super( "PluginClasspathContainerPage" );
-        setTitle( "Liferay Plugin API Library" );
-        setDescription( "This container dynamically manages the classpath entries for Liferay plugin projects." );
+        super( "PluginClasspathContainerPage" ); //$NON-NLS-1$
+        setTitle( LangMessages.PluginClasspathContainerPage_liferay_plugin_api_library );
+        setDescription( LangMessages.PluginClasspathContainerPage_this_container_dynamically_manages_this_classpath_entries_for_liferay_plugin_projects );
     }
 
     public void createControl( Composite parent )
@@ -53,9 +54,9 @@ public class PluginClasspathContainerPage extends NewElementWizardPage
         composite.setLayout( new GridLayout( 2, false ) );
 
         final Label label = new Label( composite, SWT.NONE );
-        label.setText( "Liferay Plugin Type:" );
+        label.setText( LangMessages.PluginClasspathContainerPage_liferay_plugin_type );
 
-        final String[] types = new String[] { "portlet", "hook", "ext" };
+        final String[] types = new String[] { "portlet", "hook", "ext" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         this.typeCombo = new Combo( composite, SWT.READ_ONLY );
         this.typeCombo.setItems( types );
@@ -108,14 +109,14 @@ public class PluginClasspathContainerPage extends NewElementWizardPage
         }
         else
         {
-            setErrorMessage( "Selected project is not a Liferay project. Please convert it to Liferay project first." );
+            setErrorMessage( LangMessages.PluginClasspathContainerPage_selected_project_is_not_a_liferay_project_please_convert_it_to_liferay_project_first );
             return false;
         }
     }
 
     public IClasspathEntry getSelection()
     {
-        IPath path = new Path( PluginClasspathContainerInitializer.ID + "/" );
+        IPath path = new Path( PluginClasspathContainerInitializer.ID + "/" ); //$NON-NLS-1$
 
         final int index = this.typeCombo.getSelectionIndex();
 

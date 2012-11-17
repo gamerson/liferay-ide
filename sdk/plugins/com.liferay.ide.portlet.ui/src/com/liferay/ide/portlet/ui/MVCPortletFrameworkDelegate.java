@@ -47,10 +47,10 @@ public class MVCPortletFrameworkDelegate extends AbstractPortletFrameworkDelegat
 
     public Composite createNewProjectOptionsComposite( Composite parent )
     {
-        Group group = SWTUtil.createGroup( parent, "Additional Options", 1 );
+        Group group = SWTUtil.createGroup( parent, LangMessages.MVCPortletFrameworkDelegate_additional_options, 1 );
 
         final Button createCustomClassButton = new Button( group, SWT.CHECK );
-        createCustomClassButton.setText( "Create custom portlet class" );
+        createCustomClassButton.setText( LangMessages.MVCPortletFrameworkDelegate_create_custom_portlet_class );
         createCustomClassButton.addSelectionListener
         ( 
             new SelectionAdapter()

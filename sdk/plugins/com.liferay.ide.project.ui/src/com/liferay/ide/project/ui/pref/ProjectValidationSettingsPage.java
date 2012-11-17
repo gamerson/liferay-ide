@@ -16,6 +16,7 @@
 package com.liferay.ide.project.ui.pref;
 
 import com.liferay.ide.project.core.ProjectCorePlugin;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.ui.pref.AbstractValidationSettingsPage;
 
@@ -46,14 +47,14 @@ public class ProjectValidationSettingsPage extends AbstractValidationSettingsPag
     public static final Map<Integer, Integer> ERROR_MAP = new HashMap<Integer, Integer>();
 
     public static final int[] ERROR_VALUES = new int[] { 1, 2, -1 };
-    public static final String[] ERRORS = new String[] { "Error", "Warning", "Ignore" };
+    public static final String[] ERRORS = new String[] { LangMessages.ProjectValidationSettingsPage_error, LangMessages.ProjectValidationSettingsPage_warning, LangMessages.ProjectValidationSettingsPage_ignore };
 
     public static final String PORTLET_UI_PROPERTY_PAGE_PROJECT_VALIDATION_ID =
-        "com.liferay.ide.portlet.ui.propertyPage.project.validation";
+        "com.liferay.ide.portlet.ui.propertyPage.project.validation"; //$NON-NLS-1$
 
-    public static final String SETTINGS_SECTION_NAME = "PortletValidationSeverities";
+    public static final String SETTINGS_SECTION_NAME = "PortletValidationSeverities"; //$NON-NLS-1$
 
-    public static final String VALIDATION_ID = "com.liferay.ide.portlet.ui.validation";
+    public static final String VALIDATION_ID = "com.liferay.ide.portlet.ui.validation"; //$NON-NLS-1$
 
     static
     {
@@ -130,7 +131,7 @@ public class ProjectValidationSettingsPage extends AbstractValidationSettingsPag
         gd.horizontalIndent = 0;
 
         Label description = new Label( body, SWT.NONE );
-        description.setText( "Select the severity level for the following validation problems:" );
+        description.setText( LangMessages.ProjectValidationSettingsPage_select_the_severity_level_for_the_following_validation_problems );
         description.setFont( pageContent.getFont() );
         description.setLayoutData( gd );
 

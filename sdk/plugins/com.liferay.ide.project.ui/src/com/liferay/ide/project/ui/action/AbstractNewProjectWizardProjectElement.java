@@ -16,6 +16,7 @@
 package com.liferay.ide.project.ui.action;
 
 import com.liferay.ide.core.AbstractConfigurationElement;
+import com.liferay.ide.project.ui.LangMessages;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -49,7 +50,7 @@ public abstract class AbstractNewProjectWizardProjectElement extends AbstractCon
         @Override
         public String getValue() throws InvalidRegistryObjectException
         {
-            return "Import description";
+            return LangMessages.AbstractNewProjectWizardProjectElement_import_description;
         }
     }
 

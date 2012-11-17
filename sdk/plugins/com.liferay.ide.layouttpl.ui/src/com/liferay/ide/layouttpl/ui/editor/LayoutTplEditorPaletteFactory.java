@@ -15,6 +15,7 @@
 
 package com.liferay.ide.layouttpl.ui.editor;
 
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
 import com.liferay.ide.layouttpl.ui.model.PortletLayout;
@@ -46,7 +47,7 @@ public class LayoutTplEditorPaletteFactory
     /** Create the "Tools" group. */
     private static PaletteContainer createToolsGroup( PaletteRoot palette )
     {
-        PaletteToolbar toolbar = new PaletteToolbar( "Tools" );
+        PaletteToolbar toolbar = new PaletteToolbar( LangMessages.LayoutTplEditorPaletteFactory_tools );
 
         // Add a selection tool to the group
         ToolEntry tool = new PanningSelectionToolEntry();
@@ -70,91 +71,91 @@ public class LayoutTplEditorPaletteFactory
         PaletteRoot palette = new PaletteRoot();
         palette.add( createToolsGroup( palette ) );
 
-        PaletteDrawer group = new PaletteDrawer( "Layout" );
+        PaletteDrawer group = new PaletteDrawer( LangMessages.LayoutTplEditorPaletteFactory_layout );
 
         ImageDescriptor desc =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/column_16x16.png" ) );
+                "/icons/palette/column_16x16.png" ) ); //$NON-NLS-1$
         ImageDescriptor large =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/column_32x32.png" ) );
+                "/icons/palette/column_32x32.png" ) ); //$NON-NLS-1$
 
         CombinedTemplateCreationEntry component =
             new CombinedTemplateCreationEntry(
-                "Column", "Create a single column", PortletColumn.class, new SimpleFactory( PortletColumn.class ),
+                LangMessages.LayoutTplEditorPaletteFactory_column, LangMessages.LayoutTplEditorPaletteFactory_column_a_single_column, PortletColumn.class, new SimpleFactory( PortletColumn.class ),
                 desc, large );
 
         group.add( component );
 
         desc =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/row_16x16.png" ) );
+                "/icons/palette/row_16x16.png" ) ); //$NON-NLS-1$
         large =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/row_32x32.png" ) );
+                "/icons/palette/row_32x32.png" ) ); //$NON-NLS-1$
 
         CombinedTemplateCreationEntry component2 =
-            new CombinedTemplateCreationEntry( "Row", "Create a single row", PortletLayout.class, new SimpleFactory(
+            new CombinedTemplateCreationEntry( LangMessages.LayoutTplEditorPaletteFactory_row, LangMessages.LayoutTplEditorPaletteFactory_create_a_single_row, PortletLayout.class, new SimpleFactory(
                 PortletLayout.class ), desc, large );
 
         group.add( component2 );
 
         palette.add( group );
 
-        PaletteDrawer group2 = new PaletteDrawer( "Templates" );
+        PaletteDrawer group2 = new PaletteDrawer( LangMessages.LayoutTplEditorPaletteFactory_templates );
 
         desc =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/2column_50_50_16x16.png" ) );
+                "/icons/palette/2column_50_50_16x16.png" ) ); //$NON-NLS-1$
         large =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/2column_50_50_32x32.png" ) );
+                "/icons/palette/2column_50_50_32x32.png" ) ); //$NON-NLS-1$
 
         CombinedTemplateCreationEntry component3 =
             new CombinedTemplateCreationEntry(
-                "2 Columns (50/50)", "Create a 2 column row both at 50% width.",
+                "2 Columns (50/50)", LangMessages.LayoutTplEditorPaletteFactory_create_a_2_column_row_both_at_50percent_width, //$NON-NLS-1$
                 new PortletLayoutTemplate( 2, 50, 50 ), new PortletLayoutFactory( 2, 50, 50 ), desc, large );
 
         group2.add( component3 );
 
         desc =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/2column_30_70_16x16.png" ) );
+                "/icons/palette/2column_30_70_16x16.png" ) ); //$NON-NLS-1$
         large =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/2column_30_70_32x32.png" ) );
+                "/icons/palette/2column_30_70_32x32.png" ) ); //$NON-NLS-1$
 
         CombinedTemplateCreationEntry component4 =
             new CombinedTemplateCreationEntry(
-                "2 Columns (30/70)", "Create a 2 column row with 30% and 70% for column widths.",
+                "2 Columns (30/70)", LangMessages.LayoutTplEditorPaletteFactory_create_a_2_column_row_with_30percent_and_70percent_column_widths, //$NON-NLS-1$
                 new PortletLayoutTemplate( 2, 30, 70 ), new PortletLayoutFactory( 2, 30, 70 ), desc, large );
 
         group2.add( component4 );
 
         desc =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/2column_70_30_16x16.png" ) );
+                "/icons/palette/2column_70_30_16x16.png" ) ); //$NON-NLS-1$
         large =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/2column_70_30_32x32.png" ) );
+                "/icons/palette/2column_70_30_32x32.png" ) ); //$NON-NLS-1$
 
         CombinedTemplateCreationEntry component5 =
             new CombinedTemplateCreationEntry(
-                "2 Columns (70/30)", "Create a 2 column row with 70% and 30% for column widths.",
+                "2 Columns (70/30)", LangMessages.LayoutTplEditorPaletteFactory_create_a_2_column_row_with_70percent_and_30percent_for_column_widths, //$NON-NLS-1$
                 new PortletLayoutTemplate( 2, 70, 30 ), new PortletLayoutFactory( 2, 70, 30 ), desc, large );
 
         group2.add( component5 );
 
         desc =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/3column_16x16.png" ) );
+                "/icons/palette/3column_16x16.png" ) ); //$NON-NLS-1$
         large =
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/palette/3column_32x32.png" ) );
+                "/icons/palette/3column_32x32.png" ) ); //$NON-NLS-1$
 
         CombinedTemplateCreationEntry component6 =
             new CombinedTemplateCreationEntry(
-                "3 Columns", "Create a 3 column row with all widths at 33%.",
+                "3 Columns", LangMessages.LayoutTplEditorPaletteFactory_create_a_3_column_row_with_all_widths_at_33percent, //$NON-NLS-1$
                 new PortletLayoutTemplate( 3, 33, 33, 33 ), new PortletLayoutFactory( 3, 33, 33, 33 ), desc, large );
 
         group2.add( component6 );

@@ -18,6 +18,7 @@ package com.liferay.ide.portlet.ui.wizard;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
 import com.liferay.ide.portlet.core.operation.NewPortletClassDataModelProvider;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.portlet.ui.template.PortletTemplateContextTypeIds;
 import com.liferay.ide.project.core.IPluginWizardFragmentProperties;
@@ -55,7 +56,7 @@ public class NewPortletWizard extends NewWebArtifactWizard
     implements IPluginWizardFragment, INewPortletClassDataModelProperties
 {
 
-    public static final String ID = "com.liferay.ide.portlet.ui.wizard.portlet";
+    public static final String ID = "com.liferay.ide.portlet.ui.wizard.portlet"; //$NON-NLS-1$
 
     protected boolean fragment;
     protected IWizardPage hostPage;
@@ -83,17 +84,17 @@ public class NewPortletWizard extends NewWebArtifactWizard
     protected void doAddPages()
     {
         addPage( new NewPortletClassWizardPage(
-            getDataModel(), "pageOne", "Create a portlet class.", getDefaultPageTitle(), this.fragment,
+            getDataModel(), "pageOne", LangMessages.NewPortletWizard_create_a_portlet_class, getDefaultPageTitle(), this.fragment, //$NON-NLS-1$
             ( initialProject != null ) ) );
         addPage( new NewPortletOptionsWizardPage(
-            getDataModel(), "pageTwo", "Specify portlet deployment descriptor details.", getDefaultPageTitle(),
+            getDataModel(), "pageTwo", LangMessages.NewPortletWizard_specify_portlet_deployment_descriptor_details, getDefaultPageTitle(), //$NON-NLS-1$
             this.fragment ) );
         addPage( new NewLiferayPortletWizardPage(
-            getDataModel(), "pageThree", "Specify Liferay portlet deployment descriptor details.",
+            getDataModel(), "pageThree", LangMessages.NewPortletWizard_specify_liferay_portlet_deployment_descriptor_details, //$NON-NLS-1$
             getDefaultPageTitle(), this.fragment ) );
         addPage( new NewPortletClassOptionsWizardPage(
-            getDataModel(), "pageFour",
-            "Specify modifiers, interfaces, and method stubs to generate in Portlet class.", getDefaultPageTitle(),
+            getDataModel(), "pageFour", //$NON-NLS-1$
+            LangMessages.NewPortletWizard_specify_modifiers_interfaces_and_method_stubs_to_generate_in_portlet_class, getDefaultPageTitle(),
             this.fragment ) );
     }
 
@@ -104,7 +105,7 @@ public class NewPortletWizard extends NewWebArtifactWizard
 
     protected String getDefaultPageTitle()
     {
-        return "Create Liferay Portlet";
+        return LangMessages.NewPortletWizard_create_liferay_portlet;
     }
 
     @Override
@@ -120,12 +121,12 @@ public class NewPortletWizard extends NewWebArtifactWizard
 
     protected ImageDescriptor getImage()
     {
-        return PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/wizban/portlet_wiz.png" );
+        return PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/wizban/portlet_wiz.png" ); //$NON-NLS-1$
     }
 
     public String getTitle()
     {
-        return "New Liferay Portlet";
+        return LangMessages.NewPortletWizard_new_liferay_portlet;
     }
 
     @Override
@@ -164,7 +165,7 @@ public class NewPortletWizard extends NewWebArtifactWizard
                 {
                     for( IContainer container : webappRoot.getUnderlyingFolders() )
                     {
-                        IFile viewFile = container.getFile( new Path( jspsFolder + "/view.jsp" ) );
+                        IFile viewFile = container.getFile( new Path( jspsFolder + "/view.jsp" ) ); //$NON-NLS-1$
 
                         if( viewFile.exists() )
                         {

@@ -15,6 +15,7 @@
 
 package com.liferay.ide.portlet.jsf.ui.wizard;
 
+import com.liferay.ide.portlet.jsf.ui.LangMessages;
 import com.liferay.ide.portlet.ui.wizard.NewPortletOptionsWizardPage;
 
 import org.eclipse.swt.widgets.Composite;
@@ -40,8 +41,8 @@ public class NewJSFPortletOptionsWizardPage extends NewPortletOptionsWizardPage
     {
         super.createJSPsField( parent );
 
-        createJspsButton.setText( "Create xhtml files" );
-        jspLabel.setText( "XHTML folder:" );
+        createJspsButton.setText( LangMessages.NewJSFPortletOptionsWizardPage_create_xhtml_files );
+        jspLabel.setText( LangMessages.NewJSFPortletOptionsWizardPage_xhtml_folder );
     }
 
     @Override

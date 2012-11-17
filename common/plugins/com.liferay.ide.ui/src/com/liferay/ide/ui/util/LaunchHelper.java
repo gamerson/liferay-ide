@@ -38,6 +38,8 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 
+import com.liferay.ide.ui.LangMessages;
+
 /**
  * @author Greg Amerson
  */
@@ -109,7 +111,7 @@ public abstract class LaunchHelper implements IDebugEventSetListener
 
             for( int i = 0; i < launchArgs.length; i++ )
             {
-                sb.append( "\"" + launchArgs[i] + "\" " );
+                sb.append( "\"" + launchArgs[i] + "\" " ); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             launchConfig.setAttribute( IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, sb.toString() );
@@ -185,7 +187,7 @@ public abstract class LaunchHelper implements IDebugEventSetListener
 
         if( config == null )
         {
-            throw new IllegalArgumentException( "Launch config cannot be null" );
+            throw new IllegalArgumentException( LangMessages.LaunchHelper_launch_config_cannot_be_null );
         }
 
         if( isLaunchSync() )

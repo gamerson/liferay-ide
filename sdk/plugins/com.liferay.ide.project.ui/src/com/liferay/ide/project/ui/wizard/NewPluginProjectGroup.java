@@ -16,6 +16,7 @@
 package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.ui.util.SWTUtil;
 
 import org.eclipse.swt.SWT;
@@ -36,7 +37,6 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelSynchHelper;
-import org.eclipse.wst.common.frameworks.internal.ui.InternalCommonWorkbenchMessages;
 import org.eclipse.wst.common.frameworks.internal.ui.NewProjectGroup;
 
 /**
@@ -107,7 +107,7 @@ public class NewPluginProjectGroup extends NewProjectGroup implements IPluginPro
         Label displayLabel = new Label( displayGroup, SWT.NONE );
 
         displayLabel.setFont( font );
-        displayLabel.setText( "Display name:" );
+        displayLabel.setText( LangMessages.NewPluginProjectGroup_display_name );
 
         // new project name entry field
         displayNameField = new Text( displayGroup, SWT.BORDER );
@@ -137,7 +137,7 @@ public class NewPluginProjectGroup extends NewProjectGroup implements IPluginPro
     {
         Group projectLocationGroup = new Group( parent, SWT.NONE );
 
-        projectLocationGroup.setText( "Location" );
+        projectLocationGroup.setText( "Location" ); //$NON-NLS-1$
 
         projectLocationGroup.setLayout( new GridLayout( 3, false ) );
 
@@ -147,16 +147,16 @@ public class NewPluginProjectGroup extends NewProjectGroup implements IPluginPro
         projectLocationGroup.setLayoutData( gd );
 
         sdkLocationButton =
-            SWTUtil.createRadioButton( projectLocationGroup, "Create new project in SDK", null, true, 3 );
+            SWTUtil.createRadioButton( projectLocationGroup, "Create new project in SDK", null, true, 3 ); //$NON-NLS-1$
 
         this.synchHelper.synchRadio( sdkLocationButton, LIFERAY_USE_SDK_LOCATION, null );
 
         workspaceLocationButton =
-            SWTUtil.createRadioButton( projectLocationGroup, "Create new project in workspace", null, true, 3 );
+            SWTUtil.createRadioButton( projectLocationGroup, "Create new project in workspace", null, true, 3 ); //$NON-NLS-1$
         this.nestedSynchHelper.synchRadio( workspaceLocationButton, USE_DEFAULT_LOCATION, null );
 
         customLocationButton =
-            SWTUtil.createRadioButton( projectLocationGroup, "Create new project in:", null, true, 3 );
+            SWTUtil.createRadioButton( projectLocationGroup, "Create new project in:", null, true, 3 ); //$NON-NLS-1$
         this.synchHelper.synchRadio( customLocationButton, LIFERAY_USE_CUSTOM_LOCATION, null );
 
         createUserSpecifiedProjectLocationField( projectLocationGroup );
@@ -179,7 +179,7 @@ public class NewPluginProjectGroup extends NewProjectGroup implements IPluginPro
         Label projectLabel = new Label( projectGroup, SWT.NONE );
 
         projectLabel.setFont( font );
-        projectLabel.setText( "Project name:" );
+        projectLabel.setText( "Project name:" ); //$NON-NLS-1$
 
         // new project name entry field
         projectNameField = new Text( projectGroup, SWT.BORDER );
@@ -201,7 +201,7 @@ public class NewPluginProjectGroup extends NewProjectGroup implements IPluginPro
         final Label locationLabel = new Label( projectGroup, SWT.NONE );
 
         locationLabel.setFont( font );
-        locationLabel.setText( InternalCommonWorkbenchMessages.WizardNewProjectCreationPage_locationLabel );
+        locationLabel.setText( "" ); //$NON-NLS-1$
 
         // project location entry field
         locationPathField = new Text( projectGroup, SWT.BORDER );
@@ -217,7 +217,7 @@ public class NewPluginProjectGroup extends NewProjectGroup implements IPluginPro
         browseButton = new Button( projectGroup, SWT.PUSH );
 
         browseButton.setFont( font );
-        browseButton.setText( "Browse..." );
+        browseButton.setText( LangMessages.NewPluginProjectGroup_browse );
         browseButton.addSelectionListener( new SelectionAdapter()
         {
 

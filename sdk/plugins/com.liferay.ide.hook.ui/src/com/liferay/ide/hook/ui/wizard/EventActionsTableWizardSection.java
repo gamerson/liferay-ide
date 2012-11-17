@@ -17,6 +17,7 @@ package com.liferay.ide.hook.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.hook.ui.HookUI;
+import com.liferay.ide.hook.ui.LangMessages;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.ServerUtil;
 import com.liferay.ide.ui.dialog.FilteredTypesSelectionDialogEx;
@@ -91,7 +92,7 @@ public class EventActionsTableWizardSection extends StringArrayTableWizardSectio
 
             Composite buttonComposite = new Composite( parent, SWT.NONE );
 
-            String[] buttonLbls = buttonLabels[index].split( "," );
+            String[] buttonLbls = buttonLabels[index].split( "," ); //$NON-NLS-1$
 
             GridLayout gl = new GridLayout( buttonLbls.length, true );
             gl.marginWidth = 0;
@@ -123,11 +124,11 @@ public class EventActionsTableWizardSection extends StringArrayTableWizardSectio
             { // select event
                 handleSelectEventButton( text );
             }
-            else if( index == 1 && "Select...".equals( label ) )
+            else if( index == 1 && LangMessages.EventActionsTableWizardSection_select.equals( label ) )
             {
                 handleSelectClassButton( text );
             }
-            else if( index == 1 && "New...".equals( label ) )
+            else if( index == 1 && LangMessages.EventActionsTableWizardSection_new.equals( label ) )
             {
                 handleNewClassButton( text );
             }
@@ -181,8 +182,8 @@ public class EventActionsTableWizardSection extends StringArrayTableWizardSectio
 
             FilteredTypesSelectionDialog dialog =
                 new FilteredTypesSelectionDialogEx( getShell(), false, null, scope, IJavaSearchConstants.CLASS );
-            dialog.setTitle( "Event selection" );
-            dialog.setMessage( "Select an event action:" );
+            dialog.setTitle( LangMessages.EventActionsTableWizardSection_event_selection );
+            dialog.setMessage( LangMessages.EventActionsTableWizardSection_select_an_event_action );
 
             if( dialog.open() == Window.OK )
             {
@@ -235,9 +236,9 @@ public class EventActionsTableWizardSection extends StringArrayTableWizardSectio
             // }
             // }
 
-            PropertiesFilteredDialog dialog = new PropertiesFilteredDialog( getParentShell(), ".*events.*" );
-            dialog.setTitle( "Property selection" );
-            dialog.setMessage( "Please select a property:" );
+            PropertiesFilteredDialog dialog = new PropertiesFilteredDialog( getParentShell(), ".*events.*" ); //$NON-NLS-1$
+            dialog.setTitle( LangMessages.EventActionsTableWizardSection_property_selection );
+            dialog.setMessage( LangMessages.EventActionsTableWizardSection_please_select_a_property );
             dialog.setInput( hookProperties );
 
             if( dialog.open() == Window.OK )
@@ -264,7 +265,7 @@ public class EventActionsTableWizardSection extends StringArrayTableWizardSectio
 
         super( parent, componentLabel, dialogTitle, addButtonLabel, editButtonLabel, removeButtonLabel, columnTitles, fieldLabels, labelProviderImage, model, propertyName );
 
-        this.buttonLabels = new String[] { "Select...", "Select...,New..." };
+        this.buttonLabels = new String[] { LangMessages.EventActionsTableWizardSection_select, LangMessages.EventActionsTableWizardSection_select_new };
     }
 
     public void setProject( IProject project )

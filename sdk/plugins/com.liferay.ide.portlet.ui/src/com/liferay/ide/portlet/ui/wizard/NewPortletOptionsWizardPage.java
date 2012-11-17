@@ -17,6 +17,7 @@ package com.liferay.ide.portlet.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.ui.util.SWTUtil;
 import com.liferay.ide.ui.wizard.LiferayDataModelWizardPage;
@@ -79,7 +80,7 @@ public class NewPortletOptionsWizardPage extends LiferayDataModelWizardPage
         createJspsButton.setLayoutData( new GridData( SWT.FILL, SWT.DEFAULT, true, false, 2, 1 ) );
         synchHelper.synchCheckbox( createJspsButton, INewPortletClassDataModelProperties.CREATE_JSPS, null );
 
-        jspLabel = SWTUtil.createLabel( parent, "JSP folder:", 1 );
+        jspLabel = SWTUtil.createLabel( parent, LangMessages.NewPortletOptionsWizardPage_jsp_folder, 1 );
 
         jspFolder = SWTUtil.createText( parent, 1 );
         ( (GridData) jspFolder.getLayoutData() ).widthHint = 150;
@@ -98,7 +99,7 @@ public class NewPortletOptionsWizardPage extends LiferayDataModelWizardPage
 
     protected void createLiferayPortletModesGroup( Composite composite )
     {
-        Group group = SWTUtil.createGroup( composite, "Liferay Portlet Modes", 6 );
+        Group group = SWTUtil.createGroup( composite, LangMessages.NewPortletOptionsWizardPage_liferay_portlet_modes, 6 );
 
         GridData gd = new GridData( GridData.FILL_HORIZONTAL );
         gd.horizontalSpan = 3;
@@ -132,24 +133,24 @@ public class NewPortletOptionsWizardPage extends LiferayDataModelWizardPage
 
     protected void createPortletInfoGroup( Composite composite )
     {
-        Group group = SWTUtil.createGroup( composite, "Portlet Info", 2 );
+        Group group = SWTUtil.createGroup( composite, LangMessages.NewPortletOptionsWizardPage_portlet_info, 2 );
 
         GridData gd = new GridData( GridData.FILL_HORIZONTAL );
         gd.horizontalSpan = 3;
 
         group.setLayoutData( gd );
 
-        SWTUtil.createLabel( group, "Name:", 1 );
+        SWTUtil.createLabel( group, LangMessages.NewPortletOptionsWizardPage_name, 1 );
 
         this.portletName = SWTUtil.createText( group, 1 );
         this.synchHelper.synchText( portletName, PORTLET_NAME, null );
 
-        SWTUtil.createLabel( group, "Display name:", 1 );
+        SWTUtil.createLabel( group, LangMessages.NewPortletOptionsWizardPage_display_name, 1 );
 
         this.displayName = SWTUtil.createText( group, 1 );
         this.synchHelper.synchText( displayName, DISPLAY_NAME, null );
 
-        SWTUtil.createLabel( group, "Title:", 1 );
+        SWTUtil.createLabel( group, LangMessages.NewPortletOptionsWizardPage_title, 1 );
 
         this.title = SWTUtil.createText( group, 1 );
         this.synchHelper.synchText( title, TITLE, null );
@@ -168,7 +169,7 @@ public class NewPortletOptionsWizardPage extends LiferayDataModelWizardPage
 
     protected void createPortletModesGroup( Composite composite )
     {
-        Group group = SWTUtil.createGroup( composite, "Portlet Modes", 3 );
+        Group group = SWTUtil.createGroup( composite, LangMessages.NewPortletOptionsWizardPage_portlet_modes, 3 );
 
         GridLayout gl = (GridLayout) group.getLayout();
         gl.makeColumnsEqualWidth = true;
@@ -197,12 +198,12 @@ public class NewPortletOptionsWizardPage extends LiferayDataModelWizardPage
     protected void createResourceBundleField( Composite parent )
     {
         createResourceBundleFileButton = new Button( parent, SWT.CHECK );
-        createResourceBundleFileButton.setText( "Create resource bundle file" );
+        createResourceBundleFileButton.setText( LangMessages.NewPortletOptionsWizardPage_create_resource_bundle_file );
         createResourceBundleFileButton.setLayoutData( new GridData( SWT.FILL, SWT.DEFAULT, true, false, 2, 1 ) );
         synchHelper.synchCheckbox(
             createResourceBundleFileButton, INewPortletClassDataModelProperties.CREATE_RESOURCE_BUNDLE_FILE, null );
 
-        final Label resourceBundleFileLabel = SWTUtil.createLabel( parent, "Resource bundle file path:", 1 );
+        final Label resourceBundleFileLabel = SWTUtil.createLabel( parent, LangMessages.NewPortletOptionsWizardPage_resource_bundle_file_path, 1 );
 
         resourceBundleFilePath = SWTUtil.createText( parent, 1 );
         ( (GridData) resourceBundleFilePath.getLayoutData() ).widthHint = 150;
@@ -223,7 +224,7 @@ public class NewPortletOptionsWizardPage extends LiferayDataModelWizardPage
 
     protected void createResourcesGroup( Composite composite )
     {
-        Group group = SWTUtil.createGroup( composite, "Resources", 2 );
+        Group group = SWTUtil.createGroup( composite, LangMessages.NewPortletOptionsWizardPage_resources, 2 );
 
         GridData gd = new GridData( GridData.FILL_HORIZONTAL );
         gd.horizontalSpan = 3;

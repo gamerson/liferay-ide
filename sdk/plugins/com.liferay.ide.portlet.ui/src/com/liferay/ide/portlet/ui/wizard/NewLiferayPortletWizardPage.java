@@ -17,6 +17,7 @@ package com.liferay.ide.portlet.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.ui.util.SWTUtil;
@@ -82,46 +83,46 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 
     protected void createLiferayDisplayGroup( Composite composite )
     {
-        Group group = SWTUtil.createGroup( composite, "Liferay Display", 2 );
+        Group group = SWTUtil.createGroup( composite, LangMessages.NewLiferayPortletWizardPage_liferay_display, 2 );
 
         GridData gd = new GridData( GridData.FILL_HORIZONTAL );
 
         group.setLayoutData( gd );
 
-        SWTUtil.createLabel( group, "Display Category:", 1 );
+        SWTUtil.createLabel( group, LangMessages.NewLiferayPortletWizardPage_display_category, 1 );
 
         this.category = new Combo( group, SWT.DROP_DOWN );
         this.category.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
         this.synchHelper.synchCombo( category, CATEGORY, null );
 
-        SWTUtil.createLabel(group, "", 1);
+        SWTUtil.createLabel(group, "", 1); //$NON-NLS-1$
 
-        this.addToControlPanelButton = SWTUtil.createCheckButton(group, "Add to Control Panel", null, false, 1);
+        this.addToControlPanelButton = SWTUtil.createCheckButton(group, LangMessages.NewLiferayPortletWizardPage_add_to_control_panel, null, false, 1);
         this.synchHelper.synchCheckbox(this.addToControlPanelButton, ADD_TO_CONTROL_PANEL, null);
 
-        final Label entryCategoryLabel = SWTUtil.createLabel(group, "Entry Catagory:", 1);
+        final Label entryCategoryLabel = SWTUtil.createLabel(group, LangMessages.NewLiferayPortletWizardPage_entry_catagory, 1);
         
         this.entryCategory = new Combo(group, SWT.DROP_DOWN);
         this.entryCategory.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         this.synchHelper.synchCombo(entryCategory, ENTRY_CATEGORY, null);
         
-        final Label entryWeightLabel = SWTUtil.createLabel(group, "Entry Weight:", 1);
+        final Label entryWeightLabel = SWTUtil.createLabel(group, LangMessages.NewLiferayPortletWizardPage_entry_weight, 1);
         
         this.entryWeight = SWTUtil.createText(group, 1);
         this.synchHelper.synchText(entryWeight, ENTRY_WEIGHT, null);
         
-        SWTUtil.createLabel(group, "", 1);
+        SWTUtil.createLabel(group, "", 1); //$NON-NLS-1$
         
-        this.createEntryClassButton = SWTUtil.createCheckButton(group, "Create Entry Class", null, false, 1);
+        this.createEntryClassButton = SWTUtil.createCheckButton(group, LangMessages.NewLiferayPortletWizardPage_create_entry_class, null, false, 1);
         this.createEntryClassButton.setToolTipText
         ( 
-            "The control-panel-entry-class value must be a class that implements\n " +
-            "com.liferay.portlet.ControlPanelEntry and is called by the Control Panel to\n " +
-            "decide whether the portlet should be shown to a specific user in a specific\n context." 
+            LangMessages.NewLiferayPortletWizardPage_the_control_panel_entry +
+            LangMessages.NewLiferayPortletWizardPage_com_liferay_portlet_controlpanelentry_and_is_called_by_the_control_panel_to +
+            LangMessages.NewLiferayPortletWizardPage_decide_whether_the_portlet_should_be_shown_to_a_specific_user_in_a_specific_context 
         );
         this.synchHelper.synchCheckbox(createEntryClassButton, CREATE_ENTRY_CLASS, null);
         
-        final Label entryClassLabel = SWTUtil.createLabel(group, "Entry Class:", 1);
+        final Label entryClassLabel = SWTUtil.createLabel(group, LangMessages.NewLiferayPortletWizardPage_entry_class, 1);
         
         this.entryClassWrapper = SWTUtil.createText(group, 1);
         this.synchHelper.synchText(entryClassWrapper, ENTRY_CLASS_NAME, null);
@@ -165,7 +166,7 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
 
     protected void createLiferayPortletInfoGroup( Composite composite )
     {
-        Group group = SWTUtil.createGroup( composite, "Liferay Portlet Info", 3 );
+        Group group = SWTUtil.createGroup( composite, LangMessages.NewLiferayPortletWizardPage_liferay_portlet_info, 3 );
 
         GridData gd = new GridData( GridData.FILL_HORIZONTAL );
         gd.horizontalSpan = 3;
@@ -179,18 +180,18 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
         // this.synchHelper.synchText(name, LIFERAY_PORTLET_NAME, null);
         // SWTUtil.createLabel(group, "", 1);
 
-        SWTUtil.createLabel( group, SWT.RIGHT, "Icon:", 1 );
+        SWTUtil.createLabel( group, SWT.RIGHT, LangMessages.NewLiferayPortletWizardPage_icon, 1 );
 
         this.iconFile = SWTUtil.createText( group, 1 );
         this.synchHelper.synchText( iconFile, ICON_FILE, null );
 
         if( this.fragment )
         {
-            SWTUtil.createLabel( group, "", 1 );
+            SWTUtil.createLabel( group, "", 1 ); //$NON-NLS-1$
         }
         else
         {
-            Button iconFileBrowse = SWTUtil.createPushButton( group, "Browse...", null );
+            Button iconFileBrowse = SWTUtil.createPushButton( group, LangMessages.NewLiferayPortletWizardPage_browse, null );
             iconFileBrowse.addSelectionListener
             ( 
                 new SelectionAdapter()
@@ -199,30 +200,30 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
                     public void widgetSelected( SelectionEvent e )
                     {
                         handleFileBrowseButton(
-                            NewLiferayPortletWizardPage.this.iconFile, "Icon Selection", "Choose an icon file: " );
+                            NewLiferayPortletWizardPage.this.iconFile, LangMessages.NewLiferayPortletWizardPage_icon_selection, LangMessages.NewLiferayPortletWizardPage_choose_an_icon_file );
                     }
     
                 }
             );
         }
 
-        SWTUtil.createLabel( group, "", 1 );
+        SWTUtil.createLabel( group, "", 1 ); //$NON-NLS-1$
 
-        this.allowMultiInstanceButton = SWTUtil.createCheckButton( group, "Allow multiple instances", null, true, 2 );
+        this.allowMultiInstanceButton = SWTUtil.createCheckButton( group, LangMessages.NewLiferayPortletWizardPage_allow_multiple_instances, null, true, 2 );
         this.synchHelper.synchCheckbox( this.allowMultiInstanceButton, ALLOW_MULTIPLE, null );
 
-        SWTUtil.createLabel( group, SWT.RIGHT, "CSS:", 1 );
+        SWTUtil.createLabel( group, SWT.RIGHT, LangMessages.NewLiferayPortletWizardPage_css, 1 );
 
         this.cssFile = SWTUtil.createText( group, 1 );
         this.synchHelper.synchText( cssFile, CSS_FILE, null );
 
         if( this.fragment )
         {
-            SWTUtil.createLabel( group, "", 1 );
+            SWTUtil.createLabel( group, "", 1 ); //$NON-NLS-1$
         }
         else
         {
-            Button cssFileBrowse = SWTUtil.createPushButton( group, "Browse...", null );
+            Button cssFileBrowse = SWTUtil.createPushButton( group, LangMessages.NewLiferayPortletWizardPage_browse, null );
             cssFileBrowse.addSelectionListener
             ( 
                 new SelectionAdapter()
@@ -231,25 +232,25 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
                     public void widgetSelected( SelectionEvent e )
                     {
                         handleFileBrowseButton(
-                            NewLiferayPortletWizardPage.this.cssFile, "CSS Selection", "Choose a css file: " );
+                            NewLiferayPortletWizardPage.this.cssFile, LangMessages.NewLiferayPortletWizardPage_css_selection, LangMessages.NewLiferayPortletWizardPage_choose_a_css_file );
                     }
     
                 }
             );
         }
 
-        SWTUtil.createLabel( group, SWT.RIGHT, "JavaScript:", 1 );
+        SWTUtil.createLabel( group, SWT.RIGHT, LangMessages.NewLiferayPortletWizardPage_javascript, 1 );
 
         this.javascriptFile = SWTUtil.createText( group, 1 );
         this.synchHelper.synchText( javascriptFile, JAVASCRIPT_FILE, null );
 
         if( this.fragment )
         {
-            SWTUtil.createLabel( group, "", 1 );
+            SWTUtil.createLabel( group, "", 1 ); //$NON-NLS-1$
         }
         else
         {
-            Button javascriptFileBrowse = SWTUtil.createPushButton( group, "Browse...", null );
+            Button javascriptFileBrowse = SWTUtil.createPushButton( group, LangMessages.NewLiferayPortletWizardPage_browse, null );
             javascriptFileBrowse.addSelectionListener
             (
                 new SelectionAdapter()
@@ -258,20 +259,20 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
                     public void widgetSelected( SelectionEvent e )
                     {
                         handleFileBrowseButton(
-                            NewLiferayPortletWizardPage.this.javascriptFile, "JavaScript Selection",
-                            "Choose a javascript file: " );
+                            NewLiferayPortletWizardPage.this.javascriptFile, LangMessages.NewLiferayPortletWizardPage_javascript_selection,
+                            LangMessages.NewLiferayPortletWizardPage_choose_a_javascript_file );
                     }
     
                 }
             );
         }
 
-        SWTUtil.createLabel( group, SWT.RIGHT, "CSS class wrapper:", 1 );
+        SWTUtil.createLabel( group, SWT.RIGHT, LangMessages.NewLiferayPortletWizardPage_css_class_wrapper, 1 );
 
         this.cssClassWrapper = SWTUtil.createText( group, 1 );
         this.synchHelper.synchText( cssClassWrapper, CSS_CLASS_WRAPPER, null );
 
-        SWTUtil.createLabel( group, "", 1 );
+        SWTUtil.createLabel( group, "", 1 ); //$NON-NLS-1$
 
         this.synchHelper.getDataModel().addListener
         ( 
@@ -339,7 +340,7 @@ public class NewLiferayPortletWizardPage extends LiferayDataModelWizardPage
                     return Status.OK_STATUS;
                 }
 
-                return PortletUIPlugin.createErrorStatus( "Choose a valid project file" );
+                return PortletUIPlugin.createErrorStatus( LangMessages.NewLiferayPortletWizardPage_choose_a_valid_project_file );
             }
         };
     }

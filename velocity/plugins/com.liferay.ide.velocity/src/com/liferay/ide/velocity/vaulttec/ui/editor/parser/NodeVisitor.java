@@ -156,7 +156,7 @@ public class NodeVisitor implements ParserVisitor
                     name = aNode.jjtGetChild(0).literal();
                 } else
                 {
-                    name = "";
+                    name = ""; //$NON-NLS-1$
                 }
                 id = name;
                 break;
@@ -166,14 +166,14 @@ public class NodeVisitor implements ParserVisitor
                     name = aNode.jjtGetChild(2).literal();
                 } else
                 {
-                    name = "";
+                    name = ""; //$NON-NLS-1$
                 }
                 if ((aNode.jjtGetNumChildren() > 0) && aNode.jjtGetChild(0) instanceof ASTReference)
                 {
                     id = aNode.jjtGetChild(0).literal();
                 } else
                 {
-                    id = "";
+                    id = ""; //$NON-NLS-1$
                 }
                 break;
             case Directive.TYPE_INCLUDE:
@@ -183,22 +183,22 @@ public class NodeVisitor implements ParserVisitor
                     name = aNode.jjtGetChild(0).literal();
                 } else
                 {
-                    name = "";
+                    name = ""; //$NON-NLS-1$
                 }
-                id = "";
+                id = ""; //$NON-NLS-1$
                 break;
             case Directive.TYPE_MACRO_CALL:
                 // Check if an already defined macro is referenced
                 if (VelocityEditorEnvironment.getParser().isVelocimacro(name, fTemplate.getName()))
                 {
-                    id = "";
+                    id = ""; //$NON-NLS-1$
                 } else
                 {
                     id = null;
                 }
                 break;
             case Directive.TYPE_USER_DIRECTIVE:
-                id = "";
+                id = ""; //$NON-NLS-1$
                 break;
         }
         // If valid directive then visit embedded nodes too
@@ -306,7 +306,7 @@ public class NodeVisitor implements ParserVisitor
                 break;
             }
         }
-        Directive directive = new Directive(Directive.TYPE_IF, aNode.jjtGetChild(0).literal(), "", (ITreeNode) fCurrentBlock, aNode.getFirstToken().beginLine, endLine);
+        Directive directive = new Directive(Directive.TYPE_IF, aNode.jjtGetChild(0).literal(), "", (ITreeNode) fCurrentBlock, aNode.getFirstToken().beginLine, endLine); //$NON-NLS-1$
         return visitBlockDirective(aNode, aData, directive, false);
     }
 
@@ -316,7 +316,7 @@ public class NodeVisitor implements ParserVisitor
      */
     public Object visit(ASTElseStatement aNode, Object aData)
     {
-        Directive directive = new Directive(Directive.TYPE_ELSE, null, "", (ITreeNode) fCurrentBlock, aNode.getFirstToken().beginLine, aNode.getLastToken().next.endLine);
+        Directive directive = new Directive(Directive.TYPE_ELSE, null, "", (ITreeNode) fCurrentBlock, aNode.getFirstToken().beginLine, aNode.getLastToken().next.endLine); //$NON-NLS-1$
         return visitBlockDirective(aNode, aData, directive, true);
     }
 
@@ -326,7 +326,7 @@ public class NodeVisitor implements ParserVisitor
      */
     public Object visit(ASTElseIfStatement aNode, Object aData)
     {
-        Directive directive = new Directive(Directive.TYPE_ELSEIF, aNode.jjtGetChild(0).literal(), "", (ITreeNode) fCurrentBlock, aNode.getFirstToken().beginLine, aNode.getLastToken().endLine);
+        Directive directive = new Directive(Directive.TYPE_ELSEIF, aNode.jjtGetChild(0).literal(), "", (ITreeNode) fCurrentBlock, aNode.getFirstToken().beginLine, aNode.getLastToken().endLine); //$NON-NLS-1$
         return visitBlockDirective(aNode, aData, directive, true);
     }
 

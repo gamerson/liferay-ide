@@ -18,6 +18,7 @@ package com.liferay.ide.hook.ui.wizard;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.hook.core.operation.INewHookDataModelProperties;
 import com.liferay.ide.hook.ui.HookUI;
+import com.liferay.ide.hook.ui.LangMessages;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.ServerUtil;
 import com.liferay.ide.ui.util.SWTUtil;
@@ -69,10 +70,10 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
 
     public NewCustomJSPsHookWizardPage( IDataModel dataModel, String pageName )
     {
-        super( dataModel, pageName, "Create Custom JSPs", HookUI.imageDescriptorFromPlugin(
-            HookUI.PLUGIN_ID, "/icons/wizban/hook_wiz.png" ) );
+        super( dataModel, pageName, LangMessages.NewCustomJSPsHookWizardPage_create_custom_jsps, HookUI.imageDescriptorFromPlugin(
+            HookUI.PLUGIN_ID, "/icons/wizban/hook_wiz.png" ) ); //$NON-NLS-1$
 
-        setDescription( "Create customs JSP folder and select JSPs to override." );
+        setDescription( LangMessages.NewCustomJSPsHookWizardPage_create_customs_jsp_folder_and_select_jsps_to_override );
     }
 
     protected void createCustomJSPsGroup( Composite parent )
@@ -82,8 +83,8 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
 
         jspItemsSection =
             new CustomJSPsTableWizardSection(
-                composite, "JSP files to override", "JSP File Path", "Add...", "Edit...", "Remove...",
-                new String[] { "Add" }, new String[] { "JSP File Path" }, null, getDataModel(), CUSTOM_JSPS_ITEMS );
+                composite, LangMessages.NewCustomJSPsHookWizardPage_jsp_files_to_override, LangMessages.NewCustomJSPsHookWizardPage_jsp_file_path, LangMessages.NewCustomJSPsHookWizardPage_add, LangMessages.NewCustomJSPsHookWizardPage_edit, LangMessages.NewCustomJSPsHookWizardPage_remove,
+                new String[] { LangMessages.NewCustomJSPsHookWizardPage_add2 }, new String[] { LangMessages.NewCustomJSPsHookWizardPage_jsp_file_path }, null, getDataModel(), CUSTOM_JSPS_ITEMS );
 
         GridData gd = new GridData( SWT.FILL, SWT.CENTER, true, true, 1, 1 );
         gd.heightHint = 175;
@@ -125,7 +126,7 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
         composite.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 3, 1 ) );
 
         disableJSPFolderValidation = new Button( composite, SWT.CHECK );
-        disableJSPFolderValidation.setText( "Disable JSP syntax validation for custom JSP folder (recommended)." );
+        disableJSPFolderValidation.setText( LangMessages.NewCustomJSPsHookWizardPage_disable_jsp_syntax_validation_for_custom_jsp_folder_recommended );
         this.synchHelper.synchCheckbox( disableJSPFolderValidation, DISABLE_CUSTOM_JSP_FOLDER_VALIDATION, null );
     }
 
@@ -139,12 +140,12 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
         composite.setLayout( gl );
         composite.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 3, 1 ) );
 
-        SWTUtil.createLabel( composite, SWT.LEAD, "Custom JSP folder:", 1 );
+        SWTUtil.createLabel( composite, SWT.LEAD, LangMessages.NewCustomJSPsHookWizardPage_custom_jsp_folder, 1 );
 
         customJSPsFolder = SWTUtil.createText( composite, 1 );
         this.synchHelper.synchText( customJSPsFolder, CUSTOM_JSPS_FOLDER, null );
 
-        Button iconFileBrowse = SWTUtil.createPushButton( composite, "Browse...", null );
+        Button iconFileBrowse = SWTUtil.createPushButton( composite, LangMessages.NewCustomJSPsHookWizardPage_browse, null );
         iconFileBrowse.addSelectionListener( new SelectionAdapter()
         {
 
@@ -191,7 +192,7 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
                     return Status.OK_STATUS;
                 }
 
-                return HookUI.createErrorStatus( "Choose a valid folder for custom jsps." );
+                return HookUI.createErrorStatus( LangMessages.NewCustomJSPsHookWizardPage_choose_a_valid_folder_for_custom_jsp );
             }
         };
     }
@@ -257,7 +258,7 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
 
                     if( folder.equals( CoreUtil.getDocroot( getDataModel().getStringProperty( PROJECT_NAME ) ) ) )
                     {
-                        folder = folder.getFolder( "custom_jsps" );
+                        folder = folder.getFolder( "custom_jsps" ); //$NON-NLS-1$
                     }
 
                     text.setText( folder.getFullPath().toPortableString() );

@@ -17,6 +17,7 @@ package com.liferay.ide.layouttpl.ui.wizard;
 
 import com.liferay.ide.layouttpl.core.operation.INewLayoutTplDataModelProperties;
 import com.liferay.ide.layouttpl.core.operation.NewLayoutTplDataModelProvider;
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 import com.liferay.ide.project.ui.wizard.ValidProjectChecker;
 
@@ -45,11 +46,11 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
 public class NewLayoutTplWizard extends DataModelWizard implements INewWizard, INewLayoutTplDataModelProperties
 {
 
-    public static final String ID = "com.liferay.ide.layouttpl.ui.wizard.layouttemplate";
+    public static final String ID = "com.liferay.ide.layouttpl.ui.wizard.layouttemplate"; //$NON-NLS-1$
 
-    public static final String LAYOUTTPL_LAYOUT_PAGE = "layoutTplLayoutPage";
+    public static final String LAYOUTTPL_LAYOUT_PAGE = "layoutTplLayoutPage"; //$NON-NLS-1$
 
-    public static final String LAYOUTTPL_PAGE = "layoutTplPage";
+    public static final String LAYOUTTPL_PAGE = "layoutTplPage"; //$NON-NLS-1$
 
     public static final String[] WIZARD_PAGES = new String[] { LAYOUTTPL_PAGE, LAYOUTTPL_LAYOUT_PAGE };
 
@@ -66,7 +67,7 @@ public class NewLayoutTplWizard extends DataModelWizard implements INewWizard, I
     {
         super( dataModel );
 
-        this.setWindowTitle( "New Layout Template" );
+        this.setWindowTitle( LangMessages.NewLayoutTplWizard_new_layout_template );
         this.setDefaultPageImageDescriptor( getDefaultImageDescriptor() );
     }
 
@@ -89,7 +90,7 @@ public class NewLayoutTplWizard extends DataModelWizard implements INewWizard, I
 
     protected ImageDescriptor getDefaultImageDescriptor()
     {
-        return LayoutTplUI.imageDescriptorFromPlugin( LayoutTplUI.PLUGIN_ID, "/icons/wizban/layout_template_wiz.png" );
+        return LayoutTplUI.imageDescriptorFromPlugin( LayoutTplUI.PLUGIN_ID, "/icons/wizban/layout_template_wiz.png" ); //$NON-NLS-1$
     }
 
     @Override

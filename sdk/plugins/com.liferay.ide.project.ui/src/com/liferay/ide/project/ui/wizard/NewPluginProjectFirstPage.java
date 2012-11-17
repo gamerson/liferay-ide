@@ -18,6 +18,7 @@ package com.liferay.ide.project.ui.wizard;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.facet.IPluginFacetConstants;
 import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.sdk.SDKManager;
 import com.liferay.ide.sdk.pref.SDKsPreferencePage;
@@ -69,8 +70,8 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         super( model, pageName );
 
         this.setImageDescriptor( wizard.getDefaultPageImageDescriptor() );
-        this.setTitle( "Liferay Plugin Project" );
-        this.setDescription( "Create a new plugin project for Liferay Portal." );
+        this.setTitle( LangMessages.NewPluginProjectFirstPage_liferay_plugin_project );
+        this.setDescription( LangMessages.NewPluginProjectFirstPage_create_a_new_plugin_project_for_liferay_portal );
 
         primaryProjectFacet = IPluginFacetConstants.LIFERAY_PORTLET_PROJECT_FACET;
 
@@ -131,7 +132,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         gd.verticalIndent = 8;
 
         Link link = new Link( parent, SWT.UNDERLINE_LINK );
-        link.setText( "<a href=\"#\">Create a new project from existing sources...</a>" );
+        link.setText( LangMessages.NewPluginProjectFirstPage_a_href_create_a_new_project_from_existing_source );
         link.setLayoutData( gd );
         link.addSelectionListener( new SelectionAdapter()
         {
@@ -151,7 +152,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
     protected void createLiferayRuntimeGroup( Composite parent )
     {
         Group group = new Group( parent, SWT.NONE );
-        group.setText( "Configuration" );
+        group.setText( LangMessages.NewPluginProjectFirstPage_configuration );
         group.setLayoutData( gdhfill() );
         group.setLayout( new GridLayout( 3, false ) );
 
@@ -190,12 +191,12 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         // configureSDKsLink
         // });
 
-        SWTUtil.createLabel( group, "Liferay Portal Runtime", 1 );
+        SWTUtil.createLabel( group, LangMessages.NewPluginProjectFirstPage_liferay_portal_runtime, 1 );
         serverTargetCombo = new Combo( group, SWT.BORDER | SWT.READ_ONLY );
         serverTargetCombo.setLayoutData( gdhfill() );
 
         Button newServerTargetButton = new Button( group, SWT.PUSH );
-        newServerTargetButton.setText( "New ..." );
+        newServerTargetButton.setText( LangMessages.NewPluginProjectFirstPage_new );
         newServerTargetButton.addSelectionListener( new SelectionAdapter()
         {
             public void widgetSelected( SelectionEvent e )
@@ -203,7 +204,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
                 final DataModelPropertyDescriptor[] preAdditionDescriptors =
                     model.getValidPropertyDescriptors( FACET_RUNTIME );
 
-                boolean isOK = ServerUIUtil.showNewRuntimeWizard( getShell(), getModuleTypeID(), null, "com.liferay." );
+                boolean isOK = ServerUIUtil.showNewRuntimeWizard( getShell(), getModuleTypeID(), null, "com.liferay." ); //$NON-NLS-1$
 
                 if( isOK )
                 {
@@ -239,12 +240,12 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
             serverTargetCombo.select( 0 );
         }
 
-        SWTUtil.createLabel( group, "", 1 );
+        SWTUtil.createLabel( group, "", 1 ); //$NON-NLS-1$
 
         Link facetsLink = new Link( group, SWT.UNDERLINE_LINK );
         GridData gd = new GridData( SWT.DEFAULT, SWT.DEFAULT, false, false, 1, 1 );
         facetsLink.setLayoutData( gd );
-        facetsLink.setText( "<a href=\"#\">Advanced project configuration...</a>" );
+        facetsLink.setText( LangMessages.NewPluginProjectFirstPage_a_href_advanced_project_configuration );
         facetsLink.addSelectionListener( new SelectionAdapter()
         {
             @Override
@@ -254,47 +255,47 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
                     getShell(), (IFacetedProjectWorkingCopy) getModel().getProperty( FACETED_PROJECT_WORKING_COPY ) );
             }
         } );
-        SWTUtil.createLabel( group, "", 1 );
+        SWTUtil.createLabel( group, "", 1 ); //$NON-NLS-1$
     }
 
     protected void createPluginTypeGroup( Composite parent )
     {
-        Group group = SWTUtil.createGroup( parent, "Plugin Type", 2 );
+        Group group = SWTUtil.createGroup( parent, LangMessages.NewPluginProjectFirstPage_plugin_type, 2 );
         group.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 2, 1 ) );
 
         portletType =
             SWTUtil.createRadioButton(
-                group, "Portlet", getPluginImageDescriptor( "/icons/e16/portlet.png" ).createImage(), false, 1 );
-        Label l = SWTUtil.createLabel( group, SWT.WRAP, "Create a web application using the portlet framework.", 1 );
+                group, LangMessages.NewPluginProjectFirstPage_portlet, getPluginImageDescriptor( "/icons/e16/portlet.png" ).createImage(), false, 1 ); //$NON-NLS-2$
+        Label l = SWTUtil.createLabel( group, SWT.WRAP, LangMessages.NewPluginProjectFirstPage_create_a_web_application_using_the_portlet_framework, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( portletType, PLUGIN_TYPE_PORTLET, null );
 
         hookType =
             SWTUtil.createRadioButton(
-                group, "Hook", getPluginImageDescriptor( "/icons/e16/hook.png" ).createImage(), false, 1 );
+                group, LangMessages.NewPluginProjectFirstPage_hook, getPluginImageDescriptor( "/icons/e16/hook.png" ).createImage(), false, 1 ); //$NON-NLS-2$
         l =
-            SWTUtil.createLabel( group, SWT.WRAP, "Override or extend Liferay's default behavior and functionality.", 1 );
+            SWTUtil.createLabel( group, SWT.WRAP, LangMessages.NewPluginProjectFirstPage_override_or_extend_liferays_default_behavior_and_functionality, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( hookType, PLUGIN_TYPE_HOOK, null );
 
         extType =
             SWTUtil.createRadioButton(
-                group, "Ext", getPluginImageDescriptor( "/icons/e16/ext.png" ).createImage(), false, 1 );
-        l = SWTUtil.createLabel( group, SWT.WRAP, "Light-weight extension environment for Liferay as a plugin.", 1 );
+                group, LangMessages.NewPluginProjectFirstPage_ext, getPluginImageDescriptor( "/icons/e16/ext.png" ).createImage(), false, 1 ); //$NON-NLS-2$
+        l = SWTUtil.createLabel( group, SWT.WRAP, LangMessages.NewPluginProjectFirstPage_lightweight_extension_environment_for_liferay_as_a_plugin, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( extType, PLUGIN_TYPE_EXT, null );
 
         layoutTemplateType =
             SWTUtil.createRadioButton(
-                group, "Layout", getPluginImageDescriptor( "/icons/e16/layout.png" ).createImage(), false, 1 );
-        l = SWTUtil.createLabel( group, SWT.WRAP, "Create a new custom layout for Liferay pages.", 1 );
+                group, LangMessages.NewPluginProjectFirstPage_layout, getPluginImageDescriptor( "/icons/e16/layout.png" ).createImage(), false, 1 ); //$NON-NLS-2$
+        l = SWTUtil.createLabel( group, SWT.WRAP, LangMessages.NewPluginProjectFirstPage_create_a_new_custom_layout_for_liferay_pages, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( layoutTemplateType, PLUGIN_TYPE_LAYOUTTPL, null );
 
         themeType =
             SWTUtil.createRadioButton(
-                group, "Theme", getPluginImageDescriptor( "/icons/e16/theme.png" ).createImage(), false, 1 );
-        l = SWTUtil.createLabel( group, SWT.WRAP, "Build a custom look and feel for the portal.", 1 );
+                group, LangMessages.NewPluginProjectFirstPage_theme, getPluginImageDescriptor( "/icons/e16/theme.png" ).createImage(), false, 1 ); //$NON-NLS-2$
+        l = SWTUtil.createLabel( group, SWT.WRAP, LangMessages.NewPluginProjectFirstPage_build_a_custom_look_and_feel_for_the_portal, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( themeType, PLUGIN_TYPE_THEME, null );
     }
@@ -310,7 +311,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
 
     protected void createSDKGroup( Composite parent )
     {
-        Group group = createDefaultGroup( parent, "Liferay Plugin SDK", 2 );
+        Group group = createDefaultGroup( parent, LangMessages.NewPluginProjectFirstPage_liferay_plugin_sdk, 2 );
         ( (GridData) group.getLayoutData() ).grabExcessVerticalSpace = false;
 
         // Composite labelContainer = new Composite(group, SWT.NONE);
@@ -342,7 +343,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         sdkCombo.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 1, 1 ) );
 
         Link configureSDKsLink = new Link( group, SWT.UNDERLINE_LINK );
-        configureSDKsLink.setText( "<a href=\"#\">Configure SDKs</a>" );
+        configureSDKsLink.setText( LangMessages.NewPluginProjectFirstPage_a_href_configure_sdks );
         configureSDKsLink.setLayoutData( new GridData( SWT.RIGHT, SWT.TOP, false, false ) );
         configureSDKsLink.addSelectionListener( new SelectionAdapter()
         {
@@ -360,7 +361,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
     {
         Group group = new Group( parent, SWT.NONE );
         ( (GridData) group.getLayoutData() ).grabExcessVerticalSpace = false;
-        group.setText( "Liferay runtime" );
+        group.setText( LangMessages.NewPluginProjectFirstPage_liferay_runtime );
         group.setLayoutData( gdhfill() );
         group.setLayout( new GridLayout( 2, false ) );
 
@@ -368,7 +369,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         serverTargetCombo.setLayoutData( gdhfill() );
 
         Button newServerTargetButton = new Button( group, SWT.NONE );
-        newServerTargetButton.setText( "New ..." );
+        newServerTargetButton.setText( LangMessages.NewPluginProjectFirstPage_new );
         newServerTargetButton.addSelectionListener( new SelectionAdapter()
         {
             public void widgetSelected( SelectionEvent e )
@@ -376,7 +377,7 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
                 final DataModelPropertyDescriptor[] preAdditionDescriptors =
                     model.getValidPropertyDescriptors( FACET_RUNTIME );
 
-                boolean isOK = ServerUIUtil.showNewRuntimeWizard( getShell(), getModuleTypeID(), null, "com.liferay." );
+                boolean isOK = ServerUIUtil.showNewRuntimeWizard( getShell(), getModuleTypeID(), null, "com.liferay." ); //$NON-NLS-1$
 
                 if( isOK )
                 {

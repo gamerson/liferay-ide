@@ -17,6 +17,7 @@
 
 package com.liferay.ide.layouttpl.ui.cmd;
 
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.model.LayoutConstraint;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
 import com.liferay.ide.layouttpl.ui.model.PortletLayout;
@@ -42,7 +43,7 @@ public class PortletColumnChangeConstraintCommand extends Command
         this.currentParent = currentParent;
         this.newParent = newParent;
         this.layoutConstraint = constraint;
-        setLabel( "Portlet column changed" );
+        setLabel( LangMessages.PortletColumnChangeConstraintCommand_portlet_column_changed );
     }
 
     public boolean canExecute()
@@ -80,7 +81,7 @@ public class PortletColumnChangeConstraintCommand extends Command
 
     public void undo()
     {
-        System.out.println( "UNDO" );
+        System.out.println( LangMessages.PortletColumnChangeConstraintCommand_undo );
     }
 
 }

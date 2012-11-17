@@ -155,7 +155,7 @@ public abstract class AbstractResourceBundleActionHandler extends SapphireProper
                 public void run( final IProgressMonitor monitor ) throws InvocationTargetException,
                     InterruptedException
                 {
-                    monitor.beginTask( "", workUnit );
+                    monitor.beginTask( "", workUnit ); //$NON-NLS-1$
                     try
                     {
                         IJavaProject javaProject = JavaCore.create( project );

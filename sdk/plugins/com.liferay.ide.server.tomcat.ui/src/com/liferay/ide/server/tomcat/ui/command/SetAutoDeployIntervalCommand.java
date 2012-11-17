@@ -13,6 +13,7 @@
 package com.liferay.ide.server.tomcat.ui.command;
 
 import com.liferay.ide.server.tomcat.core.LiferayTomcatServer;
+import com.liferay.ide.server.tomcat.ui.LangMessages;
 
 import org.eclipse.jst.server.tomcat.core.internal.command.ServerCommand;
 
@@ -36,7 +37,7 @@ public class SetAutoDeployIntervalCommand extends ServerCommand
      */
     public SetAutoDeployIntervalCommand( LiferayTomcatServer server, String autoDeployInterval )
     {
-        super( server, "Set Auto Deploy Interval" );
+        super( server, LangMessages.SetAutoDeployIntervalCommand_set_auto_deploy_interval );
         this.autoDeployInterval = autoDeployInterval;
     }
 

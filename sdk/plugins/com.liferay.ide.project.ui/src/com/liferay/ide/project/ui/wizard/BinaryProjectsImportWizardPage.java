@@ -19,6 +19,7 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.BinaryProjectRecord;
 import com.liferay.ide.project.core.ISDKProjectsImportDataModelProperties;
 import com.liferay.ide.project.core.util.ProjectImportUtil;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -62,7 +63,7 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
 
     protected final class BinaryLabelProvider extends StyledCellLabelProvider
     {
-        private static final String GREY_COLOR = "already_exist_element_color";
+        private static final String GREY_COLOR = "already_exist_element_color"; //$NON-NLS-1$
         private final ColorRegistry COLOR_REGISTRY = JFaceResources.getColorRegistry();
         private final Styler GREYED_STYLER;
 
@@ -99,7 +100,7 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
                 // TODO:show warning that some project exists, similar to what we get when importing projects with
                 // standard import existing project into workspace
                 styledString = new StyledString( binaryProjectRecord.getBinaryName(), GREYED_STYLER );
-                styledString.append( " (" + binaryProjectRecord.getFilePath() + ") ", GREYED_STYLER );
+                styledString.append( " (" + binaryProjectRecord.getFilePath() + ") ", GREYED_STYLER ); //$NON-NLS-1$ //$NON-NLS-2$
             }
             else
             {
@@ -107,7 +108,7 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
                     new StyledString( binaryProjectRecord.getBinaryName(), StyledString.createColorRegistryStyler(
                         JFacePreferences.CONTENT_ASSIST_FOREGROUND_COLOR,
                         JFacePreferences.CONTENT_ASSIST_BACKGROUND_COLOR ) );
-                styledString.append( " (" + binaryProjectRecord.getFilePath() + ") ", GREYED_STYLER );
+                styledString.append( " (" + binaryProjectRecord.getFilePath() + ") ", GREYED_STYLER ); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             cell.setImage( getImage() );
@@ -124,19 +125,19 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
     {
         super( model, pageName );
 
-        setTitle( "Import Liferay Binary Plugins" );
-        setDescription( "Select binary plugins (wars) to import as new Liferay Plugin Projects" );
+        setTitle( LangMessages.BinaryProjectsImportWizardPage_import_liferay_binary_plugins );
+        setDescription( LangMessages.BinaryProjectsImportWizardPage_select_binary_plugins_wars_to_import_as_new_liferay_plugin_projects );
     }
 
     protected void createBinaryLocationField( Composite parent )
     {
         Label label = new Label( parent, SWT.NONE );
-        label.setText( "Select plugins root directory:" );
+        label.setText( LangMessages.BinaryProjectsImportWizardPage_select_plugins_root_directory );
         label.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_BEGINNING ) );
 
         binariesLocation = SWTUtil.createSingleText( parent, 1 );
 
-        Button browse = SWTUtil.createButton( parent, "Browse..." );
+        Button browse = SWTUtil.createButton( parent, LangMessages.BinaryProjectsImportWizardPage_browse );
         browse.addSelectionListener
         ( 
             new SelectionAdapter()
@@ -167,7 +168,7 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
         };
 
         new LiferaySDKField(
-            parent, getDataModel(), selectionAdapter, LIFERAY_SDK_NAME, this.synchHelper, "Select SDK to copy into:" );
+            parent, getDataModel(), selectionAdapter, LIFERAY_SDK_NAME, this.synchHelper, LangMessages.BinaryProjectsImportWizardPage_select_sdk_to_copy_into );
     }
 
     @Override
@@ -175,7 +176,7 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
     {
         super.createProjectsList( workArea );
 
-        this.labelProjectsList.setText( "Binary plugins:" );
+        this.labelProjectsList.setText( LangMessages.BinaryProjectsImportWizardPage_binary_plugins );
     }
 
     @Override
@@ -195,11 +196,11 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
         if( filterPath != null )
         {
             dd.setFilterPath( filterPath );
-            dd.setText( "Select root directory " + " - " + filterPath ); //$NON-NLS-1$
+            dd.setText( "Select root directory " + " - " + filterPath ); //$NON-NLS-1$ //$NON-NLS-2$
         }
         else
         {
-            dd.setText( "Select root directory" );
+            dd.setText( LangMessages.BinaryProjectsImportWizardPage_select_root_directory );
         }
 
         if( CoreUtil.isNullOrEmpty( binariesLocation.getText() ) )
@@ -334,7 +335,7 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
         String sdkLocationPath = sdkLocation.getText();
         if( sdkLocationPath != null && sdkLocationPath.equals( path ) )
         {
-            path = sdkLocationPath + "/dist";
+            path = sdkLocationPath + "/dist"; //$NON-NLS-1$
         }
 
         final File directory = new File( path );

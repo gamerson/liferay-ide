@@ -16,6 +16,7 @@
 package com.liferay.ide.hook.ui.wizard;
 
 import com.liferay.ide.hook.ui.HookUI;
+import com.liferay.ide.hook.ui.LangMessages;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.ServerUtil;
 import com.liferay.ide.ui.wizard.StringArrayTableWizardSection;
@@ -82,7 +83,7 @@ public class PropertyOverridesTableWizardSection extends StringArrayTableWizardS
             {
                 Composite buttonComposite = new Composite( parent, SWT.NONE );
 
-                String[] buttonLbls = buttonLabels[index].split( "," );
+                String[] buttonLbls = buttonLabels[index].split( "," ); //$NON-NLS-1$
 
                 GridLayout gl = new GridLayout( buttonLbls.length, true );
                 gl.marginWidth = 0;
@@ -136,8 +137,8 @@ public class PropertyOverridesTableWizardSection extends StringArrayTableWizardS
             }
 
             PropertiesFilteredDialog dialog = new PropertiesFilteredDialog( getParentShell() );
-            dialog.setTitle( "Property selection" );
-            dialog.setMessage( "Please select a property" );
+            dialog.setTitle( LangMessages.PropertyOverridesTableWizardSection_property_selection );
+            dialog.setMessage( LangMessages.PropertyOverridesTableWizardSection_please_select_a_property );
             dialog.setInput( hookProperties );
 
             if( dialog.open() == Window.OK )
@@ -162,7 +163,7 @@ public class PropertyOverridesTableWizardSection extends StringArrayTableWizardS
 
         super( parent, componentLabel, dialogTitle, addButtonLabel, editButtonLabel, removeButtonLabel, columnTitles, fieldLabels, labelProviderImage, model, propertyName );
 
-        this.buttonLabels = new String[] { "Select...", null };
+        this.buttonLabels = new String[] { LangMessages.PropertyOverridesTableWizardSection_select, null };
     }
 
     public void setProject( IProject project )

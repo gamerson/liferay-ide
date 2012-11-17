@@ -15,6 +15,7 @@
 
 package com.liferay.ide.project.ui.action;
 
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.sdk.pref.SDKsPreferencePage;
 
@@ -33,15 +34,15 @@ public class NewPluginsSDKAction extends Action
 
     public NewPluginsSDKAction( Shell shell )
     {
-        super( "New Liferay SDK", ImageDescriptor.createFromURL( ProjectUIPlugin.getDefault().getBundle().getEntry(
-            "/icons/n16/sdk_new.png" ) ) );
+        super( LangMessages.NewPluginsSDKAction_new_liferay_sdk, ImageDescriptor.createFromURL( ProjectUIPlugin.getDefault().getBundle().getEntry(
+            "/icons/n16/sdk_new.png" ) ) ); //$NON-NLS-1$
         this.shell = shell;
     }
 
     @Override
     public void run()
     {
-        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn( shell, SDKsPreferencePage.ID, null, "new" );
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn( shell, SDKsPreferencePage.ID, null, "new" ); //$NON-NLS-1$
 
         dialog.open();
     }

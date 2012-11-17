@@ -186,7 +186,7 @@ public class VelocityConfiguration extends SourceViewerConfiguration implements 
      */
     public String[] getDefaultPrefixes(ISourceViewer aSourceViewer, String aContentType)
     {
-        return new String[] { "##", "" };
+        return new String[] { "##", "" }; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     protected HTMLScanner getHTMLScanner()
@@ -316,7 +316,7 @@ public class VelocityConfiguration extends SourceViewerConfiguration implements 
             }
             prefixes.add(prefix.toString());
         }
-        prefixes.add("");
+        prefixes.add(""); //$NON-NLS-1$
         return (String[]) prefixes.toArray(new String[prefixes.size()]);
     }
 
@@ -373,7 +373,7 @@ public class VelocityConfiguration extends SourceViewerConfiguration implements 
           }
           return sb.toString();
         }
-        return "\t";
+        return "\t"; //$NON-NLS-1$
     }
     // public IPresentationReconciler getPresentationReconciler(ISourceViewer
     // sourceViewer)

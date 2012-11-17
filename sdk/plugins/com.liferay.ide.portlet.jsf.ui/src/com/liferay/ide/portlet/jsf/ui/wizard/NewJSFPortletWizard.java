@@ -20,6 +20,7 @@ import com.liferay.ide.portlet.jsf.core.operation.INewJSFPortletClassDataModelPr
 import com.liferay.ide.portlet.jsf.core.operation.NewJSFPortletClassDataModelProvider;
 import com.liferay.ide.portlet.jsf.ui.JSFPortletTemplateContextTypeIds;
 import com.liferay.ide.portlet.jsf.ui.JSFUIPlugin;
+import com.liferay.ide.portlet.jsf.ui.LangMessages;
 import com.liferay.ide.portlet.ui.wizard.NewLiferayPortletWizardPage;
 import com.liferay.ide.portlet.ui.wizard.NewPortletWizard;
 import com.liferay.ide.project.ui.wizard.ValidProjectChecker;
@@ -48,7 +49,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 public class NewJSFPortletWizard extends NewPortletWizard implements INewJSFPortletClassDataModelProperties
 {
 
-    public static final String ID = "com.liferay.ide.portlet.jsf.ui.wizard.portlet";
+    public static final String ID = "com.liferay.ide.portlet.jsf.ui.wizard.portlet"; //$NON-NLS-1$
 
     public NewJSFPortletWizard()
     {
@@ -63,25 +64,25 @@ public class NewJSFPortletWizard extends NewPortletWizard implements INewJSFPort
     @Override
     public String getTitle()
     {
-        return "New Liferay JSF Portlet";
+        return LangMessages.NewJSFPortletWizard_new_liferay_jsf_portlet;
     }
 
     @Override
     protected String getDefaultPageTitle()
     {
-        return "Create Liferay JSF Portlet";
+        return LangMessages.NewJSFPortletWizard_create_liferay_jsf_portlet;
     }
 
     @Override
     protected void doAddPages()
     {
         addPage( new NewJSFPortletClassWizardPage(
-            getDataModel(), "pageOne", "Create a JSF portlet.", getDefaultPageTitle(), fragment ) );
+            getDataModel(), "pageOne", LangMessages.NewJSFPortletWizard_create_a_jsf_portlet, getDefaultPageTitle(), fragment ) ); //$NON-NLS-1$
         addPage( new NewJSFPortletOptionsWizardPage(
-            getDataModel(), "pageTwo", "Specify JSF portlet deployment descriptor details.", getDefaultPageTitle(),
+            getDataModel(), "pageTwo", LangMessages.NewJSFPortletWizard_specify_jsf_portlet_deployment_descriptor_details, getDefaultPageTitle(), //$NON-NLS-1$
             fragment ) );
         addPage( new NewLiferayPortletWizardPage(
-            getDataModel(), "pageThree", "Specify Liferay portlet deployment descriptor details.",
+            getDataModel(), "pageThree", LangMessages.NewJSFPortletWizard_specify_liferay_portlet_deployment_descriptor_details, //$NON-NLS-1$
             getDefaultPageTitle(), fragment ) );
     }
 
@@ -89,7 +90,7 @@ public class NewJSFPortletWizard extends NewPortletWizard implements INewJSFPort
     protected ImageDescriptor getImage()
     {
         return ImageDescriptor.createFromURL( JSFUIPlugin.getDefault().getBundle().getEntry(
-            "/icons/wizban/liferay_faces_75x66.png" ) );
+            "/icons/wizban/liferay_faces_75x66.png" ) ); //$NON-NLS-1$
     }
 
     @Override
@@ -133,7 +134,7 @@ public class NewJSFPortletWizard extends NewPortletWizard implements INewJSFPort
                     {
                         if( container != null && container.exists() )
                         {
-                            final Path path = new Path( jspsFolder + "/portletViewMode.xhtml" );
+                            final Path path = new Path( jspsFolder + "/portletViewMode.xhtml" ); //$NON-NLS-1$
                             IFile viewFile = container.getFile( path );
 
                             if( viewFile.exists() )

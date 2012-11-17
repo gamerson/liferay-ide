@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
+import com.liferay.ide.velocity.ui.LangMessages;
+
 public class Main
 {
 
@@ -26,7 +28,7 @@ public class Main
     {
         Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setText("PRBrowser");
+        shell.setText(LangMessages.Main_prbrowser);
         shell.setLayout(new FillLayout());
         TabFolder t = new TabFolder(shell, SWT.NONE);
         TabItem i1 = new TabItem(t, SWT.NONE);
@@ -37,7 +39,7 @@ public class Main
 
             public void handleEvent(Event e)
             {
-                browser.setText("<html><body>hello " + cnt + "</body></html>");
+                browser.setText(LangMessages.Main_html_body_hello + cnt + LangMessages.Main_body_html);
                 cnt++;
             }
         });
@@ -54,7 +56,7 @@ public class Main
     {
         Display display = new Display();
         Shell shell = new Shell(display);
-        shell.setText("PRBrowser");
+        shell.setText(LangMessages.Main_prbrowser);
         Button b = new Button(shell, SWT.PUSH);
         b.setBounds(0, 0, 100, 50);
         final Button b2 = new Button(shell, SWT.TOGGLE);
@@ -65,7 +67,7 @@ public class Main
 
             public void handleEvent(Event e)
             {
-                browser.setText("<html><body>hello " + cnt + "</body></html>");
+                browser.setText(LangMessages.Main_html_body_hello + cnt + LangMessages.Main_body_html);
                 cnt++;
             }
         });
@@ -74,7 +76,7 @@ public class Main
             public void handleEvent(Event e)
             {
                 boolean flag = b2.getSelection();
-                if (!flag) System.out.println("make browser visible " + flag);
+                if (!flag) System.out.println(LangMessages.Main_make_browser_visible + flag);
                 browser.setVisible(flag);
             }
         });

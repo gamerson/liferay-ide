@@ -15,7 +15,7 @@ import org.apache.velocity.runtime.parser.node.Node;
  */
 public class VelocityDirective extends Directive
 {
-    private String fName = "<NOSET>";
+    private String fName = "<NOSET>"; //$NON-NLS-1$
     private int    fType = -1;
 
     public VelocityDirective()

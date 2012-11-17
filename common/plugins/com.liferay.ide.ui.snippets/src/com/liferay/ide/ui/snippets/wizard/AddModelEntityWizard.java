@@ -17,6 +17,8 @@ package com.liferay.ide.ui.snippets.wizard;
 
 import org.eclipse.ui.IEditorPart;
 
+import com.liferay.ide.ui.snippets.LangMessages;
+
 /**
  * @author Greg Amerson
  */
@@ -26,13 +28,13 @@ public class AddModelEntityWizard extends AbstractModelWizard
     public AddModelEntityWizard( IEditorPart fEditorPart )
     {
         super( fEditorPart );
-        setWindowTitle( "Add Model Entity" );
+        setWindowTitle( LangMessages.AddModelEntityWizard_add_model_entity );
     }
 
     @Override
     protected AbstractModelWizardPage createModelWizardPage( IEditorPart editorPart )
     {
-        return new AddModelEntityWizardPage( "addModelEntityWizardPage", editorPart );
+        return new AddModelEntityWizardPage( "addModelEntityWizardPage", editorPart ); //$NON-NLS-1$
     }
 
 }

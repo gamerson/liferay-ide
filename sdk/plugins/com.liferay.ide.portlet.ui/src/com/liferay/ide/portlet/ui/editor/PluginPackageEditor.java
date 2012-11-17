@@ -18,6 +18,7 @@ package com.liferay.ide.portlet.ui.editor;
 import com.liferay.ide.core.model.IModelChangedEvent;
 import com.liferay.ide.core.model.IModelChangedListener;
 import com.liferay.ide.portlet.core.PluginPackageModel;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.server.util.ServerUtil;
 import com.liferay.ide.ui.editor.InputContext;
@@ -47,7 +48,7 @@ import org.eclipse.ui.part.FileEditorInput;
 public class PluginPackageEditor extends IDEFormEditor implements IModelChangedListener
 {
 
-    public static final String EDITOR_ID = "com.liferay.ide.eclipse.portlet.ui.editor.pluginpackage";
+    public static final String EDITOR_ID = "com.liferay.ide.eclipse.portlet.ui.editor.pluginpackage"; //$NON-NLS-1$
 
     protected BusyIndicator busyLabel;
 
@@ -108,7 +109,7 @@ public class PluginPackageEditor extends IDEFormEditor implements IModelChangedL
     public void init( IEditorSite site, IEditorInput editorInput ) throws PartInitException
     {
 
-        Assert.isLegal( editorInput instanceof IFileEditorInput, "Invalid Input: Must be IFileEditorInput" );
+        Assert.isLegal( editorInput instanceof IFileEditorInput, LangMessages.PluginPackageEditor_invalid_input_must_be_ifileeditorinput );
 
         super.init( site, editorInput );
 
@@ -158,7 +159,7 @@ public class PluginPackageEditor extends IDEFormEditor implements IModelChangedL
         {
             index = addPage( editor, getEditorInput() );
 
-            setPageText( index, "Source" );
+            setPageText( index, LangMessages.PluginPackageEditor_source );
         }
         catch( PartInitException e )
         {
@@ -172,7 +173,7 @@ public class PluginPackageEditor extends IDEFormEditor implements IModelChangedL
         try
         {
             int index = addPage( new DependenciesFormPage( this ) );
-            setPageText( index, "Dependencies" );
+            setPageText( index, LangMessages.PluginPackageEditor_dependencies );
         }
         catch( PartInitException e )
         {
@@ -194,7 +195,7 @@ public class PluginPackageEditor extends IDEFormEditor implements IModelChangedL
         {
             int index = addPage( new PluginPackageFormPage( this ) );
 
-            setPageText( index, "Properties" );
+            setPageText( index, LangMessages.PluginPackageEditor_properties );
         }
         catch( PartInitException e )
         {

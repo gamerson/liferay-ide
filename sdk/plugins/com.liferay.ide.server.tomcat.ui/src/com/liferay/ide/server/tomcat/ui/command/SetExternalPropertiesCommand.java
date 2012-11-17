@@ -13,6 +13,7 @@
 package com.liferay.ide.server.tomcat.ui.command;
 
 import com.liferay.ide.server.tomcat.core.LiferayTomcatServer;
+import com.liferay.ide.server.tomcat.ui.LangMessages;
 
 import org.eclipse.jst.server.tomcat.core.internal.command.ServerCommand;
 
@@ -36,7 +37,7 @@ public class SetExternalPropertiesCommand extends ServerCommand
      */
     public SetExternalPropertiesCommand( LiferayTomcatServer server, String externalProperties )
     {
-        super( server, "Set External properties" );
+        super( server, LangMessages.SetExternalPropertiesCommand_set_external_properties );
         this.externalProperties = externalProperties;
     }
 

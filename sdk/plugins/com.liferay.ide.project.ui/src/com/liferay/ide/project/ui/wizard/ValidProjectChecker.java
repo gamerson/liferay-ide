@@ -17,6 +17,7 @@ package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.action.NewPluginProjectDropDownAction;
 
 import java.util.Set;
@@ -38,19 +39,19 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 public class ValidProjectChecker
 {
 
-    private static final String ATT_ID = "id";
+    private static final String ATT_ID = "id"; //$NON-NLS-1$
 
-    private static final String ATT_NAME = "name";
+    private static final String ATT_NAME = "name"; //$NON-NLS-1$
 
-    private static final String ATT_VALID_PROJECT_TYPES = "validProjectTypes";
+    private static final String ATT_VALID_PROJECT_TYPES = "validProjectTypes"; //$NON-NLS-1$
 
-    private static final String TAG_NEW_WIZARDS = "newWizards";
+    private static final String TAG_NEW_WIZARDS = "newWizards"; //$NON-NLS-1$
 
-    private static final String TAG_PARAMETER = "parameter";
+    private static final String TAG_PARAMETER = "parameter"; //$NON-NLS-1$
 
-    private static final String TAG_VALUE = "value";
+    private static final String TAG_VALUE = "value"; //$NON-NLS-1$
 
-    private static final String TAG_WIZARD = "wizard";
+    private static final String TAG_WIZARD = "wizard"; //$NON-NLS-1$
 
     protected boolean isJsfPortlet = false;
     protected String validProjectTypes = null;
@@ -77,7 +78,7 @@ public class ValidProjectChecker
 
                 if( validProjectTypes != null && facets != null )
                 {
-                    String[] validTypes = validProjectTypes.split( "," );
+                    String[] validTypes = validProjectTypes.split( "," ); //$NON-NLS-1$
 
                     for( String validProjectType : validTypes )
                     {
@@ -85,12 +86,12 @@ public class ValidProjectChecker
                         {
                             String id = facet.getProjectFacet().getId();
 
-                            if( isJsfPortlet && id.equals( "jst.jsf" ) )
+                            if( isJsfPortlet && id.equals( "jst.jsf" ) ) //$NON-NLS-1$
                             {
                                 hasJsfFacet = true;
                             }
 
-                            if( id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType ) )
+                            if( id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType ) ) //$NON-NLS-1$ //$NON-NLS-2$
                             {
                                 hasValidProjectTypes = true;
                             }
@@ -110,9 +111,9 @@ public class ValidProjectChecker
             final Shell activeShell = Display.getDefault().getActiveShell();
             Boolean openNewLiferayProjectWizard =
                 MessageDialog.openQuestion(
-                    activeShell, "New Element",
-                    "There are no suitable Liferay projects available for this new element.\nDo you want"
-                        + " to open the \'New Liferay Project\' wizard now?" );
+                    activeShell, LangMessages.ValidProjectChecker_new_element,
+                    LangMessages.ValidProjectChecker_there_are_no_suitable_liferay_projects_available_for_this_new_element_do_you_want
+                        + LangMessages.ValidProjectChecker_to_open_the_new_liferay_project_wizard_now );
 
             if( openNewLiferayProjectWizard )
             {
@@ -152,7 +153,7 @@ public class ValidProjectChecker
 
     protected void init()
     {
-        if( wizardId != null && wizardId.equals( "com.liferay.ide.portlet.jsf.ui.wizard.portlet" ) )
+        if( wizardId != null && wizardId.equals( "com.liferay.ide.portlet.jsf.ui.wizard.portlet" ) ) //$NON-NLS-1$
         {
             setJsfPortlet( true );
         }

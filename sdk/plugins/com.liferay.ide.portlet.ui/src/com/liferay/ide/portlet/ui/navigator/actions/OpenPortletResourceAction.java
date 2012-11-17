@@ -20,6 +20,7 @@
 package com.liferay.ide.portlet.ui.navigator.actions;
 
 import com.liferay.ide.portlet.core.model.Portlet;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.portlet.ui.navigator.PortletNode;
 import com.liferay.ide.portlet.ui.navigator.PortletResourcesRootNode;
@@ -60,8 +61,8 @@ import org.eclipse.ui.part.FileEditorInput;
 public class OpenPortletResourceAction extends BaseSelectionListenerAction
 {
 
-    private static final String ACTION_MESSAGE = "Open portlet configuration file";
-    private static final String PORTLETS_NODE_LABEL = "Portlets";
+    private static final String ACTION_MESSAGE = LangMessages.OpenPortletResourceAction_open_portlet_configuration_file;
+    private static final String PORTLETS_NODE_LABEL = "Portlets"; //$NON-NLS-1$
 
     protected IEditorPart editorPart;
     protected Object selectedNode;
@@ -145,7 +146,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
             }
             catch( Exception e )
             {
-                MessageDialog.openError( page.getWorkbenchWindow().getShell(), "Error Opening File", e.getMessage() );
+                MessageDialog.openError( page.getWorkbenchWindow().getShell(), LangMessages.OpenPortletResourceAction_error_opening_file, e.getMessage() );
             }
         }
 
@@ -206,7 +207,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction
                                     catch( Exception e )
                                     {
                                         MessageDialog.openError(
-                                            page.getWorkbenchWindow().getShell(), "Error Opening File", e.getMessage() );
+                                            page.getWorkbenchWindow().getShell(), LangMessages.OpenPortletResourceAction_error_opening_file, e.getMessage() );
                                     }
                                 }
                             }

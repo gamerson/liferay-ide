@@ -12,6 +12,7 @@
 package com.liferay.ide.server.ui.wizard;
 
 import com.liferay.ide.server.remote.IRemoteServerWorkingCopy;
+import com.liferay.ide.server.ui.LangMessages;
 import com.liferay.ide.server.ui.LiferayServerUIPlugin;
 import com.liferay.ide.ui.util.UIUtil;
 
@@ -55,10 +56,10 @@ public class RemoteServerWizardFragment extends WizardFragment
 
         composite = new RemoteServerComposite( parent, this, wizard );
 
-        wizard.setTitle( "Remote Liferay Server" );
-        wizard.setDescription( "Configure remote Liferay server instance." );
+        wizard.setTitle( LangMessages.RemoteServerWizardFragment_remote_liferay_server );
+        wizard.setDescription( LangMessages.RemoteServerWizardFragment_configure_remote_liferay_server_instance );
         wizard.setImageDescriptor( ImageDescriptor.createFromURL( LiferayServerUIPlugin.getDefault().getBundle().getEntry(
-            "/icons/wizban/server_wiz.png" ) ) );
+            "/icons/wizban/server_wiz.png" ) ) ); //$NON-NLS-1$
 
         return composite;
     }
@@ -127,7 +128,7 @@ public class RemoteServerWizardFragment extends WizardFragment
 
                         public void run()
                         {
-                            IViewPart serversView = UIUtil.showView( "org.eclipse.wst.server.ui.ServersView" );
+                            IViewPart serversView = UIUtil.showView( "org.eclipse.wst.server.ui.ServersView" ); //$NON-NLS-1$
                             CommonViewer viewer = (CommonViewer) serversView.getAdapter( CommonViewer.class );
                             viewer.setSelection( new StructuredSelection( server ) );
                         }

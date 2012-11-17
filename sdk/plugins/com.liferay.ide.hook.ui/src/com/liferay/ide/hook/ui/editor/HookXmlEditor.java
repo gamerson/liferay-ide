@@ -66,9 +66,9 @@ public class HookXmlEditor extends SapphireEditorForXml
 {
 
     private static final String EDITOR_DEFINITION_PATH =
-        "com.liferay.ide.hook.ui/com/liferay/ide/hook/ui/editor/hook-editor.sdef/HookConfigurationPage";
+        "com.liferay.ide.hook.ui/com/liferay/ide/hook/ui/editor/hook-editor.sdef/HookConfigurationPage"; //$NON-NLS-1$
 
-    public static final String ID = "com.liferay.ide.eclipse.hook.ui.editor.HookXmlEditor";
+    public static final String ID = "com.liferay.ide.eclipse.hook.ui.editor.HookXmlEditor"; //$NON-NLS-1$
 
     protected boolean customModelDirty = false;
 
@@ -195,7 +195,7 @@ public class HookXmlEditor extends SapphireEditorForXml
         };
 
         this.ignoreCustomModelChanges = true;
-        modelElement.attach( listener, "CustomJsps/*" );
+        modelElement.attach( listener, "CustomJsps/*" ); //$NON-NLS-1$
         this.ignoreCustomModelChanges = false;
 
         return modelElement;
@@ -239,11 +239,11 @@ public class HookXmlEditor extends SapphireEditorForXml
             String systemId = docType.getSystemId();
             if( publicId != null && systemId != null )
             {
-                if( publicId.contains( "6.0.0" ) || systemId.contains( "6.0.0" ) )
+                if( publicId.contains( "6.0.0" ) || systemId.contains( "6.0.0" ) ) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     dtdVersion = HookVersionType.v6_0_0;
                 }
-                else if( publicId.contains( "6.1.0" ) || systemId.contains( "6.1.0" ) )
+                else if( publicId.contains( "6.1.0" ) || systemId.contains( "6.1.0" ) ) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     dtdVersion = HookVersionType.v6_1_0;
                 }

@@ -20,6 +20,7 @@ import com.liferay.ide.project.core.IPortletFrameworkWizardProvider;
 import com.liferay.ide.project.core.ProjectCorePlugin;
 import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
 import com.liferay.ide.project.ui.IPortletFrameworkDelegate;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.ui.util.SWTUtil;
 import com.liferay.ide.ui.util.UIUtil;
@@ -59,12 +60,12 @@ public class NewPortletPluginProjectPage extends J2EEComponentFacetCreationWizar
 
     public NewPortletPluginProjectPage( NewPluginProjectWizard wizard, IDataModel model )
     {
-        super( model, "advanced.page" );
+        super( model, "advanced.page" ); //$NON-NLS-1$
 
         setWizard( wizard );
         setImageDescriptor( wizard.getDefaultPageImageDescriptor() );
-        setTitle( "Liferay Portlet Plugin Project" );
-        setDescription( "Choose from available portlet frameworks depending on which technology is most appropriate for this project." );
+        setTitle( LangMessages.NewPortletPluginProjectPage_liferay_portlet_plugin_project );
+        setDescription( LangMessages.NewPortletPluginProjectPage_choose_from_available_portlet_frameworks_depending_on_which_technology_is_most_appropriate_for_this_project );
     }
 
     @Override
@@ -75,7 +76,7 @@ public class NewPortletPluginProjectPage extends J2EEComponentFacetCreationWizar
 
     protected void createFrameworkGroup( Composite parent )
     {
-        Group group = SWTUtil.createGroup( parent, "Select portlet framework", 2 );
+        Group group = SWTUtil.createGroup( parent, LangMessages.NewPortletPluginProjectPage_select_portlet_framework, 2 );
         GridData layoutData = new GridData( SWT.FILL, SWT.TOP, true, false, 2, 1 );
         layoutData.widthHint = 500;// make sure the width doesn't grow the dialog
         group.setLayoutData( layoutData );
@@ -101,7 +102,7 @@ public class NewPortletPluginProjectPage extends J2EEComponentFacetCreationWizar
                 }
                 else
                 {
-                    iconUrl = "icons/e16/jsp-template.png";
+                    iconUrl = "icons/e16/jsp-template.png"; //$NON-NLS-1$
                     bundleId = ProjectUIPlugin.PLUGIN_ID;
                 }
 
@@ -128,7 +129,7 @@ public class NewPortletPluginProjectPage extends J2EEComponentFacetCreationWizar
 
                 final URL helpUrl = framework.getHelpUrl();
                 final String url = (helpUrl != null ? helpUrl.toExternalForm() : null);
-                Link descriptionWithLink = SWTUtil.createHyperLink(group, SWT.WRAP, framework.getDescription() + (helpUrl != null ? " <a>Learn more....</a>" : ""), 1, url);
+                Link descriptionWithLink = SWTUtil.createHyperLink(group, SWT.WRAP, framework.getDescription() + (helpUrl != null ? LangMessages.NewPortletPluginProjectPage_a_href_learn_more : ""), 1, url); //$NON-NLS-2$
                 descriptionWithLink.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
 
                 if( helpUrl != null )
@@ -145,7 +146,7 @@ public class NewPortletPluginProjectPage extends J2EEComponentFacetCreationWizar
                             }
                             catch( Exception e1 )
                             {
-                                ProjectUIPlugin.logError( "Could not open external browser", e1 );
+                                ProjectUIPlugin.logError( LangMessages.NewPortletPluginProjectPage_could_not_open_external_browser, e1 );
                             }
                         }
 

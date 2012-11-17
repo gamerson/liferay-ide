@@ -19,6 +19,7 @@ import com.liferay.ide.core.model.IModelChangedEvent;
 import com.liferay.ide.core.model.IModelChangedListener;
 import com.liferay.ide.portlet.core.IPluginPackageModel;
 import com.liferay.ide.portlet.core.PluginPackageModel;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.ui.form.FormEntry;
 import com.liferay.ide.ui.form.FormEntryAdapter;
 import com.liferay.ide.ui.form.FormLayoutFactory;
@@ -67,7 +68,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
         initialize( page.getManagedForm() );
 
         getSection().clientVerticalSpacing = FormLayoutFactory.SECTION_HEADER_VERTICAL_SPACING;
-        getSection().setData( "part", this );
+        getSection().setData( "part", this ); //$NON-NLS-1$
 
         createClient( getSection(), page.getEditor().getToolkit() );
     }
@@ -85,7 +86,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     public String getContextId()
     {
-        return "plugin-package-general";
+        return "plugin-package-general"; //$NON-NLS-1$
     }
 
     public IDEFormPage getPage()
@@ -230,7 +231,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createAuthorEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        authorEntry = new FormEntry( client, toolkit, "Author:", null, false );
+        authorEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_author, null, false );
         authorEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -245,7 +246,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createChangeLogEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        changeLogEntry = new FormEntry( client, toolkit, "Change Log:", null, false );
+        changeLogEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_change_log, null, false );
         changeLogEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -265,8 +266,8 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
         gd.minimumWidth = 250;
         gd.grabExcessVerticalSpace = true;
 
-        section.setText( "General" );
-        section.setDescription( "Specify plugin package properties." );
+        section.setText( LangMessages.PluginPackageGeneralSection_general );
+        section.setDescription( LangMessages.PluginPackageGeneralSection_specify_plugin_package_properties );
         section.setLayout( FormLayoutFactory.createClearTableWrapLayout( false, 1 ) );
         section.setLayoutData( gd );
 
@@ -294,7 +295,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createLicensesEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        licensesEntry = new FormEntry( client, toolkit, "Licenses:", null, false );
+        licensesEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_licenses, null, false );
         licensesEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -310,7 +311,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createModuleGroupIdEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        moduleGroupIdEntry = new FormEntry( client, toolkit, "Module Group Id:", null, false );
+        moduleGroupIdEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_module_group_id, null, false );
         moduleGroupIdEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -326,7 +327,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createModuleIncrementalVersionEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        moduleIncrementalVersionEntry = new FormEntry( client, toolkit, "Module Version:", null, false );
+        moduleIncrementalVersionEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_module_version, null, false );
         moduleIncrementalVersionEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -342,7 +343,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createNameEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        nameEntry = new FormEntry( client, toolkit, "Name:", null, false );
+        nameEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_name, null, false );
         nameEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -358,7 +359,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createPageUrlEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        pageUrlEntry = new FormEntry( client, toolkit, "Page URL:", null, false );
+        pageUrlEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_page_url, null, false );
         pageUrlEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -379,7 +380,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
         gd.horizontalSpan = 5;
         gd.heightHint = 50;
 
-        shortDescriptionEntry = new FormEntry( client, toolkit, "Short Description:", null, false );
+        shortDescriptionEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_short_description, null, false );
         shortDescriptionEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 
@@ -395,12 +396,12 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createSpeedFiltersEntry( Composite parent, FormToolkit toolkit, IActionBars actionBars )
     {
-        SWTUtil.createLabel( parent, "", 1 );
+        SWTUtil.createLabel( parent, "", 1 ); //$NON-NLS-1$
 
         GridData td = new GridData();
         td.horizontalSpan = 5;
 
-        speedFilters = toolkit.createButton( parent, "Speed Filters", SWT.CHECK );
+        speedFilters = toolkit.createButton( parent, LangMessages.PluginPackageGeneralSection_speed_filters, SWT.CHECK );
 
         speedFilters.setLayoutData( td );
         speedFilters.setEnabled( isEditable() );
@@ -420,7 +421,7 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
 
     protected void createTagsEntry( Composite client, FormToolkit toolkit, IActionBars actionBars )
     {
-        tagsEntry = new FormEntry( client, toolkit, "Tags:", null, false );
+        tagsEntry = new FormEntry( client, toolkit, LangMessages.PluginPackageGeneralSection_tags, null, false );
         tagsEntry.setFormEntryListener( new FormEntryAdapter( this, actionBars )
         {
 

@@ -17,6 +17,7 @@ package com.liferay.ide.layouttpl.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.operation.INewLayoutTplDataModelProperties;
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 import com.liferay.ide.layouttpl.ui.util.LayoutTplUtil;
 import com.liferay.ide.ui.util.SWTUtil;
@@ -62,10 +63,10 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
 
     public NewLayoutTplWizardPage( IDataModel dataModel, String pageName )
     {
-        super( dataModel, pageName, "Create Layout Template", LayoutTplUI.imageDescriptorFromPlugin(
-            LayoutTplUI.PLUGIN_ID, "/icons/wizban/layout_template_wiz.png" ) );
+        super( dataModel, pageName, LangMessages.NewLayoutTplWizardPage_create_layout_template, LayoutTplUI.imageDescriptorFromPlugin(
+            LayoutTplUI.PLUGIN_ID, "/icons/wizban/layout_template_wiz.png" ) ); //$NON-NLS-1$
 
-        setDescription( "Create a Liferay layout template." );
+        setDescription( LangMessages.NewLayoutTplWizardPage_choose_a_liferay_layout_template );
     }
 
     protected void createProjectNameGroup( Composite parent )
@@ -92,24 +93,24 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
 
     protected void createTemplateInfoGroup( Composite parent )
     {
-        SWTUtil.createLabel( parent, SWT.RIGHT, "Name:", 1 );
+        SWTUtil.createLabel( parent, SWT.RIGHT, LangMessages.NewLayoutTplWizardPage_name, 1 );
 
         this.name = SWTUtil.createText( parent, 1 );
         this.synchHelper.synchText( name, LAYOUT_TEMPLATE_NAME, null );
-        SWTUtil.createLabel( parent, "", 1 );
+        SWTUtil.createLabel( parent, "", 1 ); //$NON-NLS-1$
 
-        SWTUtil.createLabel( parent, SWT.RIGHT, "Id:", 1 );
+        SWTUtil.createLabel( parent, SWT.RIGHT, LangMessages.NewLayoutTplWizardPage_id, 1 );
 
         this.id = SWTUtil.createText( parent, 1 );
         this.synchHelper.synchText( id, LAYOUT_TEMPLATE_ID, null );
-        SWTUtil.createLabel( parent, "", 1 );
+        SWTUtil.createLabel( parent, "", 1 ); //$NON-NLS-1$
 
-        SWTUtil.createLabel( parent, SWT.RIGHT, "Template file:", 1 );
+        SWTUtil.createLabel( parent, SWT.RIGHT, LangMessages.NewLayoutTplWizardPage_template_file, 1 );
 
         this.templateFile = SWTUtil.createText( parent, 1 );
         this.synchHelper.synchText( templateFile, LAYOUT_TEMPLATE_FILE, null );
 
-        Button templateFileBrowse = SWTUtil.createPushButton( parent, "Browse...", null );
+        Button templateFileBrowse = SWTUtil.createPushButton( parent, LangMessages.NewLayoutTplWizardPage_browse, null );
 
         templateFileBrowse.addSelectionListener( new SelectionAdapter()
         {
@@ -118,17 +119,17 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
             public void widgetSelected( SelectionEvent e )
             {
                 handleFileBrowseButton(
-                    NewLayoutTplWizardPage.this.templateFile, "Template file selection", "Choose a template file: " );
+                    NewLayoutTplWizardPage.this.templateFile, LangMessages.NewLayoutTplWizardPage_template_file_selection, LangMessages.NewLayoutTplWizardPage_choose_a_template_file );
             }
 
         } );
 
-        SWTUtil.createLabel( parent, SWT.RIGHT, "WAP template file:", 1 );
+        SWTUtil.createLabel( parent, SWT.RIGHT, LangMessages.NewLayoutTplWizardPage_wap_template_file, 1 );
 
         this.wapTemplateFile = SWTUtil.createText( parent, 1 );
         this.synchHelper.synchText( wapTemplateFile, LAYOUT_WAP_TEMPLATE_FILE, null );
 
-        Button wapTemplateFileBrowse = SWTUtil.createPushButton( parent, "Browse...", null );
+        Button wapTemplateFileBrowse = SWTUtil.createPushButton( parent, LangMessages.NewLayoutTplWizardPage_browse, null );
 
         wapTemplateFileBrowse.addSelectionListener( new SelectionAdapter()
         {
@@ -137,18 +138,18 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
             public void widgetSelected( SelectionEvent e )
             {
                 handleFileBrowseButton(
-                    NewLayoutTplWizardPage.this.wapTemplateFile, "WAP template file selection",
-                    "Choose a WAP template file: " );
+                    NewLayoutTplWizardPage.this.wapTemplateFile, LangMessages.NewLayoutTplWizardPage_wap_template_file_selection,
+                    LangMessages.NewLayoutTplWizardPage_choose_a_wap_template_file );
             }
 
         } );
 
-        SWTUtil.createLabel( parent, SWT.RIGHT, "Thumbnail file:", 1 );
+        SWTUtil.createLabel( parent, SWT.RIGHT, LangMessages.NewLayoutTplWizardPage_thumbnail_file, 1 );
 
         this.thumbnailFile = SWTUtil.createText( parent, 1 );
         this.synchHelper.synchText( thumbnailFile, LAYOUT_THUMBNAIL_FILE, null );
 
-        Button thumbnailFileBrowse = SWTUtil.createPushButton( parent, "Browse...", null );
+        Button thumbnailFileBrowse = SWTUtil.createPushButton( parent, LangMessages.NewLayoutTplWizardPage_browse, null );
 
         thumbnailFileBrowse.addSelectionListener( new SelectionAdapter()
         {
@@ -157,8 +158,8 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
             public void widgetSelected( SelectionEvent e )
             {
                 handleFileBrowseButton(
-                    NewLayoutTplWizardPage.this.thumbnailFile, "WAP template file selection",
-                    "Choose a thumbnail file: " );
+                    NewLayoutTplWizardPage.this.thumbnailFile, LangMessages.NewLayoutTplWizardPage_wap_template_file_selection,
+                    LangMessages.NewLayoutTplWizardPage_choose_a_thumbnail_file );
             }
 
         } );

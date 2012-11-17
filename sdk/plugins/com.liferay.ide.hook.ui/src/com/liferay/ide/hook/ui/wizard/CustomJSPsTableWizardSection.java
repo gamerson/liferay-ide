@@ -16,6 +16,7 @@
 package com.liferay.ide.hook.ui.wizard;
 
 import com.liferay.ide.core.util.FileListing;
+import com.liferay.ide.hook.ui.LangMessages;
 import com.liferay.ide.ui.wizard.ExternalFileSelectionDialog;
 import com.liferay.ide.ui.wizard.StringArrayTableWizardSection;
 
@@ -108,7 +109,7 @@ public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection
                 {
                     // we only want to show the directory if it had children
                     // that have jsps
-                    if( directoryContainsFiles( file, "jsp", viewer ) )
+                    if( directoryContainsFiles( file, "jsp", viewer ) ) //$NON-NLS-1$
                     {
                         cachedDirs.add( file );
 
@@ -117,7 +118,7 @@ public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection
                 }
                 else
                 {
-                    if( filePath.getFileExtension().contains( "jsp" ) )
+                    if( filePath.getFileExtension().contains( "jsp" ) ) //$NON-NLS-1$
                     {
                         return true;
                     }
@@ -177,7 +178,7 @@ public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection
     {
 
         addFromPortalButton = new Button( buttonCompo, SWT.PUSH );
-        addFromPortalButton.setText( "Add from Liferay..." );
+        addFromPortalButton.setText( LangMessages.CustomJSPsTableWizardSection_add_from_liferay );
         addFromPortalButton.setLayoutData( new GridData( GridData.VERTICAL_ALIGN_BEGINNING |
             GridData.HORIZONTAL_ALIGN_FILL ) );
         addFromPortalButton.addSelectionListener( new SelectionListener()
@@ -201,7 +202,7 @@ public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection
     {
         if( portalDir == null || !portalDir.exists() )
         {
-            MessageDialog.openWarning( getShell(), "Add JSP", "Could not find portal root." );
+            MessageDialog.openWarning( getShell(), LangMessages.CustomJSPsTableWizardSection_add_jsp, LangMessages.CustomJSPsTableWizardSection_could_not_find_portal_root );
 
             return;
         }
@@ -210,9 +211,9 @@ public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection
 
         ExternalFileSelectionDialog dialog =
             new ExternalFileSelectionDialog(
-                getShell(), new JSPFileViewerFilter( portalDir, new String[] { "html" } ), true, false );
-        dialog.setTitle( "Liferay Custom JSP" );
-        dialog.setMessage( "Select a JSP to customize:" );
+                getShell(), new JSPFileViewerFilter( portalDir, new String[] { "html" } ), true, false ); //$NON-NLS-1$
+        dialog.setTitle( LangMessages.CustomJSPsTableWizardSection_liferay_custom_jsp );
+        dialog.setMessage( LangMessages.CustomJSPsTableWizardSection_select_a_jsp_to_customize );
         dialog.setInput( portalDir );
 
         if( dialog.open() == Window.OK )
@@ -223,7 +224,7 @@ public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection
             {
                 IPath filePath = Path.fromOSString( ( (File) selected[i] ).getPath() );
 
-                addStringArray( new String[] { "/" + filePath.makeRelativeTo( rootPath ).toPortableString() } );
+                addStringArray( new String[] { "/" + filePath.makeRelativeTo( rootPath ).toPortableString() } ); //$NON-NLS-1$
             }
         }
     }

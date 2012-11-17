@@ -16,6 +16,7 @@
 package com.liferay.ide.ui.snippets.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.ui.snippets.LangMessages;
 import com.liferay.ide.ui.util.SWTUtil;
 
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class AbstractModelWizardPage extends NewTypeWizardPage
 
     protected IEditorPart editorPart;
 
-    protected String lastVarName = "";
+    protected String lastVarName = ""; //$NON-NLS-1$
 
     protected StringButtonDialogField modelClassDialogField;
 
@@ -134,14 +135,14 @@ public class AbstractModelWizardPage extends NewTypeWizardPage
         TypeFieldAdapter adapter = new TypeFieldAdapter();
 
         modelClassDialogField = new StringButtonDialogField( adapter );
-        modelClassDialogField.setLabelText( "Model class:" );
-        modelClassDialogField.setButtonLabel( NewWizardMessages.NewTypeWizardPage_superclass_button );
+        modelClassDialogField.setLabelText( LangMessages.AbstractModelWizardPage_model_class );
+        modelClassDialogField.setButtonLabel( "" ); //$NON-NLS-1$
 
-        String[] buttonLabels = new String[] { "Select All", "Deselect All" };
+        String[] buttonLabels = new String[] { LangMessages.AbstractModelWizardPage_select_all, LangMessages.AbstractModelWizardPage_deselect_all };
 
         propertyListField = new CheckedListDialogField( adapter, buttonLabels, new LabelProvider() );
         propertyListField.setDialogFieldListener( adapter );
-        propertyListField.setLabelText( "Property columns:" );
+        propertyListField.setLabelText( LangMessages.AbstractModelWizardPage_property_columns );
         propertyListField.setCheckAllButtonIndex( IDX_SELECT );
         propertyListField.setUncheckAllButtonIndex( IDX_DESELECT );
     }
@@ -173,7 +174,7 @@ public class AbstractModelWizardPage extends NewTypeWizardPage
         propertyListField.getTableViewer().setComparator( new ViewerComparator() );
 
         varNameLabel = new Label( topComposite, SWT.LEFT );
-        varNameLabel.setText( "Variable name:" );
+        varNameLabel.setText( LangMessages.AbstractModelWizardPage_variable_name );
         varNameLabel.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
 
         varNameText = new Text( topComposite, SWT.SINGLE | SWT.BORDER );
@@ -218,7 +219,7 @@ public class AbstractModelWizardPage extends NewTypeWizardPage
         {
 
         }
-        return "";
+        return ""; //$NON-NLS-1$
     }
 
     public String getModelClass()
@@ -262,8 +263,8 @@ public class AbstractModelWizardPage extends NewTypeWizardPage
         FilteredTypesSelectionDialog dialog =
             new FilteredTypesSelectionDialog(
                 getShell(), false, getWizard().getContainer(), scope, IJavaSearchConstants.CLASS_AND_INTERFACE );
-        dialog.setTitle( "Model class selection" );
-        dialog.setMessage( NewWizardMessages.NewTypeWizardPage_SuperClassDialog_message );
+        dialog.setTitle( LangMessages.AbstractModelWizardPage_model_class_selection );
+        dialog.setMessage( "" ); //$NON-NLS-1$
         dialog.setInitialPattern( getSuperClass() );
 
         if( dialog.open() == Window.OK )
@@ -339,7 +340,7 @@ public class AbstractModelWizardPage extends NewTypeWizardPage
 
         propertyListField.setElements( propNames );
 
-        varNameText.setText( "a" + getModel() );
+        varNameText.setText( LangMessages.AbstractModelWizardPage_a + getModel() );
     }
 
 }

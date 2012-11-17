@@ -15,6 +15,7 @@
 
 package com.liferay.ide.project.ui.wizard;
 
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.sdk.pref.SDKsPreferencePage;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -46,7 +47,7 @@ public class LiferaySDKField
         Composite parent, IDataModel model, SelectionAdapter selectionAdapter, String fieldPropertyName,
         DataModelSynchHelper synchHelper )
     {
-        this( parent, model, selectionAdapter, fieldPropertyName, synchHelper, "Liferay Plugins SDK" );
+        this( parent, model, selectionAdapter, fieldPropertyName, synchHelper, LangMessages.LiferaySDKField_liferay_plugins_sdk );
     }
 
     public LiferaySDKField(
@@ -74,7 +75,7 @@ public class LiferaySDKField
 
         Link configureSDKsLink = new Link( parent, SWT.UNDERLINE_LINK );
         // Button configureSDKsLink = new Button(group, SWT.PUSH);
-        configureSDKsLink.setText( "<a href=\"#\">Configure</a>" );
+        configureSDKsLink.setText( LangMessages.LiferaySDKField_a_href_configure );
         // configureSDKsLink.setText("Configure ...");
         configureSDKsLink.setLayoutData( new GridData( SWT.LEFT, SWT.TOP, false, false ) );
         configureSDKsLink.addSelectionListener( new SelectionAdapter()

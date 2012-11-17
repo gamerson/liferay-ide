@@ -11,6 +11,7 @@
 
 package com.liferay.ide.portlet.ui.editor;
 
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.ui.form.FormLayoutFactory;
 import com.liferay.ide.ui.form.IDEFormPage;
@@ -30,15 +31,15 @@ public class DependenciesFormPage extends IDEFormPage
 
     public DependenciesFormPage( FormEditor editor )
     {
-        super( editor, PAGE_ID, "Dependencies" );
+        super( editor, PAGE_ID, LangMessages.DependenciesFormPage_dependencies );
     }
 
     protected void createFormContent( IManagedForm managedForm )
     {
         super.createFormContent( managedForm );
         ScrolledForm form = managedForm.getForm();
-        form.setImage( PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/e16/plugin.png" ).createImage() );
-        form.setText( "Dependencies" );
+        form.setImage( PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/e16/plugin.png" ).createImage() ); //$NON-NLS-1$
+        form.setText( LangMessages.DependenciesFormPage_dependencies );
         Composite body = form.getBody();
         body.setLayout( FormLayoutFactory.createFormGridLayout( true, 2 ) );
 
@@ -63,7 +64,7 @@ public class DependenciesFormPage extends IDEFormPage
 
     private String[] getRequiredSectionLabels()
     {
-        return new String[] { "Add...", "Remove",
+        return new String[] { LangMessages.DependenciesFormPage_add, LangMessages.DependenciesFormPage_remove,
         // "Up",
         // "Down"
         };

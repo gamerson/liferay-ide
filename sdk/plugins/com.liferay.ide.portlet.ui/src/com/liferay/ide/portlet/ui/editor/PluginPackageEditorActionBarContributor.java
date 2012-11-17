@@ -35,7 +35,7 @@ public class PluginPackageEditorActionBarContributor extends IDEFormEditorContri
 
     public PluginPackageEditorActionBarContributor()
     {
-        super( "" );
+        super( "" ); //$NON-NLS-1$
     }
 
     @Override

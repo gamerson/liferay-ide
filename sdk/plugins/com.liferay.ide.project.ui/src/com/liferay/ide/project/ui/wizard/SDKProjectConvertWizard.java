@@ -16,6 +16,7 @@
 package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.SDKProjectConvertDataModelProvider;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 
 import org.eclipse.core.resources.IProject;
@@ -45,10 +46,10 @@ public class SDKProjectConvertWizard extends DataModelWizard implements IWorkben
 
         this.project = project;
 
-        setWindowTitle( "Convert Project" );
+        setWindowTitle( LangMessages.SDKProjectConvertWizard_convert_project );
 
         setDefaultPageImageDescriptor( ProjectUIPlugin.imageDescriptorFromPlugin(
-            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/convert_wiz.png" ) );
+            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/convert_wiz.png" ) ); //$NON-NLS-1$
     }
 
     @Override
@@ -64,7 +65,7 @@ public class SDKProjectConvertWizard extends DataModelWizard implements IWorkben
     @Override
     protected void doAddPages()
     {
-        sdkProjectConvertWizardPage = new SDKProjectConvertWizardPage( getDataModel(), "pageOne" );
+        sdkProjectConvertWizardPage = new SDKProjectConvertWizardPage( getDataModel(), "pageOne" ); //$NON-NLS-1$
 
         addPage( sdkProjectConvertWizardPage );
     }

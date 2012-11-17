@@ -15,6 +15,7 @@
 
 package com.liferay.ide.ui.pref;
 
+import com.liferay.ide.ui.LangMessages;
 import com.liferay.ide.ui.LiferayUIPlugin;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -76,13 +77,13 @@ public class LiferayUIPreferencePage extends PreferencePage implements IWorkbenc
 
         Group group = new Group( pageParent, SWT.NONE );
         group.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
-        group.setText( "Liferay shortcuts" );
+        group.setText( LangMessages.LiferayUIPreferencePage_liferay_shortcuts );
         group.setLayout( new GridLayout( 1, false ) );
 
         Hyperlink link = new Hyperlink( group, SWT.NULL );
         link.setForeground( parent.getDisplay().getSystemColor( SWT.COLOR_BLUE ) );
         link.setUnderlined( true );
-        link.setText( "Configure installed Liferay Plugin SDKs." );
+        link.setText( LangMessages.LiferayUIPreferencePage_configure_installed_liferay_plugin_sdk );
         link.addHyperlinkListener( new HyperlinkAdapter()
         {
 
@@ -95,7 +96,7 @@ public class LiferayUIPreferencePage extends PreferencePage implements IWorkbenc
 
                     public void run()
                     {
-                        container.openPage( "com.liferay.ide.sdk.preferences.installedSDKs", null );
+                        container.openPage( "com.liferay.ide.sdk.preferences.installedSDKs", null ); //$NON-NLS-1$
                     }
 
                 } );
@@ -106,14 +107,14 @@ public class LiferayUIPreferencePage extends PreferencePage implements IWorkbenc
         Hyperlink link2 = new Hyperlink( group, SWT.NULL );
         link2.setForeground( parent.getDisplay().getSystemColor( SWT.COLOR_BLUE ) );
         link2.setUnderlined( true );
-        link2.setText( "Create a new Liferay runtime environment." );
+        link2.setText( LangMessages.LiferayUIPreferencePage_create_a_new_liferay_runtime_environment );
         link2.addHyperlinkListener( new HyperlinkAdapter()
         {
 
             public void linkActivated( HyperlinkEvent e )
             {
                 ServerUIUtil.showNewRuntimeWizard(
-                    LiferayUIPreferencePage.this.getShell(), IModuleConstants.JST_WEB_MODULE, "2.5", "com.liferay." );
+                    LiferayUIPreferencePage.this.getShell(), IModuleConstants.JST_WEB_MODULE, "2.5", "com.liferay." ); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
         } );
@@ -121,28 +122,28 @@ public class LiferayUIPreferencePage extends PreferencePage implements IWorkbenc
         Hyperlink link3 = new Hyperlink( group, SWT.NULL );
         link3.setForeground( parent.getDisplay().getSystemColor( SWT.COLOR_BLUE ) );
         link3.setUnderlined( true );
-        link3.setText( "Create a new Liferay server." );
+        link3.setText( LangMessages.LiferayUIPreferencePage_create_a_new_liferay_server );
         link3.addHyperlinkListener( new HyperlinkAdapter()
         {
 
             public void linkActivated( HyperlinkEvent e )
             {
                 ServerUIUtil.showNewServerWizard(
-                    LiferayUIPreferencePage.this.getShell(), IModuleConstants.JST_WEB_MODULE, "2.5", "com.liferay." );
+                    LiferayUIPreferencePage.this.getShell(), IModuleConstants.JST_WEB_MODULE, "2.5", "com.liferay." ); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
         } );
 
         group = new Group( pageParent, SWT.NONE );
         group.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
-        group.setText( "Message dialogs" );
+        group.setText( LangMessages.LiferayUIPreferencePage_message_dialogs );
         group.setLayout( new GridLayout( 2, false ) );
 
         Label label = new Label( group, SWT.NONE );
-        label.setText( "Clean all 'do not show again' settings and show all hidden dialogs again." );
+        label.setText( LangMessages.LiferayUIPreferencePage_clean_all_do_not_show_again_settings_and_show_all_hidden_dialogs_again );
 
         final Button button = new Button( group, SWT.PUSH );
-        button.setText( "Clear" );
+        button.setText( LangMessages.LiferayUIPreferencePage_clear );
         button.addSelectionListener( new SelectionAdapter()
         {
 
@@ -155,7 +156,7 @@ public class LiferayUIPreferencePage extends PreferencePage implements IWorkbenc
                 }
                 catch( BackingStoreException e1 )
                 {
-                    MessageDialog.openError( button.getShell(), "Liferay Preferences", "Unable to reset settings." );
+                    MessageDialog.openError( button.getShell(), LangMessages.LiferayUIPreferencePage_liferay_preferences, LangMessages.LiferayUIPreferencePage_unable_to_reset_settings );
                 }
             }
 

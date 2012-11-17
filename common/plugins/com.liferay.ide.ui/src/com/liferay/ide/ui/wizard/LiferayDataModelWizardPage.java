@@ -16,6 +16,7 @@
 package com.liferay.ide.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.ui.LangMessages;
 import com.liferay.ide.ui.LiferayUIPlugin;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public abstract class LiferayDataModelWizardPage extends DataModelWizardPage
                     return Status.OK_STATUS;
                 }
 
-                return LiferayUIPlugin.createErrorStatus( "Choose a valid project file" );
+                return LiferayUIPlugin.createErrorStatus( LangMessages.LiferayDataModelWizardPage_choose_a_valid_project_file );
             }
         };
     }
@@ -327,7 +328,7 @@ public abstract class LiferayDataModelWizardPage extends DataModelWizardPage
 
                             final IPath relativePath = file.getFullPath().makeRelativeTo( container.getFullPath() );
 
-                            text.setText( "/" + relativePath.toPortableString() );
+                            text.setText( "/" + relativePath.toPortableString() ); //$NON-NLS-1$
                             // dealWithSelectedContainerResource(container);
                         }
                     }

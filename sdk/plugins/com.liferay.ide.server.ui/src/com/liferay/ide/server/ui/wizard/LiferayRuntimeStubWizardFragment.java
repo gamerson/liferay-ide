@@ -12,6 +12,7 @@
 package com.liferay.ide.server.ui.wizard;
 
 import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.ui.LangMessages;
 import com.liferay.ide.server.ui.LiferayServerUIPlugin;
 
 import org.eclipse.core.runtime.IStatus;
@@ -27,7 +28,7 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
  */
 public class LiferayRuntimeStubWizardFragment extends WizardFragment
 {
-    public static final String LIFERAY_RUNTIME_STUB = "liferay-runtime-stub";
+    public static final String LIFERAY_RUNTIME_STUB = "liferay-runtime-stub"; //$NON-NLS-1$
 
     protected LiferayRuntimeStubComposite composite;
 
@@ -39,10 +40,10 @@ public class LiferayRuntimeStubWizardFragment extends WizardFragment
     @Override
     public Composite createComposite( Composite parent, IWizardHandle wizard )
     {
-        wizard.setTitle( "Liferay Runtime Stub" );
-        wizard.setDescription( "Specify the directory location of Liferay portal bundle that will be used as a runtime stub." );
+        wizard.setTitle( LangMessages.LiferayRuntimeStubWizardFragment_liferay_runtime_stub );
+        wizard.setDescription( LangMessages.LiferayRuntimeStubWizardFragment_specify_the_directory_location_of_liferay_portal_bundle_that_will_be_used_as_a_runtime_stub );
         wizard.setImageDescriptor( ImageDescriptor.createFromURL( LiferayServerUIPlugin.getDefault().getBundle().getEntry(
-            "/icons/wizban/server_wiz.png" ) ) );
+            "/icons/wizban/server_wiz.png" ) ) ); //$NON-NLS-1$
 
         composite = new LiferayRuntimeStubComposite( parent, wizard );
 

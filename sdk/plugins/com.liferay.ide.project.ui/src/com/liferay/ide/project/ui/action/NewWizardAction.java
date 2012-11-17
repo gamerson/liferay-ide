@@ -50,7 +50,7 @@ public class NewWizardAction extends Action implements Comparable
 
     public final static String ATT_NAME = "name";//$NON-NLS-1$
 
-    public final static String ATT_PROJECTTYPE = "project_type";
+    public final static String ATT_PROJECTTYPE = "project_type"; //$NON-NLS-1$
 
     public final static String TAG_CLASS = "class"; //$NON-NLS-1$
 
@@ -62,7 +62,7 @@ public class NewWizardAction extends Action implements Comparable
 
     public final static String TAG_VALUE = "value";//$NON-NLS-1$
 
-	public final static String ATT_VALID_PROJECT_TYPES = "validProjectTypes";
+	public final static String ATT_VALID_PROJECT_TYPES = "validProjectTypes"; //$NON-NLS-1$
 
     protected IConfigurationElement fConfigurationElement;
 
@@ -80,7 +80,7 @@ public class NewWizardAction extends Action implements Comparable
 
         String description = getDescriptionFromConfig( fConfigurationElement );
 
-        setText( "New " + element.getAttribute( ATT_NAME ) );
+        setText( "New " + element.getAttribute( ATT_NAME ) ); //$NON-NLS-1$
         setDescription( description );
         setToolTipText( description );
         setImageDescriptor( getIconFromConfig( fConfigurationElement ) );

@@ -17,6 +17,7 @@ package com.liferay.ide.layouttpl.ui.editor;
 
 import com.liferay.ide.layouttpl.core.LayoutTplCore;
 import com.liferay.ide.layouttpl.ui.ILayoutTplUIPreferenceNames;
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 
 import org.eclipse.core.resources.IFile;
@@ -231,7 +232,7 @@ public class LayoutTplMultiPageEditor extends MultiPageEditorPart implements ISe
     protected void addSourcePage() throws PartInitException
     {
         int index = addPage( sourceEditor, getEditorInput() );
-        setPageText( index, "Source" );
+        setPageText( index, LangMessages.LayoutTplMultiPageEditor_source );
 
         firePropertyChange( PROP_TITLE );
 
@@ -250,7 +251,7 @@ public class LayoutTplMultiPageEditor extends MultiPageEditorPart implements ISe
     {
         IEditorPart editor = createVisualEditor();
         int index = addPage( editor, getEditorInput() );
-        setPageText( index, "Visual (Experimental)" );
+        setPageText( index, LangMessages.LayoutTplMultiPageEditor_visual_experimental );
     }
 
     @Override

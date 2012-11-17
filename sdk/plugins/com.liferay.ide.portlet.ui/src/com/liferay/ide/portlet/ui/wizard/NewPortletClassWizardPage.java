@@ -17,6 +17,7 @@ package com.liferay.ide.portlet.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.ui.dialog.FilteredTypesSelectionDialogEx;
@@ -123,7 +124,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
     {
         // class name
         classLabel = new Label( parent, SWT.LEFT );
-        classLabel.setText( "Portlet class:" );
+        classLabel.setText( LangMessages.NewPortletClassWizardPage_portlet_class );
         classLabel.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
 
         classText = new Text( parent, SWT.SINGLE | SWT.BORDER );
@@ -198,10 +199,10 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
         composite.setLayout( new GridLayout( 2, false ) );
 
         createNewClassRadio = new Button( composite, SWT.RADIO );
-        createNewClassRadio.setText( "Create new portlet" );
+        createNewClassRadio.setText( LangMessages.NewPortletClassWizardPage_create_new_portlet );
 
         useDefaultPortletRadio = new Button( composite, SWT.RADIO );
-        useDefaultPortletRadio.setText( "Use default portlet (MVCPortlet)" );
+        useDefaultPortletRadio.setText( LangMessages.NewPortletClassWizardPage_use_default_portlet_mvcportlet );
 
         new Label( parent, SWT.NONE );
 
@@ -252,7 +253,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
 
         if( this.fragment )
         {
-            SWTUtil.createLabel( parent, "", 1 );
+            SWTUtil.createLabel( parent, "", 1 ); //$NON-NLS-1$
         }
         else
         {
@@ -341,7 +342,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
 
         if( this.fragment )
         {
-            SWTUtil.createLabel( parent, "", 1 );
+            SWTUtil.createLabel( parent, "", 1 ); //$NON-NLS-1$
         }
         else
         {
@@ -360,7 +361,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
                 {
                     // handleSuperButtonPressed();
                     handleClassButtonSelected(
-                        superCombo, "javax.portlet.GenericPortlet", J2EEUIMessages.SUPERCLASS_SELECTION_DIALOG_TITLE,
+                        superCombo, "javax.portlet.GenericPortlet", J2EEUIMessages.SUPERCLASS_SELECTION_DIALOG_TITLE, //$NON-NLS-1$
                         J2EEUIMessages.SUPERCLASS_SELECTION_DIALOG_DESC );
                 }
             } );
@@ -854,7 +855,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
 
     protected void setShellImage()
     {
-        URL url = PortletUIPlugin.getDefault().getBundle().getEntry( "/icons/e16/portlet.png" );
+        URL url = PortletUIPlugin.getDefault().getBundle().getEntry( "/icons/e16/portlet.png" ); //$NON-NLS-1$
 
         Image shellImage = ImageDescriptor.createFromURL( url ).createImage();
 

@@ -47,7 +47,7 @@ public class PortletNode
 
     public String getName()
     {
-        String retval = "";
+        String retval = ""; //$NON-NLS-1$
 
         if( this.portlet != null )
         {

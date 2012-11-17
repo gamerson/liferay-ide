@@ -17,6 +17,7 @@
 
 package com.liferay.ide.layouttpl.ui.cmd;
 
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.model.LayoutTplDiagram;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
 import com.liferay.ide.layouttpl.ui.model.PortletLayout;
@@ -40,7 +41,7 @@ public class PortletColumnDeleteCommand extends Command
             throw new IllegalArgumentException();
         }
 
-        setLabel( "Portlet Column deleted" );
+        setLabel( LangMessages.PortletColumnDeleteCommand_portlet_column_deleted );
 
         this.parent = parent;
         this.child = child;

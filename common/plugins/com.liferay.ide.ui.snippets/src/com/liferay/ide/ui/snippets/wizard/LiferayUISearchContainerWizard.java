@@ -17,6 +17,8 @@ package com.liferay.ide.ui.snippets.wizard;
 
 import org.eclipse.ui.IEditorPart;
 
+import com.liferay.ide.ui.snippets.LangMessages;
+
 /**
  * @author Greg Amerson
  */
@@ -26,13 +28,13 @@ public class LiferayUISearchContainerWizard extends AbstractModelWizard
     public LiferayUISearchContainerWizard( IEditorPart fEditorPart )
     {
         super( fEditorPart );
-        setWindowTitle( "Insert Search Container" );
+        setWindowTitle( LangMessages.LiferayUISearchContainerWizard_insert_search_container );
     }
 
     @Override
     protected AbstractModelWizardPage createModelWizardPage( IEditorPart editorPart )
     {
-        return new LiferayUISearchContainerWizardPage( "liferayUISearchContainerWizardPage", editorPart );
+        return new LiferayUISearchContainerWizardPage( "liferayUISearchContainerWizardPage", editorPart ); //$NON-NLS-1$
     }
 
     public String getModelClass()

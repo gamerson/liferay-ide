@@ -2,6 +2,7 @@ package com.liferay.ide.velocity.vaulttec.ui.editor.parser;
 
 import com.liferay.ide.velocity.vaulttec.ui.IPreferencesConstants;
 import com.liferay.ide.velocity.vaulttec.ui.VelocityPlugin;
+import com.liferay.ide.velocity.vaulttec.ui.editor.LangMessages;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class VelocityParser extends RuntimeInstance
     public VelocimacroProxy getLibraryMacro(String aName)
     { 
         // blank string is the global namespace
-        return (VelocimacroProxy)getVelocimacro(aName, "");
+        return (VelocimacroProxy)getVelocimacro(aName, ""); //$NON-NLS-1$
     }
 
     /**
@@ -70,7 +71,7 @@ public class VelocityParser extends RuntimeInstance
       ArrayList<VelocimacroProxy> macros = new ArrayList<VelocimacroProxy>(128);
       // Blank is the global namespace
 
-		for( VelocimacroProxy vp : getVelocimacros( "" ) )
+		for( VelocimacroProxy vp : getVelocimacros( "" ) ) //$NON-NLS-1$
       {
         macros.add(vp);
       }
@@ -102,9 +103,9 @@ public class VelocityParser extends RuntimeInstance
         {
             // Set Velocity library
             IPreferenceStore store = VelocityPlugin.getDefault().getPreferenceStore();
-            setProperty("file.resource.loader.path", store.getString(IPreferencesConstants.LIBRARY_PATH));
-            setProperty("velocimacro.library", store.getString(IPreferencesConstants.LIBRARY_LIST));
-            setProperty("parser.pool.size", 1);
+            setProperty("file.resource.loader.path", store.getString(IPreferencesConstants.LIBRARY_PATH)); //$NON-NLS-1$
+            setProperty("velocimacro.library", store.getString(IPreferencesConstants.LIBRARY_LIST)); //$NON-NLS-1$
+            setProperty("parser.pool.size", 1); //$NON-NLS-1$
             // Initialize system and user directives
             initializeDirectives();
             // Call super implementation last because it calls createNewParser()
@@ -151,8 +152,8 @@ public class VelocityParser extends RuntimeInstance
          */
         ClassLoader classLoader = this.getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(DEFAULT_RUNTIME_DIRECTIVES);
-        if (inputStream == null) { throw new RuntimeException("Error loading directive.properties! " + "Something is very wrong if these properties " + "aren't being located. Either your Velocity "
-                + "distribution is incomplete or your Velocity " + "jar file is corrupted!"); }
+        if (inputStream == null) { throw new RuntimeException(LangMessages.VelocityParser_error_loading_directive_properties + LangMessages.VelocityParser_something_is_very_wrong_if_these_properties + LangMessages.VelocityParser_arent_being_located_either_your_velocity
+                + LangMessages.VelocityParser_distribution_is_incomplete_or_your_velocity + LangMessages.VelocityParser_jar_file_is_corrupted); }
         try
         {
           directiveProperties.load(inputStream);
@@ -171,7 +172,7 @@ public class VelocityParser extends RuntimeInstance
         while (directiveClasses.hasMoreElements())
         {
             String directiveClass = (String) directiveClasses.nextElement();
-            loadDirective(directiveClass, "System");
+            loadDirective(directiveClass, "System"); //$NON-NLS-1$
         }
         /*
          * now the user's directives
@@ -182,7 +183,7 @@ public class VelocityParser extends RuntimeInstance
         {
             String directive = (String) userDirectives.next();
             String name = directive.substring(0, directive.indexOf(' '));
-            int type = (directive.endsWith("[Block]") ? DirectiveConstants.BLOCK : DirectiveConstants.LINE);
+            int type = (directive.endsWith("[Block]") ? DirectiveConstants.BLOCK : DirectiveConstants.LINE); //$NON-NLS-1$
             fUserDirectives.add('#' + name);
             fDirectives.put(name, new VelocityDirective(name, type));
         }

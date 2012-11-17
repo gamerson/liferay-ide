@@ -15,6 +15,7 @@ import com.liferay.ide.core.model.IModelChangedEvent;
 import com.liferay.ide.core.model.IModelChangedListener;
 import com.liferay.ide.portlet.core.IPluginPackageModel;
 import com.liferay.ide.portlet.core.PluginPackageModel;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.project.ui.dialog.LiferayProjectSelectionDialog;
 import com.liferay.ide.ui.form.DefaultContentProvider;
 import com.liferay.ide.ui.form.FormLayoutFactory;
@@ -79,7 +80,7 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 				return element.toString();
 			}
 
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		
 	}
@@ -98,8 +99,8 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 	
 	public RequiredDeploymentContextsSection(IDEFormPage page, Composite parent, String[] labels) {
 		super(page, parent, Section.DESCRIPTION, labels);
-		getSection().setText("Required Deployment Contexts");
-		getSection().setDescription("Specify which plugins are required to be deployed before this plugin.");
+		getSection().setText(LangMessages.RequiredDeploymentContextsSection_require_deployment_contexts);
+		getSection().setDescription(LangMessages.RequiredDeploymentContextsSection_specify_which_plugins_are_required_to_be_deployed_before_this_plugin);
 		getSection().getTextClient().getParent().layout(true);
 		getTablePart().setEditable(true);
 	}
@@ -120,7 +121,7 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 		gd.grabExcessVerticalSpace = true;
 		section.setLayout(FormLayoutFactory.createClearGridLayout(false, 1));
 		section.setLayoutData(gd);
-		section.setText("Service Dependencies");
+		section.setText(LangMessages.RequiredDeploymentContextsSection_service_dependencies);
 		createSectionToolbar(section, toolkit);
 		initialize();
 	}
@@ -323,13 +324,13 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 	}
 
 	private void makeActions() {
-		fAddAction = new Action("Add...") {
+		fAddAction = new Action(LangMessages.RequiredDeploymentContextsSection_add) {
 			public void run() {
 				handleAdd();
 			}
 		};
 		
-		fRemoveAction = new Action("Remove") {
+		fRemoveAction = new Action(LangMessages.RequiredDeploymentContextsSection_remove) {
 			public void run() {
 				handleRemove();
 			}

@@ -17,6 +17,7 @@
 
 package com.liferay.ide.project.ui.action;
 
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.project.ui.wizard.NewProjectFromSourceWizard;
 
@@ -38,11 +39,11 @@ public class ImportLiferayProjectWizardAction extends NewWizardAction
         {
             if( NewWizardAction.ATT_NAME.equals( attr ) )
             {
-                return "";
+                return ""; //$NON-NLS-1$
             }
             else if( NewWizardAction.ATT_ICON.equals( attr ) )
             {
-                return "/icons/n16/plugin_new.png";
+                return "/icons/n16/plugin_new.png"; //$NON-NLS-1$
             }
 
             return null;
@@ -63,7 +64,7 @@ public class ImportLiferayProjectWizardAction extends NewWizardAction
             }
             else if( NewWizardAction.TAG_VALUE.equals( name ) )
             {
-                return "100";
+                return "100"; //$NON-NLS-1$
             }
 
             return null;
@@ -74,7 +75,7 @@ public class ImportLiferayProjectWizardAction extends NewWizardAction
     public ImportLiferayProjectWizardAction()
     {
         super( new ImportLiferayProjectElement() );
-        setText( "New Liferay Project from Existing Source" );
+        setText( LangMessages.ImportLiferayProjectWizardAction_new_liferay_project_from_existing_source );
     }
 
 }

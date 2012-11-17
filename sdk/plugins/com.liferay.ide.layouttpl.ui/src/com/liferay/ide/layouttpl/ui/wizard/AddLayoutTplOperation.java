@@ -111,7 +111,7 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
     {
         IFolder defaultDocroot = CoreUtil.getDefaultDocrootFolder( getTargetProject() );
         IFile thumbnailFileValue = defaultDocroot.getFile( thumbnailFile );
-        URL iconFileURL = LayoutTplUI.getDefault().getBundle().getEntry( "/icons/blank_columns.png" );
+        URL iconFileURL = LayoutTplUI.getDefault().getBundle().getEntry( "/icons/blank_columns.png" ); //$NON-NLS-1$
 
         CoreUtil.prepareFolder( (IFolder) thumbnailFileValue.getParent() );
 
@@ -137,7 +137,7 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
         }
         else
         {
-            ByteArrayInputStream input = new ByteArrayInputStream( "".getBytes() );
+            ByteArrayInputStream input = new ByteArrayInputStream( "".getBytes() ); //$NON-NLS-1$
 
             if( templateFileValue.exists() )
             {

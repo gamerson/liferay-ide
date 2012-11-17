@@ -17,6 +17,7 @@
 
 package com.liferay.ide.project.ui.action;
 
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 
 import org.eclipse.jface.action.Action;
@@ -33,15 +34,15 @@ public class NewServerAction extends Action
 
     public NewServerAction( Shell shell )
     {
-        super( "New Liferay Server", ImageDescriptor.createFromURL( ProjectUIPlugin.getDefault().getBundle().getEntry(
-            "/icons/n16/server_new.png" ) ) );
+        super( LangMessages.NewServerAction_new_liferay_server, ImageDescriptor.createFromURL( ProjectUIPlugin.getDefault().getBundle().getEntry(
+            "/icons/n16/server_new.png" ) ) ); //$NON-NLS-1$
         this.shell = shell;
     }
 
     @Override
     public void run()
     {
-        ServerUIUtil.showNewServerWizard( shell, null, null, "com.liferay." );
+        ServerUIUtil.showNewServerWizard( shell, null, null, "com.liferay." ); //$NON-NLS-1$
     }
 
 }

@@ -16,6 +16,7 @@
 package com.liferay.ide.layouttpl.ui.wizard;
 
 import com.liferay.ide.layouttpl.core.operation.INewLayoutTplDataModelProperties;
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -46,37 +47,37 @@ public class NewLayoutTplLayoutWizardPage extends DataModelWizardPage implements
     protected static final ImageDescriptor[] layoutOptionsImages =
         new ImageDescriptor[] {
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/blank_column.png" ) ),
-            ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry( "/icons/layouts/1_column.png" ) ),
+                "/icons/layouts/blank_column.png" ) ), //$NON-NLS-1$
+            ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry( "/icons/layouts/1_column.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/1_2_columns_i.png" ) ),
+                "/icons/layouts/1_2_columns_i.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/1_2_columns_ii.png" ) ),
+                "/icons/layouts/1_2_columns_ii.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/1_2_1_columns.png" ) ),
+                "/icons/layouts/1_2_1_columns.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/2_columns_i.png" ) ),
+                "/icons/layouts/2_columns_i.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/2_columns_ii.png" ) ),
+                "/icons/layouts/2_columns_ii.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/2_columns_iii.png" ) ),
+                "/icons/layouts/2_columns_iii.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/2_2_columns.png" ) ),
+                "/icons/layouts/2_2_columns.png" ) ), //$NON-NLS-1$
             ImageDescriptor.createFromURL( LayoutTplUI.getDefault().getBundle().getEntry(
-                "/icons/layouts/3_columns.png" ) ), };
+                "/icons/layouts/3_columns.png" ) ), }; //$NON-NLS-1$
 
-    protected static final String[] layoutOptionsText = new String[] { "Blank", "1 Column", "1-2 Columns (30/70)",
-        "1-2 Columns (70/30)", "1-2-1 Columns", "2 Columns (50/50)", "2 Columns (30/70)", "2 Columns (70/30)",
-        "2-2 Columns", "3 Columns" };
+    protected static final String[] layoutOptionsText = new String[] { "Blank", "1 Column", "1-2 Columns (30/70)", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        "1-2 Columns (70/30)", "1-2-1 Columns", "2 Columns (50/50)", "2 Columns (30/70)", "2 Columns (70/30)", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        "2-2 Columns", "3 Columns" }; //$NON-NLS-1$ //$NON-NLS-2$
 
     protected List<Image> imagesToDispose;
 
     public NewLayoutTplLayoutWizardPage( IDataModel dataModel, String pageName )
     {
-        super( dataModel, pageName, "Create Layout Template", LayoutTplUI.imageDescriptorFromPlugin(
-            LayoutTplUI.PLUGIN_ID, "/icons/wizban/layout_template_wiz.png" ) );
+        super( dataModel, pageName, LangMessages.NewLayoutTplLayoutWizardPage_create_layout_template, LayoutTplUI.imageDescriptorFromPlugin(
+            LayoutTplUI.PLUGIN_ID, "/icons/wizban/layout_template_wiz.png" ) ); //$NON-NLS-1$
 
-        setDescription( "Select initial template to start designing." );
+        setDescription( LangMessages.NewLayoutTplLayoutWizardPage_select_initial_template_to_start_designing );
     }
 
     @Override
@@ -122,7 +123,7 @@ public class NewLayoutTplLayoutWizardPage extends DataModelWizardPage implements
 
     protected void createSelectLayoutGroup( Composite parent )
     {
-        SWTUtil.createLabel( parent, "Select an initial layout to use for the new template:", 1 );
+        SWTUtil.createLabel( parent, LangMessages.NewLayoutTplLayoutWizardPage_select_an_initial_layout_to_use_for_the_new_template, 1 );
 
         // Composite group = SWTUtil.createTopComposite(parent, 4);
         // group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

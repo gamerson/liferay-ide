@@ -16,6 +16,7 @@
 package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.LiferayProjectImportDataModelProvider;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.ui.util.UIUtil;
 import com.liferay.ide.ui.wizard.INewProjectWizard;
@@ -50,9 +51,9 @@ public class LiferayProjectImportWizard extends DataModelWizard implements IWork
     {
         super( dataModel );
 
-        setWindowTitle( "Import Project" );
+        setWindowTitle( LangMessages.LiferayProjectImportWizard_import_project );
         setDefaultPageImageDescriptor( ProjectUIPlugin.imageDescriptorFromPlugin(
-            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/import_wiz.png" ) );
+            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/import_wiz.png" ) ); //$NON-NLS-1$
         setNeedsProgressMonitor( true );
     }
 
@@ -84,7 +85,7 @@ public class LiferayProjectImportWizard extends DataModelWizard implements IWork
 
         }
 
-        liferayProjectImportWizardPage = new LiferayProjectImportWizardPage( getDataModel(), "pageOne", this );
+        liferayProjectImportWizardPage = new LiferayProjectImportWizardPage( getDataModel(), "pageOne", this ); //$NON-NLS-1$
 
         if( folder != null )
         {

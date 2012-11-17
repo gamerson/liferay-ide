@@ -15,6 +15,7 @@
 
 package com.liferay.ide.portlet.ui.editor;
 
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.ui.form.FormLayoutFactory;
 import com.liferay.ide.ui.form.IDEFormPage;
@@ -38,7 +39,7 @@ public class PluginPackageFormPage extends IDEFormPage
 
     public PluginPackageFormPage( PluginPackageEditor editor )
     {
-        super( editor, "pluginPackage", "Properties" );
+        super( editor, "pluginPackage", LangMessages.PluginPackageFormPage_properties ); //$NON-NLS-1$
     }
 
     @Override
@@ -57,8 +58,8 @@ public class PluginPackageFormPage extends IDEFormPage
         FormToolkit toolkit = managedForm.getToolkit();
         toolkit.decorateFormHeading( form.getForm() );
 
-        form.setText( "Liferay Plugin Package Properties" );
-        form.setImage( PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/e16/plugin.png" ).createImage() );
+        form.setText( LangMessages.PluginPackageFormPage_liferay_plugin_package_properties );
+        form.setImage( PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/e16/plugin.png" ).createImage() ); //$NON-NLS-1$
 
         toolkit = managedForm.getToolkit();
 
@@ -90,11 +91,11 @@ public class PluginPackageFormPage extends IDEFormPage
 
     private String[] getContextsSectionLabels()
     {
-        return new String[] { "Add...", "Remove", "Up", "Down" };
+        return new String[] { LangMessages.PluginPackageFormPage_add, LangMessages.PluginPackageFormPage_remove, LangMessages.PluginPackageFormPage_up, LangMessages.PluginPackageFormPage_down };
     }
 
     private String[] getPortalSectionLabels()
     {
-        return new String[] { "Add...", "Remove" };
+        return new String[] { LangMessages.PluginPackageFormPage_add, LangMessages.PluginPackageFormPage_remove };
     }
 }

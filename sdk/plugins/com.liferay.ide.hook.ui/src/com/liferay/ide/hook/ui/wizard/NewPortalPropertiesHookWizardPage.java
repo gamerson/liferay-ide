@@ -18,6 +18,7 @@ package com.liferay.ide.hook.ui.wizard;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.hook.core.operation.INewHookDataModelProperties;
 import com.liferay.ide.hook.ui.HookUI;
+import com.liferay.ide.hook.ui.LangMessages;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.ui.util.SWTUtil;
 import com.liferay.ide.ui.wizard.StringArrayTableWizardSectionCallback;
@@ -65,10 +66,10 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
 
     public NewPortalPropertiesHookWizardPage( IDataModel dataModel, String pageName )
     {
-        super( dataModel, pageName, "Create Portal Properties", HookUI.imageDescriptorFromPlugin(
-            HookUI.PLUGIN_ID, "/icons/wizban/hook_wiz.png" ) );
+        super( dataModel, pageName, LangMessages.NewPortalPropertiesHookWizardPage_create_portal_properties, HookUI.imageDescriptorFromPlugin(
+            HookUI.PLUGIN_ID, "/icons/wizban/hook_wiz.png" ) ); //$NON-NLS-1$
 
-        setDescription( "Specify which portal properties to override." );
+        setDescription( LangMessages.NewPortalPropertiesHookWizardPage_specify_which_portal_properties_to_override );
     }
 
     protected void createEventActionsGroup( Composite topComposite )
@@ -78,8 +79,8 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
 
         eventActionsSection =
             new EventActionsTableWizardSection(
-                composite, "Define actions to be executed on portal events:", "Add Event Action", "Add...", "Edit...",
-                "Remove...", new String[] { "Event", "Class" }, new String[] { "Event:", "Class:" }, null,
+                composite, LangMessages.NewPortalPropertiesHookWizardPage_define_actions_to_be_executed_on_portal_events, LangMessages.NewPortalPropertiesHookWizardPage_add_event_action, LangMessages.NewPortalPropertiesHookWizardPage_add, LangMessages.NewPortalPropertiesHookWizardPage_edit,
+                LangMessages.NewPortalPropertiesHookWizardPage_remove, new String[] { LangMessages.NewPortalPropertiesHookWizardPage_event, LangMessages.NewPortalPropertiesHookWizardPage_class }, new String[] { LangMessages.NewPortalPropertiesHookWizardPage_event2, LangMessages.NewPortalPropertiesHookWizardPage_class2 }, null,
                 getDataModel(), PORTAL_PROPERTIES_ACTION_ITEMS );
 
         GridData gd = new GridData( SWT.FILL, SWT.CENTER, true, true, 1, 1 );
@@ -106,12 +107,12 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
         composite.setLayout( gl );
         composite.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 3, 1 ) );
 
-        SWTUtil.createLabel( composite, SWT.LEAD, "Portal properties file:", 1 );
+        SWTUtil.createLabel( composite, SWT.LEAD, LangMessages.NewPortalPropertiesHookWizardPage_portal_properties_file, 1 );
 
         portalPropertiesFile = SWTUtil.createText( composite, 1 );
         this.synchHelper.synchText( portalPropertiesFile, PORTAL_PROPERTIES_FILE, null );
 
-        Button iconFileBrowse = SWTUtil.createPushButton( composite, "Browse...", null );
+        Button iconFileBrowse = SWTUtil.createPushButton( composite, LangMessages.NewPortalPropertiesHookWizardPage_browse, null );
         iconFileBrowse.addSelectionListener( new SelectionAdapter()
         {
 
@@ -130,8 +131,8 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
 
         propertyOverridesSection =
             new PropertyOverridesTableWizardSection(
-                composite, "Specify properties to override:", "Add Property Override", "Add...", "Edit...",
-                "Remove...", new String[] { "Property", "Value" }, new String[] { "Property:", "Value:" }, null,
+                composite, LangMessages.NewPortalPropertiesHookWizardPage_specify_properties_to_override, LangMessages.NewPortalPropertiesHookWizardPage_add_property_override, LangMessages.NewPortalPropertiesHookWizardPage_add, LangMessages.NewPortalPropertiesHookWizardPage_edit,
+                LangMessages.NewPortalPropertiesHookWizardPage_remove, new String[] { LangMessages.NewPortalPropertiesHookWizardPage_property, LangMessages.NewPortalPropertiesHookWizardPage_value }, new String[] { LangMessages.NewPortalPropertiesHookWizardPage_property2, LangMessages.NewPortalPropertiesHookWizardPage_value2 }, null,
                 getDataModel(), PORTAL_PROPERTIES_OVERRIDE_ITEMS );
 
         GridData gd = new GridData( SWT.FILL, SWT.CENTER, true, true, 1, 1 );
@@ -176,7 +177,7 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
                     return Status.OK_STATUS;
                 }
 
-                return HookUI.createErrorStatus( "Choose a valid file or folder for portal.properties." );
+                return HookUI.createErrorStatus( LangMessages.NewPortalPropertiesHookWizardPage_choose_a_valid_file_or_folder_for_portal_properties );
             }
         };
     }
@@ -221,7 +222,7 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
                 {
                     IFile file = (IFile) element;
 
-                    return file.exists() && file.getName().equals( "portal.properties" );
+                    return file.exists() && file.getName().equals( "portal.properties" ); //$NON-NLS-1$
                 }
 
                 return false;
@@ -249,8 +250,8 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
 
         ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog( getShell(), labelProvider, contentProvider );
         dialog.setValidator( validator );
-        dialog.setTitle( "Portal properties File" );
-        dialog.setMessage( "Portal properties File" );
+        dialog.setTitle( LangMessages.NewPortalPropertiesHookWizardPage_portal_properties_file2 );
+        dialog.setMessage( LangMessages.NewPortalPropertiesHookWizardPage_portal_properties_file2 );
         dialog.addFilter( filter );
         dialog.setInput( CoreUtil.getWorkspaceRoot() );
 
@@ -270,7 +271,7 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
                 {
                     IFolder folder = (IFolder) element;
 
-                    text.setText( folder.getFullPath().append( "portal.properties" ).toPortableString() );
+                    text.setText( folder.getFullPath().append( "portal.properties" ).toPortableString() ); //$NON-NLS-1$
                 }
             }
             catch( Exception ex )

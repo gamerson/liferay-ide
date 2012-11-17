@@ -17,6 +17,7 @@ package com.liferay.ide.portlet.vaadin.ui.wizard;
 
 import com.liferay.ide.portlet.ui.wizard.NewPortletClassWizardPage;
 import com.liferay.ide.portlet.vaadin.core.operation.INewVaadinPortletClassDataModelProperties;
+import com.liferay.ide.portlet.vaadin.ui.LangMessages;
 import com.liferay.ide.portlet.vaadin.ui.VaadinUI;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -64,7 +65,7 @@ public class NewVaadinApplicationClassWizardPage extends NewPortletClassWizardPa
     {
         // class name
         classLabel = new Label( parent, SWT.LEFT );
-        classLabel.setText( "Application class:" );
+        classLabel.setText( LangMessages.NewVaadinApplicationClassWizardPage_application_class );
         classLabel.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
 
         classText = new Text( parent, SWT.SINGLE | SWT.BORDER );
@@ -84,7 +85,7 @@ public class NewVaadinApplicationClassWizardPage extends NewPortletClassWizardPa
     {
         // portlet class
         vaadinPortletClassLabel = new Label( parent, SWT.LEFT );
-        vaadinPortletClassLabel.setText( "Portlet class:" );
+        vaadinPortletClassLabel.setText( LangMessages.NewVaadinApplicationClassWizardPage_portlet_class );
         vaadinPortletClassLabel.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
 
         vaadinPortletClassCombo = new Combo( parent, SWT.DROP_DOWN );
@@ -93,7 +94,7 @@ public class NewVaadinApplicationClassWizardPage extends NewPortletClassWizardPa
 
         if( this.fragment )
         {
-            SWTUtil.createLabel( parent, "", 1 );
+            SWTUtil.createLabel( parent, "", 1 ); //$NON-NLS-1$
         }
         else
         {
@@ -158,12 +159,12 @@ public class NewVaadinApplicationClassWizardPage extends NewPortletClassWizardPa
     protected void handlePortletClassButtonSelected( Control control )
     {
         handleClassButtonSelected(
-            control, "javax.portlet.GenericPortlet", "Portlet Class Selection", "Choose a portlet class:" );
+            control, "javax.portlet.GenericPortlet", LangMessages.NewVaadinApplicationClassWizardPage_portlet_class_selection, LangMessages.NewVaadinApplicationClassWizardPage_choose_a_portlet_class ); //$NON-NLS-1$
     }
 
     protected void setShellImage()
     {
-        URL url = VaadinUI.getDefault().getBundle().getEntry( "/icons/e16/vaadinportlet.png" );
+        URL url = VaadinUI.getDefault().getBundle().getEntry( "/icons/e16/vaadinportlet.png" ); //$NON-NLS-1$
 
         Image shellImage = ImageDescriptor.createFromURL( url ).createImage();
 

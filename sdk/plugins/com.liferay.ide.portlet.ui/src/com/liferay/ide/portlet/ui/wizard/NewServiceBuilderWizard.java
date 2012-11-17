@@ -17,6 +17,7 @@ package com.liferay.ide.portlet.ui.wizard;
 
 import com.liferay.ide.portlet.core.operation.INewServiceBuilderDataModelProperties;
 import com.liferay.ide.portlet.core.operation.NewServiceBuilderDataModelProvider;
+import com.liferay.ide.portlet.ui.LangMessages;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.portlet.ui.template.ServiceBuilderTemplateContextTypeIds;
 import com.liferay.ide.project.ui.wizard.ValidProjectChecker;
@@ -42,7 +43,7 @@ public class NewServiceBuilderWizard extends NewWebArtifactWizard
     implements INewWizard, INewServiceBuilderDataModelProperties
 {
 
-    public static final String ID = "com.liferay.ide.portlet.ui.wizard.servicebuilder";
+    public static final String ID = "com.liferay.ide.portlet.ui.wizard.servicebuilder"; //$NON-NLS-1$
 
     public NewServiceBuilderWizard()
     {
@@ -60,8 +61,8 @@ public class NewServiceBuilderWizard extends NewWebArtifactWizard
     protected void doAddPages()
     {
         addPage( new NewServiceBuilderWizardPage(
-            getDataModel(), "pageOne", "New Liferay Service Builder",
-            "Create a new service builder xml file in a project." ) );
+            getDataModel(), "pageOne", LangMessages.NewServiceBuilderWizard_new_liferay_service_builder, //$NON-NLS-1$
+            LangMessages.NewServiceBuilderWizard_create_a_new_service_builder_xml_file_in_a_project ) );
     }
 
     @Override
@@ -78,13 +79,13 @@ public class NewServiceBuilderWizard extends NewWebArtifactWizard
 
     protected ImageDescriptor getImage()
     {
-        return PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/wizban/service_wiz.png" );
+        return PortletUIPlugin.imageDescriptorFromPlugin( PortletUIPlugin.PLUGIN_ID, "/icons/wizban/service_wiz.png" ); //$NON-NLS-1$
     }
 
     @Override
     protected String getTitle()
     {
-        return "New Service Builder";
+        return LangMessages.NewServiceBuilderWizard_new_service_builder;
     }
 
     @Override

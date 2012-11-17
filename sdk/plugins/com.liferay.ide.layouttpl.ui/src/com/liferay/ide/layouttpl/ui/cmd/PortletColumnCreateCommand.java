@@ -17,6 +17,7 @@
 
 package com.liferay.ide.layouttpl.ui.cmd;
 
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.model.LayoutConstraint;
 import com.liferay.ide.layouttpl.ui.model.LayoutTplDiagram;
 import com.liferay.ide.layouttpl.ui.model.ModelElement;
@@ -39,7 +40,7 @@ public class PortletColumnCreateCommand extends Command
         this.newColumn = newColumn;
         this.diagram = diagram;
         this.layoutConstraint = constraint;
-        setLabel( "Portlet column added" );
+        setLabel( LangMessages.PortletColumnCreateCommand_portlet_column_added );
     }
 
     public boolean canExecute()
@@ -99,7 +100,7 @@ public class PortletColumnCreateCommand extends Command
         }
         else
         {
-            System.out.println( "UNDO not supported!" );
+            System.out.println( LangMessages.PortletColumnCreateCommand_undo_not_supported );
         }
     }
 

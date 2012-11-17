@@ -16,6 +16,7 @@
 package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.SDKProjectsImportDataModelProvider;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.sdk.SDK;
 import com.liferay.ide.ui.util.UIUtil;
@@ -48,9 +49,9 @@ public class SDKProjectsImportWizard extends DataModelWizard implements IWorkben
     {
         super( dataModel );
 
-        setWindowTitle( "Import Projects" );
+        setWindowTitle( LangMessages.SDKProjectsImportWizard_import_projects );
         setDefaultPageImageDescriptor( ProjectUIPlugin.imageDescriptorFromPlugin(
-            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/import_wiz.png" ) );
+            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/import_wiz.png" ) ); //$NON-NLS-1$
     }
 
     public SDKProjectsImportWizard( SDK sdk )
@@ -78,7 +79,7 @@ public class SDKProjectsImportWizard extends DataModelWizard implements IWorkben
             model.setStringProperty( SDKProjectsImportDataModelProvider.LIFERAY_SDK_NAME, sdk.getName() );
         }
 
-        sdkProjectsImportWizardPage = new SDKProjectsImportWizardPage( getDataModel(), "pageOne" );
+        sdkProjectsImportWizardPage = new SDKProjectsImportWizardPage( getDataModel(), "pageOne" ); //$NON-NLS-1$
 
         addPage( sdkProjectsImportWizardPage );
     }

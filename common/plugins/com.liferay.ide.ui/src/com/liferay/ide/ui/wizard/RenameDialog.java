@@ -11,6 +11,7 @@
 
 package com.liferay.ide.ui.wizard;
 
+import com.liferay.ide.ui.LangMessages;
 import com.liferay.ide.ui.LiferayUIPlugin;
 
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class RenameDialog extends SelectionStatusDialog
         container.setLayoutData( gd );
 
         Label label = new Label( container, SWT.NULL );
-        label.setText( "Enter new name" );
+        label.setText( LangMessages.RenameDialog_enter_new_name );
 
         text = new Text( container, SWT.SINGLE | SWT.BORDER );
         text.addModifyListener( new ModifyListener()
@@ -175,7 +176,7 @@ public class RenameDialog extends SelectionStatusDialog
                 ( !isCaseSensitive && text.equalsIgnoreCase( oldNames.get( i ).toString() ) ) )
             {
                 status =
-                    new Status( IStatus.ERROR, LiferayUIPlugin.PLUGIN_ID, IStatus.ERROR, "Name already exists", null );
+                    new Status( IStatus.ERROR, LiferayUIPlugin.PLUGIN_ID, IStatus.ERROR, LangMessages.RenameDialog_name_already_exists, null );
                 updateStatus( status );
                 okButton.setEnabled( false );
                 break;

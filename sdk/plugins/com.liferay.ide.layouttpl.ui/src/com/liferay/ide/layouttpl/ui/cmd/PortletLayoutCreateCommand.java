@@ -17,6 +17,7 @@
 
 package com.liferay.ide.layouttpl.ui.cmd;
 
+import com.liferay.ide.layouttpl.ui.LangMessages;
 import com.liferay.ide.layouttpl.ui.model.LayoutConstraint;
 import com.liferay.ide.layouttpl.ui.model.LayoutTplDiagram;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
@@ -38,7 +39,7 @@ public class PortletLayoutCreateCommand extends Command
         this.newLayout = newLayout;
         this.diagram = diagram;
         this.layoutConstraint = constraint;
-        setLabel( "Portlet row added" );
+        setLabel( LangMessages.PortletLayoutCreateCommand_portlet_row_added );
     }
 
     public boolean canExecute()
@@ -64,7 +65,7 @@ public class PortletLayoutCreateCommand extends Command
 
     public void undo()
     {
-        System.out.println( "UNDO not yet supported!" );
+        System.out.println( LangMessages.PortletLayoutCreateCommand_undo_not_yet_supported );
     }
 
 }

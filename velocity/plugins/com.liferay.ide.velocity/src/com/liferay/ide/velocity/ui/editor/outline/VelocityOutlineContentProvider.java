@@ -19,7 +19,7 @@ import com.liferay.ide.velocity.vaulttec.ui.model.ITreeNode;
 public class VelocityOutlineContentProvider implements ITreeContentProvider
 {
 
-    public static final String VELOCITY_TEMPLATE = "__velocity_template";
+    public static final String VELOCITY_TEMPLATE = "__velocity_template"; //$NON-NLS-1$
     private VelocityEditor     fEditor;
     private IPositionUpdater   fPositionUpdater;
 

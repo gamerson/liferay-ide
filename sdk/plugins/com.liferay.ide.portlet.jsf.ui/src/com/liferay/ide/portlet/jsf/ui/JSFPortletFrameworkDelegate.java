@@ -53,55 +53,55 @@ public class JSFPortletFrameworkDelegate extends AbstractPortletFrameworkDelegat
     {
         this.syncHelper = new DataModelSynchHelper( this.dataModel );
         
-        final Group group = SWTUtil.createGroup( parent, "Select JSF component suite", 2 );
+        final Group group = SWTUtil.createGroup( parent, LangMessages.JSFPortletFrameworkDelegate_select_jsf_component_suite, 2 );
         
         createComponentSuiteOption
         (
             group, 
-            "JSF standard", 
-            "Standard UI components provided by the JSF runtime. <a>Learn more...</a>", 
-            "icons/e16/jsf-logo-16x16.png", 
-            "http://javaserverfaces.java.net/",
+            LangMessages.JSFPortletFrameworkDelegate_jsf_standard, 
+            LangMessages.JSFPortletFrameworkDelegate_standard_ui_components_provided_by_the_jsf_runtime_learn_more, 
+            "icons/e16/jsf-logo-16x16.png",  //$NON-NLS-1$
+            "http://javaserverfaces.java.net/", //$NON-NLS-1$
             COMPONENT_SUITE_JSF_STANDARD
         );
         
         createComponentSuiteOption
         (
             group, 
-            "Liferay Faces Alloy", 
-            "Components that utilize Liferay's Alloy UI technology based on YUI3. <a>Learn more...</a>", 
-            "icons/e16/liferay_faces.png", 
-            "http://www.liferay.com/community/liferay-projects/liferay-faces/alloy",
+            LangMessages.JSFPortletFrameworkDelegate_liferay_faces_alloy, 
+            LangMessages.JSFPortletFrameworkDelegate_components_that_utilize_liferays_alloy_ui_technology_based_on_yui3_learn_more, 
+            "icons/e16/liferay_faces.png",  //$NON-NLS-1$
+            "http://www.liferay.com/community/liferay-projects/liferay-faces/alloy", //$NON-NLS-1$
             COMPONENT_SUITE_LIFERAY_FACES_ALLOY
         );
         
         createComponentSuiteOption
         (
             group, 
-            "ICEfaces", 
-            "Components based in part on YUI and jQuery with automatic Ajax and Ajax Push support. <a>Learn more...</a>", 
-            "icons/e16/icefaces_16x16.png", 
-            "http://www.icesoft.org/projects/ICEfaces",
+            LangMessages.JSFPortletFrameworkDelegate_icefaces, 
+            LangMessages.JSFPortletFrameworkDelegate_components_based_in_part_on_yui_and_jquery_with_automatic_ajax_and_ajax_push_support_learn_more, 
+            "icons/e16/icefaces_16x16.png",  //$NON-NLS-1$
+            "http://www.icesoft.org/projects/ICEfaces", //$NON-NLS-1$
             COMPONENT_SUITE_ICEFACES
         );
         
         createComponentSuiteOption
         (
             group, 
-            "PrimeFaces", 
-            "Lightweight, zero-configuration JSF UI framework built on jQuery. <a>Learn more...</a>", 
-            "icons/e16/primefaces_16x16.png", 
-            "http://www.primefaces.org/",
+            LangMessages.JSFPortletFrameworkDelegate_primefaces, 
+            LangMessages.JSFPortletFrameworkDelegate_lightweight_zero_configuration_jsf_ui_framework_built_on_jquery_learn_more, 
+            "icons/e16/primefaces_16x16.png",  //$NON-NLS-1$
+            "http://www.primefaces.org/", //$NON-NLS-1$
             COMPONENT_SUITE_PRIMEFACES
         );
         
         createComponentSuiteOption
         (
             group, 
-            "RichFaces", 
-            "Next-generation JSF component framework by JBoss. <a>Learn more...</a>", 
-            "icons/e16/portlet_16x16.png", 
-            "http://www.jboss.org/richfaces",
+            LangMessages.JSFPortletFrameworkDelegate_richfaces, 
+            LangMessages.JSFPortletFrameworkDelegate_next_generation_jsf_component_framework_by_jboss_learn_more, 
+            "icons/e16/portlet_16x16.png",  //$NON-NLS-1$
+            "http://www.jboss.org/richfaces", //$NON-NLS-1$
             COMPONENT_SUITE_RICHFACES
         );
         

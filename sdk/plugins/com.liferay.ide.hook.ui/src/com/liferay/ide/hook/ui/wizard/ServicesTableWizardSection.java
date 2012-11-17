@@ -17,6 +17,7 @@ package com.liferay.ide.hook.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.hook.ui.HookUI;
+import com.liferay.ide.hook.ui.LangMessages;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.ServerUtil;
@@ -94,7 +95,7 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
 
             Composite buttonComposite = new Composite( parent, SWT.NONE );
 
-            String[] buttonLbls = buttonLabels[index].split( "," );
+            String[] buttonLbls = buttonLabels[index].split( "," ); //$NON-NLS-1$
 
             GridLayout gl = new GridLayout( buttonLbls.length, true );
             gl.marginWidth = 0;
@@ -126,11 +127,11 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
             { // select event
                 handleSelectServiceButton( text );
             }
-            else if( index == 1 && "Select...".equals( label ) )
+            else if( index == 1 && LangMessages.ServicesTableWizardSection_select.equals( label ) )
             {
                 handleSelectImplClassButton( text );
             }
-            else if( index == 1 && "New...".equals( label ) )
+            else if( index == 1 && LangMessages.ServicesTableWizardSection_new.equals( label ) )
             {
                 handleNewImplClassButton( text );
             }
@@ -140,18 +141,18 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
         {
             if( CoreUtil.isNullOrEmpty( texts[0].getText() ) )
             {
-                MessageDialog.openWarning( getParentShell(), "Add Service", "Please specify a service type first." );
+                MessageDialog.openWarning( getParentShell(), LangMessages.ServicesTableWizardSection_add_service, LangMessages.ServicesTableWizardSection_please_specify_a_service_type_first );
 
                 return;
             }
 
             String serviceType = texts[0].getText();
 
-            String wrapperType = "";
+            String wrapperType = ""; //$NON-NLS-1$
 
-            if( serviceType.endsWith( "Service" ) )
+            if( serviceType.endsWith( "Service" ) ) //$NON-NLS-1$
             {
-                wrapperType = serviceType + "Wrapper";
+                wrapperType = serviceType + "Wrapper"; //$NON-NLS-1$
             }
 
             NewEventActionClassDialog dialog =
@@ -169,7 +170,7 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
         {
             if( CoreUtil.isNullOrEmpty( texts[0].getText() ) )
             {
-                MessageDialog.openWarning( getParentShell(), "Add Service", "Please specify a service type first." );
+                MessageDialog.openWarning( getParentShell(), LangMessages.ServicesTableWizardSection_add_service, LangMessages.ServicesTableWizardSection_please_specify_a_service_type_first );
 
                 return;
             }
@@ -190,9 +191,9 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
                 // make it the supertype
                 String serviceType = texts[0].getText();
 
-                if( serviceType.endsWith( "Service" ) )
+                if( serviceType.endsWith( "Service" ) ) //$NON-NLS-1$
                 {
-                    String wrapperType = serviceType + "Wrapper";
+                    String wrapperType = serviceType + "Wrapper"; //$NON-NLS-1$
 
                     scope = BasicSearchEngine.createHierarchyScope( packRoot.getJavaProject().findType( wrapperType ) );
                 }
@@ -227,7 +228,7 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
         protected void handleSelectServiceButton( Text text )
         {
             PortalServiceSearchScope scope = new PortalServiceSearchScope();
-            scope.setResourcePattern( new String[] { ".*Service.class$" } );
+            scope.setResourcePattern( new String[] { ".*Service.class$" } ); //$NON-NLS-1$
 
             IProject project = ProjectUtil.getProject( model );
 
@@ -239,7 +240,7 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
 
                 for( IPath lib : libs )
                 {
-                    if( lib.lastSegment().equals( "portal-service.jar" ) )
+                    if( lib.lastSegment().equals( "portal-service.jar" ) ) //$NON-NLS-1$
                     {
                         scope.setEnclosingJarPaths( new IPath[] { lib } );
 
@@ -288,7 +289,7 @@ public class ServicesTableWizardSection extends StringArrayTableWizardSection
     {
         super( parent, componentLabel, dialogTitle, addButtonLabel, editButtonLabel, removeButtonLabel, columnTitles, fieldLabels, labelProviderImage, model, propertyName );
 
-        this.buttonLabels = new String[] { "Select...", "Select...,New..." };
+        this.buttonLabels = new String[] { LangMessages.ServicesTableWizardSection_select, LangMessages.ServicesTableWizardSection_select_new };
 
         this.servicesPropertiesFile = null;
     }

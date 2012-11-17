@@ -17,6 +17,7 @@ package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.BinaryProjectsImportDataModelProvider;
 import com.liferay.ide.project.core.SDKProjectsImportDataModelProvider;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.project.ui.ProjectUIPlugin;
 import com.liferay.ide.sdk.SDK;
 import com.liferay.ide.ui.util.UIUtil;
@@ -51,10 +52,10 @@ public class BinaryProjectsImportWizard extends DataModelWizard implements IWork
     {
         super( dataModel );
 
-        setWindowTitle( "Import Projects" );
+        setWindowTitle( LangMessages.BinaryProjectsImportWizard_import_projects );
 
         setDefaultPageImageDescriptor( ProjectUIPlugin.imageDescriptorFromPlugin(
-            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/import_wiz.png" ) );
+            ProjectUIPlugin.PLUGIN_ID, "/icons/wizban/import_wiz.png" ) ); //$NON-NLS-1$
     }
 
     public BinaryProjectsImportWizard( SDK sdk )
@@ -79,7 +80,7 @@ public class BinaryProjectsImportWizard extends DataModelWizard implements IWork
             model.setStringProperty( SDKProjectsImportDataModelProvider.LIFERAY_SDK_NAME, sdk.getName() );
         }
 
-        pluginBinaryProjectsImportWizardPage = new BinaryProjectsImportWizardPage( getDataModel(), "pageOne" );
+        pluginBinaryProjectsImportWizardPage = new BinaryProjectsImportWizardPage( getDataModel(), "pageOne" ); //$NON-NLS-1$
 
         addPage( pluginBinaryProjectsImportWizardPage );
     }

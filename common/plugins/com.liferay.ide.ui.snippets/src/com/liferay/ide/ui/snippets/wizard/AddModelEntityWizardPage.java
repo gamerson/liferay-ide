@@ -18,6 +18,8 @@ package com.liferay.ide.ui.snippets.wizard;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 
+import com.liferay.ide.ui.snippets.LangMessages;
+
 /**
  * @author Greg Amerson
  */
@@ -27,8 +29,8 @@ public class AddModelEntityWizardPage extends AbstractModelWizardPage
     public AddModelEntityWizardPage( String pageName, IEditorPart editor )
     {
         super( pageName, editor );
-        setTitle( "Add Model Entity" );
-        setDescription( "Insert code to create a new model entity.." );
+        setTitle( LangMessages.AddModelEntityWizardPage_add_model_entity );
+        setDescription( LangMessages.AddModelEntityWizardPage_insert_code_to_create_a_new_model_entity );
     }
 
     public void createControl( Composite parent )

@@ -17,6 +17,7 @@ package com.liferay.ide.portlet.jsf.ui.wizard;
 
 import com.liferay.ide.portlet.jsf.core.JSFPortletUtil;
 import com.liferay.ide.portlet.jsf.core.operation.INewJSFPortletClassDataModelProperties;
+import com.liferay.ide.portlet.jsf.ui.LangMessages;
 import com.liferay.ide.portlet.ui.wizard.NewPortletClassWizardPage;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -66,7 +67,7 @@ public class NewJSFPortletClassWizardPage extends NewPortletClassWizardPage
     {
         // portlet class
         jsfPortletClassLabel = new Label( parent, SWT.LEFT );
-        jsfPortletClassLabel.setText( "Portlet class:" );
+        jsfPortletClassLabel.setText( LangMessages.NewJSFPortletClassWizardPage_portlet_class );
         jsfPortletClassLabel.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
 
         jsfPortletClassText = new Text( parent, SWT.BORDER );
@@ -75,7 +76,7 @@ public class NewJSFPortletClassWizardPage extends NewPortletClassWizardPage
 
         if( this.fragment )
         {
-            SWTUtil.createLabel( parent, "", 1 );
+            SWTUtil.createLabel( parent, "", 1 ); //$NON-NLS-1$
         }
         else
         {
@@ -132,7 +133,7 @@ public class NewJSFPortletClassWizardPage extends NewPortletClassWizardPage
     protected void handlePortletClassButtonSelected( Control control )
     {
         handleClassButtonSelected(
-            control, "javax.portlet.GenericPortlet", "Portlet Class Selection", "Choose a portlet class:" );
+            control, "javax.portlet.GenericPortlet", LangMessages.NewJSFPortletClassWizardPage_portlet_class_selection, LangMessages.NewJSFPortletClassWizardPage_choose_a_portlet_class ); //$NON-NLS-1$
     }
 
     @Override

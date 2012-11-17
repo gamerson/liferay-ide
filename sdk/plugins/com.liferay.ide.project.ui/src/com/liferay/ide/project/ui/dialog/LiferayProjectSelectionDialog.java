@@ -18,6 +18,7 @@
 package com.liferay.ide.project.ui.dialog;
 
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.ui.LangMessages;
 import com.liferay.ide.ui.LiferayUIPlugin;
 
 import java.util.HashSet;
@@ -107,8 +108,8 @@ public class LiferayProjectSelectionDialog extends SelectionStatusDialog
     public LiferayProjectSelectionDialog( Shell parentShell, ViewerFilter filter )
     {
         super( parentShell );
-        setTitle( "Project Selection" );
-        setMessage( "Select project" );
+        setTitle( LangMessages.LiferayProjectSelectionDialog_project_selection );
+        setMessage( LangMessages.LiferayProjectSelectionDialog_select_project );
 
         fFilter = filter;
     }

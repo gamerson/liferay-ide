@@ -17,6 +17,7 @@ package com.liferay.ide.hook.ui.wizard;
 
 import com.liferay.ide.hook.core.operation.NewEventActionClassDataModelProvider;
 import com.liferay.ide.hook.core.operation.NewEventActionClassOperation;
+import com.liferay.ide.hook.ui.LangMessages;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jdt.core.IJavaElement;
@@ -122,7 +123,7 @@ public class NewEventActionClassDialog extends Dialog
     {
         if( IDialogConstants.OK_ID == id )
         {
-            return super.createButton( parent, id, "Create", defaultButton );
+            return super.createButton( parent, id, LangMessages.NewEventActionClassDialog_create, defaultButton );
         }
 
         return super.createButton( parent, id, label, defaultButton );
@@ -132,7 +133,7 @@ public class NewEventActionClassDialog extends Dialog
     {
         // class name
         classLabel = new Label( parent, SWT.LEFT );
-        classLabel.setText( "Classname:" );
+        classLabel.setText( LangMessages.NewEventActionClassDialog_classname );
         classLabel.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
 
         classText = new Text( parent, SWT.SINGLE | SWT.BORDER );
@@ -173,8 +174,8 @@ public class NewEventActionClassDialog extends Dialog
 
         superCombo = new Combo( parent, SWT.DROP_DOWN );
         superCombo.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
-        superCombo.setItems( new String[] { "com.liferay.portal.kernel.events.SimpleAction",
-            "com.liferay.portal.kernel.events.SessionAction", "com.liferay.portal.kernel.events.Action" } );
+        superCombo.setItems( new String[] { "com.liferay.portal.kernel.events.SimpleAction", //$NON-NLS-1$
+            "com.liferay.portal.kernel.events.SessionAction", "com.liferay.portal.kernel.events.Action" } ); //$NON-NLS-1$ //$NON-NLS-2$
         superCombo.addSelectionListener( new SelectionAdapter()
         {
 
@@ -270,7 +271,7 @@ public class NewEventActionClassDialog extends Dialog
 
     protected void updateQualifiedClassname()
     {
-        this.qualifiedClassname = packageText.getText() + "." + classText.getText();
+        this.qualifiedClassname = packageText.getText() + "." + classText.getText(); //$NON-NLS-1$
     }
 
 }

@@ -17,6 +17,8 @@
 
 package com.liferay.ide.layouttpl.ui.editor;
 
+import com.liferay.ide.layouttpl.ui.LangMessages;
+
 /**
  * @author Gregory Amerson
  */
@@ -30,12 +32,12 @@ public class PortletLayoutTemplate
     {
         if( numCols < 1 )
         {
-            throw new IllegalArgumentException( "Number of columns must be greater than 0" );
+            throw new IllegalArgumentException( LangMessages.PortletLayoutTemplate_number_of_columns_must_be_greater_than_zero );
         }
 
         if( numCols != weights.length )
         {
-            throw new IllegalArgumentException( "Number of weight args must match number of columns." );
+            throw new IllegalArgumentException( LangMessages.PortletLayoutTemplate_number_of_weight_args_must_match_number_of_columns );
         }
 
         this.numColumns = numCols;

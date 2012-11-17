@@ -18,6 +18,7 @@ package com.liferay.ide.hook.ui.wizard;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.hook.core.operation.INewHookDataModelProperties;
 import com.liferay.ide.hook.ui.HookUI;
+import com.liferay.ide.hook.ui.LangMessages;
 import com.liferay.ide.ui.util.SWTUtil;
 import com.liferay.ide.ui.wizard.StringArrayTableWizardSectionCallback;
 
@@ -38,10 +39,10 @@ public class NewServicesHookWizardPage extends DataModelWizardPage implements IN
 
     public NewServicesHookWizardPage( IDataModel dataModel, String pageName )
     {
-        super( dataModel, pageName, "Create Service Hook", HookUI.imageDescriptorFromPlugin(
-            HookUI.PLUGIN_ID, "/icons/wizban/hook_wiz.png" ) );
+        super( dataModel, pageName, LangMessages.NewServicesHookWizardPage_create_service_hook, HookUI.imageDescriptorFromPlugin(
+            HookUI.PLUGIN_ID, "/icons/wizban/hook_wiz.png" ) ); //$NON-NLS-1$
 
-        setDescription( "Specify which Liferay services to extend." );
+        setDescription( LangMessages.NewServicesHookWizardPage_specify_which_liferay_service_to_extend );
     }
 
     protected void createServicesFileGroup( Composite topComposite )
@@ -51,9 +52,9 @@ public class NewServicesHookWizardPage extends DataModelWizardPage implements IN
 
         servicesSection =
             new ServicesTableWizardSection(
-                composite, "Define portal services to extend:", "Add Service Wrapper", "Add...", "Edit...",
-                "Remove...", new String[] { "Service Type", "Impl Class" }, new String[] { "Service Type:",
-                    "Impl Class:" }, null, getDataModel(), SERVICES_ITEMS );
+                composite, LangMessages.NewServicesHookWizardPage_define_portal_services_to_extend, LangMessages.NewServicesHookWizardPage_add_service_wrapper, LangMessages.NewServicesHookWizardPage_add, LangMessages.NewServicesHookWizardPage_edit,
+                LangMessages.NewServicesHookWizardPage_remove, new String[] { LangMessages.NewServicesHookWizardPage_service_type, LangMessages.NewServicesHookWizardPage_impl_class }, new String[] { LangMessages.NewServicesHookWizardPage_service_type2,
+                    LangMessages.NewServicesHookWizardPage_impl_class2 }, null, getDataModel(), SERVICES_ITEMS );
 
         GridData gd = new GridData( SWT.FILL, SWT.CENTER, true, true, 1, 1 );
         gd.heightHint = 150;

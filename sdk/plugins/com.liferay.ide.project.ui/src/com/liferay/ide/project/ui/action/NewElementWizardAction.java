@@ -2,6 +2,7 @@ package com.liferay.ide.project.ui.action;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.ui.LangMessages;
 
 import java.util.Set;
 
@@ -55,13 +56,13 @@ public class NewElementWizardAction extends NewWizardAction
 
                 if( validProjectTypes != null && facets != null)
                 {
-                    String[] validTypes = validProjectTypes.split( "," );
+                    String[] validTypes = validProjectTypes.split( "," ); //$NON-NLS-1$
                     for( String validProjectType : validTypes )
                     {
                         for( IProjectFacetVersion facet : facets )
                         {
                             String id = facet.getProjectFacet().getId();
-                            if(id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType )) {
+                            if(id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType )) { //$NON-NLS-1$ //$NON-NLS-2$
                                 hasValidProjectTypes = true;
                                 break;
                             }
@@ -76,9 +77,9 @@ public class NewElementWizardAction extends NewWizardAction
         }
         else {
             Shell shell = getShell();
-            Boolean openNewLiferayProjectWizard = MessageDialog.openQuestion( shell, "New Element",
-                "There are no suitable Liferay projects available for this new element.\nDo you want"
-                + " to open the \'New Liferay Project\' wizard now?" );
+            Boolean openNewLiferayProjectWizard = MessageDialog.openQuestion( shell, LangMessages.NewElementWizardAction_new_element,
+                LangMessages.NewElementWizardAction_there_are_no_suitableliferay_projects_available_for_this_new_element_do_you_want
+                + LangMessages.NewElementWizardAction_to_open_the_new_liferay_project_wizard_now );
 
             if(openNewLiferayProjectWizard) {
                 Action[] actions = NewPluginProjectDropDownAction.getNewProjectActions();

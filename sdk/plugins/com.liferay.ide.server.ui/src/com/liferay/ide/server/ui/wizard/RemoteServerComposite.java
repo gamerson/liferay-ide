@@ -17,6 +17,7 @@ import com.liferay.ide.server.remote.IRemoteServer;
 import com.liferay.ide.server.remote.IRemoteServerWorkingCopy;
 import com.liferay.ide.server.remote.RemoteServer;
 import com.liferay.ide.server.remote.RemoteUtil;
+import com.liferay.ide.server.ui.LangMessages;
 import com.liferay.ide.server.ui.LiferayServerUIPlugin;
 import com.liferay.ide.ui.LiferayUIPlugin;
 import com.liferay.ide.ui.util.SWTUtil;
@@ -168,39 +169,39 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         setLayout( new GridLayout( 1, false ) );
 
         disableValidation = true;
-        Group connectionGroup = SWTUtil.createGroup( this, "Connection Settings", 2 );
+        Group connectionGroup = SWTUtil.createGroup( this, LangMessages.RemoteServerComposite_connection_settings, 2 );
         connectionGroup.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
 
         Label labelHostname = new Label( connectionGroup, SWT.NONE );
-        labelHostname.setText( "Hostname:" );
+        labelHostname.setText( LangMessages.RemoteServerComposite_hostname );
 
         textHostname = new Text( connectionGroup, SWT.BORDER );
         textHostname.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         textHostname.addModifyListener( this );
 
         labelHttpPort = new Label( connectionGroup, SWT.NONE );
-        labelHttpPort.setText( "HTTP port:" );
+        labelHttpPort.setText( LangMessages.RemoteServerComposite_http_port );
 
         textHTTP = new Text( connectionGroup, SWT.BORDER );
         textHTTP.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
         textHTTP.addModifyListener( this );
 
         labelUsername = new Label( connectionGroup, SWT.NONE );
-        labelUsername.setText( "Username:" );
+        labelUsername.setText( LangMessages.RemoteServerComposite_username );
 
         textUsername = new Text( connectionGroup, SWT.BORDER );
         textUsername.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
         textUsername.addModifyListener( this );
 
         labelPassword = new Label( connectionGroup, SWT.NONE );
-        labelPassword.setText( "Password:" );
+        labelPassword.setText( LangMessages.RemoteServerComposite_password );
 
         textPassword = new Text( connectionGroup, SWT.BORDER | SWT.PASSWORD );
         textPassword.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         textPassword.addModifyListener( this );
 
         labelLiferayPortalContextPath = new Label( connectionGroup, SWT.NONE );
-        labelLiferayPortalContextPath.setText( "Liferay Portal Context Path:" );
+        labelLiferayPortalContextPath.setText( LangMessages.RemoteServerComposite_liferay_portal_context_path );
         labelLiferayPortalContextPath.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, false, false ) );
 
         textLiferayPortalContextPath = new Text( connectionGroup, SWT.BORDER );
@@ -208,19 +209,19 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         textLiferayPortalContextPath.addModifyListener( this );
 
         labelServerManagerContextPath = new Label( connectionGroup, SWT.NONE );
-        labelServerManagerContextPath.setText( "Server Manager Context Path:" );
+        labelServerManagerContextPath.setText( LangMessages.RemoteServerComposite_server_manager_context_path );
         labelServerManagerContextPath.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, false, false ) );
 
         textServerManagerContextPath = new Text( connectionGroup, SWT.BORDER );
         textServerManagerContextPath.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         textServerManagerContextPath.addModifyListener( this );
 
-        final String marketplaceLinkLabel = "Need to install the <a>Remote IDE Connector</a> from Liferay Marketplace?";
-        final String appUrl = "http://www.liferay.com/marketplace/-/mp/application/15193785";
+        final String marketplaceLinkLabel = LangMessages.RemoteServerComposite_need_to_install_the_remote_ide_connector_from_liferay_marketplace;
+        final String appUrl = "http://www.liferay.com/marketplace/-/mp/application/15193785"; //$NON-NLS-1$
         SWTUtil.createHyperLink( this, SWT.NONE, marketplaceLinkLabel, 1, appUrl );
         
-        final String installLabel = "<a>Click here to install app into configured portal server.</a>";
-        final String installUrl = "{0}/group/control_panel/manage?p_p_id=1_WAR_marketplaceportlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&appId=15193785"; 
+        final String installLabel = LangMessages.RemoteServerComposite_a_href_click_here_to_install_app_into_configured_portal_server;
+        final String installUrl = "{0}/group/control_panel/manage?p_p_id=1_WAR_marketplaceportlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&appId=15193785";  //$NON-NLS-1$
         final Link installLink = SWTUtil.createLink( this, SWT.NONE, installLabel, 1 );
         installLink.addSelectionListener
         (
@@ -231,12 +232,12 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
                     try
                     {
                         final String url =
-                            MessageFormat.format( installUrl, "http://" + textHostname.getText() + ":" + textHTTP.getText() );
+                            MessageFormat.format( installUrl, "http://" + textHostname.getText() + ":" + textHTTP.getText() ); //$NON-NLS-1$ //$NON-NLS-2$
                         PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL( new URL( url ) );
                     }
                     catch ( Exception e1 )
                     {
-                        LiferayUIPlugin.logError( "Could not open external browser.", e1 );
+                        LiferayUIPlugin.logError( LangMessages.RemoteServerComposite_could_not_open_external_browser, e1 );
                     }
                 };
             }
@@ -247,7 +248,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         validateComposite.setLayout( new GridLayout( 1, false ) );
 
         Button validateButton = new Button( validateComposite, SWT.PUSH );
-        validateButton.setText( "Validate connection" );
+        validateButton.setText( LangMessages.RemoteServerComposite_validate_connection );
         validateButton.setLayoutData( new GridData( SWT.LEFT, SWT.BOTTOM, false, false ) );
         validateButton.addSelectionListener( new SelectionAdapter()
         {
@@ -305,7 +306,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
 
         if( serverWC == null )
         {
-            wizard.setMessage( "", IMessageProvider.ERROR );
+            wizard.setMessage( "", IMessageProvider.ERROR ); //$NON-NLS-1$
             return;
         }
 
@@ -381,21 +382,21 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
 
         if( CoreUtil.isNullOrEmpty( host ) )
         {
-            return LiferayServerUIPlugin.createErrorStatus( "Must specify hostname" );
+            return LiferayServerUIPlugin.createErrorStatus( LangMessages.RemoteServerComposite_must_specify_hostname );
         }
 
         String username = remoteServerWC.getUsername();
 
         if( CoreUtil.isNullOrEmpty( username ) )
         {
-            return LiferayServerUIPlugin.createErrorStatus( "Must specify username and password" );
+            return LiferayServerUIPlugin.createErrorStatus( LangMessages.RemoteServerComposite_must_specify_username_and_password );
         }
 
         String port = remoteServerWC.getHTTPPort();
 
         if( CoreUtil.isNullOrEmpty( port ) )
         {
-            return LiferayServerUIPlugin.createErrorStatus( "Must specify HTTP port" );
+            return LiferayServerUIPlugin.createErrorStatus( LangMessages.RemoteServerComposite_must_specify_http_port );
         }
 
         IStatus status = remoteServerWC.validate( monitor );

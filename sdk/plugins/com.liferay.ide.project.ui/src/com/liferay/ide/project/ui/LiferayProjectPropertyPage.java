@@ -70,7 +70,7 @@ public class LiferayProjectPropertyPage extends PropertyPage
         super();
 
         setImageDescriptor( ProjectUIPlugin.imageDescriptorFromPlugin(
-            ProjectUIPlugin.PLUGIN_ID, "/icons/e16/liferay.png" ) );
+            ProjectUIPlugin.PLUGIN_ID, "/icons/e16/liferay.png" ) ); //$NON-NLS-1$
     }
 
     protected void configureSDKsLinkSelected( SelectionEvent e )
@@ -131,7 +131,7 @@ public class LiferayProjectPropertyPage extends PropertyPage
 
                 if( !runtime.equals( primaryRuntime ) )
                 {
-                    Job job = new WorkspaceJob("Setting targeted runtime for project.")
+                    Job job = new WorkspaceJob(LangMessages.LiferayProjectPropertyPage_setting_targeted_runtime_for_project)
                     {
                         @Override
                         public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
@@ -145,7 +145,7 @@ public class LiferayProjectPropertyPage extends PropertyPage
                             }
                             catch( Exception e )
                             {
-                                retval = ProjectUIPlugin.createErrorStatus( "Could not set targeted runtime", e );
+                                retval = ProjectUIPlugin.createErrorStatus( LangMessages.LiferayProjectPropertyPage_could_not_set_targeted_runtime, e );
                             }
 
                             return retval;
@@ -166,7 +166,7 @@ public class LiferayProjectPropertyPage extends PropertyPage
 
     protected void createInfoGroup( Composite parent )
     {
-        new Label( parent, SWT.LEFT ).setText( "Liferay plugin type:" );
+        new Label( parent, SWT.LEFT ).setText( LangMessages.LiferayProjectPropertyPage_liferay_plugin_type );
 
         final Text pluginTypeLabel = new Text( parent, SWT.READ_ONLY | SWT.BORDER );
         pluginTypeLabel.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
@@ -178,7 +178,7 @@ public class LiferayProjectPropertyPage extends PropertyPage
             pluginTypeLabel.setText( liferayFacet.getLabel() );
         }
 
-        new Label( parent, SWT.LEFT ).setText( "Liferay runtime:" );
+        new Label( parent, SWT.LEFT ).setText( LangMessages.LiferayProjectPropertyPage_liferay_runtime );
 
         this.runtimeCombo = new Combo( parent, SWT.DROP_DOWN | SWT.READ_ONLY );
         this.runtimeCombo.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
@@ -193,7 +193,7 @@ public class LiferayProjectPropertyPage extends PropertyPage
         }
         catch( Exception e )
         {
-            ProjectUIPlugin.logError( "Could not determine liferay runtime", e );
+            ProjectUIPlugin.logError( LangMessages.LiferayProjectPropertyPage_could_not_determine_liferay_runtime, e );
         }
 
         final List<String> runtimeNames = new ArrayList<String>();
@@ -214,7 +214,7 @@ public class LiferayProjectPropertyPage extends PropertyPage
 
         if( runtimeNames.size() == 0 )
         {
-            runtimeNames.add( "No Liferay runtimes available." );
+            runtimeNames.add( LangMessages.LiferayProjectPropertyPage_no_liferay_runtime_available );
         }
 
         this.runtimeCombo.setItems( runtimeNames.toArray( new String[0] ) );
