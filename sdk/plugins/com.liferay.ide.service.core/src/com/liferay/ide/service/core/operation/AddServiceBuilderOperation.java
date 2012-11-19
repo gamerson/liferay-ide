@@ -24,6 +24,7 @@ import com.liferay.ide.service.core.ServiceCore;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IContainer;
@@ -53,7 +54,8 @@ import org.eclipse.wst.xml.core.internal.provisional.format.FormatProcessorXML;
 import org.osgi.framework.Version;
 
 /**
- * @author Greg Amerson
+ * @author Gregory Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( { "restriction" } )
 public class AddServiceBuilderOperation extends LiferayDataModelOperation
@@ -117,39 +119,31 @@ public class AddServiceBuilderOperation extends LiferayDataModelOperation
     protected void createDefaultServiceBuilderFile( IFile serviceBuilderFile ) throws UnsupportedEncodingException,
         CoreException, BadLocationException, TemplateException
     {
-        Template template = null;
+        String descriptorVersion = null;
 
         try
         {
             ILiferayRuntime liferayRuntime = ServerUtil.getLiferayRuntime( getTargetProject() );
+
             Version portalVersion = new Version( liferayRuntime.getPortalVersion() );
 
-            if( CoreUtil.compareVersions( portalVersion, new Version( 6, 1, 0 ) ) >= 0 )
-            {
-                if( getDataModel().getBooleanProperty( USE_SAMPLE_TEMPLATE ) )
-                {
-                    template = getTemplateStore().findTemplateById( SAMPLE_SERVICE_61_FILE_TEMPLATE );
-                }
-                else
-                {
-                    template = getTemplateStore().findTemplateById( SERVICE_61_FILE_TEMPLATE );
-                }
-            }
+            descriptorVersion = portalVersion.getMajor() + "." + portalVersion.getMinor() + ".0";
         }
         catch( Exception e )
         {
+            ServiceCore.logError( "Could not determine liferay runtime version", e );
+            descriptorVersion = "6.0.0";
         }
 
-        if( template == null )
+        Template template = null;
+
+        if( getDataModel().getBooleanProperty( USE_SAMPLE_TEMPLATE ) )
         {
-            if( getDataModel().getBooleanProperty( USE_SAMPLE_TEMPLATE ) )
-            {
-                template = getTemplateStore().findTemplateById( SAMPLE_SERVICE_FILE_TEMPLATE );
-            }
-            else
-            {
-                template = getTemplateStore().findTemplateById( SERVICE_FILE_TEMPLATE );
-            }
+            template = getTemplateStore().findTemplateById( SAMPLE_SERVICE_FILE_TEMPLATE );
+        }
+        else
+        {
+            template = getTemplateStore().findTemplateById( SERVICE_FILE_TEMPLATE );
         }
 
         IDocument document = new Document();
@@ -163,7 +157,8 @@ public class AddServiceBuilderOperation extends LiferayDataModelOperation
 
         TemplateBuffer buffer = context.evaluate( template );
 
-        templateString = buffer.getString();
+        templateString =
+            MessageFormat.format( buffer.getString(), descriptorVersion, descriptorVersion.replace( '.', '_' ) );
 
         CoreUtil.prepareFolder( (IFolder) serviceBuilderFile.getParent() );
 
