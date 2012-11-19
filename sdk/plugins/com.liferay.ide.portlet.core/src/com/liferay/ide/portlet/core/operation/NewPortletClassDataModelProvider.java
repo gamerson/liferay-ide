@@ -666,14 +666,6 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 
             return getBooleanProperty( CREATE_NEW_PORTLET_CLASS );
         }
-        else if( CREATE_RESOURCE_BUNDLE_FILE_PATH.equals( propertyName ) )
-        {
-            return getBooleanProperty( CREATE_RESOURCE_BUNDLE_FILE );
-        }
-        else if( CREATE_JSPS_FOLDER.equals( propertyName ) )
-        {
-            return getBooleanProperty( CREATE_JSPS );
-        }
 
         return super.isPropertyEnabled( propertyName );
     }
