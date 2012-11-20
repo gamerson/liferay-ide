@@ -15,7 +15,7 @@
  * 		Gregory Amerson - initial implementation and ongoing maintenance
  *******************************************************************************/
 
-package com.liferay.ide.service.ui.actions;
+package com.liferay.ide.service.ui.action;
 
 import com.liferay.ide.service.core.model.ServiceBuilder;
 
