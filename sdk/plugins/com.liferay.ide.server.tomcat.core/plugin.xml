@@ -41,7 +41,7 @@
             id="com.liferay.ide.server.62.tomcat.runtime.70"
             name="Liferay v6.2 CE (Tomcat 7)"
             vendor="Liferay, Inc."
-            version="7.0">
+            version="6.2">
          <moduleType
                types="jst.web"
                versions="2.3,2.4,2.5,3.0">
@@ -100,7 +100,7 @@
             hasConfiguration="true"
             id="com.liferay.ide.server.62.tomcat.70"
             initialState="stopped"
-            launchConfigId="com.liferay.ide.eclipse.server.tomcat.70.launchConfigurationType"
+            launchConfigId="com.liferay.ide.server.62.tomcat.70.launchConfigurationType"
             name="Liferay v6.2 CE Server (Tomcat 7)"
             runtime="true"
             runtimeTypeId="com.liferay.ide.server.62.tomcat.runtime.70"
