@@ -40,9 +40,9 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jem.workbench.utility.JemProjectUtilities;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
-import org.eclipse.jst.j2ee.internal.common.J2EECommonMessages;
 import org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties;
 import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.internal.operation.ArtifactEditOperationDataModelProvider;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -81,7 +81,7 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
         }
         else if( AUTHOR.equals( propertyName ) )
         {
-            return System.getProperty( "user.name" );
+            return System.getProperty( "user.name" ); //$NON-NLS-1$
         }
         else if( JAVA_PACKAGE_FRAGMENT_ROOT.equals( propertyName ) )
         {
@@ -209,17 +209,17 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
 
             if( serviceFile == null )
             {
-                return ServiceCore.createErrorStatus( "Service file must be specified." );
+                return ServiceCore.createErrorStatus( Msgs.serviceFileSpecified );
             }
 
-            if( !( "xml".equals( serviceFile.getFileExtension() ) ) )
+            if( !( "xml".equals( serviceFile.getFileExtension() ) ) ) //$NON-NLS-1$
             {
-                return ServiceCore.createErrorStatus( "Service file must be have xml file extension." );
+                return ServiceCore.createErrorStatus( Msgs.serviceFileHaveXmlFileExtension );
             }
 
             if( serviceFile.exists() )
             {
-                return ServiceCore.createErrorStatus( "Project already contains service.xml file, please select another project." );
+                return ServiceCore.createErrorStatus( Msgs.projectContainsServiceXmlFile );
             }
         }
         else if( PACKAGE_PATH.equals( propertyName ) )
@@ -228,7 +228,7 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
 
             if( empty( packagePath ) )
             {
-                return ServiceCore.createErrorStatus( "Package path cannot be empty." );
+                return ServiceCore.createErrorStatus( Msgs.packagePathNotEmpty );
             }
 
             if( !empty( packagePath ) )
@@ -242,7 +242,7 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
 
             if( empty( namespace ) )
             {
-                return ServiceCore.createErrorStatus( "Namespace cannot be empty." );
+                return ServiceCore.createErrorStatus( Msgs.namespaceNotEmpty );
             }
         }
 
@@ -326,13 +326,13 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
 
             if( javaStatus.getSeverity() == IStatus.ERROR )
             {
-                String msg = J2EECommonMessages.ERR_JAVA_PACAKGE_NAME_INVALID + javaStatus.getMessage();
+                String msg = "" + javaStatus.getMessage(); //$NON-NLS-1$
 
                 return WTPCommonPlugin.createErrorStatus( msg );
             }
             else if( javaStatus.getSeverity() == IStatus.WARNING )
             {
-                String msg = J2EECommonMessages.ERR_JAVA_PACKAGE_NAME_WARNING + javaStatus.getMessage();
+                String msg = "" + javaStatus.getMessage(); //$NON-NLS-1$
 
                 return WTPCommonPlugin.createWarningStatus( msg );
             }
@@ -462,7 +462,7 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
 
         if( webappRoot != null )
         {
-            IVirtualFolder webInfFolder = webappRoot.getFolder( "WEB-INF" );
+            IVirtualFolder webInfFolder = webappRoot.getFolder( "WEB-INF" ); //$NON-NLS-1$
 
             if( webInfFolder != null )
             {
@@ -499,6 +499,21 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
             }
         }
 
-        return ServiceCore.createErrorStatus( "Need to specify at least one item." );
+        return ServiceCore.createErrorStatus( Msgs.specifyOneItem );
+    }
+
+    private static class Msgs extends NLS
+    {
+        public static String namespaceNotEmpty;
+        public static String packagePathNotEmpty;
+        public static String projectContainsServiceXmlFile;
+        public static String serviceFileHaveXmlFileExtension;
+        public static String serviceFileSpecified;
+        public static String specifyOneItem;
+
+        static
+        {
+            initializeMessages( NewServiceBuilderDataModelProvider.class.getName(), Msgs.class );
+        }
     }
 }
