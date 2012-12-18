@@ -91,8 +91,8 @@ public abstract class AbstractPortletFrameworkWizardProvider implements IPortlet
 
     public IStatus getUnsupportedSDKErrorMsg()
     {
-        return ProjectCorePlugin.createErrorStatus( "At least SDK version " + requiredSDKVersion +
-            " is required to use the selected portlet framework." );
+        return ProjectCorePlugin.createErrorStatus( "At least SDK version " + requiredSDKVersion + //$NON-NLS-1$
+            " is required to use the selected portlet framework." ); //$NON-NLS-1$
     }
 
     public boolean hasPropertyName( String propertyName )

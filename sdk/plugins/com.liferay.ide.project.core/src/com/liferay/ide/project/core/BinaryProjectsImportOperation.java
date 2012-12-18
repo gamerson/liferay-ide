@@ -66,7 +66,7 @@ public class BinaryProjectsImportOperation extends AbstractDataModelOperation
         final BridgedRuntime bridgedRuntime =
             (BridgedRuntime) model.getProperty( IFacetProjectCreationDataModelProperties.FACET_RUNTIME );
 
-        WorkspaceJob job = new WorkspaceJob( "Importing Binary Project Plugins" )
+        WorkspaceJob job = new WorkspaceJob( "Importing Binary Project Plugins" ) //$NON-NLS-1$
         {
             @Override
             public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
@@ -76,7 +76,7 @@ public class BinaryProjectsImportOperation extends AbstractDataModelOperation
                     SDKManager sdkManager = SDKManager.getInstance();
                     SDK liferaySDK = sdkManager.getSDK( new Path( sdkLocation ) );
                     Object[] seleBinaryRecords = (Object[]) projects;
-                    monitor.beginTask( "Creating SDK Projects", seleBinaryRecords.length );
+                    monitor.beginTask( "Creating SDK Projects", seleBinaryRecords.length ); //$NON-NLS-1$
                     ProjectRecord[] projectRecords = new ProjectRecord[seleBinaryRecords.length];
 
                     for( int i = 0; i < seleBinaryRecords.length; i++ )
@@ -85,14 +85,14 @@ public class BinaryProjectsImportOperation extends AbstractDataModelOperation
 
                         try
                         {
-                            monitor.setTaskName( "Creating Plugin  " + pluginBinaryRecord.getLiferayPluginName() );
+                            monitor.setTaskName( "Creating Plugin  " + pluginBinaryRecord.getLiferayPluginName() ); //$NON-NLS-1$
                             projectRecords[i] =
                                 ProjectImportUtil.createSDKPluginProject( bridgedRuntime, pluginBinaryRecord, liferaySDK );
                             monitor.worked( 1 );
                         }
                         catch( IOException e )
                         {
-                            throw new CoreException( ProjectCorePlugin.createErrorStatus( "Error creating project.", e ) );
+                            throw new CoreException( ProjectCorePlugin.createErrorStatus( "Error creating project.", e ) ); //$NON-NLS-1$
                         }
 
                     }

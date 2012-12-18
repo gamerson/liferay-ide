@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
@@ -55,13 +56,13 @@ public class NewElementWizardAction extends NewWizardAction
 
                 if( validProjectTypes != null && facets != null)
                 {
-                    String[] validTypes = validProjectTypes.split( "," );
+                    String[] validTypes = validProjectTypes.split( "," ); //$NON-NLS-1$
                     for( String validProjectType : validTypes )
                     {
                         for( IProjectFacetVersion facet : facets )
                         {
                             String id = facet.getProjectFacet().getId();
-                            if(id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType )) {
+                            if(id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType )) {  //$NON-NLS-1$//$NON-NLS-2$
                                 hasValidProjectTypes = true;
                                 break;
                             }
@@ -76,9 +77,8 @@ public class NewElementWizardAction extends NewWizardAction
         }
         else {
             Shell shell = getShell();
-            Boolean openNewLiferayProjectWizard = MessageDialog.openQuestion( shell, "New Element",
-                "There are no suitable Liferay projects available for this new element.\nDo you want"
-                + " to open the \'New Liferay Project\' wizard now?" );
+            Boolean openNewLiferayProjectWizard = MessageDialog.openQuestion( shell, Msgs.newElement,
+                Msgs.noSuitableLiferayProjects );
 
             if(openNewLiferayProjectWizard) {
                 Action[] actions = NewPluginProjectDropDownAction.getNewProjectActions();
@@ -93,5 +93,16 @@ public class NewElementWizardAction extends NewWizardAction
 
     public void setValidProjectTypes(String validProjectTypes) {
         this.validProjectTypes = validProjectTypes;
+    }
+
+    private static class Msgs extends NLS
+    {
+        public static String newElement;
+        public static String noSuitableLiferayProjects;
+
+        static
+        {
+            initializeMessages( NewElementWizardAction.class.getName(), Msgs.class );
+        }
     }
 }

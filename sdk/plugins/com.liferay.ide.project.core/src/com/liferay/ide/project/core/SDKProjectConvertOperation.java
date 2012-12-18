@@ -108,7 +108,7 @@ public class SDKProjectConvertOperation extends AbstractDataModelOperation
             record.description.setName( projectName );
         }
 
-        monitor.beginTask( "Importing project", 100 );
+        monitor.beginTask( "Importing project", 100 ); //$NON-NLS-1$
 
         project.open( IResource.FORCE, new SubProgressMonitor( monitor, 70 ) );
 
