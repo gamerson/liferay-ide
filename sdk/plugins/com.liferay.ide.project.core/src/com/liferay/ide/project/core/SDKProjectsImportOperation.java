@@ -49,7 +49,7 @@ public class SDKProjectsImportOperation extends AbstractDataModelOperation
         final Object[] projects =
             (Object[]) model.getProperty( ISDKProjectsImportDataModelProperties.SELECTED_PROJECTS );
 
-        WorkspaceJob workspaceJob = new WorkspaceJob( "Creating SDK Projects" )
+        WorkspaceJob workspaceJob = new WorkspaceJob( "Creating SDK Projects" ) //$NON-NLS-1$
         {
             /*
              * (non-Javadoc)
