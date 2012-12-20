@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -38,19 +39,19 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 public class ValidProjectChecker
 {
 
-    private static final String ATT_ID = "id";
+    private static final String ATT_ID = "id"; //$NON-NLS-1$
 
-    private static final String ATT_NAME = "name";
+    private static final String ATT_NAME = "name"; //$NON-NLS-1$
 
-    private static final String ATT_VALID_PROJECT_TYPES = "validProjectTypes";
+    private static final String ATT_VALID_PROJECT_TYPES = "validProjectTypes"; //$NON-NLS-1$
 
-    private static final String TAG_NEW_WIZARDS = "newWizards";
+    private static final String TAG_NEW_WIZARDS = "newWizards"; //$NON-NLS-1$
 
-    private static final String TAG_PARAMETER = "parameter";
+    private static final String TAG_PARAMETER = "parameter"; //$NON-NLS-1$
 
-    private static final String TAG_VALUE = "value";
+    private static final String TAG_VALUE = "value"; //$NON-NLS-1$
 
-    private static final String TAG_WIZARD = "wizard";
+    private static final String TAG_WIZARD = "wizard"; //$NON-NLS-1$
 
     protected boolean isJsfPortlet = false;
     protected String validProjectTypes = null;
@@ -77,7 +78,7 @@ public class ValidProjectChecker
 
                 if( validProjectTypes != null && facets != null )
                 {
-                    String[] validTypes = validProjectTypes.split( "," );
+                    String[] validTypes = validProjectTypes.split( "," ); //$NON-NLS-1$
 
                     for( String validProjectType : validTypes )
                     {
@@ -85,12 +86,12 @@ public class ValidProjectChecker
                         {
                             String id = facet.getProjectFacet().getId();
 
-                            if( isJsfPortlet && id.equals( "jst.jsf" ) )
+                            if( isJsfPortlet && id.equals( "jst.jsf" ) ) //$NON-NLS-1$
                             {
                                 hasJsfFacet = true;
                             }
 
-                            if( id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType ) )
+                            if( id.startsWith( "liferay." ) && id.equals( "liferay." + validProjectType ) ) //$NON-NLS-1$ //$NON-NLS-2$
                             {
                                 hasValidProjectTypes = true;
                             }
@@ -109,10 +110,7 @@ public class ValidProjectChecker
         {
             final Shell activeShell = Display.getDefault().getActiveShell();
             Boolean openNewLiferayProjectWizard =
-                MessageDialog.openQuestion(
-                    activeShell, "New Element",
-                    "There are no suitable Liferay projects available for this new element.\nDo you want"
-                        + " to open the \'New Liferay Project\' wizard now?" );
+                MessageDialog.openQuestion( activeShell, Msgs.newElement, Msgs.noSuitableLiferayProjects );
 
             if( openNewLiferayProjectWizard )
             {
@@ -152,7 +150,7 @@ public class ValidProjectChecker
 
     protected void init()
     {
-        if( wizardId != null && wizardId.equals( "com.liferay.ide.portlet.jsf.ui.wizard.portlet" ) )
+        if( wizardId != null && wizardId.equals( "com.liferay.ide.portlet.jsf.ui.wizard.portlet" ) ) //$NON-NLS-1$
         {
             setJsfPortlet( true );
         }
@@ -185,5 +183,16 @@ public class ValidProjectChecker
     public void setValidProjectTypes( String validProjectTypes )
     {
         this.validProjectTypes = validProjectTypes;
+    }
+
+    private static class Msgs extends NLS
+    {
+        public static String newElement;
+        public static String noSuitableLiferayProjects;
+
+        static
+        {
+            initializeMessages( ValidProjectChecker.class.getName(), Msgs.class );
+        }
     }
 }
