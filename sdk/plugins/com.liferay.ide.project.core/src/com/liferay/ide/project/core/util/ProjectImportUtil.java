@@ -186,7 +186,7 @@ public class ProjectImportUtil
             ZipUtil.unzip( binaryFile, docRoot );
 
             // IDE-569 check to see if the project already has .project
-            File projectFile = new File( liferayPluginProjectDir, ".project" );
+            File projectFile = new File( liferayPluginProjectDir, ".project" ); //$NON-NLS-1$
 
             if( projectFile.exists() )
             {
@@ -254,7 +254,7 @@ public class ProjectImportUtil
      */
     public static final String getConfigFileLocation( String configFile )
     {
-        StringBuilder sb = new StringBuilder( "WEB-INF/" );
+        StringBuilder sb = new StringBuilder( "WEB-INF/" ); //$NON-NLS-1$
         sb.append( configFile );
         return sb.toString();
 
