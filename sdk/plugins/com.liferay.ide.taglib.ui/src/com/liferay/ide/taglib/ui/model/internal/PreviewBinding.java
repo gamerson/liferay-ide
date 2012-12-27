@@ -26,7 +26,7 @@ public class PreviewBinding extends ValueBindingImpl
     @Override
     public String read()
     {
-        return "preview string " + System.currentTimeMillis();
+        return "preview string " + System.currentTimeMillis(); //$NON-NLS-1$
     }
 
     @Override
