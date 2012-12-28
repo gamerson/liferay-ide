@@ -18,6 +18,7 @@ package com.liferay.ide.project.core.util;
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.DescriptorHelper;
 import com.liferay.ide.core.util.NodeUtil;
+import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.project.core.ProjectCorePlugin;
 
 import org.eclipse.core.resources.IFile;
@@ -140,7 +141,7 @@ public class WebXMLDescriptorHelper extends DescriptorHelper
                 {
                     try
                     {
-                        NodeList welcomeFileLists = document.getElementsByTagName( "welcome-file-list" );
+                        NodeList welcomeFileLists = document.getElementsByTagName( "welcome-file-list" ); //$NON-NLS-1$
 
                         for( int i = 0; i < welcomeFileLists.getLength(); i++ )
                         {
@@ -171,54 +172,54 @@ public class WebXMLDescriptorHelper extends DescriptorHelper
         String typeId = document.getDocumentTypeId();
         Element docRoot = document.getDocumentElement();
 
-        if( typeId != null && typeId.contains( "2.3" ) )
+        if( typeId != null && typeId.contains( "2.3" ) ) //$NON-NLS-1$
         {
-            Element taglibNextSibling = findChildElement( docRoot, "resource-env-ref" );
+            Element taglibNextSibling = findChildElement( docRoot, "resource-env-ref" ); //$NON-NLS-1$
 
             if( taglibNextSibling == null )
             {
-                taglibNextSibling = findChildElement( docRoot, "resource-ref" );
+                taglibNextSibling = findChildElement( docRoot, "resource-ref" ); //$NON-NLS-1$
             }
 
             if( taglibNextSibling == null )
             {
-                taglibNextSibling = findChildElement( docRoot, "security-constraint" );
+                taglibNextSibling = findChildElement( docRoot, "security-constraint" ); //$NON-NLS-1$
             }
 
             if( taglibNextSibling == null )
             {
-                taglibNextSibling = findChildElement( docRoot, "login-config" );
+                taglibNextSibling = findChildElement( docRoot, "login-config" ); //$NON-NLS-1$
             }
 
             if( taglibNextSibling == null )
             {
-                taglibNextSibling = findChildElement( docRoot, "security-role" );
+                taglibNextSibling = findChildElement( docRoot, "security-role" ); //$NON-NLS-1$
             }
 
             if( taglibNextSibling == null )
             {
-                taglibNextSibling = findChildElement( docRoot, "env-entry" );
+                taglibNextSibling = findChildElement( docRoot, "env-entry" ); //$NON-NLS-1$
             }
 
             if( taglibNextSibling == null )
             {
-                taglibNextSibling = findChildElement( docRoot, "ejb-ref" );
+                taglibNextSibling = findChildElement( docRoot, "ejb-ref" ); //$NON-NLS-1$
             }
 
             if( taglibNextSibling == null )
             {
-                taglibNextSibling = findChildElement( docRoot, "ejb-local-ref" );
+                taglibNextSibling = findChildElement( docRoot, "ejb-local-ref" ); //$NON-NLS-1$
             }
 
-            Element taglib = insertChildElement( docRoot, taglibNextSibling, "taglib", "" );
+            Element taglib = insertChildElement( docRoot, taglibNextSibling, "taglib", StringUtil.EMPTY ); //$NON-NLS-1$
 
-            appendChildElement( taglib, "taglib-uri", tagLibRefType.getTaglibURI() );
+            appendChildElement( taglib, "taglib-uri", tagLibRefType.getTaglibURI() ); //$NON-NLS-1$
 
-            appendChildElement( taglib, "taglib-location", tagLibRefType.getTaglibLocation() );
+            appendChildElement( taglib, "taglib-location", tagLibRefType.getTaglibLocation() ); //$NON-NLS-1$
 
             if( taglibNextSibling == null )
             {
-                docRoot.appendChild( document.createTextNode( System.getProperty( "line.separator" ) ) );
+                docRoot.appendChild( document.createTextNode( System.getProperty( "line.separator" ) ) ); //$NON-NLS-1$
             }
             // format the new node added to the model;
             FormatProcessorXML processor = new FormatProcessorXML();
@@ -227,20 +228,20 @@ public class WebXMLDescriptorHelper extends DescriptorHelper
         }
         else
         {
-            Element jspConfig = findChildElement( docRoot, "jsp-config" );
+            Element jspConfig = findChildElement( docRoot, "jsp-config" ); //$NON-NLS-1$
 
             if( jspConfig == null )
             {
-                jspConfig = appendChildElement( docRoot, "jsp-config" );
+                jspConfig = appendChildElement( docRoot, "jsp-config" ); //$NON-NLS-1$
             }
 
-            Element taglib = appendChildElement( jspConfig, "taglib" );
+            Element taglib = appendChildElement( jspConfig, "taglib" ); //$NON-NLS-1$
 
-            appendChildElement( taglib, "taglib-uri", tagLibRefType.getTaglibURI() );
+            appendChildElement( taglib, "taglib-uri", tagLibRefType.getTaglibURI() ); //$NON-NLS-1$
 
-            appendChildElement( taglib, "taglib-location", tagLibRefType.getTaglibLocation() );
+            appendChildElement( taglib, "taglib-location", tagLibRefType.getTaglibLocation() ); //$NON-NLS-1$
 
-            docRoot.appendChild( document.createTextNode( System.getProperty( "line.separator" ) ) );
+            docRoot.appendChild( document.createTextNode( System.getProperty( "line.separator" ) ) ); //$NON-NLS-1$
 
             // format the new node added to the model;
             FormatProcessorXML processor = new FormatProcessorXML();
@@ -253,18 +254,18 @@ public class WebXMLDescriptorHelper extends DescriptorHelper
 
     protected boolean tagLibReferenceExists( IDOMDocument document, TagLibRefType tagLibRefType )
     {
-        NodeList taglibs = document.getElementsByTagName( "taglib" );
+        NodeList taglibs = document.getElementsByTagName( "taglib" ); //$NON-NLS-1$
 
         for( int i = 0; i < taglibs.getLength(); i++ )
         {
             Node taglib = taglibs.item( i );
 
             boolean taglibUriEquals =
-                NodeUtil.getChildElementContent( taglib, "taglib-uri" ).trim().equals(
+                NodeUtil.getChildElementContent( taglib, "taglib-uri" ).trim().equals( //$NON-NLS-1$
                     tagLibRefType.getTaglibURI().trim() );
 
             boolean taglibLocationEquals =
-                NodeUtil.getChildElementContent( taglib, "taglib-location" ).trim().equals(
+                NodeUtil.getChildElementContent( taglib, "taglib-location" ).trim().equals( //$NON-NLS-1$
                     tagLibRefType.getTaglibLocation().trim() );
 
             if( taglibUriEquals && taglibLocationEquals )
