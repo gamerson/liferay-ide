@@ -280,6 +280,19 @@ public class UIUtil
 
         if( window != null )
         {
+            IWorkbenchPage page = window.getActivePage();
+
+            if( page != null )
+            {
+                IPerspectiveDescriptor currentPersp = page.getPerspective();
+
+                // don't switch if the current perspective is the Liferay perspective
+                if( finalPersp.getId().equals( currentPersp.getId() ) )
+                {
+                    return;
+                }
+            }
+
             // prompt the user to switch
             if( !confirmPerspectiveSwitch( window, finalPersp ) )
             {
