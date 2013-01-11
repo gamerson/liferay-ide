@@ -37,9 +37,12 @@ public class BuildServicesActionHandler extends SapphireActionHandler
 
         if( file != null && file.exists() )
         {
-            BuildServiceJob job = ServiceCore.createBuildServiceJob( file );
+            if( ServiceUIUtil.shouldCreateBuildServiceJob( file ) )
+            {
+                BuildServiceJob job = ServiceCore.createBuildServiceJob( file );
 
-            job.schedule();
+                job.schedule();
+            }
         }
         else
         {
