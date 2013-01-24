@@ -250,7 +250,7 @@ public class LayoutTplUtil
         int retval = -1;
 
         // make sure that new weight is valid
-        if( newWeight > 31 && newWeight < 34 )
+        if( newWeight > 31 && newWeight < 35 )
         {
             retval = 33;
         }
