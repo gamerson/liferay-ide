@@ -58,24 +58,26 @@ public class PortletColumnChangeConstraintCommand extends Command
 
     public void redo()
     {
-        if( currentParent.equals( newParent ) )
+        if( layoutConstraint.refColumn != null )
         {
-            int currentColumnIndex = LayoutTplUtil.getColumnIndex( currentParent, column );
-
-            if( currentColumnIndex != layoutConstraint.newColumnIndex )
+            if( currentParent.equals( newParent ) )
             {
+                int existingWeight = column.getWeight();
+                column.setWeight( layoutConstraint.weight );
+                int diffWeight = existingWeight - layoutConstraint.weight;
+
+                PortletColumn refColumn = layoutConstraint.refColumn;
+                int newWeight = refColumn.getWeight() + diffWeight;
+
+                if( refColumn.getWeight() == 33 )
+                {
+                    newWeight = newWeight + 1;
+                }
+
+                newWeight = LayoutTplUtil.adjustWeight( newWeight );
+
+                refColumn.setWeight( newWeight );
             }
-
-            int existingWeight = column.getWeight();
-            column.setWeight( layoutConstraint.weight );
-            int diffWeight = existingWeight - layoutConstraint.weight;
-
-            PortletColumn refColumn = layoutConstraint.refColumn;
-            int newWeight = refColumn.getWeight() + diffWeight;
-
-            newWeight = LayoutTplUtil.adjustWeight( newWeight );
-
-            refColumn.setWeight( newWeight );
         }
     }
 
