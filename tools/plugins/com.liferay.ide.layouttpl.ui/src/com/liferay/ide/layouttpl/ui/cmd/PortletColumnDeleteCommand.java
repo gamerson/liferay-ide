@@ -60,11 +60,36 @@ public class PortletColumnDeleteCommand extends Command
     public void redo()
     {
         wasRemoved = parent.removeColumn( child );
+        final int columnsNum = parent.getColumns().size();
 
-        if( parent.getColumns().size() == 0 )
+        if( columnsNum == 0 )
         {
             diagram = (LayoutTplDiagram) parent.getParent();
             diagram.removeChild( parent );
+        }
+        else if( columnsNum == 1 )
+        {
+            ((PortletColumn) parent.getColumns().get( 0 )).setWeight( 100 );
+        }
+        else
+        {
+            //if there are 2 or more columns left, pick the right adjacent one only when there are more right remaining ones than the left,
+            //otherwise pick the left one.
+            final PortletColumn firstColumn = (PortletColumn) parent.getColumns().get( 0 );
+            final int childIndex = child.getNumId() - firstColumn.getNumId();
+            int adjustedColumnIndex = 0;
+
+            if( childIndex < ( ( columnsNum + 1 ) / 2 ) )
+            {
+                adjustedColumnIndex = childIndex;
+            }
+            else
+            {
+                adjustedColumnIndex = childIndex - 1;
+            }
+
+            PortletColumn adjustedColumn = (PortletColumn) parent.getColumns().get( adjustedColumnIndex );
+            adjustedColumn.setWeight( adjustedColumn.getWeight() + child.getWeight() );
         }
     }
 
