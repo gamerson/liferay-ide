@@ -190,6 +190,16 @@ public class LayoutTplMultiPageEditor extends MultiPageEditorPart implements ISe
         return result;
     }
 
+    public StructuredTextEditor getSourceEditor()
+    {
+        return sourceEditor;
+    }
+
+    public LayoutTplEditor getVisualEditor()
+    {
+        return visualEditor;
+    }
+
     @Override
     public void init( IEditorSite site, IEditorInput input ) throws PartInitException
     {
