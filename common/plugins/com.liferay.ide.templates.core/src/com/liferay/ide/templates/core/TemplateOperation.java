@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -19,16 +19,17 @@ package com.liferay.ide.templates.core;
 
 import com.liferay.ide.core.util.CoreUtil;
 
+import freemarker.template.Template;
+
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 
-import org.apache.velocity.Template;
-import org.apache.velocity.context.Context;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * @author Gregory Amerson
+ * @author Cindy Li
  */
 public class TemplateOperation implements ITemplateOperation
 {
@@ -85,7 +86,8 @@ public class TemplateOperation implements ITemplateOperation
         }
 
         StringWriter writer = new StringWriter();
-        getTemplate().merge( (Context) getContext(), writer );
+        TemplateContext templateContext = (TemplateContext)getContext();
+        getTemplate().process( templateContext.getMap(), writer );
         String result = writer.toString();
 
         if( this.outputFile != null )
@@ -142,7 +144,7 @@ public class TemplateOperation implements ITemplateOperation
 
         if( template == null )
         {
-            template = this.model.getEngine().getTemplate( this.model.getResource() );
+            template = this.model.getConfig().getTemplate( this.model.getResource() );
         }
 
         return template;
