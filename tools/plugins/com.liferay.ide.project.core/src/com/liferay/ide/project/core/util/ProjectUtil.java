@@ -94,23 +94,23 @@ public class ProjectUtil
 
     public static final String METADATA_FOLDER = ".metadata"; //$NON-NLS-1$
 
-    //IDE-815 no need for this method anymore
-//    public static void addTldToWebXml( final IProject project, String uriValue, String taglibLocation )
-//    {
-//        WebXMLDescriptorHelper webXmlHelper = new WebXMLDescriptorHelper( project );
-//        TagLibRefType tagLibRefType = JspFactory.eINSTANCE.createTagLibRefType();
-//        tagLibRefType.setTaglibURI( uriValue );
-//        tagLibRefType.setTaglibLocation( taglibLocation );
-//
-//        try
-//        {
-//            webXmlHelper.addTagLib( tagLibRefType );
-//        }
-//        catch( Exception e )
-//        {
-//            LiferayProjectCore.logError( "Failed to add taglib reference " + uriValue + ":" + taglibLocation, e ); //$NON-NLS-1$ //$NON-NLS-2$
-//        }
-//    }
+    // IDE-815 no need for this method anymore
+    // public static void addTldToWebXml( final IProject project, String uriValue, String taglibLocation )
+    // {
+    // WebXMLDescriptorHelper webXmlHelper = new WebXMLDescriptorHelper( project );
+    // TagLibRefType tagLibRefType = JspFactory.eINSTANCE.createTagLibRefType();
+    // tagLibRefType.setTaglibURI( uriValue );
+    // tagLibRefType.setTaglibLocation( taglibLocation );
+    //
+    // try
+    // {
+    // webXmlHelper.addTagLib( tagLibRefType );
+    // }
+    // catch( Exception e )
+    // {
+    //            LiferayProjectCore.logError( "Failed to add taglib reference " + uriValue + ":" + taglibLocation, e ); //$NON-NLS-1$ //$NON-NLS-2$
+    // }
+    // }
 
     public static boolean collectProjectsFromDirectory(
         Collection<File> eclipseProjectFiles, Collection<File> liferayProjectDirs, File directory,
@@ -321,6 +321,7 @@ public class ProjectUtil
 
         ResourcesPlugin.getWorkspace().run( new IWorkspaceRunnable()
         {
+
             public void run( IProgressMonitor monitor ) throws CoreException
             {
                 for( IClasspathEntry entry : javaProject.getRawClasspath() )
@@ -990,8 +991,7 @@ public class ProjectUtil
             ( ISDKConstants.PORTLET_PLUGIN_PROJECT_SUFFIX.endsWith( type ) ||
                 ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX.endsWith( type ) ||
                 ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX.endsWith( type ) ||
-                ISDKConstants.LAYOUTTPL_PLUGIN_PROJECT_SUFFIX.endsWith( type ) ||
-                ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX.endsWith( type ) );
+                ISDKConstants.LAYOUTTPL_PLUGIN_PROJECT_SUFFIX.endsWith( type ) || ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX.endsWith( type ) );
     }
 
     public static boolean isLiferaySDKProject( IFolder folder )
@@ -1134,17 +1134,17 @@ public class ProjectUtil
         return string.replaceFirst( regex, StringPool.EMPTY );
     }
 
-    public static void setDefaultRuntime(IDataModel dataModel)
+    public static void setDefaultRuntime( IDataModel dataModel )
     {
         DataModelPropertyDescriptor[] validDescriptors =
             dataModel.getValidPropertyDescriptors( IFacetProjectCreationDataModelProperties.FACET_RUNTIME );
 
         for( DataModelPropertyDescriptor desc : validDescriptors )
-		{
+        {
             Object runtime = desc.getPropertyValue();
 
             if( runtime instanceof BridgedRuntime && ServerUtil.isLiferayRuntime( (BridgedRuntime) runtime ) )
-			{
+            {
                 dataModel.setProperty( IFacetProjectCreationDataModelProperties.FACET_RUNTIME, runtime );
                 break;
             }
@@ -1174,6 +1174,7 @@ public class ProjectUtil
 
     private static class Msgs extends NLS
     {
+
         public static String checking;
         public static String importingProject;
 
@@ -1181,5 +1182,18 @@ public class ProjectUtil
         {
             initializeMessages( ProjectUtil.class.getName(), Msgs.class );
         }
+    }
+
+    /**
+     * @param facetedProject
+     * @return
+     */
+    public static boolean hasAnyLiferayPluginFacet( IFacetedProject facetedProject )
+    {
+        return facetedProject.hasProjectFacet( IPluginFacetConstants.LIFERAY_EXT_PROJECT_FACET ) ||
+            facetedProject.hasProjectFacet( IPluginFacetConstants.LIFERAY_HOOK_PROJECT_FACET ) ||
+            facetedProject.hasProjectFacet( IPluginFacetConstants.LIFERAY_LAYOUTTPL_PROJECT_FACET ) ||
+            facetedProject.hasProjectFacet( IPluginFacetConstants.LIFERAY_PORTLET_PROJECT_FACET ) ||
+            facetedProject.hasProjectFacet( IPluginFacetConstants.LIFERAY_THEME_PROJECT_FACET );
     }
 }
