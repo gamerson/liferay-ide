@@ -12,9 +12,8 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.maven.core;
-
-
 
 /**
  * @author Gregory Amerson
@@ -63,5 +62,56 @@ public interface ILiferayMavenConstants
     String PORTLET_PLUGIN_TYPE = DEFAULT_PLUGIN_TYPE;
 
     String THEME_PLUGIN_TYPE = "theme"; //$NON-NLS-1$
+
+    String PARENT_THEME = "parentTheme"; //$NON-NLS-1$
+
+    String THEME_TYPE = "themeType";//$NON-NLS-1$
+
+    String SERVLET_API_GROUP_ID = "javax.servlet"; //$NON-NLS-1$
+    String SERVLET_API_VERSION = "2.4"; //$NON-NLS-1$
+
+    String JSP_API_GROUP_ID = "javax.servlet.jsp"; //$NON-NLS-1$
+
+    String JSP_API_VERSION = "2.0"; //$NON-NLS-1$
+    
+    String JSP_JSTL_GROUP_ID="javax.servlet.jsp.jstl"; //$NON-NLS-1$
+
+    String PORTLET_API_GROUP_ID = "javax.portlet"; //$NON-NLS-1$
+
+    String PORTLET_API_VERSION = "2.0"; //$NON-NLS-1$
+
+    String LIFERAY_GROUP_ID = "com.liferay.portal"; //$NON-NLS-1$
+
+    String LIFERAY_MAVEN_PLUGINS_GROUP_ID = "com.liferay.maven.plugins"; //$NON-NLS-1$
+
+    String PORTAL_SERVICE_ARTIFACT_ID = "portal-service"; //$NON-NLS-1$
+
+    String UTIL_BRIDGES_ARTIFACT_ID = "util-bridges"; //$NON-NLS-1$
+
+    String UTIL_TAGLIB_ARTIFACT_ID = "util-taglib"; //$NON-NLS-1$
+
+    String UTIL_JAVA_ARTIFACT_ID = "util-java"; //$NON-NLS-1$
+
+    String PORTLET_API_ARTIFACT_ID = "portlet-api"; //$NON-NLS-1$
+
+    String SERVLET_API_ARTIFACT_ID = "servlet-api"; //$NON-NLS-1$
+
+    String JSP_API_ARTIFACT_ID = "jsp-api"; //$NON-NLS-1$
+
+    String JSTL_ARTIFACT_ID = "jstl"; //$NON-NLS-1$
+
+    String JSTL_VERSION = "1.2"; //$NON-NLS-1$
+
+    String PROVIDED_SCOPE = "provided"; //$NON-NLS-1$
+
+    String TEST_SCOPE = "test"; //$NON-NLS-1$
+
+    String RUNTIME_SCOPE = "runtime"; //$NON-NLS-1$
+
+    String COMPILE_SCOPE = "compile"; //$NON-NLS-1$
+
+    String LIFERAY_MAVEN_PLUGIN_ID = "liferay-maven-plugin"; //$NON-NLS-1$
+
+    String MAVEN_PLUGIN_CONFIG_KEY = "configuration"; //$NON-NLS-1$
 
 }
