@@ -46,7 +46,7 @@
             conversionParticipantId="com.liferay.ide.maven.core.liferayProjectConversionParticipant">
       </conversionParticipantConfiguration>    
       <projectConversionParticipant
-            class="com.liferay.ide.maven.core.internal.converters.LiferayProjectConverter"
+            class="com.liferay.ide.maven.core.LiferayProjectConverter"
             id="com.liferay.ide.maven.core.liferayProjectConversionParticipant"
             name="%liferay.maven.project.converter.name"
             nature="org.eclipse.wst.common.modulecore.ModuleCoreNature">
@@ -55,8 +55,8 @@
    <extension
          point="org.eclipse.m2e.core.conversionEnabler">
       <enabler
-            class="com.liferay.ide.maven.core.internal.converters.LiferayPluginFacetConversionEnabler"
-            id="com.liferay.ide.maven.core.PluginProjectConversionEnabler">
+            class="com.liferay.ide.maven.core.LiferayPluginFacetConversionEnabler"
+            id="com.liferay.ide.maven.core.liferayProjectConversionEnabler">
       </enabler>
    </extension>
 

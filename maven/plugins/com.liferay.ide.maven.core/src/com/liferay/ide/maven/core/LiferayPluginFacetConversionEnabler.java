@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.maven.core.internal.converters;
+package com.liferay.ide.maven.core;
 
 import com.liferay.ide.project.core.util.ProjectUtil;
 
@@ -23,7 +23,7 @@ import org.eclipse.m2e.core.project.conversion.AbstractProjectConversionEnabler;
 /**
  * @author kamesh.sampath
  */
-public abstract class LiferayPluginFacetConversionEnabler extends AbstractProjectConversionEnabler
+public class LiferayPluginFacetConversionEnabler extends AbstractProjectConversionEnabler
 {
 
     /*
@@ -36,7 +36,7 @@ public abstract class LiferayPluginFacetConversionEnabler extends AbstractProjec
     public boolean accept( IProject project )
     {
         // the converter is applicable only for Liferay Faceted projects
-        if( project != null && ProjectUtil.isLiferayFacetedProject( project ) )
+        if(ProjectUtil.isLiferayFacetedProject( project ) )
         {
             return true;
 
