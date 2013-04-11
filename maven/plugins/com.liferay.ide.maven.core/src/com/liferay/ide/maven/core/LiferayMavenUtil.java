@@ -15,6 +15,13 @@
 
 package com.liferay.ide.maven.core;
 
+import static com.liferay.ide.maven.core.ILiferayMavenConstants.*;
+import static com.liferay.ide.project.core.facet.IPluginFacetConstants.LIFERAY_EXT_FACET_ID;
+import static com.liferay.ide.project.core.facet.IPluginFacetConstants.LIFERAY_HOOK_FACET_ID;
+import static com.liferay.ide.project.core.facet.IPluginFacetConstants.LIFERAY_LAYOUTTPL_FACET_ID;
+import static com.liferay.ide.project.core.facet.IPluginFacetConstants.LIFERAY_PORTLET_FACET_ID;
+import static com.liferay.ide.project.core.facet.IPluginFacetConstants.LIFERAY_THEME_FACET_ID;
+
 import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.util.ArrayList;
@@ -32,22 +39,20 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.core.resources.IProject;
 
-import static com.liferay.ide.maven.core.ILiferayMavenConstants.*;
-import static com.liferay.ide.project.core.facet.IPluginFacetConstants.*;
-
 /**
  * @author Gregory Amerson
  */
 public class LiferayMavenUtil
 {
 
+   
     public static Plugin getLiferayMavenPlugin( MavenProject mavenProject )
     {
         Plugin retval = null;
 
         if( mavenProject != null )
         {
-            retval = mavenProject.getPlugin( ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_KEY );
+            retval = mavenProject.getPlugin( LIFERAY_MAVEN_PLUGIN_KEY );
         }
 
         return retval;
@@ -59,7 +64,7 @@ public class LiferayMavenUtil
 
         if( mavenProject != null )
         {
-            final Plugin plugin = mavenProject.getPlugin( ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_KEY );
+            final Plugin plugin = mavenProject.getPlugin( LIFERAY_MAVEN_PLUGIN_KEY );
 
             if( plugin != null )
             {
@@ -89,7 +94,31 @@ public class LiferayMavenUtil
         return retval;
     }
 
-    public static List<Dependency> liferayDependencies( String portalVersion, Model model )
+    public static List<Dependency> hookPluginDependencies( String portalVersion, Model model )
+    {
+        List<Dependency> dependencies = new ArrayList<Dependency>();
+
+        // portal-service
+        Dependency dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( PORTAL_SERVICE_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependencies.add( dependency );
+
+        // util-java
+        dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( UTIL_JAVA_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependencies.add( dependency );
+
+        return dependencies;
+
+    }
+
+    public static List<Dependency> portletPluginDependencies( String portalVersion, Model model )
     {
         List<Dependency> dependencies = new ArrayList<Dependency>();
 
@@ -125,8 +154,17 @@ public class LiferayMavenUtil
         dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
         dependencies.add( dependency );
 
+        return dependencies;
+    }
+
+    // TODO Portlet JSF/ICEFACES/RICHFACES/LIFERAYFACES/PRIMEFACES dependencies
+
+    public static List<Dependency> javaeeDependencies( Model model )
+    {
+        List<Dependency> dependencies = new ArrayList<Dependency>();
+
         // jstl.jar
-        dependency = new Dependency();
+        Dependency dependency = new Dependency();
         dependency.setGroupId( JSP_JSTL_GROUP_ID );
         dependency.setArtifactId( JSTL_ARTIFACT_ID );
         dependency.setScope( PROVIDED_SCOPE );
@@ -179,17 +217,16 @@ public class LiferayMavenUtil
 
         Plugin plugin =
             build.getPluginsAsMap().get(
-                LiferayMavenUtil.getQualifiedArtifactId(
-                    ILiferayMavenConstants.LIFERAY_MAVEN_PLUGINS_GROUP_ID,
-                    ":" + ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_ID ) ); //$NON-NLS-1$
+                getQualifiedArtifactId( LIFERAY_MAVEN_PLUGINS_GROUP_ID, MAVEN_GROUP_ARTIFACT_SEPERATOR +
+                    LIFERAY_MAVEN_PLUGIN_KEY ) );
 
         if( plugin == null )
         {
             build.flushPluginMap();
 
             plugin = new Plugin();
-            plugin.setGroupId( ILiferayMavenConstants.LIFERAY_MAVEN_PLUGINS_GROUP_ID );
-            plugin.setArtifactId( ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_ID );
+            plugin.setGroupId( LIFERAY_MAVEN_PLUGINS_GROUP_ID );
+            plugin.setArtifactId( LIFERAY_MAVEN_PLUGIN_KEY );
             plugin.setVersion( "${liferay.version}" ); //$NON-NLS-1$
 
             Map<String, String> configuration = new HashMap<String, String>();
@@ -219,11 +256,11 @@ public class LiferayMavenUtil
             }
             else if( ProjectUtil.hasFacet( project, LIFERAY_THEME_FACET_ID ) )
             {
-                configuration.put( ILiferayMavenConstants.PLUGIN_CONFIG_PLUGIN_TYPE, THEME_PLUGIN_TYPE );
-                configuration.put( ILiferayMavenConstants.PARENT_THEME, "${liferay.theme.parent}" ); //$NON-NLS-1$ 
-                model.addProperty( "liferay.theme.parent", "${liferay.theme.parent}" ); //$NON-NLS-1$ //$NON-NLS-2$
-                configuration.put( ILiferayMavenConstants.THEME_TYPE, "${liferay.theme.type}" ); //$NON-NLS-1$ 
-                model.addProperty( "liferay.theme.type", "${liferay.theme.type}" ); //$NON-NLS-1$ //$NON-NLS-2$
+                configuration.put( PLUGIN_CONFIG_PLUGIN_TYPE, THEME_PLUGIN_TYPE );
+                configuration.put( PARENT_THEME, "${liferay.theme.parent}" ); //$NON-NLS-1$ 
+                model.addProperty( MAVEN_PROP_LIFERAY_THEME_PARENT, "${liferay.theme.parent}" ); //$NON-NLS-1$ 
+                configuration.put( THEME_TYPE, "${liferay.theme.type}" ); //$NON-NLS-1$ 
+                model.addProperty( MAVEN_PROP_LIFERAY_THEME_TYPE, "${liferay.theme.type}" ); //$NON-NLS-1$2$
             }
 
             plugin = LiferayMavenUtil.configurePlugin( plugin, configuration );
@@ -243,7 +280,7 @@ public class LiferayMavenUtil
         Xpp3Dom pluginConfig = (Xpp3Dom) plugin.getConfiguration();
         if( pluginConfig == null )
         {
-            pluginConfig = new Xpp3Dom( ILiferayMavenConstants.MAVEN_PLUGIN_CONFIG_KEY );
+            pluginConfig = new Xpp3Dom( MAVEN_PLUGIN_CONFIG_KEY );
             plugin.setConfiguration( pluginConfig );
         }
 
@@ -271,15 +308,21 @@ public class LiferayMavenUtil
 
     public static void addLiferayMavenProperties( Properties liferayProperties, Model model )
     {
-        model.addProperty( "liferay.version", liferayProperties.getProperty( PLUGIN_CONFIG_LIFERAY_VERSION ) ); //$NON-NLS-1$
-        model.addProperty( "liferay.auto.deploy.dir", liferayProperties.getProperty( PLUGIN_CONFIG_APP_AUTO_DEPLOY_DIR ) ); //$NON-NLS-1$ 
-        model.addProperty( "appserver.deploy.dir", liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_DEPLOY_DIR ) ); //$NON-NLS-1$
+        model.addProperty( MAVEN_PROP_LIFERAY_VERSION, liferayProperties.getProperty( PLUGIN_CONFIG_LIFERAY_VERSION ) );
         model.addProperty(
-            "appserver.lib.global.dir", liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_GLOBAL_DIR ) ); //$NON-NLS-1$
+            MAVEN_PROP_LIFERAY_AUTO_DEPLOY_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_AUTO_DEPLOY_DIR ) );
         model.addProperty(
-            "appserver.portal.lib.dir", liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_PORTAL_DIR ) ); //$NON-NLS-1$
-        model.addProperty( "appserver.portal.dir", liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_PORTAL_DIR ) ); //$NON-NLS-1$
+            MAVEN_PROP_APPSERVER_DEPLOY_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_DEPLOY_DIR ) );
         model.addProperty(
-            "appserver.portal.tld.dir", liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_TLD_PORTAL_DIR ) ); //$NON-NLS-1$
+            MAVEN_PROP_APPSERVER_LIB_GLOBAL_DIR,
+            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_GLOBAL_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_PORTAL_LIB_DIR,
+            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_PORTAL_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_PORTAL_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_PORTAL_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_PORTAL_TLD_DIR,
+            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_TLD_PORTAL_DIR ) );
     }
 }

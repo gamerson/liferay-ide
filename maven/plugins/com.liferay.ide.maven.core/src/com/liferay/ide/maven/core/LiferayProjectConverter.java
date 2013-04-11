@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.maven.core.internal.converters;
+package com.liferay.ide.maven.core;
 
 import static com.liferay.ide.maven.core.ILiferayMavenConstants.PLUGIN_CONFIG_APP_AUTO_DEPLOY_DIR;
 import static com.liferay.ide.maven.core.ILiferayMavenConstants.PLUGIN_CONFIG_APP_SERVER_DEPLOY_DIR;
@@ -22,16 +22,21 @@ import static com.liferay.ide.maven.core.ILiferayMavenConstants.PLUGIN_CONFIG_AP
 import static com.liferay.ide.maven.core.ILiferayMavenConstants.PLUGIN_CONFIG_APP_SERVER_PORTAL_DIR;
 import static com.liferay.ide.maven.core.ILiferayMavenConstants.PLUGIN_CONFIG_APP_SERVER_TLD_PORTAL_DIR;
 import static com.liferay.ide.maven.core.ILiferayMavenConstants.PLUGIN_CONFIG_LIFERAY_VERSION;
+import static com.liferay.ide.maven.core.LiferayMavenUtil.hookPluginDependencies;
+import static com.liferay.ide.maven.core.LiferayMavenUtil.javaeeDependencies;
+import static com.liferay.ide.maven.core.LiferayMavenUtil.portletPluginDependencies;
 
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.maven.core.LiferayMavenUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.ServerUtil;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
@@ -57,7 +62,7 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
     public boolean accept( IProject project ) throws CoreException
     {
 
-        return project != null && ProjectUtil.isLiferayFacetedProject( project );
+        return ProjectUtil.isLiferayFacetedProject( project );
 
     }
 
@@ -68,20 +73,20 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
      * .IProject, org.apache.maven.model.Model, org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override
-    public void convert( IProject iProject, Model model, IProgressMonitor monitor ) throws CoreException
+    public void convert( IProject project, Model model, IProgressMonitor monitor ) throws CoreException
     {
-        if( iProject != null && ProjectUtil.isLiferayFacetedProject( iProject ) )
+        if( ProjectUtil.isLiferayFacetedProject( project ) )
         {
-            ILiferayRuntime liferayRuntime = ServerUtil.getLiferayRuntime( iProject );
-            ILiferayProject liferayProject = LiferayCore.create( iProject );
+            ILiferayRuntime liferayRuntime = ServerUtil.getLiferayRuntime( project );
+            ILiferayProject liferayProject = LiferayCore.create( project );
             Properties liferayProperties = getLiferayProperties( liferayRuntime, liferayProject );
 
             // Add the dependencies only if its a portlet/hook/ext
-            if( ProjectUtil.isExtProject( iProject ) || ProjectUtil.isPortletProject( iProject ) ||
-                ProjectUtil.isHookProject( iProject ) )
+            if( ProjectUtil.isExtProject( project ) || ProjectUtil.isPortletProject( project ) ||
+                ProjectUtil.isHookProject( project ) )
             {
 
-                addDependencies( liferayProperties.getProperty( PLUGIN_CONFIG_LIFERAY_VERSION ), model );
+                addDependencies( project, liferayProperties.getProperty( PLUGIN_CONFIG_LIFERAY_VERSION ), model );
             }
 
             /*
@@ -89,19 +94,19 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
              */
             LiferayMavenUtil.addLiferayMavenProperties( liferayProperties, model );
 
-            Build build = LiferayMavenUtil.addLiferayMavenPlugin( model, iProject, liferayProperties );
+            Build build = LiferayMavenUtil.addLiferayMavenPlugin( model, project, liferayProperties );
 
             model.setBuild( build );
 
-            removeStaleClasspathEntires( iProject );
+            removeStaleClasspathEntires( project );
         }
 
     }
 
-    private void removeStaleClasspathEntires( IProject iProject )
+    private void removeStaleClasspathEntires( IProject project )
     {
         // TODO Auto-generated method stub
-        
+
     }
 
     private Properties getLiferayProperties( ILiferayRuntime liferayRuntime, ILiferayProject liferayProject )
@@ -125,12 +130,25 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
         return liferayProperties;
     }
 
-    private void addDependencies( String portalVersion, Model model )
+    private void addDependencies( IProject project, String portalVersion, Model model )
     {
-        List<Dependency> existingDependencies = model.getDependencies();
-        List<Dependency> liferayProjectDependencies = LiferayMavenUtil.liferayDependencies( portalVersion, model );
-        liferayProjectDependencies.removeAll( existingDependencies );
-        model.setDependencies( liferayProjectDependencies );
-    }
+        Set<Dependency> projectDependencySet = new HashSet<Dependency>();
 
+        List<Dependency> existingDependencies = model.getDependencies();
+        projectDependencySet.addAll( existingDependencies );
+        projectDependencySet.addAll( javaeeDependencies( model ) );
+        if( ProjectUtil.isPortletProject( project ) )
+        {
+            projectDependencySet.addAll( portletPluginDependencies( portalVersion, model ) );
+        }
+        else if( ProjectUtil.isHookProject( project ) )
+        {
+            projectDependencySet.addAll( hookPluginDependencies( portalVersion, model ) );
+        }
+
+        List<Dependency> projectDependencies = new ArrayList<Dependency>();
+        projectDependencies.addAll( projectDependencySet );
+
+        model.setDependencies( projectDependencies );
+    }
 }
