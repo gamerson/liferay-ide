@@ -45,7 +45,6 @@ import org.eclipse.core.resources.IProject;
 public class LiferayMavenUtil
 {
 
-   
     public static Plugin getLiferayMavenPlugin( MavenProject mavenProject )
     {
         Plugin retval = null;
@@ -168,40 +167,32 @@ public class LiferayMavenUtil
         dependency.setGroupId( JSP_JSTL_GROUP_ID );
         dependency.setArtifactId( JSTL_ARTIFACT_ID );
         dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${jstl.version}" ); //$NON-NLS-1$
+        dependency.setVersion( JSTL_VERSION );
         dependencies.add( dependency );
-
-        model.addProperty( "jstl.version", JSTL_VERSION ); //$NON-NLS-1$ 
 
         // jsp-api
         dependency = new Dependency();
         dependency.setGroupId( JSP_API_GROUP_ID );
         dependency.setArtifactId( JSP_API_ARTIFACT_ID );
         dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${jsp.api.version}" ); //$NON-NLS-1$
+        dependency.setVersion( JSP_API_VERSION );
         dependencies.add( dependency );
-
-        model.addProperty( "jsp.api.version", JSP_API_VERSION ); //$NON-NLS-1$ 
 
         // servlet-api
         dependency = new Dependency();
         dependency.setGroupId( SERVLET_API_GROUP_ID );
         dependency.setArtifactId( SERVLET_API_ARTIFACT_ID );
         dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${servlet.api.version}" ); //$NON-NLS-1$
+        dependency.setVersion( SERVLET_API_VERSION );
         dependencies.add( dependency );
-
-        model.addProperty( "servlet.api.version", SERVLET_API_VERSION ); //$NON-NLS-1$
 
         // Portlet
         dependency = new Dependency();
         dependency.setGroupId( PORTLET_API_GROUP_ID );
         dependency.setArtifactId( PORTLET_API_ARTIFACT_ID );
         dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${portlet.api.version}" ); //$NON-NLS-1$
+        dependency.setVersion( PORTLET_API_VERSION );
         dependencies.add( dependency );
-
-        model.addProperty( "portlet.api.version", PORTLET_API_VERSION ); //$NON-NLS-1$
 
         return dependencies;
     }
@@ -263,20 +254,18 @@ public class LiferayMavenUtil
                 model.addProperty( MAVEN_PROP_LIFERAY_THEME_TYPE, "${liferay.theme.type}" ); //$NON-NLS-1$2$
             }
 
-            plugin = LiferayMavenUtil.configurePlugin( plugin, configuration );
+            plugin = configurePlugin( plugin, configuration );
             build.addPlugin( plugin );
+            return build;
         }
         else
         {
-            return build;
+            return null;
         }
-
-        return build;
     }
 
     public static Plugin configurePlugin( Plugin plugin, Map<String, String> configuration )
     {
-
         Xpp3Dom pluginConfig = (Xpp3Dom) plugin.getConfiguration();
         if( pluginConfig == null )
         {
@@ -302,7 +291,6 @@ public class LiferayMavenUtil
 
     public static Object getQualifiedArtifactId( String groupId, String artifactId )
     {
-
         return groupId + ":" + artifactId; //$NON-NLS-1$
     }
 

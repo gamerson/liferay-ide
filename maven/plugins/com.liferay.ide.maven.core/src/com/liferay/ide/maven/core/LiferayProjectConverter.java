@@ -28,12 +28,15 @@ import static com.liferay.ide.maven.core.LiferayMavenUtil.portletPluginDependenc
 
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.project.core.HookClasspathContainer;
+import com.liferay.ide.project.core.PortletClasspathContainer;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.ServerUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -44,34 +47,24 @@ import org.apache.maven.model.Model;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.project.conversion.AbstractProjectConversionParticipant;
 
 /**
- * @author kamesh.sampath
+ * @author Kamesh Sampath
  */
 public class LiferayProjectConverter extends AbstractProjectConversionParticipant
 {
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.eclipse.m2e.core.project.conversion.AbstractProjectConversionParticipant#accept(org.eclipse.core.resources
-     * .IProject)
-     */
     @Override
     public boolean accept( IProject project ) throws CoreException
     {
-
         return ProjectUtil.isLiferayFacetedProject( project );
-
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.eclipse.m2e.core.project.conversion.AbstractProjectConversionParticipant#convert(org.eclipse.core.resources
-     * .IProject, org.apache.maven.model.Model, org.eclipse.core.runtime.IProgressMonitor)
-     */
     @Override
     public void convert( IProject project, Model model, IProgressMonitor monitor ) throws CoreException
     {
@@ -96,16 +89,59 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
 
             Build build = LiferayMavenUtil.addLiferayMavenPlugin( model, project, liferayProperties );
 
-            model.setBuild( build );
+            if( build != null )
+            {
+                model.setBuild( build );
+            }
 
-            removeStaleClasspathEntires( project );
+            removeStaleClasspathEntires( project, liferayRuntime.getRuntime().getName() );
+
         }
 
     }
 
-    private void removeStaleClasspathEntires( IProject project )
+    private void removeStaleClasspathEntires( final IProject project, String runtimeName )
     {
-        // TODO Auto-generated method stub
+
+        IJavaProject javaProject = JavaCore.create( project );
+        try
+        {
+
+            IClasspathEntry[] classpathEntries = javaProject.getRawClasspath();
+            List<IClasspathEntry> newCpEntries = new LinkedList<IClasspathEntry>();
+            for( IClasspathEntry classpathEntry : classpathEntries )
+            {
+                if( classpathEntry.getEntryKind() == IClasspathEntry.CPE_CONTAINER )
+                {
+                    String containerLastSegment = classpathEntry.getPath().lastSegment();
+                    String containerName = null;
+                    if( ProjectUtil.isHookProject( project ) )
+                    {
+                        containerName = HookClasspathContainer.SEGMENT_PATH;
+                    }
+                    else if( ProjectUtil.isPortletProject( project ) )
+                    {
+                        containerName = PortletClasspathContainer.SEGMENT_PATH;
+                    }
+                    if( !( containerLastSegment != null && ( containerLastSegment.equals( containerName ) || containerLastSegment.equals( runtimeName ) ) ) )
+                    {
+                        newCpEntries.add( classpathEntry );
+                    }
+
+                }
+                else
+                {
+                    newCpEntries.add( classpathEntry );
+                }
+            }
+            javaProject.setRawClasspath(
+                newCpEntries.toArray( new IClasspathEntry[newCpEntries.size()] ), new NullProgressMonitor() );
+
+        }
+        catch( Exception e )
+        { // TODO LOG error
+
+        }
 
     }
 
