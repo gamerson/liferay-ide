@@ -21,22 +21,16 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.m2e.core.project.conversion.AbstractProjectConversionEnabler;
 
 /**
- * @author kamesh.sampath
+ * @author Kamesh Sampath
  */
 public class LiferayPluginFacetConversionEnabler extends AbstractProjectConversionEnabler
 {
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.eclipse.m2e.core.project.conversion.AbstractProjectConversionEnabler#accept(org.eclipse.core.resources.IProject
-     * )
-     */
     @Override
     public boolean accept( IProject project )
     {
         // the converter is applicable only for Liferay Faceted projects
-        if(ProjectUtil.isLiferayFacetedProject( project ) )
+        if( ProjectUtil.isLiferayFacetedProject( project ) )
         {
             return true;
 
