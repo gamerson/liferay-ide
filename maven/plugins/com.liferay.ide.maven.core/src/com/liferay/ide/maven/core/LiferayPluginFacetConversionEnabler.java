@@ -33,8 +33,8 @@ public class LiferayPluginFacetConversionEnabler extends AbstractProjectConversi
         if( ProjectUtil.isLiferayFacetedProject( project ) )
         {
             return true;
-
         }
+        
         return false;
     }
 }

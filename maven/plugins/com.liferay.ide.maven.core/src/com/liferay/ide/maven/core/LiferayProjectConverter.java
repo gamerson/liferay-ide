@@ -78,7 +78,6 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
             if( ProjectUtil.isExtProject( project ) || ProjectUtil.isPortletProject( project ) ||
                 ProjectUtil.isHookProject( project ) )
             {
-
                 addDependencies( project, liferayProperties.getProperty( PLUGIN_CONFIG_LIFERAY_VERSION ), model );
             }
 
@@ -95,54 +94,34 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
             }
 
             removeStaleClasspathEntires( project, liferayRuntime.getRuntime().getName() );
-
         }
 
     }
 
-    private void removeStaleClasspathEntires( final IProject project, String runtimeName )
+    private void addDependencies( IProject project, String portalVersion, Model model )
     {
+        Set<Dependency> projectDependencySet = new HashSet<Dependency>();
 
-        IJavaProject javaProject = JavaCore.create( project );
-        try
+        List<Dependency> existingDependencies = model.getDependencies();
+        projectDependencySet.addAll( existingDependencies );
+        projectDependencySet.addAll( javaeeDependencies( model ) );
+
+        if( ProjectUtil.isPortletProject( project ) )
         {
-
-            IClasspathEntry[] classpathEntries = javaProject.getRawClasspath();
-            List<IClasspathEntry> newCpEntries = new LinkedList<IClasspathEntry>();
-            for( IClasspathEntry classpathEntry : classpathEntries )
-            {
-                if( classpathEntry.getEntryKind() == IClasspathEntry.CPE_CONTAINER )
-                {
-                    String containerLastSegment = classpathEntry.getPath().lastSegment();
-                    String containerName = null;
-                    if( ProjectUtil.isHookProject( project ) )
-                    {
-                        containerName = HookClasspathContainer.SEGMENT_PATH;
-                    }
-                    else if( ProjectUtil.isPortletProject( project ) )
-                    {
-                        containerName = PortletClasspathContainer.SEGMENT_PATH;
-                    }
-                    if( !( containerLastSegment != null && ( containerLastSegment.equals( containerName ) || containerLastSegment.equals( runtimeName ) ) ) )
-                    {
-                        newCpEntries.add( classpathEntry );
-                    }
-
-                }
-                else
-                {
-                    newCpEntries.add( classpathEntry );
-                }
-            }
-            javaProject.setRawClasspath(
-                newCpEntries.toArray( new IClasspathEntry[newCpEntries.size()] ), new NullProgressMonitor() );
-
+            projectDependencySet.addAll( portletPluginDependencies( portalVersion, model ) );
         }
-        catch( Exception e )
-        { // TODO LOG error
-
+        else if( ProjectUtil.isHookProject( project ) )
+        {
+            projectDependencySet.addAll( hookPluginDependencies( portalVersion, model ) );
+        }
+        else if( ProjectUtil.isExtProject( project ) )
+        {
+            // TODO add new classpath container, currently not supported
         }
 
+        List<Dependency> projectDependencies = new ArrayList<Dependency>();
+        projectDependencies.addAll( projectDependencySet );
+        model.setDependencies( projectDependencies );
     }
 
     private Properties getLiferayProperties( ILiferayRuntime liferayRuntime, ILiferayProject liferayProject )
@@ -166,25 +145,49 @@ public class LiferayProjectConverter extends AbstractProjectConversionParticipan
         return liferayProperties;
     }
 
-    private void addDependencies( IProject project, String portalVersion, Model model )
+    private void removeStaleClasspathEntires( final IProject project, String runtimeName )
     {
-        Set<Dependency> projectDependencySet = new HashSet<Dependency>();
+        IJavaProject javaProject = JavaCore.create( project );
 
-        List<Dependency> existingDependencies = model.getDependencies();
-        projectDependencySet.addAll( existingDependencies );
-        projectDependencySet.addAll( javaeeDependencies( model ) );
-        if( ProjectUtil.isPortletProject( project ) )
+        try
         {
-            projectDependencySet.addAll( portletPluginDependencies( portalVersion, model ) );
+            IClasspathEntry[] classpathEntries = javaProject.getRawClasspath();
+            List<IClasspathEntry> newCpEntries = new LinkedList<IClasspathEntry>();
+
+            for( IClasspathEntry classpathEntry : classpathEntries )
+            {
+                if( classpathEntry.getEntryKind() == IClasspathEntry.CPE_CONTAINER )
+                {
+                    String containerLastSegment = classpathEntry.getPath().lastSegment();
+                    String containerName = null;
+                    if( ProjectUtil.isHookProject( project ) )
+                    {
+                        containerName = HookClasspathContainer.SEGMENT_PATH;
+                    }
+                    else if( ProjectUtil.isPortletProject( project ) )
+                    {
+                        containerName = PortletClasspathContainer.SEGMENT_PATH;
+                    }
+
+                    if( !( containerLastSegment != null && ( containerLastSegment.equals( containerName ) || containerLastSegment.equals( runtimeName ) ) ) )
+                    {
+                        newCpEntries.add( classpathEntry );
+                    }
+                }
+                else
+                {
+                    newCpEntries.add( classpathEntry );
+                }
+            }
+
+            javaProject.setRawClasspath(
+                newCpEntries.toArray( new IClasspathEntry[newCpEntries.size()] ), new NullProgressMonitor() );
         }
-        else if( ProjectUtil.isHookProject( project ) )
+        catch( Exception e )
         {
-            projectDependencySet.addAll( hookPluginDependencies( portalVersion, model ) );
+            LiferayMavenCore.logError( e );
         }
 
-        List<Dependency> projectDependencies = new ArrayList<Dependency>();
-        projectDependencies.addAll( projectDependencySet );
-
-        model.setDependencies( projectDependencies );
     }
+
 }

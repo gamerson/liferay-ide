@@ -27,7 +27,9 @@ public interface ILiferayMavenConstants
 
     String BUILD_THUMBNAIL = "build-thumbnail"; //$NON-NLS-1$
 
-    String COMPILE_SCOPE = "compile"; //$NON-NLS-1$
+    String COMPILE_SCOPE = "compile"; //$NON-NLS-1$    
+
+    String COLON = ":"; //$NON-NLS-1$
 
     String DEFAULT_PLUGIN_TYPE = "portlet"; //$NON-NLS-1$
 
@@ -55,11 +57,11 @@ public interface ILiferayMavenConstants
 
     String LIFERAY_MAVEN_PLUGIN = "liferay-maven-plugin"; //$NON-NLS-1$
 
-    String LIFERAY_MAVEN_PLUGIN_KEY = "com.liferay.maven.plugins:liferay-maven-plugin"; //$NON-NLS-1$
-
     String LIFERAY_MAVEN_PLUGINS_GROUP_ID = "com.liferay.maven.plugins"; //$NON-NLS-1$
 
-    String MAVEN_GROUP_ARTIFACT_SEPERATOR = ":";//$NON-NLS-1$
+    String LIFERAY_MAVEN_PLUGINS_ARTIFACT_ID = "liferay-maven-plugin"; //$NON-NLS-1$
+
+    String LIFERAY_MAVEN_PLUGIN_KEY = LIFERAY_MAVEN_PLUGINS_GROUP_ID + COLON + LIFERAY_MAVEN_PLUGINS_ARTIFACT_ID;
 
     String MAVEN_PLUGIN_CONFIG_KEY = "configuration"; //$NON-NLS-1$
 
@@ -86,6 +88,7 @@ public interface ILiferayMavenConstants
     String PLUGIN_CONFIG_APP_AUTO_DEPLOY_DIR = "autoDeployDir"; //$NON-NLS-1$
 
     String PLUGIN_CONFIG_APP_SERVER_CLASSES_PORTAL_DIR = "appServerClassesPortalDir"; //$NON-NLS-1$
+
     String PLUGIN_CONFIG_APP_SERVER_DEPLOY_DIR = "appServerDeployDir"; //$NON-NLS-1$
 
     String PLUGIN_CONFIG_APP_SERVER_LIB_GLOBAL_DIR = "appServerLibGlobalDir"; //$NON-NLS-1$

@@ -41,161 +41,10 @@ import org.eclipse.core.resources.IProject;
 
 /**
  * @author Gregory Amerson
+ * @author Kamesh Sampath
  */
 public class LiferayMavenUtil
 {
-
-    public static Plugin getLiferayMavenPlugin( MavenProject mavenProject )
-    {
-        Plugin retval = null;
-
-        if( mavenProject != null )
-        {
-            retval = mavenProject.getPlugin( LIFERAY_MAVEN_PLUGIN_KEY );
-        }
-
-        return retval;
-    }
-
-    public static Xpp3Dom getLiferayMavenPluginConfig( MavenProject mavenProject )
-    {
-        Xpp3Dom retval = null;
-
-        if( mavenProject != null )
-        {
-            final Plugin plugin = mavenProject.getPlugin( LIFERAY_MAVEN_PLUGIN_KEY );
-
-            if( plugin != null )
-            {
-                retval = (Xpp3Dom) plugin.getConfiguration();
-            }
-        }
-
-        return retval;
-    }
-
-    public static String getLiferayMavenPluginConfig( MavenProject mavenProject, String childElement )
-    {
-        String retval = null;
-
-        Xpp3Dom liferayMavenPluginConfig = getLiferayMavenPluginConfig( mavenProject );
-
-        if( liferayMavenPluginConfig != null )
-        {
-            final Xpp3Dom childNode = liferayMavenPluginConfig.getChild( childElement );
-
-            if( childNode != null )
-            {
-                retval = childNode.getValue();
-            }
-        }
-
-        return retval;
-    }
-
-    public static List<Dependency> hookPluginDependencies( String portalVersion, Model model )
-    {
-        List<Dependency> dependencies = new ArrayList<Dependency>();
-
-        // portal-service
-        Dependency dependency = new Dependency();
-        dependency.setGroupId( LIFERAY_GROUP_ID );
-        dependency.setArtifactId( PORTAL_SERVICE_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
-        dependencies.add( dependency );
-
-        // util-java
-        dependency = new Dependency();
-        dependency.setGroupId( LIFERAY_GROUP_ID );
-        dependency.setArtifactId( UTIL_JAVA_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
-        dependencies.add( dependency );
-
-        return dependencies;
-
-    }
-
-    public static List<Dependency> portletPluginDependencies( String portalVersion, Model model )
-    {
-        List<Dependency> dependencies = new ArrayList<Dependency>();
-
-        // portal-service
-        Dependency dependency = new Dependency();
-        dependency.setGroupId( LIFERAY_GROUP_ID );
-        dependency.setArtifactId( PORTAL_SERVICE_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
-        dependencies.add( dependency );
-
-        // util-java
-        dependency = new Dependency();
-        dependency.setGroupId( LIFERAY_GROUP_ID );
-        dependency.setArtifactId( UTIL_JAVA_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
-        dependencies.add( dependency );
-
-        // util-bridges
-        dependency = new Dependency();
-        dependency.setGroupId( LIFERAY_GROUP_ID );
-        dependency.setArtifactId( UTIL_BRIDGES_ARTIFACT_ID );
-        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
-        dependency.setScope( PROVIDED_SCOPE );
-        dependencies.add( dependency );
-
-        // util-taglib
-        dependency = new Dependency();
-        dependency.setGroupId( LIFERAY_GROUP_ID );
-        dependency.setArtifactId( UTIL_TAGLIB_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
-        dependencies.add( dependency );
-
-        return dependencies;
-    }
-
-    // TODO Portlet JSF/ICEFACES/RICHFACES/LIFERAYFACES/PRIMEFACES dependencies
-
-    public static List<Dependency> javaeeDependencies( Model model )
-    {
-        List<Dependency> dependencies = new ArrayList<Dependency>();
-
-        // jstl.jar
-        Dependency dependency = new Dependency();
-        dependency.setGroupId( JSP_JSTL_GROUP_ID );
-        dependency.setArtifactId( JSTL_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( JSTL_VERSION );
-        dependencies.add( dependency );
-
-        // jsp-api
-        dependency = new Dependency();
-        dependency.setGroupId( JSP_API_GROUP_ID );
-        dependency.setArtifactId( JSP_API_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( JSP_API_VERSION );
-        dependencies.add( dependency );
-
-        // servlet-api
-        dependency = new Dependency();
-        dependency.setGroupId( SERVLET_API_GROUP_ID );
-        dependency.setArtifactId( SERVLET_API_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( SERVLET_API_VERSION );
-        dependencies.add( dependency );
-
-        // Portlet
-        dependency = new Dependency();
-        dependency.setGroupId( PORTLET_API_GROUP_ID );
-        dependency.setArtifactId( PORTLET_API_ARTIFACT_ID );
-        dependency.setScope( PROVIDED_SCOPE );
-        dependency.setVersion( PORTLET_API_VERSION );
-        dependencies.add( dependency );
-
-        return dependencies;
-    }
 
     public static Build addLiferayMavenPlugin( Model model, IProject project, Properties liferayProperties )
     {
@@ -206,10 +55,7 @@ public class LiferayMavenUtil
             build = new Build();
         }
 
-        Plugin plugin =
-            build.getPluginsAsMap().get(
-                getQualifiedArtifactId( LIFERAY_MAVEN_PLUGINS_GROUP_ID, MAVEN_GROUP_ARTIFACT_SEPERATOR +
-                    LIFERAY_MAVEN_PLUGIN_KEY ) );
+        Plugin plugin = build.getPluginsAsMap().get( LIFERAY_MAVEN_PLUGIN_KEY );
 
         if( plugin == null )
         {
@@ -264,6 +110,26 @@ public class LiferayMavenUtil
         }
     }
 
+    public static void addLiferayMavenProperties( Properties liferayProperties, Model model )
+    {
+        model.addProperty( MAVEN_PROP_LIFERAY_VERSION, liferayProperties.getProperty( PLUGIN_CONFIG_LIFERAY_VERSION ) );
+        model.addProperty(
+            MAVEN_PROP_LIFERAY_AUTO_DEPLOY_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_AUTO_DEPLOY_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_DEPLOY_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_DEPLOY_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_LIB_GLOBAL_DIR,
+            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_GLOBAL_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_PORTAL_LIB_DIR,
+            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_PORTAL_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_PORTAL_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_PORTAL_DIR ) );
+        model.addProperty(
+            MAVEN_PROP_APPSERVER_PORTAL_TLD_DIR,
+            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_TLD_PORTAL_DIR ) );
+    }
+
     public static Plugin configurePlugin( Plugin plugin, Map<String, String> configuration )
     {
         Xpp3Dom pluginConfig = (Xpp3Dom) plugin.getConfiguration();
@@ -289,28 +155,164 @@ public class LiferayMavenUtil
         return plugin;
     }
 
-    public static Object getQualifiedArtifactId( String groupId, String artifactId )
+    public static Plugin getLiferayMavenPlugin( MavenProject mavenProject )
     {
-        return groupId + ":" + artifactId; //$NON-NLS-1$
+        Plugin retval = null;
+
+        if( mavenProject != null )
+        {
+            retval = mavenProject.getPlugin( LIFERAY_MAVEN_PLUGIN_KEY );
+        }
+
+        return retval;
     }
 
-    public static void addLiferayMavenProperties( Properties liferayProperties, Model model )
+    public static Xpp3Dom getLiferayMavenPluginConfig( MavenProject mavenProject )
     {
-        model.addProperty( MAVEN_PROP_LIFERAY_VERSION, liferayProperties.getProperty( PLUGIN_CONFIG_LIFERAY_VERSION ) );
-        model.addProperty(
-            MAVEN_PROP_LIFERAY_AUTO_DEPLOY_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_AUTO_DEPLOY_DIR ) );
-        model.addProperty(
-            MAVEN_PROP_APPSERVER_DEPLOY_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_DEPLOY_DIR ) );
-        model.addProperty(
-            MAVEN_PROP_APPSERVER_LIB_GLOBAL_DIR,
-            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_GLOBAL_DIR ) );
-        model.addProperty(
-            MAVEN_PROP_APPSERVER_PORTAL_LIB_DIR,
-            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_LIB_PORTAL_DIR ) );
-        model.addProperty(
-            MAVEN_PROP_APPSERVER_PORTAL_DIR, liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_PORTAL_DIR ) );
-        model.addProperty(
-            MAVEN_PROP_APPSERVER_PORTAL_TLD_DIR,
-            liferayProperties.getProperty( PLUGIN_CONFIG_APP_SERVER_TLD_PORTAL_DIR ) );
+        Xpp3Dom retval = null;
+
+        if( mavenProject != null )
+        {
+            final Plugin plugin = mavenProject.getPlugin( LIFERAY_MAVEN_PLUGIN_KEY );
+
+            if( plugin != null )
+            {
+                retval = (Xpp3Dom) plugin.getConfiguration();
+            }
+        }
+
+        return retval;
+    }
+
+    public static String getLiferayMavenPluginConfig( MavenProject mavenProject, String childElement )
+    {
+        String retval = null;
+
+        Xpp3Dom liferayMavenPluginConfig = getLiferayMavenPluginConfig( mavenProject );
+
+        if( liferayMavenPluginConfig != null )
+        {
+            final Xpp3Dom childNode = liferayMavenPluginConfig.getChild( childElement );
+
+            if( childNode != null )
+            {
+                retval = childNode.getValue();
+            }
+        }
+
+        return retval;
+    }
+
+    public static Object getQualifiedArtifactId( String groupId, String artifactId )
+    {
+        return groupId + COLON + artifactId;
+    }
+
+    public static List<Dependency> hookPluginDependencies( String portalVersion, Model model )
+    {
+        List<Dependency> dependencies = new ArrayList<Dependency>();
+
+        // portal-service
+        Dependency dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( PORTAL_SERVICE_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependencies.add( dependency );
+
+        // util-java
+        dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( UTIL_JAVA_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependencies.add( dependency );
+
+        return dependencies;
+
+    }
+
+    public static List<Dependency> javaeeDependencies( Model model )
+    {
+        List<Dependency> dependencies = new ArrayList<Dependency>();
+
+        // jstl.jar
+        Dependency dependency = new Dependency();
+        dependency.setGroupId( JSP_JSTL_GROUP_ID );
+        dependency.setArtifactId( JSTL_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( JSTL_VERSION );
+        dependencies.add( dependency );
+
+        // jsp-api
+        dependency = new Dependency();
+        dependency.setGroupId( JSP_API_GROUP_ID );
+        dependency.setArtifactId( JSP_API_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( JSP_API_VERSION );
+        dependencies.add( dependency );
+
+        // servlet-api
+        dependency = new Dependency();
+        dependency.setGroupId( SERVLET_API_GROUP_ID );
+        dependency.setArtifactId( SERVLET_API_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( SERVLET_API_VERSION );
+        dependencies.add( dependency );
+
+        // Portlet
+        dependency = new Dependency();
+        dependency.setGroupId( PORTLET_API_GROUP_ID );
+        dependency.setArtifactId( PORTLET_API_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( PORTLET_API_VERSION );
+        dependencies.add( dependency );
+
+        return dependencies;
+    }
+
+    public static List<Dependency> jsfDependencies( Model model )
+    {
+        // TODO JSF, PrimeFaces, RichFaces, Liferay Faces
+        return null;
+    }
+
+    public static List<Dependency> portletPluginDependencies( String portalVersion, Model model )
+    {
+        List<Dependency> dependencies = new ArrayList<Dependency>();
+
+        // portal-service
+        Dependency dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( PORTAL_SERVICE_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependencies.add( dependency );
+
+        // util-java
+        dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( UTIL_JAVA_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependencies.add( dependency );
+
+        // util-bridges
+        dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( UTIL_BRIDGES_ARTIFACT_ID );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependency.setScope( PROVIDED_SCOPE );
+        dependencies.add( dependency );
+
+        // util-taglib
+        dependency = new Dependency();
+        dependency.setGroupId( LIFERAY_GROUP_ID );
+        dependency.setArtifactId( UTIL_TAGLIB_ARTIFACT_ID );
+        dependency.setScope( PROVIDED_SCOPE );
+        dependency.setVersion( "${liferay.version}" ); //$NON-NLS-1$
+        dependencies.add( dependency );
+
+        return dependencies;
     }
 }
