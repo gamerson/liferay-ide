@@ -1,45 +1,53 @@
-<#macro printLayout type="">
+<#assign appendIndent="">
+<#macro printLayout this type="">
 <#if type == "ie">
-<#assign rowElement="table" trBegin="\n\t\t<tr>" trEnd="</tr>\n\t\t" columnElement="td" columnNewline="">
+<#assign rowElement="table" trBegin="\n"+appendIndent+"\t\t<tr>" trEnd=appendIndent+"</tr>\n\t\t" columnElement="td" columnNewline="">
 <#else>
 <#assign rowElement="div" trBegin="" trEnd="" columnElement="div" columnNewline="\n">
 </#if>
 <#assign rowCounter=0>
-<#list root.getRows() as row>
+<#if !this.getRows().isEmpty()>
+<#list this.getRows() as row>
 <#if (rowCounter > 0)>
 
 </#if>
 <#assign rowCounter = rowCounter + 1>
-		<${rowElement} class="${row.className}">${trBegin}
-<#if row.getColumns().size() == 1>
-<#assign columnOnly=row.getColumns().get(0)>
-			<${columnElement} class="portlet-column portlet-column-only" id="column-${columnOnly.numId}">
-				$processor.processColumn("column-${columnOnly.numId}", "portlet-column-content portlet-column-content-only")
-			</${columnElement}>
-<#elseif (row.getColumns().size() > 1)>
+		${appendIndent}<${rowElement} class="${row.className}">${trBegin}
 <#list row.getColumns() as col>
+<#if row.getColumns().size() == 1>
+<#assign columnContentDescriptor = " portlet-column-content-only" columnDescriptor = " portlet-column-only">
+<#elseif (row.getColumns().size() > 1)>
 <#if col.isFirst()>
-			<${columnElement} class="aui-w${col.getWeight()} portlet-column portlet-column-first" id="column-${col.numId}">
-				$processor.processColumn("column-${col.numId}", "portlet-column-content portlet-column-content-first")
+<#assign columnContentDescriptor = " portlet-column-content-first" columnDescriptor = " portlet-column-first">
 <#elseif col.isLast()>${columnNewline}<#rt>
-			<${columnElement} class="aui-w${col.getWeight()} portlet-column portlet-column-last" id="column-${col.numId}">
-				$processor.processColumn("column-${col.numId}", "portlet-column-content portlet-column-content-last")
+<#assign columnContentDescriptor = " portlet-column-content-last" columnDescriptor = " portlet-column-last">
 <#else>${columnNewline}<#rt>
-			<${columnElement} class="aui-w${col.getWeight()} portlet-column" id="column-${col.numId}">
-				$processor.processColumn("column-${col.numId}", "portlet-column-content")
+<#assign columnContentDescriptor = "" columnDescriptor = "">
 </#if>
-			</${columnElement}>
+</#if>
+			${appendIndent}<${columnElement} class="aui-w${col.getWeight()} portlet-column${columnDescriptor}"<#if !(col.numId==0)> id="column-${col.numId}"</#if>>
+<#if !col.getRows().isEmpty()>
+<#assign appendIndent = stack.push(appendIndent) + "\t\t">
+<@printLayout this=col type=type/>
+<#assign appendIndent = stack.pop()>
+<#if type=="ie">
+<#assign trEnd=appendIndent+"</tr>\n\t\t">
+</#if>
+<#else>
+				${appendIndent}$processor.processColumn("column-${col.numId}", "portlet-column-content${columnContentDescriptor}")
+</#if>
+			${appendIndent}</${columnElement}>
+</#list>
+		${trEnd}${appendIndent}</${rowElement}>
 </#list>
 </#if>
-		${trEnd}</${rowElement}>
-</#list>
 </#macro>
-<#if (root.getRows().size() > 0)>
+<#if (root.getRows().size() >= 0)>
 <div class="${templateName}" id="${root.id}" role="${root.role}">
 	#if ($browserSniffer.isIe($request) && $browserSniffer.getMajorVersion($request) < 8)
-	<@printLayout type="ie"/>
+<@printLayout this=root type="ie"/>
 	#else
-	<@printLayout/>
+<@printLayout this=root/>
 	#end
-</div>
+</div><#rt>
 </#if>
