@@ -29,10 +29,14 @@ import com.liferay.ide.server.util.ServerUtil;
 import com.liferay.ide.server.util.SocketUtil;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -55,6 +59,8 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Greg Amerson
@@ -73,9 +79,40 @@ public class RemoteServerBehavior extends ServerBehaviourDelegate
 
     public boolean canConnect()
     {
-        return SocketUtil.canConnect( getServer().getHost(), getRemoteServer().getHTTPPort() ).isOK();
+        IStatus status = null;
+        ServiceTracker<Object, Object> proxyTracker = new ServiceTracker<Object, Object>(FrameworkUtil.getBundle(
+            this.getClass() ).getBundleContext(), IProxyService.class
+             .getName(), null);
+         proxyTracker.open();
+         IProxyService proxyService = (IProxyService) proxyTracker.getService();
+         status = SocketUtil.canConnect( getServer().getHost(), getRemoteServer().getHTTPPort() );
+        if( status != null && status.isOK() ){
+            return true;
+        }
+        else{
+            try
+            {
+                URI uri = new URI("SOCKS://"+getServer().getHost()+":"+getRemoteServer().getHTTPPort()); //$NON-NLS-1$ //$NON-NLS-2$
+                IProxyData[] proxyDataForHost = proxyService.select(uri);
+                for( IProxyData data : proxyDataForHost ){
+                    if( data.getHost() != null ){  
+                        status = SocketUtil.canConnect( data.getHost(), String.valueOf( data.getPort() ));
+                        if( status != null && status.isOK() ){
+                            return true;
+                        }
+                    }
+                 break;
+                }         
+            }     
+            catch( URISyntaxException e )
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }    
+        return false;
     }
-
+     
     @Override
     public IStatus canPublish()
     {

@@ -11,7 +11,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons.io_2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/json.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.2.1.jar" sourcepath="C:/Users/liferay/Downloads/httpcomponents-client-4.2.1"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpmime-4.2.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
