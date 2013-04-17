@@ -15,8 +15,6 @@
 
 package com.liferay.ide.core.util;
 
-import com.liferay.ide.core.LiferayCore;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,6 +28,7 @@ import java.security.MessageDigest;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -58,7 +57,10 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.osgi.framework.Version;
+import org.osgi.util.tracker.ServiceTracker;
 import org.w3c.dom.Node;
+
+import com.liferay.ide.core.LiferayCore;
 
 /**
  * Core Utility methods
@@ -580,5 +582,16 @@ public class CoreUtil
                 node.removeChild( node.getFirstChild() );
             }
         }
+    }
+
+    public static IProxyService getProxySerice()
+    {
+        ServiceTracker<Object, Object> proxyTracker =
+            new ServiceTracker<Object, Object>(
+                LiferayCore.getDefault().getBundle().getBundleContext(), IProxyService.class.getName(), null );
+        proxyTracker.open();
+        IProxyService proxyService = (IProxyService) proxyTracker.getService();
+
+        return proxyService;
     }
 }

@@ -15,24 +15,15 @@
 
 package com.liferay.ide.server.remote;
 
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.remote.APIException;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.server.core.ILiferayServerBehavior;
-import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.util.LiferayPublishHelper;
-import com.liferay.ide.server.util.ServerUtil;
-import com.liferay.ide.server.util.SocketUtil;
-
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -56,6 +47,19 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.remote.APIException;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.sdk.core.ISDKConstants;
+import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKUtil;
+import com.liferay.ide.server.core.ILiferayServerBehavior;
+import com.liferay.ide.server.core.LiferayServerCore;
+import com.liferay.ide.server.util.LiferayPublishHelper;
+import com.liferay.ide.server.util.ServerUtil;
+import com.liferay.ide.server.util.SocketUtil;
+
 /**
  * @author Greg Amerson
  */
@@ -73,7 +77,43 @@ public class RemoteServerBehavior extends ServerBehaviourDelegate
 
     public boolean canConnect()
     {
-        return SocketUtil.canConnect( getServer().getHost(), getRemoteServer().getHTTPPort() ).isOK();
+        IStatus status = null;
+        IProxyService proxyService = CoreUtil.getProxySerice();
+        status = SocketUtil.canConnect( getServer().getHost(), getRemoteServer().getHTTPPort() );
+
+        if( status != null && status.isOK() )
+        {
+            return true;
+        }
+        else
+        {
+            try
+            {
+                URI uri = new URI( "SOCKS://" + getServer().getHost() + ":" + getRemoteServer().getHTTPPort() ); //$NON-NLS-1$ //$NON-NLS-2$
+                IProxyData[] proxyDataForHost = proxyService.select( uri );
+
+                for( IProxyData data : proxyDataForHost )
+                {
+                    if( data.getHost() != null )
+                    {
+                        status = SocketUtil.canConnect( data.getHost(), String.valueOf( data.getPort() ) );
+
+                        if( status != null && status.isOK() )
+                        {
+                            return true;
+                        }
+                    }
+
+                    break;
+                }
+            }
+            catch( URISyntaxException e )
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
     }
 
     @Override
