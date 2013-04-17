@@ -20,6 +20,9 @@ package com.liferay.ide.core.remote;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -32,20 +35,24 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * @author Gregory Amerson
+ * @author Tao Tao
  */
 public class RemoteConnection implements IRemoteConnection
 {
 
     private String hostname;
-    private DefaultHttpClient httpClient;
+    private HttpClient httpClient;
     private int httpPort;
     private String password;
     private String username;
@@ -71,14 +78,40 @@ public class RemoteConnection implements IRemoteConnection
     {
         if( httpClient == null )
         {
-            httpClient = new DefaultHttpClient();
+            DefaultHttpClient newHttpClient = new DefaultHttpClient();
 
             if( getUsername() != null || getPassword() != null )
             {
-                httpClient.getCredentialsProvider().setCredentials(
+                newHttpClient.getCredentialsProvider().setCredentials(
                     new AuthScope( getHost(), getHttpPort() ),
                     new UsernamePasswordCredentials( getUsername(), getPassword() ) );
+                IProxyService proxyService = CoreUtil.getProxyService();
+
+                try
+                {
+                    URI uri = new URI( "SOCKS://" + getHost() + ":" + getHttpPort() ); //$NON-NLS-1$ //$NON-NLS-2$
+                    IProxyData[] proxyDataForHost = proxyService.select( uri );
+
+                    for( IProxyData data : proxyDataForHost )
+                    {
+                        if( data.getHost() != null )
+                        {
+                            newHttpClient.getParams().setParameter( "socks.host", data.getHost() ); //$NON-NLS-1$
+                            newHttpClient.getParams().setParameter( "socks.port", data.getPort() ); //$NON-NLS-1$
+                            newHttpClient.getConnectionManager().getSchemeRegistry().register(
+                                new Scheme( "http", data.getPort(), new RemoteServerSocketFactory() ) ); //$NON-NLS-1$
+
+                            break;
+                        }
+                    }
+                }
+                catch( URISyntaxException e )
+                {
+                    e.printStackTrace();
+                }
             }
+
+            httpClient = newHttpClient;
         }
 
         return httpClient;
@@ -233,7 +266,7 @@ public class RemoteConnection implements IRemoteConnection
         {
             throw e;
         }
-        catch (Exception e)
+        catch( Exception e )
         {
             throw new APIException( api, e );
         }
@@ -295,5 +328,4 @@ public class RemoteConnection implements IRemoteConnection
         this.username = username;
         this.httpClient = null;
     }
-
 }
