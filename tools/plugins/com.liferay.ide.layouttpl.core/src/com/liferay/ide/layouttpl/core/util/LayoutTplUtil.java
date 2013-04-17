@@ -23,11 +23,14 @@ import java.util.regex.Pattern;
 
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
 /**
  * @author Gregory Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( "restriction" )
 public class LayoutTplUtil
@@ -44,11 +47,11 @@ public class LayoutTplUtil
 
         List<IDOMElement> childElements = new ArrayList<IDOMElement>();
 
-        NodeList divChildren = parentElement.getElementsByTagName( childElementTag );
+        List<Element> divChildren = getChildElementsByTagName( parentElement, childElementTag );
 
-        for( int i = 0; i < divChildren.getLength(); i++ )
+        for( int i = 0; i < divChildren.size(); i++ )
         {
-            IDOMElement childDivElement = (IDOMElement) divChildren.item( i );
+            IDOMElement childDivElement = (IDOMElement) divChildren.get( i );
 
             if( hasClassName( childDivElement, className ) )
             {
@@ -71,6 +74,30 @@ public class LayoutTplUtil
         mainContentElement = (IDOMElement) rootDocument.getElementById( "main-content" ); //$NON-NLS-1$
 
         return mainContentElement;
+    }
+
+    public static List<Element> getChildElementsByTagName( IDOMElement parentElement, String childElementTag )
+    {
+        final NodeList childNodes = ( (Node) parentElement ).getChildNodes();
+
+        List<Element> childElements = new ArrayList<Element>();
+
+        for( int i = 0; i < childNodes.getLength(); i++)
+        {
+            Node childNode = childNodes.item( i );
+
+            if( childNode.getNodeType() == 1 && childElementTag != null )
+            {
+                Element element = (Element) childNode;
+
+                if( element.getTagName().equals( childElementTag ) )
+                {
+                    childElements.add( element );
+                }
+            }
+        }
+
+        return childElements;
     }
 
     public static String getRoleValue( IDOMElement mainContentElement, String defaultValue )
