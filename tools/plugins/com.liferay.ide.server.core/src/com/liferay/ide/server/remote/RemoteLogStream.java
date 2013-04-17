@@ -22,13 +22,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.codec.binary.Base64;
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.wst.server.core.IServer;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Greg Amerson
@@ -64,14 +70,14 @@ public class RemoteLogStream extends BufferedInputStream
         try
         {
             URL url = createBaseUrl( server, remoteServer, connection, log );
-
+            
+            //return connection.getURLInputStream( url );
             return openInputStream( connection, url );
         }
         catch( Exception e )
         {
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -93,12 +99,36 @@ public class RemoteLogStream extends BufferedInputStream
         String authString = username + ":" + password; //$NON-NLS-1$
         byte[] authEncBytes = Base64.encodeBase64( authString.getBytes() );
         String authStringEnc = new String( authEncBytes );
-
+        ServiceTracker<Object, Object> proxyTracker = new ServiceTracker<Object, Object>(FrameworkUtil.getBundle(
+           RemoteLogStream.class ).getBundleContext(), IProxyService.class
+            .getName(), null);
+        proxyTracker.open();
+        IProxyService proxyService = (IProxyService) proxyTracker.getService();
+        try
+        {
+            URI uri = new URI("SOCKS://"+url.getHost()+":"+url.getPort()); //$NON-NLS-1$ //$NON-NLS-2$
+            IProxyData[] proxyDataForHost = proxyService.select(uri);
+            for( IProxyData data : proxyDataForHost ){
+                if( data.getHost() != null ){
+                    System.setProperty("http.proxySet", "true");  //$NON-NLS-1$//$NON-NLS-2$
+                    System.setProperty("http.proxyHost", data.getHost() ); //$NON-NLS-1$
+                    System.setProperty("http.proxyPort", String.valueOf( data.getPort() ));  //$NON-NLS-1$
+                }
+             break;
+            }                    
+          
+        }
+        catch( URISyntaxException e )
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+       
         URLConnection conn = url.openConnection();
         conn.setRequestProperty( "Authorization", "Basic " + authStringEnc ); //$NON-NLS-1$ //$NON-NLS-2$
         Authenticator.setDefault( null );
         conn.setAllowUserInteraction( false );
-
+        
         return conn.getInputStream();
     }
 

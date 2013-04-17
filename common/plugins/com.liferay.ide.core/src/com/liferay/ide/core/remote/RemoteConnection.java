@@ -17,6 +17,12 @@
 
 package com.liferay.ide.core.remote;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 
@@ -25,6 +31,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -32,11 +39,16 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Gregory Amerson
@@ -44,11 +56,11 @@ import org.json.JSONObject;
 public class RemoteConnection implements IRemoteConnection
 {
 
-    private String hostname;
-    private DefaultHttpClient httpClient;
+    private String hostname; 
+    private HttpClient httpClient;
     private int httpPort;
-    private String password;
-    private String username;
+    private String password; 
+    private String username; 
 
     protected Object deleteJSONAPI( Object... args ) throws APIException
     {
@@ -71,14 +83,45 @@ public class RemoteConnection implements IRemoteConnection
     {
         if( httpClient == null )
         {
-            httpClient = new DefaultHttpClient();
+            DefaultHttpClient newHttpClient = new DefaultHttpClient();
 
             if( getUsername() != null || getPassword() != null )
             {
-                httpClient.getCredentialsProvider().setCredentials(
+                newHttpClient.getCredentialsProvider().setCredentials(
                     new AuthScope( getHost(), getHttpPort() ),
                     new UsernamePasswordCredentials( getUsername(), getPassword() ) );
+                ServiceTracker<Object, Object> proxyTracker = new ServiceTracker<Object, Object>(FrameworkUtil.getBundle(
+                    this.getClass()).getBundleContext(), IProxyService.class
+                    .getName(), null);
+                proxyTracker.open();
+                IProxyService proxyService = (IProxyService) proxyTracker.getService();
+                
+                try
+                {
+                    URI uri = new URI("SOCKS://" + getHost()+":"+getHttpPort());  //$NON-NLS-1$ //$NON-NLS-2$
+                    
+                    IProxyData[] proxyDataForHost = proxyService.select(uri);
+                    for( IProxyData data : proxyDataForHost ){
+                        if( data.getHost() != null ){
+                            newHttpClient.getParams().setParameter( "socks.host", data.getHost() );   //$NON-NLS-1$
+                            newHttpClient.getParams().setParameter( "socks.port", data.getPort() ); //$NON-NLS-1$
+                        }
+                     break;
+                    }                    
+                    newHttpClient
+                            .getConnectionManager()
+                            .getSchemeRegistry()
+                            .register(new Scheme("http", 8080, new MySchemeSocketFactory())); //$NON-NLS-1$
+                }
+                catch( URISyntaxException e )
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+               
             }
+            
+            httpClient = newHttpClient;
         }
 
         return httpClient;
@@ -294,6 +337,41 @@ public class RemoteConnection implements IRemoteConnection
     {
         this.username = username;
         this.httpClient = null;
+    }
+
+    public InputStream getURLInputStream( URL url ) 
+    {
+        
+        try
+        {
+            HttpGet get = new HttpGet(url.toURI());
+            HttpResponse response = getHttpClient().execute( get );
+
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            if( statusCode == HttpStatus.SC_OK )
+            {
+                HttpEntity entity = response.getEntity();
+
+                return entity.getContent();
+            }
+        }
+        catch( URISyntaxException e )
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch( ClientProtocolException e )
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch( IOException e )
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

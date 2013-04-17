@@ -22,10 +22,13 @@ import com.liferay.ide.server.util.SocketUtil;
 
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,6 +40,8 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Greg Amerson
@@ -84,13 +89,33 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
         try
         {
             status = SocketUtil.canConnect( socket, host, http );
+            if( status != null && status.isOK() ){
+                return true;
+            }
+            else{
+                ServiceTracker<Object, Object> proxyTracker = new ServiceTracker<Object, Object>(FrameworkUtil.getBundle(
+                    RemoteLogStream.class ).getBundleContext(), IProxyService.class
+                     .getName(), null);
+                 proxyTracker.open();
+                 IProxyService proxyService = (IProxyService) proxyTracker.getService();
+                 URI uri = new URI("SOCKS://"+ host +":"+ http); //$NON-NLS-1$ //$NON-NLS-2$
+                 IProxyData[] proxyDataForHost = proxyService.select(uri);
+                 for( IProxyData data : proxyDataForHost ){
+                     if( data.getHost() != null ){  
+                         status = SocketUtil.canConnect( data.getHost(), String.valueOf( data.getPort() ));
+                         if( status != null && status.isOK() ){
+                             return true;
+                         }
+                     }
+                  break;
+                 }         
+            }
         }
         catch( Exception e )
         {
         }
-
-        return status != null && status.isOK();
-    }
+        return false;
+        }
 
     @Override
     public IStatus canModifyModules( IModule[] add, IModule[] remove )
