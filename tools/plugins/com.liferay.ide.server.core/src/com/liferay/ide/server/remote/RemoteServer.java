@@ -15,17 +15,15 @@
 
 package com.liferay.ide.server.remote;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.util.ServerUtil;
-import com.liferay.ide.server.util.SocketUtil;
-
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,6 +35,11 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.server.core.LiferayServerCore;
+import com.liferay.ide.server.util.ServerUtil;
+import com.liferay.ide.server.util.SocketUtil;
 
 /**
  * @author Greg Amerson
@@ -80,16 +83,38 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
         }.start();
 
         IStatus status = null;
-
-        try
+        status = SocketUtil.canConnect( socket, host, http );
+        if( status != null && status.isOK() )
         {
-            status = SocketUtil.canConnect( socket, host, http );
+            return true;
         }
-        catch( Exception e )
+        else
         {
-        }
+            IProxyService proxyService = CoreUtil.getProxySerice();
 
-        return status != null && status.isOK();
+            try
+            {
+                URI uri = new URI( "SOCKS://" + host + ":" + http ); //$NON-NLS-1$ //$NON-NLS-2$
+                IProxyData[] proxyDataForHost = proxyService.select( uri );
+                for( IProxyData data : proxyDataForHost )
+                {
+                    if( data.getHost() != null )
+                    {
+                        status = SocketUtil.canConnect( data.getHost(), String.valueOf( data.getPort() ) );
+                        if( status != null && status.isOK() )
+                        {
+                            return true;
+                        }
+                    }
+
+                    break;
+                }
+            }
+            catch( Exception e )
+            {
+            }
+        }
+        return false;
     }
 
     @Override
