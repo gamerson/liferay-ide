@@ -164,13 +164,13 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_COLUMN ) )
         {
             PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn(), 0 );
+            row.addColumn( new PortletColumn( 100 ), 0 );
             diagram.addRow( row );
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_2_I_COLUMN ) )
         {
             PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn(), 0 );
+            row.addColumn( new PortletColumn( 100 ), 0 );
 
             PortletLayout row2 = new PortletLayout();
             row2.addColumn( new PortletColumn( 70 ), 0 );
@@ -182,7 +182,7 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_2_II_COLUMN ) )
         {
             PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn(), 0 );
+            row.addColumn( new PortletColumn( 100 ), 0 );
 
             PortletLayout row2 = new PortletLayout();
             row2.addColumn( new PortletColumn( 30 ), 0 );
@@ -194,14 +194,14 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_2_1_COLUMN ) )
         {
             PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn(), 0 );
+            row.addColumn( new PortletColumn( 100 ), 0 );
 
             PortletLayout row2 = new PortletLayout();
             row2.addColumn( new PortletColumn( 50 ), 0 );
             row2.addColumn( new PortletColumn( 50 ), 0 );
 
             PortletLayout row3 = new PortletLayout();
-            row3.addColumn( new PortletColumn(), 0 );
+            row3.addColumn( new PortletColumn( 100 ), 0 );
 
             diagram.addRow( row );
             diagram.addRow( row2 );
