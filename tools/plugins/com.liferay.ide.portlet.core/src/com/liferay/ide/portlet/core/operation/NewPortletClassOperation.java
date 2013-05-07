@@ -15,12 +15,23 @@
 
 package com.liferay.ide.portlet.core.operation;
 
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.portlet.core.PortletCore;
+
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelProperties;
 import org.eclipse.jst.j2ee.internal.web.operations.CreateWebClassTemplateModel;
 import org.eclipse.jst.j2ee.internal.web.operations.NewWebClassOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * @author Greg Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( "restriction" )
 public class NewPortletClassOperation extends NewWebClassOperation
@@ -39,6 +50,43 @@ public class NewPortletClassOperation extends NewWebClassOperation
     protected CreateWebClassTemplateModel createTemplateModel()
     {
         return new CreatePortletTemplateModel( getDataModel() );
+    }
+
+    @Override
+    public IStatus execute( IProgressMonitor monitor, IAdaptable info ) throws ExecutionException
+    {
+        String defaultSuperclasses =
+            INewPortletClassDataModelProperties.QUALIFIED_MVC_PORTLET + StringPool.COMMA +
+                INewPortletClassDataModelProperties.QUALIFIED_LIFERAY_PORTLET + StringPool.COMMA +
+                INewPortletClassDataModelProperties.QUALIFIED_GENERIC_PORTLET;
+        try
+        {
+            Preferences preferences = PortletCore.getPreferences();
+            String superclasses = preferences.get( PortletCore.PREF_KEY_PORTLET_SUPERCLASSES_USED, null );
+
+            String superclass = getDataModel().getProperty( INewJavaClassDataModelProperties.SUPERCLASS ).toString();
+
+            if( ! defaultSuperclasses.contains( superclass ) )
+            {
+                if( superclasses == null )
+                {
+                    preferences.put( PortletCore.PREF_KEY_PORTLET_SUPERCLASSES_USED, superclass );
+                    preferences.flush();
+                }
+                else if( ! superclasses.contains( superclass ) )
+                {
+                    preferences.put( PortletCore.PREF_KEY_PORTLET_SUPERCLASSES_USED, superclasses + StringPool.COMMA +
+                        superclass );
+                    preferences.flush();
+                }
+            }
+        }
+        catch( BackingStoreException e )
+        {
+            PortletCore.logError( e );
+        }
+
+        return super.execute( monitor, info );
     }
 
     @Override
