@@ -62,7 +62,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
 {
 
     public static final String ID = "com.liferay.ide.eclipse.theme.core.cssBuilder"; //$NON-NLS-1$
-    public static final String[] THEME_PARENTS = { "control_panel", "classic", "_styled", "_unstyled" };
+    public static final String[] THEME_PARENTS = { "control_panel", "classic", "_styled", "_unstyled" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     public static IStatus compileTheme( IProject project ) throws CoreException
     {
@@ -341,7 +341,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
                                     }
                                 }
                             }
-                            else if( "build.xml".equals( segment ) ) //IDE-828
+                            else if( "build.xml".equals( segment ) ) //IDE-828 //$NON-NLS-1$
                             {
                                 IPath relPath = resource.getProjectRelativePath();
 
@@ -353,7 +353,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
                                     }
                                     catch( CoreException e )
                                     {
-                                        ThemeCore.logError( "Error compiling theme.", e );
+                                        ThemeCore.logError( "Error compiling theme.", e ); //$NON-NLS-1$
                                     }
                                 }
                             }

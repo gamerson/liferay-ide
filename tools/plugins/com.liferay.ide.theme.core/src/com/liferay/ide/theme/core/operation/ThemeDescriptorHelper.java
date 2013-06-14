@@ -38,8 +38,8 @@ public class ThemeDescriptorHelper extends LiferayDescriptorHelper
 {
 
     public static final String DEFUALT_FILE_TEMPLATE =
-        "<?xml version=\"1.0\"?>\n<!DOCTYPE look-and-feel PUBLIC \"-//Liferay//DTD Look and Feel {0}//EN\" " +
-        "\"http://www.liferay.com/dtd/liferay-look-and-feel_{1}.dtd\">\n\n<look-and-feel>\n\t<compatibility>\n\t\t" +
+        "<?xml version=\"1.0\"?>\n<!DOCTYPE look-and-feel PUBLIC \"-//Liferay//DTD Look and Feel {0}//EN\" " + //$NON-NLS-1$
+        "\"http://www.liferay.com/dtd/liferay-look-and-feel_{1}.dtd\">\n\n<look-and-feel>\n\t<compatibility>\n\t\t" + //$NON-NLS-1$
         "<version>__VERSION__</version>\n\t</compatibility>\n\t<theme id=\"__ID__\" name=\"__NAME__\" />\n</look-and-feel>"; //$NON-NLS-1$
 
     public ThemeDescriptorHelper( IProject project )
@@ -56,7 +56,7 @@ public class ThemeDescriptorHelper extends LiferayDescriptorHelper
 
         try
         {
-            final Path path = new Path( ILiferayConstants.LIFERAY_LOOK_AND_FEEL_XML_FILE ); //$NON-NLS-1$
+            final Path path = new Path( ILiferayConstants.LIFERAY_LOOK_AND_FEEL_XML_FILE );
             final IFile lookAndFeelFile = container.getFile( path );
             final String descriptorVersion = getDescriptorVersionFromPortalVersion( version );
 

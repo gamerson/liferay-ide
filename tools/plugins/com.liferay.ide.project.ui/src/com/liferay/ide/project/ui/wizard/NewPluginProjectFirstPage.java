@@ -54,6 +54,7 @@ import org.eclipse.wst.server.ui.ServerUIUtil;
 
 /**
  * @author Greg Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( "restriction" )
 public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IPluginProjectDataModelProperties
@@ -85,8 +86,8 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
 
         if( canFlip )
         {
-            // Only the portlet mode needs a 2ne page
-            return getModel().getBooleanProperty( PLUGIN_TYPE_PORTLET );
+            // Portlet and theme modes need a 2nd page
+            return ( getModel().getBooleanProperty( PLUGIN_TYPE_PORTLET ) ) || ( getModel().getBooleanProperty( PLUGIN_TYPE_THEME ) );
         }
 
         return canFlip;
@@ -270,6 +271,15 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         Label l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.createWebApplication, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( portletType, PLUGIN_TYPE_PORTLET, null );
+        portletType.addSelectionListener( new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected( SelectionEvent e )
+            {
+                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_PORTLET_FACET_ID );
+            }
+
+        } );
 
         hookType =
             SWTUtil.createRadioButton(
@@ -278,6 +288,15 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
             SWTUtil.createLabel( group, SWT.WRAP, Msgs.overrideLiferayDefaultBehavior, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( hookType, PLUGIN_TYPE_HOOK, null );
+        hookType.addSelectionListener( new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected( SelectionEvent e )
+            {
+                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_HOOK_FACET_ID );
+            }
+
+        } );
 
         extType =
             SWTUtil.createRadioButton(
@@ -285,6 +304,15 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.lightWeightExtensionEnvironment, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( extType, PLUGIN_TYPE_EXT, null );
+        extType.addSelectionListener( new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected( SelectionEvent e )
+            {
+                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_EXT_FACET_ID );
+            }
+
+        } );
 
         layoutTemplateType =
             SWTUtil.createRadioButton(
@@ -292,6 +320,15 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.createNewCustomLayout, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( layoutTemplateType, PLUGIN_TYPE_LAYOUTTPL, null );
+        layoutTemplateType.addSelectionListener( new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected( SelectionEvent e )
+            {
+                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_LAYOUTTPL_FACET_ID );
+            }
+
+        } );
 
         themeType =
             SWTUtil.createRadioButton(
@@ -299,6 +336,15 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.buildCustomLookFeel, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( themeType, PLUGIN_TYPE_THEME, null );
+        themeType.addSelectionListener( new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected( SelectionEvent e )
+            {
+                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_THEME_FACET_ID );
+            }
+
+        } );
     }
 
     protected void createProjectGroup( Composite parent )

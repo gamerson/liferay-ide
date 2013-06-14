@@ -67,6 +67,7 @@ import org.eclipse.wst.web.ui.internal.wizards.NewProjectDataModelFacetWizard;
 
 /**
  * @author Greg Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( "restriction" )
 public class NewPluginProjectWizard extends NewProjectDataModelFacetWizard
@@ -77,6 +78,7 @@ public class NewPluginProjectWizard extends NewProjectDataModelFacetWizard
     protected IPortletFrameworkDelegate[] portletFrameworkDelegates;
     protected NewPortletPluginProjectPage portletPluginPage;
     protected String projectType;
+    protected NewThemePluginProjectPage themePluginPage;
 
     public NewPluginProjectWizard()
     {
@@ -108,6 +110,7 @@ public class NewPluginProjectWizard extends NewProjectDataModelFacetWizard
     {
         this.firstPage = createFirstPage();
         this.portletPluginPage = new NewPortletPluginProjectPage( this, model );
+        this.themePluginPage = new NewThemePluginProjectPage( this, model );
 
         return new IWizardPage[] { firstPage, portletPluginPage };
     }
@@ -180,6 +183,11 @@ public class NewPluginProjectWizard extends NewProjectDataModelFacetWizard
             {
                 return null;
             }
+        }
+
+        if( this.firstPage.equals( page ) && model.getBooleanProperty( PLUGIN_TYPE_THEME ) )
+        {
+            return this.themePluginPage;
         }
 
         return super.getNextPage( page );
@@ -426,7 +434,7 @@ public class NewPluginProjectWizard extends NewProjectDataModelFacetWizard
                 ProjectUIPlugin.logError( "Error executing wizard fragment", e ); //$NON-NLS-1$
             }
         }
-        
+
         IProject project = getFacetedProject().getProject();
 
         if( project != null && ProjectUtil.isPortletProject( project ) )

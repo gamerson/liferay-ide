@@ -51,6 +51,7 @@ import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( { "unchecked", "restriction", "rawtypes" } )
 public class PluginFacetProjectCreationDataModelProvider extends WebFacetProjectCreationDataModelProvider
@@ -136,6 +137,14 @@ public class PluginFacetProjectCreationDataModelProvider extends WebFacetProject
         else if( PORTLET_FRAMEWORK_ID.equals( propertyName ) )
         {
             return LiferayProjectCore.getPortletFrameworks()[0].getId();
+        }
+        else if( THEME_PARENT.equals( propertyName ) )
+        {
+            return "_styled"; //$NON-NLS-1$
+        }
+        else if( THEME_TEMPLATE_FRAMEWORK.equals( propertyName ) )
+        {
+            return "Velocity"; //$NON-NLS-1$
         }
 
         for( IPortletFrameworkWizardProvider portletFramework : LiferayProjectCore.getPortletFrameworks() )
@@ -266,6 +275,8 @@ public class PluginFacetProjectCreationDataModelProvider extends WebFacetProject
         propNames.add( PLUGIN_FRAGMENT_ENABLED );
         propNames.add( PLUGIN_FRAGMENT_DM );
         propNames.add( PORTLET_FRAMEWORK_ID );
+        propNames.add( THEME_PARENT );
+        propNames.add( THEME_TEMPLATE_FRAMEWORK );
 
         for( IPortletFrameworkWizardProvider portletFramework : LiferayProjectCore.getPortletFrameworks() )
         {
@@ -308,6 +319,27 @@ public class PluginFacetProjectCreationDataModelProvider extends WebFacetProject
             }
 
             return DataModelPropertyDescriptor.createDescriptors( values, descriptions );
+        }
+
+        if( THEME_PARENT.equals( propertyName ))
+        {
+            String[] values = new String[4];
+            values[0] = "_styled"; //$NON-NLS-1$
+            values[2] = "_unstyled"; //$NON-NLS-1$
+            values[1] = "classic"; //$NON-NLS-1$
+            values[3] = "control_panel"; //$NON-NLS-1$
+
+            return DataModelPropertyDescriptor.createDescriptors( values, values );
+        }
+
+        if( THEME_TEMPLATE_FRAMEWORK.equals( propertyName ) )
+        {
+            String[] values = new String[3];
+            values[0] = "Velocity"; //$NON-NLS-1$
+            values[2] = "Freemarker"; //$NON-NLS-1$
+            values[1] = "JSP"; //$NON-NLS-1$
+
+            return DataModelPropertyDescriptor.createDescriptors( values, values );
         }
 
         return super.getValidPropertyDescriptors( propertyName );
