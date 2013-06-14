@@ -21,6 +21,7 @@ import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
 import com.liferay.ide.sdk.core.ISDKConstants;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
@@ -62,7 +63,6 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
 {
 
     public static final String ID = "com.liferay.ide.eclipse.theme.core.cssBuilder"; //$NON-NLS-1$
-    public static final String[] THEME_PARENTS = { "control_panel", "classic", "_styled", "_unstyled" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     public static IStatus compileTheme( IProject project ) throws CoreException
     {
@@ -181,17 +181,17 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
 
         final List<IPath> restorePaths = new ArrayList<IPath>();
 
-        for( int i = 0; i < THEME_PARENTS.length; i++ )
+        for( int i = 0; i < IPluginProjectDataModelProperties.THEME_PARENTS.length; i++ )
         {
-            if( THEME_PARENTS[i].equals( themeParent ) )
+            if( IPluginProjectDataModelProperties.THEME_PARENTS[i].equals( themeParent ) )
             {
-                restorePaths.add( themesPath.append( THEME_PARENTS[i] ) );
+                restorePaths.add( themesPath.append( IPluginProjectDataModelProperties.THEME_PARENTS[i] ) );
             }
             else
             {
                 if( restorePaths.size() > 0 )
                 {
-                    restorePaths.add( themesPath.append( THEME_PARENTS[i] ) );
+                    restorePaths.add( themesPath.append( IPluginProjectDataModelProperties.THEME_PARENTS[i] ) );
                 }
             }
         }

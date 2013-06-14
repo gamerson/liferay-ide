@@ -323,23 +323,15 @@ public class PluginFacetProjectCreationDataModelProvider extends WebFacetProject
 
         if( THEME_PARENT.equals( propertyName ))
         {
-            String[] values = new String[4];
-            values[0] = "_styled"; //$NON-NLS-1$
-            values[2] = "_unstyled"; //$NON-NLS-1$
-            values[1] = "classic"; //$NON-NLS-1$
-            values[3] = "control_panel"; //$NON-NLS-1$
-
-            return DataModelPropertyDescriptor.createDescriptors( values, values );
+            return DataModelPropertyDescriptor.createDescriptors(
+                IPluginProjectDataModelProperties.THEME_PARENTS, IPluginProjectDataModelProperties.THEME_PARENTS );
         }
 
         if( THEME_TEMPLATE_FRAMEWORK.equals( propertyName ) )
         {
-            String[] values = new String[3];
-            values[0] = "Velocity"; //$NON-NLS-1$
-            values[2] = "Freemarker"; //$NON-NLS-1$
-            values[1] = "JSP"; //$NON-NLS-1$
-
-            return DataModelPropertyDescriptor.createDescriptors( values, values );
+            return DataModelPropertyDescriptor.createDescriptors(
+                IPluginProjectDataModelProperties.THEME_TEMPLATE_FRAMEWORKS,
+                IPluginProjectDataModelProperties.THEME_TEMPLATE_FRAMEWORKS );
         }
 
         return super.getValidPropertyDescriptors( propertyName );

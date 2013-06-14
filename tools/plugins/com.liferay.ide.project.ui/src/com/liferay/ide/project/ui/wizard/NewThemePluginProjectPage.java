@@ -66,17 +66,19 @@ public class NewThemePluginProjectPage extends J2EEComponentFacetCreationWizardP
 
         createTemplateFrameworkGroup( top );
 
-        getModel().addListener( new IDataModelListener()
-        {
-
-            public void propertyChanged( DataModelEvent event )
+        getModel().addListener
+        (
+            new IDataModelListener()
             {
-                if( PLUGIN_TYPE_THEME.equals( event.getPropertyName() ) )
+                public void propertyChanged( DataModelEvent event )
                 {
-                    validatePage( false );
+                    if( PLUGIN_TYPE_THEME.equals( event.getPropertyName() ) )
+                    {
+                        validatePage( false );
+                    }
                 }
             }
-        } );
+        );
 
         return top;
     }

@@ -120,44 +120,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
             }
         }
 
-        String themeParent = this.masterModel.getStringProperty( THEME_PARENT );
-        String tplFramework = this.masterModel.getStringProperty( THEME_TEMPLATE_FRAMEWORK );
-
-        if( ( themeParent != null && !themeParent.equals( this.masterModel.getDefaultProperty( THEME_PARENT ) ) ) ||
-            ( tplFramework != null && !tplFramework.equals( this.masterModel.getDefaultProperty( THEME_TEMPLATE_FRAMEWORK ) ) ) )
-        {
-            IResource buildXml = project.findMember( "build.xml" ); //$NON-NLS-1$
-            InputStream inputStream = ( (IFile) buildXml ).getContents();
-
-            try
-            {
-                String strCon = CoreUtil.readStreamToString( inputStream );
-
-                if( !themeParent.equals( this.masterModel.getDefaultProperty( THEME_PARENT ) ) )
-                {
-                    strCon = strCon.replace(
-                            "<property name=\"theme.parent\" value=\"_styled\" />", "<property name=\"theme.parent\" value=\"" + themeParent + "\" />" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                }
-
-                if( !tplFramework.equals( this.masterModel.getDefaultProperty( THEME_TEMPLATE_FRAMEWORK ) ) )
-                {
-                    Map<String, String> tplMap = new HashMap<String, String>();
-
-                    tplMap.put( "Velocity", "vm" ); //$NON-NLS-1$ //$NON-NLS-2$
-                    tplMap.put( "Freemarker", "ftl" ); //$NON-NLS-1$ //$NON-NLS-2$
-                    tplMap.put( "JSP", "jsp" ); //$NON-NLS-1$ //$NON-NLS-2$
-
-                    strCon = strCon.replace(
-                            "</project>", "    <property name=\"theme.type\" value=\"" + tplMap.get( tplFramework ) + "\" />\n</project>" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                }
-
-                ( (IFile) buildXml ).setContents( new ByteArrayInputStream( strCon.getBytes() ), IResource.FORCE, null );
-            }
-            catch( IOException e )
-            {
-                ThemeCore.logError( e );
-            }
-        }
+        updateBuildFile( project );
 
         if( shouldInstallThemeBuilder() )
         {
@@ -268,6 +231,49 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
     protected boolean shouldInstallThemeBuilder()
     {
         return this.model.getBooleanProperty( INSTALL_THEME_CSS_BUILDER );
+    }
+
+    public void updateBuildFile( IProject project ) throws CoreException
+    {
+        String themeParent = this.masterModel.getStringProperty( THEME_PARENT );
+        String tplFramework = this.masterModel.getStringProperty( THEME_TEMPLATE_FRAMEWORK );
+
+        if( ( themeParent != null && !themeParent.equals( this.masterModel.getDefaultProperty( THEME_PARENT ) ) ) ||
+            ( tplFramework != null && !tplFramework.equals( this.masterModel.getDefaultProperty( THEME_TEMPLATE_FRAMEWORK ) ) ) )
+        {
+            IFile buildXml = project.getFile( "build.xml" ); //$NON-NLS-1$
+            InputStream inputStream = buildXml.getContents();
+
+            try
+            {
+                String strCon = CoreUtil.readStreamToString( inputStream );
+                inputStream.close();
+
+                if( !themeParent.equals( this.masterModel.getDefaultProperty( THEME_PARENT ) ) )
+                {
+                    strCon = strCon.replace(
+                            "<property name=\"theme.parent\" value=\"_styled\" />", "<property name=\"theme.parent\" value=\"" + themeParent + "\" />" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                }
+
+                if( !tplFramework.equals( this.masterModel.getDefaultProperty( THEME_TEMPLATE_FRAMEWORK ) ) )
+                {
+                    Map<String, String> tplMap = new HashMap<String, String>();
+
+                    tplMap.put( "Velocity", "vm" ); //$NON-NLS-1$ //$NON-NLS-2$
+                    tplMap.put( "Freemarker", "ftl" ); //$NON-NLS-1$ //$NON-NLS-2$
+                    tplMap.put( "JSP", "jsp" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+                    strCon = strCon.replace(
+                            "</project>", "\t<property name=\"theme.type\" value=\"" + tplMap.get( tplFramework ) + "\" />\n</project>" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                }
+
+                buildXml.setContents( new ByteArrayInputStream( strCon.getBytes() ), IResource.FORCE, null );
+            }
+            catch( IOException e )
+            {
+                ThemeCore.logError( e );
+            }
+        }
     }
 
 }

@@ -271,15 +271,6 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         Label l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.createWebApplication, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( portletType, PLUGIN_TYPE_PORTLET, null );
-        portletType.addSelectionListener( new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected( SelectionEvent e )
-            {
-                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_PORTLET_FACET_ID );
-            }
-
-        } );
 
         hookType =
             SWTUtil.createRadioButton(
@@ -288,15 +279,6 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
             SWTUtil.createLabel( group, SWT.WRAP, Msgs.overrideLiferayDefaultBehavior, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( hookType, PLUGIN_TYPE_HOOK, null );
-        hookType.addSelectionListener( new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected( SelectionEvent e )
-            {
-                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_HOOK_FACET_ID );
-            }
-
-        } );
 
         extType =
             SWTUtil.createRadioButton(
@@ -304,15 +286,6 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.lightWeightExtensionEnvironment, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( extType, PLUGIN_TYPE_EXT, null );
-        extType.addSelectionListener( new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected( SelectionEvent e )
-            {
-                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_EXT_FACET_ID );
-            }
-
-        } );
 
         layoutTemplateType =
             SWTUtil.createRadioButton(
@@ -320,15 +293,6 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.createNewCustomLayout, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( layoutTemplateType, PLUGIN_TYPE_LAYOUTTPL, null );
-        layoutTemplateType.addSelectionListener( new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected( SelectionEvent e )
-            {
-                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_LAYOUTTPL_FACET_ID );
-            }
-
-        } );
 
         themeType =
             SWTUtil.createRadioButton(
@@ -336,15 +300,6 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         l = SWTUtil.createLabel( group, SWT.WRAP, Msgs.buildCustomLookFeel, 1 );
         l.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 1, 1 ) );
         this.synchHelper.synchCheckbox( themeType, PLUGIN_TYPE_THEME, null );
-        themeType.addSelectionListener( new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected( SelectionEvent e )
-            {
-                ( ( NewPluginProjectWizard ) getWizard() ).setProjectType( IPluginFacetConstants.LIFERAY_THEME_FACET_ID );
-            }
-
-        } );
     }
 
     protected void createProjectGroup( Composite parent )
@@ -483,63 +438,6 @@ public class NewPluginProjectFirstPage extends WebProjectFirstPage implements IP
         updateControls();
 
         return top;
-    }
-
-    @Override
-    protected void enter()
-    {
-        super.enter();
-
-        String projectType = ( (NewPluginProjectWizard) getWizard() ).getProjectType();
-
-        if( CoreUtil.isNullOrEmpty( projectType ) )
-        {
-            projectType = IPluginFacetConstants.LIFERAY_PORTLET_FACET_ID;
-        }
-
-        setShouldValidatePage( false );
-        if( IPluginFacetConstants.LIFERAY_PORTLET_FACET_ID.equals( projectType.toLowerCase() ) )
-        {
-            getDataModel().setProperty( PLUGIN_TYPE_PORTLET, true );
-            getDataModel().setProperty( PLUGIN_TYPE_HOOK, false );
-            getDataModel().setProperty( PLUGIN_TYPE_EXT, false );
-            getDataModel().setProperty( PLUGIN_TYPE_LAYOUTTPL, false );
-            getDataModel().setProperty( PLUGIN_TYPE_THEME, false );
-        }
-        else if( IPluginFacetConstants.LIFERAY_HOOK_FACET_ID.equals( projectType.toLowerCase() ) )
-        {
-            getDataModel().setProperty( PLUGIN_TYPE_HOOK, true );
-            getDataModel().setProperty( PLUGIN_TYPE_PORTLET, false );
-            getDataModel().setProperty( PLUGIN_TYPE_EXT, false );
-            getDataModel().setProperty( PLUGIN_TYPE_LAYOUTTPL, false );
-            getDataModel().setProperty( PLUGIN_TYPE_THEME, false );
-        }
-        else if( IPluginFacetConstants.LIFERAY_EXT_FACET_ID.equals( projectType.toLowerCase() ) )
-        {
-            getDataModel().setProperty( PLUGIN_TYPE_EXT, true );
-            getDataModel().setProperty( PLUGIN_TYPE_PORTLET, false );
-            getDataModel().setProperty( PLUGIN_TYPE_HOOK, false );
-            getDataModel().setProperty( PLUGIN_TYPE_LAYOUTTPL, false );
-            getDataModel().setProperty( PLUGIN_TYPE_THEME, false );
-        }
-        else if( IPluginFacetConstants.LIFERAY_LAYOUTTPL_FACET_ID.equals( projectType.toLowerCase() ) )
-        {
-            getDataModel().setProperty( PLUGIN_TYPE_LAYOUTTPL, true );
-            getDataModel().setProperty( PLUGIN_TYPE_PORTLET, false );
-            getDataModel().setProperty( PLUGIN_TYPE_HOOK, false );
-            getDataModel().setProperty( PLUGIN_TYPE_EXT, false );
-            getDataModel().setProperty( PLUGIN_TYPE_THEME, false );
-        }
-        else if( IPluginFacetConstants.LIFERAY_THEME_FACET_ID.equals( projectType.toLowerCase() ) )
-        {
-            getDataModel().setProperty( PLUGIN_TYPE_THEME, true );
-            getDataModel().setProperty( PLUGIN_TYPE_LAYOUTTPL, false );
-            getDataModel().setProperty( PLUGIN_TYPE_PORTLET, false );
-            getDataModel().setProperty( PLUGIN_TYPE_HOOK, false );
-            getDataModel().setProperty( PLUGIN_TYPE_EXT, false );
-        }
-        setShouldValidatePage( true );
-        // getDataModel().setProperty(PLUGIN_TYPE_PORTLET, true);
     }
 
     protected IDataModel getModel()

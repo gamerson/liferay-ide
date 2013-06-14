@@ -83,5 +83,9 @@ public interface IPluginProjectDataModelProperties
 
     public static final String THEME_PARENT = "IPluginProjectDataModelProperties.THEME_PARENT"; //$NON-NLS-1$
 
+    public static final String[] THEME_PARENTS = { "control_panel", "classic", "_styled", "_unstyled" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
     public static final String THEME_TEMPLATE_FRAMEWORK = "IPluginProjectDataModelProperties.THEME_TEMPLATE_FRAMEWORK"; //$NON-NLS-1$
+
+    public static final String[] THEME_TEMPLATE_FRAMEWORKS = { "Velocity", "Freemarker", "JSP" };  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 }
