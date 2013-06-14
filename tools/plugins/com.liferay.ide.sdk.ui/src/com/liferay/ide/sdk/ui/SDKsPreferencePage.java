@@ -50,8 +50,6 @@ public class SDKsPreferencePage extends FieldEditorPreferencePage implements IWo
 
     private ScopedPreferenceStore prefStore;
 
-    public static boolean isClosed;
-
     public SDKsPreferencePage()
     {
         setImageDescriptor( SDKUIPlugin.imageDescriptorFromPlugin( SDKUIPlugin.PLUGIN_ID, "/icons/e16/sdk.png" ) ); //$NON-NLS-1$
@@ -133,7 +131,7 @@ public class SDKsPreferencePage extends FieldEditorPreferencePage implements IWo
         data.horizontalSpan = 1;
 
         installedSDKsComposite.setLayoutData( data );
-        installedSDKsComposite.setSDKs( SDKManager.getInstance().getSDKs() );
+//        installedSDKsComposite.setSDKs( SDKManager.getInstance().getSDKs() );
 
         createFieldEditors();
 
@@ -184,22 +182,6 @@ public class SDKsPreferencePage extends FieldEditorPreferencePage implements IWo
         }
 
         getPreferenceStore().setValue( MessageDialogWithToggle.PROMPT, SDKUIPlugin.PREF_KEY_OVERWRITE_USER_BUILD_FILE );
-    }
-
-    @Override
-    public boolean performCancel()
-    {
-        if( !isClosed )
-        {
-            setClosed( true );
-        }
-
-        return super.performCancel();
-    }
-
-    public void setClosed( boolean isClosed )
-    {
-        this.isClosed = isClosed;
     }
 
     private static class Msgs extends NLS

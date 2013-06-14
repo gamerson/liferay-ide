@@ -139,16 +139,6 @@ public final class SDKManager
         return sdkList.toArray( new SDK[0] );
     }
 
-    public SDK[] getSDKs( boolean boo )
-    {
-        if( !initialized || boo )
-        {
-            initialize();
-        }
-
-        return sdkList.toArray( new SDK[0] );
-    }
-
     public void setSDKs( SDK[] sdks )
     {
         this.sdkList.clear();
