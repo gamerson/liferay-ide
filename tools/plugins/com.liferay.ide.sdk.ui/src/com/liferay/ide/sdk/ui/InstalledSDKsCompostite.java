@@ -305,13 +305,13 @@ public class InstalledSDKsCompostite extends Composite
             }
         } );
 
-        final SDK[] originalSdks = SDKManager.getInstance().getSDKs();
+        final SDK[] sdks = SDKManager.getInstance().getSDKs();
 
-        SDK[] editableSDKs = new SDK[originalSdks.length];
+        SDK[] editableSDKs = new SDK[sdks.length];
 
-        for( int i = 0; i < originalSdks.length; i++ )
+        for( int i = 0; i < sdks.length; i++ )
         {
-            editableSDKs[i] = originalSdks[i].copy();
+            editableSDKs[i] = sdks[i].copy();
         }
 
         setSDKs( editableSDKs );
