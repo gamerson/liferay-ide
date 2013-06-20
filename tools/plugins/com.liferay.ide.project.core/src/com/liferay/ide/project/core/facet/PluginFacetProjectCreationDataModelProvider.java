@@ -623,6 +623,13 @@ public class PluginFacetProjectCreationDataModelProvider extends WebFacetProject
                 return Status.OK_STATUS;
             }
         }
+        else if( THEME_TEMPLATE_FRAMEWORK.equals( propertyName ) )
+        {
+            if( getModel().getStringProperty( THEME_TEMPLATE_FRAMEWORK ).equals( "JSP" ) ) //$NON-NLS-1$
+            {
+                return LiferayProjectCore.createWarningStatus( Msgs.advancedThemeDevelopers );
+            }
+        }
 
         if( framework != null && framework.hasPropertyName( propertyName ) )
         {
@@ -634,6 +641,7 @@ public class PluginFacetProjectCreationDataModelProvider extends WebFacetProject
 
     private static class Msgs extends NLS
     {
+        public static String advancedThemeDevelopers;
         public static String configureLiferayPortalRuntime;
         public static String configurePluginSDK;
         public static String pluginSDKInvalid;

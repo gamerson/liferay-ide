@@ -120,7 +120,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
             }
         }
 
-        updateBuildFile( project );
+        updateProjectFiles( project );
 
         if( shouldInstallThemeBuilder() )
         {
@@ -143,6 +143,17 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
     protected String getDefaultOutputLocation()
     {
         return IPluginFacetConstants.THEME_PLUGIN_SDK_DEFAULT_OUTPUT_FOLDER;
+    }
+
+    public String getTemplateExtension( String tplFramework )
+    {
+        Map<String, String> tplMap = new HashMap<String, String>();
+
+        tplMap.put( "Velocity", "vm" ); //$NON-NLS-1$ //$NON-NLS-2$
+        tplMap.put( "Freemarker", "ftl" ); //$NON-NLS-1$ //$NON-NLS-2$
+        tplMap.put( "JSP", "jsp" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return tplMap.get( tplFramework );
     }
 
     protected void installThemeBuilder( IProject project ) throws CoreException
@@ -233,7 +244,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
         return this.model.getBooleanProperty( INSTALL_THEME_CSS_BUILDER );
     }
 
-    public void updateBuildFile( IProject project ) throws CoreException
+    public void updateProjectFiles( IProject project ) throws CoreException
     {
         String themeParent = this.masterModel.getStringProperty( THEME_PARENT );
         String tplFramework = this.masterModel.getStringProperty( THEME_TEMPLATE_FRAMEWORK );
@@ -257,14 +268,9 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
 
                 if( !tplFramework.equals( this.masterModel.getDefaultProperty( THEME_TEMPLATE_FRAMEWORK ) ) )
                 {
-                    Map<String, String> tplMap = new HashMap<String, String>();
-
-                    tplMap.put( "Velocity", "vm" ); //$NON-NLS-1$ //$NON-NLS-2$
-                    tplMap.put( "Freemarker", "ftl" ); //$NON-NLS-1$ //$NON-NLS-2$
-                    tplMap.put( "JSP", "jsp" ); //$NON-NLS-1$ //$NON-NLS-2$
-
+                    String tplExtension = getTemplateExtension( tplFramework );
                     strCon = strCon.replace(
-                            "</project>", "\t<property name=\"theme.type\" value=\"" + tplMap.get( tplFramework ) + "\" />\n</project>" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            "</project>", "\t<property name=\"theme.type\" value=\"" + tplExtension + "\" />\n</project>" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
 
                 buildXml.setContents( new ByteArrayInputStream( strCon.getBytes() ), IResource.FORCE, null );

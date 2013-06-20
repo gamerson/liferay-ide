@@ -19,7 +19,6 @@ import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
 import com.liferay.ide.sdk.core.ISDKConstants;
@@ -51,12 +50,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Gregory Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( "rawtypes" )
 public class ThemeCSSBuilder extends IncrementalProjectBuilder
@@ -142,7 +139,8 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
 
                     ILiferayProject lProject = LiferayCore.create( project );
 
-                    themeDescriptorHelper.createDefaultFile( underlyingFile.getParent(), lProject.getPortalVersion() , id, name );
+                    themeDescriptorHelper.createDefaultFile( underlyingFile.getParent(), lProject.getPortalVersion(), id, name,
+                        ThemeCore.getThemeProperty( "theme.type", project ) ); //$NON-NLS-1$
                 }
                 catch( IOException e )
                 {
@@ -174,7 +172,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
 
         final IPath path = CoreUtil.getResourceLocation( docroot );
         // final IPath restoreLocation = getRestoreLocation(docroot);
-        String themeParent = getThemeParent( getProject() );
+        String themeParent = ThemeCore.getThemeProperty( "theme.parent", getProject() ); //$NON-NLS-1$
 
         ILiferayProject liferayProject = LiferayCore.create( getProject() );
         IPath themesPath = liferayProject.getAppServerPortalDir().append( "html/themes" ); //$NON-NLS-1$
@@ -260,43 +258,6 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder
     protected IProject getProject( Map args )
     {
         return this.getProject();
-    }
-
-    private String getThemeParent( IProject project )
-    {
-        String retval = null;
-
-        try
-        {
-            Document buildXmlDoc = FileUtil.readXML( project.getFile( "build.xml" ).getContents(), null, null ); //$NON-NLS-1$
-
-            NodeList properties = buildXmlDoc.getElementsByTagName( "property" ); //$NON-NLS-1$
-
-            for( int i = 0; i < properties.getLength(); i++ )
-            {
-                final Node item = properties.item( i );
-                Node name = item.getAttributes().getNamedItem( "name" ); //$NON-NLS-1$
-
-                if( name != null && "theme.parent".equals( name.getNodeValue() ) ) //$NON-NLS-1$
-                {
-                    Node value = item.getAttributes().getNamedItem( "value" ); //$NON-NLS-1$
-
-                    retval = value.getNodeValue();
-                    break;
-                }
-            }
-        }
-        catch( CoreException e )
-        {
-            e.printStackTrace();
-        }
-
-        if( retval == null )
-        {
-            retval = "_styled"; //$NON-NLS-1$
-        }
-
-        return retval;
     }
 
     protected void incrementalBuild( IResourceDelta delta, final IProgressMonitor monitor )

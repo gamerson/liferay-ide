@@ -17,10 +17,12 @@ package com.liferay.ide.theme.core.operation;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.NodeUtil;
 import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
 import com.liferay.ide.theme.core.ThemeCore;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IContainer;
@@ -28,12 +30,19 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
+import org.eclipse.wst.xml.core.internal.provisional.format.FormatProcessorXML;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * @author Gregory Amerson
  * @author Cindy Li
  */
+@SuppressWarnings( "restriction" )
 public class ThemeDescriptorHelper extends LiferayDescriptorHelper
 {
 
@@ -47,7 +56,7 @@ public class ThemeDescriptorHelper extends LiferayDescriptorHelper
         super( project );
     }
 
-    public void createDefaultFile( IContainer container, String version, String id, String name )
+    public void createDefaultFile( IContainer container, String version, String id, String name, String themeType )
     {
         if( container == null || id == null || name == null )
         {
@@ -69,11 +78,54 @@ public class ThemeDescriptorHelper extends LiferayDescriptorHelper
                     "__NAME__", name ); //$NON-NLS-1$
 
             lookAndFeelFile.create( new ByteArrayInputStream( contents.getBytes() ), true, null );
+
+            if( ! themeType.equals( "vm" ) ) //$NON-NLS-1$
+            {
+                setTemplateExtension( lookAndFeelFile, themeType );
+            }
+
+            FormatProcessorXML processor = new FormatProcessorXML();
+
+            try
+            {
+                processor.formatFile( lookAndFeelFile );
+            }
+            catch( IOException e )
+            {
+            }
         }
         catch( CoreException e )
         {
             ThemeCore.logError( "Error creating default descriptor file", e ); //$NON-NLS-1$
         }
+    }
+
+    protected void setTemplateExtension( IFile lookAndFeelFile, final String extension )
+    {
+        IStatus status = new DOMModelEditOperation( lookAndFeelFile )
+        {
+            protected void createDefaultFile()
+            {
+            }
+
+            protected IStatus doExecute( IDOMDocument document )
+            {
+                try
+                {
+                    NodeList themeElements = document.getElementsByTagName( "theme" ); //$NON-NLS-1$
+
+                    Element themeElement = (Element) themeElements.item( 0 );
+
+                    NodeUtil.appendChildElement( themeElement, "template-extension", extension ); //$NON-NLS-1$
+                }
+                catch( Exception e )
+                {
+                    return ThemeCore.createErrorStatus( e );
+                }
+
+                return Status.OK_STATUS;
+            }
+        }.execute();
     }
 
 }

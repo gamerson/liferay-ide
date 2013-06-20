@@ -9,9 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 
 /**
  * @author Cindy Li
@@ -66,20 +64,6 @@ public class NewThemePluginProjectPage extends J2EEComponentFacetCreationWizardP
 
         createTemplateFrameworkGroup( top );
 
-        getModel().addListener
-        (
-            new IDataModelListener()
-            {
-                public void propertyChanged( DataModelEvent event )
-                {
-                    if( PLUGIN_TYPE_THEME.equals( event.getPropertyName() ) )
-                    {
-                        validatePage( false );
-                    }
-                }
-            }
-        );
-
         return top;
     }
 
@@ -97,7 +81,9 @@ public class NewThemePluginProjectPage extends J2EEComponentFacetCreationWizardP
     @Override
     protected String[] getValidationPropertyNames()
     {
-        return null;
+        String[] validationPropertyNames = { THEME_TEMPLATE_FRAMEWORK };
+
+        return validationPropertyNames;
     }
 
     @Override
