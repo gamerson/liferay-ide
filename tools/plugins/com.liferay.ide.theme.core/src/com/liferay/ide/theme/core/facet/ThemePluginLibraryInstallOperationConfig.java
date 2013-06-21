@@ -13,21 +13,14 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.core.facet;
+package com.liferay.ide.theme.core.facet;
 
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import com.liferay.ide.project.core.library.PluginLibraryInstallOperationConfig;
 
 /**
- * @author Greg Amerson
+ * @author Cindy Li
  */
-public class ExtPluginFacetValidator extends PluginFacetValidator
+public class ThemePluginLibraryInstallOperationConfig extends PluginLibraryInstallOperationConfig
 {
-
-    @Override
-    protected IProjectFacet getProjectFacet()
-    {
-        return ProjectFacetsManager.getProjectFacet( IPluginFacetConstants.LIFERAY_EXT_FACET_ID );
-    }
 
 }

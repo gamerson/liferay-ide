@@ -11,28 +11,26 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  *
- * Contributors:
- * 		Gregory Amerson - initial implementation and ongoing maintenance
  *******************************************************************************/
 
-package com.liferay.ide.layouttpl.core.facet;
+package com.liferay.ide.theme.core.facet;
 
-import com.liferay.ide.project.core.facet.IPluginFacetConstants;
-import com.liferay.ide.project.core.facet.PluginFacetValidator;
+import com.liferay.ide.project.core.PluginClasspathContainerInitializer;
+import com.liferay.ide.project.core.ThemeClasspathContainer;
+import com.liferay.ide.project.core.library.PluginLibraryInstallOperation;
 
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 /**
- * @author Greg Amerson
+ * @author Cindy Li
  */
-public class LayoutTplPluginFacetValidator extends PluginFacetValidator
+public class ThemePluginLibraryInstallOperation extends PluginLibraryInstallOperation
 {
 
-    @Override
-    protected IProjectFacet getProjectFacet()
+    protected IPath getClasspathContainerPath()
     {
-        return ProjectFacetsManager.getProjectFacet( IPluginFacetConstants.LIFERAY_LAYOUTTPL_FACET_ID );
+        return new Path( PluginClasspathContainerInitializer.ID + "/" + ThemeClasspathContainer.SEGMENT_PATH ); //$NON-NLS-1$
     }
 
 }
