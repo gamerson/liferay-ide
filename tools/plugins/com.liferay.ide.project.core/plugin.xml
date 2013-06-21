@@ -219,6 +219,73 @@
                facet="liferay.ext">
          </fixed>
       </template>
+      <project-facet
+            id="liferay.theme">
+         <label>
+            Liferay Theme
+         </label>
+         <description>
+            Theme plugin for Liferay portal.  Version cooresponds to Portal version.
+         </description>
+         <member
+               category="liferay.plugins">
+         </member>
+         <default-version
+               version="6.0">
+         </default-version>
+      </project-facet>
+      <project-facet-version
+            facet="liferay.theme"
+            version="6.0">
+         <constraint>
+            <and>
+               <requires
+                     facet="jst.java"
+                     version="[5.0">
+               </requires>
+               <requires
+                     facet="jst.web"
+                     version="[2.3">
+               </requires>
+            </and>
+         </constraint>
+      </project-facet-version>
+      <action
+            facet="liferay.theme"
+            id="liferay.theme.install"
+            type="INSTALL"
+            version="[6.0">
+         <delegate
+               class="com.liferay.ide.project.core.facet.ThemePluginFacetInstall">
+         </delegate>
+         <config-factory
+               class="com.liferay.ide.project.core.facet.ThemePluginFacetInstallDataModelProvider">
+         </config-factory>
+      </action>
+      <action
+            facet="liferay.theme"
+            id="liferay.theme.uninstall"
+            type="UNINSTALL"
+            version="[6.0">
+         <delegate
+               class="com.liferay.ide.project.core.facet.ThemePluginFacetUninstall">
+         </delegate>
+      </action>
+      <template
+            id="liferay.theme.template">
+         <label>
+            Liferay Theme Plugin Project
+         </label>
+         <fixed
+               facet="jst.java">
+         </fixed>
+         <fixed
+               facet="jst.web">
+         </fixed>
+         <fixed
+               facet="liferay.theme">
+         </fixed>
+      </template>
    </extension>
 
    <extension
@@ -285,6 +352,27 @@
          </facet>
          <facet
                id="liferay.ext"
+               version="6.0">
+         </facet>
+      </static-preset>
+      <static-preset
+            id="liferay.theme.preset">
+         <label>
+            Liferay theme plugin 6.0 preset
+         </label>
+         <description>
+            Preset for Liferay 6.0 theme plugin
+         </description>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+         <facet
+               id="jst.web"
+               version="2.5">
+         </facet>
+         <facet
+               id="liferay.theme"
                version="6.0">
          </facet>
       </static-preset>
@@ -393,6 +481,39 @@
             </config>
          </action>
       </provider>
+      <provider
+            id="com.liferay.ide.eclipse.plugin.theme.libraryProvider">
+         <label>
+            Liferay theme plugin library
+         </label>
+         <enablement>
+            <with
+                  variable="requestingProjectFacet">
+               <test
+                     forcePluginActivation="true"
+                     property="org.eclipse.wst.common.project.facet.core.projectFacet"
+                     value="liferay.theme">
+               </test>
+            </with>
+            <with
+                  variable="context">
+               <test
+                     forcePluginActivation="true"
+                     property="com.liferay.ide.project.core.isLiferayRuntime"
+                     value="true">
+               </test>
+            </with>
+         </enablement>
+         <action
+               type="INSTALL">
+            <operation
+                  class="com.liferay.ide.project.core.library.ThemePluginLibraryInstallOperation">
+            </operation>
+            <config
+                  class="com.liferay.ide.project.core.library.ThemePluginLibraryInstallOperationConfig">
+            </config>
+         </action>
+      </provider>
 
    </extension>
    <extension
@@ -413,10 +534,10 @@
       </listener>
    </extension>
 
-   <!--
+
    <extension
          point="org.eclipse.wst.common.project.facet.core.validators">
-      <validator
+         <!--<validator
             class="com.liferay.ide.project.core.facet.PortletPluginFacetValidator">
          <facet
                id="liferay.portlet"
@@ -436,9 +557,16 @@
                id="liferay.ext"
                version="6.0">
          </facet>
+      </validator>   -->
+      <validator
+            class="com.liferay.ide.project.core.facet.ThemePluginFacetValidator">
+         <facet
+               id="liferay.theme"
+               version="6.0">
+         </facet>
       </validator>
    </extension>
-   -->
+
 
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">

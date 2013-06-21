@@ -13,32 +13,12 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.theme.core.facet;
-
-import com.liferay.ide.project.core.facet.IPluginFacetConstants;
-import com.liferay.ide.project.core.facet.PluginFacetInstallDataModelProvider;
+package com.liferay.ide.project.core.library;
 
 /**
- * @author Greg Amerson
+ * @author Cindy Li
  */
-public class ThemePluginFacetInstallDataModelProvider extends PluginFacetInstallDataModelProvider
+public class ThemePluginLibraryInstallOperationConfig extends PluginLibraryInstallOperationConfig
 {
-
-    @Override
-    public Object getDefaultProperty( String propertyName )
-    {
-        if( INSTALL_THEME_CSS_BUILDER.equals( propertyName) )
-        {
-            return true;
-        }
-
-        return super.getDefaultProperty( propertyName );
-    }
-
-    @Override
-    protected String getPluginFacetId()
-    {
-        return IPluginFacetConstants.LIFERAY_THEME_FACET_ID;
-    }
 
 }

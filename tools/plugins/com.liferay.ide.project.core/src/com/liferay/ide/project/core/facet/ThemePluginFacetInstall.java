@@ -13,16 +13,13 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.theme.core.facet;
+package com.liferay.ide.project.core.facet;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.project.core.facet.IPluginFacetConstants;
-import com.liferay.ide.project.core.facet.PluginFacetInstall;
+import com.liferay.ide.project.core.LiferayProjectCore;
 import com.liferay.ide.sdk.core.ISDKConstants;
 import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.theme.core.ThemeCSSBuilder;
-import com.liferay.ide.theme.core.ThemeCore;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -135,7 +132,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
         }
         catch( Exception e )
         {
-            ThemeCore.logError( e );
+            LiferayProjectCore.logError( e );
         }
     }
 
@@ -168,7 +165,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
 
         for( ICommand command : commands )
         {
-            if( ThemeCSSBuilder.ID.equals( command.getBuilderName() ) )
+            if( "com.liferay.ide.eclipse.theme.core.cssBuilder".equals( command.getBuilderName() ) ) //$NON-NLS-1$
             {
                 return;
             }
@@ -176,7 +173,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
 
         // add builder to project
         ICommand command = desc.newCommand();
-        command.setBuilderName( ThemeCSSBuilder.ID );
+        command.setBuilderName( "com.liferay.ide.eclipse.theme.core.cssBuilder" ); //$NON-NLS-1$
         ICommand[] nc = new ICommand[commands.length + 1];
 
         // Add it before other builders.
@@ -236,7 +233,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
     @Override
     protected boolean shouldInstallPluginLibraryDelegate()
     {
-        return false;
+        return true;
     }
 
     protected boolean shouldInstallThemeBuilder()
@@ -277,7 +274,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
             }
             catch( IOException e )
             {
-                ThemeCore.logError( e );
+                LiferayProjectCore.logError( e );
             }
         }
     }
