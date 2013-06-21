@@ -169,7 +169,7 @@
                   class="com.liferay.ide.theme.core.facet.ThemePluginLibraryInstallOperation">
             </operation>
             <config
-                  class="com.liferay.ide.theme.core.facet.ThemePluginLibraryInstallOperationConfig">
+                  class="com.liferay.ide.theme.core.facet.LibraryProviderOperationConfig">
             </config>
          </action>
       </provider>

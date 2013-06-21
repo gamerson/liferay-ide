@@ -321,7 +321,7 @@
                   class="com.liferay.ide.project.core.library.PortletPluginLibraryInstallOperation">
             </operation>
             <config
-                  class="com.liferay.ide.project.core.library.PortletPluginLibraryInstallOperationConfig">
+                  class="com.liferay.ide.project.core.library.LibraryProviderOperationConfig">
             </config>
          </action>
       </provider>
@@ -355,7 +355,7 @@
                   class="com.liferay.ide.project.core.library.HookPluginLibraryInstallOperation">
             </operation>
             <config
-                  class="com.liferay.ide.project.core.library.HookPluginLibraryInstallOperationConfig">
+                  class="com.liferay.ide.project.core.library.LibraryProviderOperationConfig">
             </config>
          </action>
       </provider>
@@ -389,7 +389,7 @@
                   class="com.liferay.ide.project.core.library.ExtPluginLibraryInstallOperation">
             </operation>
             <config
-                  class="com.liferay.ide.project.core.library.ExtPluginLibraryInstallOperationConfig">
+                  class="com.liferay.ide.project.core.library.LibraryProviderOperationConfig">
             </config>
          </action>
       </provider>
