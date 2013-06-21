@@ -12,38 +12,31 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.maven.core;
 
-import com.liferay.ide.project.core.facet.ThemePluginFacetInstallDataModelProvider;
+package com.liferay.ide.project.core.facet;
 
 
 /**
- * @author Gregory Amerson
+ * @author Greg Amerson
  */
-public class MavenThemePluginFacetInstallProvider extends ThemePluginFacetInstallDataModelProvider
+public class ThemePluginFacetInstallDataModelProvider extends PluginFacetInstallDataModelProvider
 {
 
     @Override
     public Object getDefaultProperty( String propertyName )
     {
-        if( INSTALL_LIFERAY_PLUGIN_LIBRARY_DELEGATE.equals( propertyName ) )
+        if( INSTALL_THEME_CSS_BUILDER.equals( propertyName) )
         {
-            return false;
-        }
-        else if ( INSTALL_THEME_CSS_BUILDER.equals( propertyName) )
-        {
-            return false;
-        }
-        else if( SETUP_DEFAULT_OUTPUT_LOCATION.equals( propertyName ) )
-        {
-            return false;
-        }
-        else if( CONFIGURE_DEPLOYMENT_ASSEMBLY.equals( propertyName ) )
-        {
-            return false;
+            return true;
         }
 
         return super.getDefaultProperty( propertyName );
+    }
+
+    @Override
+    protected String getPluginFacetId()
+    {
+        return IPluginFacetConstants.LIFERAY_THEME_FACET_ID;
     }
 
 }

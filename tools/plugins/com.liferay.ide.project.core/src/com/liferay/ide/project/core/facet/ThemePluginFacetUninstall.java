@@ -13,10 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.theme.core.facet;
-
-import com.liferay.ide.project.core.facet.PluginFacetUninstall;
-import com.liferay.ide.theme.core.ThemeCSSBuilder;
+package com.liferay.ide.project.core.facet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+
 
 /**
  * @author Greg Amerson
@@ -58,7 +56,7 @@ public class ThemePluginFacetUninstall extends PluginFacetUninstall
 
         for( ICommand command : commands )
         {
-            if( !( ThemeCSSBuilder.ID.equals( command.getBuilderName() ) ) )
+            if( !( "com.liferay.ide.eclipse.theme.core.cssBuilder".equals( command.getBuilderName() ) ) ) //$NON-NLS-1$
             {
                 newCommands.add( command );
             }
