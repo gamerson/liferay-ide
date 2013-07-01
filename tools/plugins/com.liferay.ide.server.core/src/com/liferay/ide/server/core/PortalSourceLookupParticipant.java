@@ -47,7 +47,7 @@ public class PortalSourceLookupParticipant extends AbstractSourceLookupParticipa
 {
 
     @Override
-    public Object[] findSourceElements( Object object ) throws CoreException
+    public synchronized Object[] findSourceElements( Object object ) throws CoreException
     {
         Object[] retval = null;
 
