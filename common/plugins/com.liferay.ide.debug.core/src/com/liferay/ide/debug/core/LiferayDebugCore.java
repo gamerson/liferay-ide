@@ -74,7 +74,7 @@ public class LiferayDebugCore extends Plugin
         return plugin;
     }
 
-    public static IEclipsePreferences getDefPrefs()
+    public static IEclipsePreferences getDefaultPrefs()
     {
         return DefaultScope.INSTANCE.getNode( PLUGIN_ID );
     }

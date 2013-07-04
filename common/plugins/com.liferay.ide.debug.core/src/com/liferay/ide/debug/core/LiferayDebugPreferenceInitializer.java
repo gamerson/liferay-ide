@@ -30,8 +30,8 @@ public class LiferayDebugPreferenceInitializer extends AbstractPreferenceInitial
     @Override
     public void initializeDefaultPreferences()
     {
-        LiferayDebugCore.getDefPrefs().put( LiferayDebugCore.PREF_FM_DEBUG_PASSWORD, ILRDebugConstants.FM_DEBUG_PASSWORD );
-        LiferayDebugCore.getDefPrefs().putInt( LiferayDebugCore.PREF_FM_DEBUG_PORT, ILRDebugConstants.FM_DEBUG_PORT );
+        LiferayDebugCore.getDefaultPrefs().put( LiferayDebugCore.PREF_FM_DEBUG_PASSWORD, ILRDebugConstants.FM_DEBUG_PASSWORD );
+        LiferayDebugCore.getDefaultPrefs().putInt( LiferayDebugCore.PREF_FM_DEBUG_PORT, ILRDebugConstants.FM_DEBUG_PORT );
     }
 
 }
