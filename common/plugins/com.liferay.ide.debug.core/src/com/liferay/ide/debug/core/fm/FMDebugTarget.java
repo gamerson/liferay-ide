@@ -65,6 +65,7 @@ import org.eclipse.osgi.util.NLS;
 
 /**
  * @author Gregory Amerson
+ * @author Cindy Li
  */
 @SuppressWarnings( "restriction" )
 public class FMDebugTarget extends FMDebugElement implements IDebugTarget, IDebugEventSetListener, IPreferenceChangeListener
@@ -469,8 +470,9 @@ public class FMDebugTarget extends FMDebugElement implements IDebugTarget, IDebu
             {
                 this.debuggerClient =
                     DebuggerClient.getDebugger(
-                        Inet4Address.getByName( this.host ), ILRDebugConstants.FM_DEBUG_PORT,
-                        ILRDebugConstants.FM_DEBUG_PASSWORD );
+                        Inet4Address.getByName( this.host ),
+                        Integer.parseInt( LiferayDebugCore.getPreference( LiferayDebugCore.PREF_FM_DEBUG_PORT ) ),
+                        LiferayDebugCore.getPreference( LiferayDebugCore.PREF_FM_DEBUG_PASSWORD ) );
             }
             catch( Exception e )
             {
@@ -539,7 +541,9 @@ public class FMDebugTarget extends FMDebugElement implements IDebugTarget, IDebu
     {
         if( this.name == null )
         {
-            this.name = "Freemarker Debugger at " + this.host + ":" + ILRDebugConstants.FM_DEBUG_PORT;
+            this.name =
+                "Freemarker Debugger at " + this.host + ":" +
+                    LiferayDebugCore.getPreference( LiferayDebugCore.PREF_FM_DEBUG_PORT );
         }
 
         return this.name;
