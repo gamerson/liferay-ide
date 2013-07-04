@@ -19,10 +19,10 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 /**
  * @author Cindy Li
  */
-public class PreferenceInitializer extends AbstractPreferenceInitializer
+public class LiferayDebugPreferenceInitializer extends AbstractPreferenceInitializer
 {
 
-    public PreferenceInitializer()
+    public LiferayDebugPreferenceInitializer()
     {
         super();
     }

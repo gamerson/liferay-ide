@@ -46,9 +46,7 @@ public class LiferayDebugCore extends Plugin
     public static final String PLUGIN_ID = "com.liferay.ide.debug.core"; //$NON-NLS-1$
 
     public static final String PREF_ADVANCED_VARIABLES_VIEW = "advanced-variables-view"; //$NON-NLS-1$
-
     public static final String PREF_FM_DEBUG_PASSWORD = "fm-debug-password"; //$NON-NLS-1$
-
     public static final String PREF_FM_DEBUG_PORT = "fm-debug-port"; //$NON-NLS-1$
 
     public static IStatus createErrorStatus( String msg )

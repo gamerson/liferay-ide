@@ -110,7 +110,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="com.liferay.ide.ui.preferences.liferay"
-            class="com.liferay.ide.debug.ui.FMPreferencePage"
+            class="com.liferay.ide.debug.ui.DebugPreferencePage"
             id="com.liferay.ide.debug.ui.FMPreferencePage"
             name="Debug">
       </page>

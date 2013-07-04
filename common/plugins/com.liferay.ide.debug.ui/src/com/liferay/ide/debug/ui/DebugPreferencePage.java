@@ -34,11 +34,11 @@ import org.osgi.service.prefs.BackingStoreException;
 /**
  * @author Cindy Li
  */
-public class FMPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage
+public class DebugPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage
 {
     private ScopedPreferenceStore prefStore;
 
-    public FMPreferencePage()
+    public DebugPreferencePage()
     {
         super( GRID );
     }
@@ -46,7 +46,7 @@ public class FMPreferencePage extends FieldEditorPreferencePage implements IWork
     @Override
     protected void createFieldEditors()
     {
-        Group group = SWTUtil.createGroup( getFieldEditorParent(), "Freemarker debug configuration", 1 ); //$NON-NLS-1$
+        Group group = SWTUtil.createGroup( getFieldEditorParent(), "FreeMarker Debugger", 1 ); //$NON-NLS-1$
         GridData gd = new GridData( GridData.FILL_HORIZONTAL );
         group.setLayoutData( gd );
         Composite composite = SWTUtil.createComposite( group, 2, 2, GridData.FILL_HORIZONTAL );
@@ -66,13 +66,12 @@ public class FMPreferencePage extends FieldEditorPreferencePage implements IWork
         addField( portEditor );
     }
 
-    @SuppressWarnings( "deprecation" )
     @Override
     public IPreferenceStore getPreferenceStore()
     {
         if( prefStore == null )
         {
-            prefStore = new ScopedPreferenceStore( new InstanceScope(), LiferayDebugCore.PLUGIN_ID );
+            prefStore = new ScopedPreferenceStore( InstanceScope.INSTANCE, LiferayDebugCore.PLUGIN_ID );
         }
 
         return prefStore;
@@ -95,7 +94,7 @@ public class FMPreferencePage extends FieldEditorPreferencePage implements IWork
         }
         catch( BackingStoreException e )
         {
-            e.printStackTrace();
+            LiferayDebugUI.logError( e );
         }
 
         super.performDefaults();
