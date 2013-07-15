@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 /**
  * @author Gregory Amerson
+ * @author Cindy Li
  */
 public class ServerManagerConnection extends RemoteConnection implements IServerManagerConnection
 {
@@ -58,28 +59,11 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 
     public int getDebugPort() throws APIException
     {
-        if( isAlive() )
+        String debugPort = getRemoteServerConfig( getDebugPortAPI() );
+
+        if( debugPort != null )
         {
-            Object response = getJSONAPI( getDebugPortAPI() );
-
-            if( response instanceof JSONObject )
-            {
-                JSONObject debugPort = (JSONObject) response;
-
-                try
-                {
-                    if( isSuccess( debugPort ) )
-                    {
-                        String debugPortOutput = getJSONOutput( debugPort );
-
-                        return Integer.parseInt( new String( debugPortOutput ) );
-                    }
-                }
-                catch (JSONException e)
-                {
-                    throw new APIException( getDebugPortAPI(), e );
-                }
-            }
+            return Integer.parseInt( debugPort );
         }
 
         return -1;
@@ -93,6 +77,33 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
     private String getDeployURI( String appName )
     {
         return getPluginsAPI() + "/" + appName; //$NON-NLS-1$
+    }
+
+    public String getFMDebuggerPassword() throws APIException
+    {
+        return getRemoteServerConfig( getFMDebuggerPasswordAPI() );
+    }
+
+    private String getFMDebuggerPasswordAPI()
+    {
+        return managerContextPath + "/server/freemarker/fm-debug-password"; //$NON-NLS-1$
+    }
+
+    public int getFMDebuggerPort() throws APIException
+    {
+        String fmDebuggerPort = getRemoteServerConfig( getFMDebuggerPortAPI() );
+
+        if(fmDebuggerPort != null )
+        {
+            return Integer.parseInt( fmDebuggerPort );
+        }
+
+        return -1;
+    }
+
+    private String getFMDebuggerPortAPI()
+    {
+        return managerContextPath + "/server/freemarker/fm-debug-port"; //$NON-NLS-1$
     }
 
     private String getIsAliveAPI()
@@ -159,6 +170,33 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
     private String getPluginURI( String appName )
     {
         return getPluginsAPI() + "/" + appName; //$NON-NLS-1$
+    }
+
+    public String getRemoteServerConfig( String configAPI ) throws APIException
+    {
+        if( isAlive() )
+        {
+            Object response = getJSONAPI( configAPI );
+
+            if( response instanceof JSONObject )
+            {
+                JSONObject debugPort = (JSONObject) response;
+
+                try
+                {
+                    if( isSuccess( debugPort ) )
+                    {
+                        return getJSONOutput( debugPort );
+                    }
+                }
+                catch (JSONException e)
+                {
+                    throw new APIException( configAPI, e );
+                }
+            }
+        }
+
+        return null;
     }
 
     public String getServerState() throws APIException

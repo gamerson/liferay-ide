@@ -27,15 +27,22 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * @author Gregory Amerson
+ * @author Cindy Li
  */
 public interface IServerManagerConnection extends IRemoteConnection
 {
 
     int getDebugPort() throws APIException;
-    
+
     String getManagerURI();
 
+    String getFMDebuggerPassword() throws APIException;
+
+    int getFMDebuggerPort() throws APIException;
+
     List<String> getLiferayPlugins();
+
+    String getRemoteServerConfig( String configAPI ) throws APIException;
 
     String getServerState() throws APIException;
 
