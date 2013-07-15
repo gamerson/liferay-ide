@@ -15,7 +15,9 @@
 
 package com.liferay.ide.server.remote;
 
+import com.liferay.ide.core.remote.APIException;
 import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.debug.core.fm.FMDebugTarget;
 import com.liferay.ide.server.core.LiferayServerCore;
 
 import java.util.Map;
@@ -37,6 +39,7 @@ import org.eclipse.wst.server.core.ServerCore;
 
 /**
  * @author Greg Amerson
+ * @author Cindy Li
  */
 public class RemoteLaunchConfigDelegate extends AbstractJavaLaunchConfigurationDelegate
 {
@@ -119,6 +122,26 @@ public class RemoteLaunchConfigDelegate extends AbstractJavaLaunchConfigurationD
 
         connectMap.put( "timeout", StringPool.EMPTY + connectTimeout ); //$NON-NLS-1$
 
+        try
+        {
+            IServerManagerConnection connection = getServerManagerConnection( server, monitor );
+
+            String fmDebuggerPassword = connection.getFMDebuggerPassword();
+            int fmDebuggerPort = connection.getFMDebuggerPort();
+
+            if( fmDebuggerPassword != null && fmDebuggerPort != -1 )
+            {
+                launch.setAttribute( "fm-debug-password", fmDebuggerPassword ); //$NON-NLS-1$
+                launch.setAttribute( "fm-debug-port", Integer.toString( fmDebuggerPort ) ); //$NON-NLS-1$
+                final IDebugTarget target = new FMDebugTarget( server.getHost(), launch, launch.getProcesses()[0] );
+                launch.addDebugTarget( target );
+            }
+
+        }
+        catch( APIException e )
+        {
+        }
+
         // check for cancellation
         if( monitor.isCanceled() )
         {
@@ -157,13 +180,19 @@ public class RemoteLaunchConfigDelegate extends AbstractJavaLaunchConfigurationD
         throws CoreException
     {
 
-        IServerManagerConnection connection =
-            LiferayServerCore.getRemoteConnection( (IRemoteServer) server.loadAdapter(
-                IRemoteServer.class, monitor ) );
+        IServerManagerConnection connection = getServerManagerConnection( server, monitor );
 
         RemoteMonitorProcess process = new RemoteMonitorProcess( server, connection, launch );
 
         launch.addProcess( process );
+    }
+
+    public IServerManagerConnection getServerManagerConnection( IServer server, IProgressMonitor monitor )
+    {
+        IServerManagerConnection connection =
+            LiferayServerCore.getRemoteConnection( (IRemoteServer) server.loadAdapter( IRemoteServer.class, monitor ) );
+
+        return connection;
     }
 
     private static class Msgs extends NLS
