@@ -34,13 +34,13 @@ public interface IServerManagerConnection extends IRemoteConnection
 
     int getDebugPort() throws APIException;
 
-    String getManagerURI();
-
     String getFMDebuggerPassword() throws APIException;
 
     int getFMDebuggerPort() throws APIException;
 
     List<String> getLiferayPlugins();
+
+    String getManagerURI();
 
     String getRemoteServerConfig( String configAPI ) throws APIException;
 

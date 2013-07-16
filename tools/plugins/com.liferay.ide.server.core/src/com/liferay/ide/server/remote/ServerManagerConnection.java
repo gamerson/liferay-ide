@@ -86,7 +86,7 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 
     private String getFMDebuggerPasswordAPI()
     {
-        return managerContextPath + "/server/freemarker/fm-debug-password"; //$NON-NLS-1$
+        return managerContextPath + "/server/freemarker/debug-password"; //$NON-NLS-1$
     }
 
     public int getFMDebuggerPort() throws APIException
@@ -103,7 +103,7 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 
     private String getFMDebuggerPortAPI()
     {
-        return managerContextPath + "/server/freemarker/fm-debug-port"; //$NON-NLS-1$
+        return managerContextPath + "/server/freemarker/debug-port"; //$NON-NLS-1$
     }
 
     private String getIsAliveAPI()
