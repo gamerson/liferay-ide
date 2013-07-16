@@ -72,7 +72,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
     implements INewPortletClassDataModelProperties, IPluginWizardFragmentProperties
 {
 
-    private static final String PORTLET_SUFFIX_PATTERN = "[Pp][Oo][Rr][Tt][Ll][Ee][Tt]"; //$NON-NLS-1$
+    private static final String PORTLET_SUFFIX_PATTERN = "([Pp][Oo][Rr][Tt][Ll][Ee][Tt])$"; //$NON-NLS-1$
 
     protected Properties categories;
     protected Properties entryCategories;
@@ -135,29 +135,6 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         }
 
         return defaultParams.toArray( new ParamValue[0] );
-    }
-
-    protected IRuntime getRuntime() throws CoreException
-    {
-        IRuntime runtime = null;
-
-        if( this.fragment )
-        {
-            org.eclipse.wst.common.project.facet.core.runtime.IRuntime bRuntime =
-                (org.eclipse.wst.common.project.facet.core.runtime.IRuntime) getDataModel().getProperty( FACET_RUNTIME );
-            runtime = ServerUtil.getRuntime( bRuntime );
-        }
-        else
-        {
-            runtime = ServerUtil.getRuntime( (IProject) getProperty( PROJECT ) );
-        }
-
-        return runtime;
-    }
-
-    protected IProject getProject()
-    {
-        return (IProject) getProperty( PROJECT );
     }
 
     protected Properties getCategories()
@@ -267,7 +244,6 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         else if( PORTLET_NAME.equals( propertyName ) || LIFERAY_PORTLET_NAME.equals( propertyName ) )
         {
             return getPortletNameFromClassName( getProperty( CLASS_NAME ).toString().replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ) );
-//            return getProperty( CLASS_NAME ).toString().toLowerCase().replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY );
         }
         else if( DISPLAY_NAME.equals( propertyName ) || TITLE.equals( propertyName ) ||
             SHORT_TITLE.equals( propertyName ) )
@@ -512,6 +488,11 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         return newName.toString().toLowerCase();
     }
 
+    protected IProject getProject()
+    {
+        return (IProject) getProperty( PROJECT );
+    }
+
     @Override
     public DataModelPropertyDescriptor getPropertyDescriptor( String propertyName )
     {
@@ -642,6 +623,24 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         propertyNames.add( USE_DEFAULT_PORTLET_CLASS );
 
         return propertyNames;
+    }
+
+    protected IRuntime getRuntime() throws CoreException
+    {
+        IRuntime runtime = null;
+
+        if( this.fragment )
+        {
+            org.eclipse.wst.common.project.facet.core.runtime.IRuntime bRuntime =
+                (org.eclipse.wst.common.project.facet.core.runtime.IRuntime) getDataModel().getProperty( FACET_RUNTIME );
+            runtime = ServerUtil.getRuntime( bRuntime );
+        }
+        else
+        {
+            runtime = ServerUtil.getRuntime( (IProject) getProperty( PROJECT ) );
+        }
+
+        return runtime;
     }
 
     @Override
