@@ -44,6 +44,8 @@ import org.eclipse.wst.server.core.ServerCore;
 public class RemoteLaunchConfigDelegate extends AbstractJavaLaunchConfigurationDelegate
 {
 
+    public static final String FM_DEBUG_PASSWORD = "fm-debug-password"; //$NON-NLS-1$
+    public static final String FM_DEBUG_PORT = "fm-debug-port"; //$NON-NLS-1$
     public static final String SERVER_ID = "server-id"; //$NON-NLS-1$
 
     public void launch( ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor )
@@ -126,15 +128,18 @@ public class RemoteLaunchConfigDelegate extends AbstractJavaLaunchConfigurationD
         {
             IServerManagerConnection connection = getServerManagerConnection( server, monitor );
 
-            String fmDebuggerPassword = connection.getFMDebuggerPassword();
-            int fmDebuggerPort = connection.getFMDebuggerPort();
-
-            if( fmDebuggerPassword != null && fmDebuggerPort != -1 )
+            if( connection != null )
             {
-                launch.setAttribute( "fm-debug-password", fmDebuggerPassword ); //$NON-NLS-1$
-                launch.setAttribute( "fm-debug-port", Integer.toString( fmDebuggerPort ) ); //$NON-NLS-1$
-                final IDebugTarget target = new FMDebugTarget( server.getHost(), launch, launch.getProcesses()[0] );
-                launch.addDebugTarget( target );
+                String fmDebuggerPassword = connection.getFMDebuggerPassword();
+                int fmDebuggerPort = connection.getFMDebuggerPort();
+
+                if( fmDebuggerPassword != null && fmDebuggerPort != -1 )
+                {
+                    launch.setAttribute( FM_DEBUG_PASSWORD, fmDebuggerPassword );
+                    launch.setAttribute( FM_DEBUG_PORT, Integer.toString( fmDebuggerPort ) );
+                    final IDebugTarget target = new FMDebugTarget( server.getHost(), launch, launch.getProcesses()[0] );
+                    launch.addDebugTarget( target );
+                }
             }
 
         }
