@@ -72,7 +72,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
     implements INewPortletClassDataModelProperties, IPluginWizardFragmentProperties
 {
 
-    private static final String PORTLET_SUFFIX_PATTERN = "(?<!^)portlet$"; //$NON-NLS-1$
+    private static final String PORTLET_SUFFIX_PATTERN = "[Pp][Oo][Rr][Tt][Ll][Ee][Tt]"; //$NON-NLS-1$
 
     protected Properties categories;
     protected Properties entryCategories;
@@ -266,12 +266,13 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         }
         else if( PORTLET_NAME.equals( propertyName ) || LIFERAY_PORTLET_NAME.equals( propertyName ) )
         {
-            return getProperty( CLASS_NAME ).toString().toLowerCase().replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY );
+            return getPortletNameFromClassName( getProperty( CLASS_NAME ).toString().replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ) );
+//            return getProperty( CLASS_NAME ).toString().toLowerCase().replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY );
         }
         else if( DISPLAY_NAME.equals( propertyName ) || TITLE.equals( propertyName ) ||
             SHORT_TITLE.equals( propertyName ) )
         {
-            return getDisplayNameFromClassName( getProperty( CLASS_NAME ).toString() );
+            return getDisplayNameFromPortletName( getProperty( PORTLET_NAME ).toString() );
         }
         else if( KEYWORDS.equals( propertyName ) )
         {
@@ -393,6 +394,31 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         return super.getDefaultProperty( propertyName );
     }
 
+    private Object getDisplayNameFromPortletName( String oldName )
+    {
+        /*
+         * Explaination for following regex first part, the rule is "before this place there is not a line start" then,
+         * two options - 1. after this place is: uppercase followed by lowercase. eg: NewJSF_Portlet or 2. before this
+         * place is lowercase and after this place is uppercase. eg: New_JSFPortlet
+         */
+        final String[] words = oldName.split( StringPool.DASH ); //$NON-NLS-1$
+        StringBuilder newName = new StringBuilder();
+
+        for( int i = 0; i < words.length; i++ )
+        {
+            if( i > 0 )
+            {
+                newName.append( StringPool.SPACE );
+            }
+
+            String pattern = "(^\\D)(\\S+$)";
+            String word =words[i].replaceFirst( pattern, String.valueOf( ( words[i].charAt( 0 ) ) ).toUpperCase() + "$2" );
+            newName.append( word );
+        }
+
+        return newName.toString();
+    }
+
     protected Properties getEntryCategories()
     {
         if( entryCategories == null )
@@ -462,7 +488,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         return initParams;
     }
 
-    protected String getDisplayNameFromClassName( String oldName )
+    protected String getPortletNameFromClassName( String oldName )
     {
         /*
          * Explaination for following regex
@@ -477,13 +503,13 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         {
             if( i > 0 )
             {
-                newName.append( StringPool.SPACE );
+                newName.append( StringPool.DASH );
             }
 
             newName.append( words[i] );
         }
 
-        return newName.toString();
+        return newName.toString().toLowerCase();
     }
 
     @Override
