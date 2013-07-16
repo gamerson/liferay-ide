@@ -34,9 +34,9 @@ public interface IServerManagerConnection extends IRemoteConnection
 
     int getDebugPort() throws APIException;
 
-    String getFMDebuggerPassword() throws APIException;
+    String getFMDebugPassword() throws APIException;
 
-    int getFMDebuggerPort() throws APIException;
+    int getFMDebugPort() throws APIException;
 
     List<String> getLiferayPlugins();
 

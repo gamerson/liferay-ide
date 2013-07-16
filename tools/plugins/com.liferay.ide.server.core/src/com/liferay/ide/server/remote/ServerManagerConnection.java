@@ -79,29 +79,29 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
         return getPluginsAPI() + "/" + appName; //$NON-NLS-1$
     }
 
-    public String getFMDebuggerPassword() throws APIException
+    public String getFMDebugPassword() throws APIException
     {
-        return getRemoteServerConfig( getFMDebuggerPasswordAPI() );
+        return getRemoteServerConfig( getFMDebugPasswordAPI() );
     }
 
-    private String getFMDebuggerPasswordAPI()
+    private String getFMDebugPasswordAPI()
     {
         return managerContextPath + "/server/freemarker/debug-password"; //$NON-NLS-1$
     }
 
-    public int getFMDebuggerPort() throws APIException
+    public int getFMDebugPort() throws APIException
     {
-        String fmDebuggerPort = getRemoteServerConfig( getFMDebuggerPortAPI() );
+        String fmDebugPort = getRemoteServerConfig( getFMDebugPortAPI() );
 
-        if(fmDebuggerPort != null )
+        if(fmDebugPort != null )
         {
-            return Integer.parseInt( fmDebuggerPort );
+            return Integer.parseInt( fmDebugPort );
         }
 
         return -1;
     }
 
-    private String getFMDebuggerPortAPI()
+    private String getFMDebugPortAPI()
     {
         return managerContextPath + "/server/freemarker/debug-port"; //$NON-NLS-1$
     }
