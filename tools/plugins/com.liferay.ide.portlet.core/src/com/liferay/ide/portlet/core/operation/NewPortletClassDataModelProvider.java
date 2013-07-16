@@ -243,7 +243,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         }
         else if( PORTLET_NAME.equals( propertyName ) || LIFERAY_PORTLET_NAME.equals( propertyName ) )
         {
-            return getPortletNameFromClassName( getProperty( CLASS_NAME ).toString().replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ) );
+            return getPortletNameFromClassName( getProperty( CLASS_NAME ).toString() );
         }
         else if( DISPLAY_NAME.equals( propertyName ) || TITLE.equals( propertyName ) ||
             SHORT_TITLE.equals( propertyName ) )
@@ -379,17 +379,20 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
          */
         final String[] words = oldName.split( StringPool.DASH ); //$NON-NLS-1$
         StringBuilder newName = new StringBuilder();
+        String pattern = "(^[a-zA-Z])(\\S+$)";
 
         for( int i = 0; i < words.length; i++ )
         {
-            if( i > 0 )
+            if( !words[i].isEmpty() && words[i].matches( pattern ) )
             {
-                newName.append( StringPool.SPACE );
-            }
+                if( i > 0 )
+                {
+                    newName.append( StringPool.SPACE );
+                }
 
-            String pattern = "(^\\D)(\\S+$)";
-            String word =words[i].replaceFirst( pattern, String.valueOf( ( words[i].charAt( 0 ) ) ).toUpperCase() + "$2" );
-            newName.append( word );
+                String word = words[i].replaceFirst( pattern, String.valueOf( ( words[i].charAt( 0 ) ) ).toUpperCase() + "$2" );
+                newName.append( word );
+            }
         }
 
         return newName.toString();
@@ -472,7 +475,8 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
          * then, two options - 1. after this place is: uppercase followed by lowercase. eg: NewJSF_Portlet
          * or 2. before this place is lowercase and after this place is uppercase. eg: New_JSFPortlet
          */
-        final String[] words = oldName.split( "(?<!^)((?=[A-Z][^A-Z])|(?<![A-Z])(?=[A-Z]))" ); //$NON-NLS-1$
+        final String SPLIT_PATTERN = "(?<!^)((?=[A-Z][^A-Z])|(?<![A-Z])(?=[A-Z]))";
+        final String[] words = oldName.replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ).split( SPLIT_PATTERN  ); //$NON-NLS-1$
         StringBuilder newName = new StringBuilder();
 
         for( int i = 0; i < words.length; i++ )
@@ -786,14 +790,17 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         {
             IJavaProject javaProject = JavaCore.create( getProject() );
 
-            IJavaSearchScope scope =
-                BasicSearchEngine.createHierarchyScope( javaProject.findType( "javax.portlet.Portlet" ) );
-
-            IType classType = javaProject.findType( qualifiedClassName );
-
-            if( classType != null && scope.encloses( classType ) )
+            if( javaProject != null )
             {
-                return true;
+                IJavaSearchScope scope =
+                    BasicSearchEngine.createHierarchyScope( javaProject.findType( "javax.portlet.Portlet" ) );
+
+                IType classType = javaProject.findType( qualifiedClassName );
+
+                if( classType != null && scope.encloses( classType ) )
+                {
+                    return true;
+                }
             }
         }
         catch( JavaModelException e )
