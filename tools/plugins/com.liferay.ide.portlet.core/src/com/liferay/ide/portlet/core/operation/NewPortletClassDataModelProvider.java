@@ -379,7 +379,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
          */
         final String[] words = oldName.split( StringPool.DASH ); //$NON-NLS-1$
         StringBuilder newName = new StringBuilder();
-        String pattern = "(^[a-zA-Z])(\\S+$)";
+        String pattern = "(^\\w)(\\S+$)";
 
         for( int i = 0; i < words.length; i++ )
         {
