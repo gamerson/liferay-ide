@@ -377,25 +377,29 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
          * two options - 1. after this place is: uppercase followed by lowercase. eg: NewJSF_Portlet or 2. before this
          * place is lowercase and after this place is uppercase. eg: New_JSFPortlet
          */
-        final String[] words = oldName.split( StringPool.DASH ); //$NON-NLS-1$
+        final String[] words = oldName.split( "\\s|-|_" ); //$NON-NLS-1$
         StringBuilder newName = new StringBuilder();
-        String pattern = "(^\\w)(\\S+$)";
+        String pattern = "\\w*";
 
         for( int i = 0; i < words.length; i++ )
         {
             if( !words[i].isEmpty() && words[i].matches( pattern ) )
             {
-                if( i > 0 )
+                if( words[i].length() > 1 )
                 {
+                    String word = words[i].substring( 0, 1 ).toUpperCase() + words[i].substring( 1, words[i].length() );
+                    newName.append( word );
                     newName.append( StringPool.SPACE );
                 }
-
-                String word = words[i].replaceFirst( pattern, String.valueOf( ( words[i].charAt( 0 ) ) ).toUpperCase() + "$2" );
-                newName.append( word );
+                else if( words[i].length() == 1 )
+                {
+                    newName.append( words[i].substring( 0, 1 ).toUpperCase() );
+                    newName.append( StringPool.SPACE );
+                }
             }
         }
 
-        return newName.toString();
+        return newName.toString().trim();
     }
 
     protected Properties getEntryCategories()
@@ -475,7 +479,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
          * then, two options - 1. after this place is: uppercase followed by lowercase. eg: NewJSF_Portlet
          * or 2. before this place is lowercase and after this place is uppercase. eg: New_JSFPortlet
          */
-        final String SPLIT_PATTERN = "(?<!^)((?=[A-Z][^A-Z])|(?<![A-Z])(?=[A-Z]))";
+        final String SPLIT_PATTERN = "(?<!^)(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])";
         final String[] words = oldName.replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ).split( SPLIT_PATTERN  ); //$NON-NLS-1$
         StringBuilder newName = new StringBuilder();
 
