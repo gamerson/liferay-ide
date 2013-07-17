@@ -80,13 +80,13 @@ public class PortletCoreTests extends BaseTests implements INewPortletClassDataM
         
         assertEquals( "Aa12 M334y Bb Ccc", dataModel.getProperty( TITLE ) );
         
-        dataModel.setProperty( CLASS_NAME, "Aa12M334yB2bCC2C" );
+        dataModel.setProperty( CLASS_NAME, "Aa12M334yB2bCCC2C" );
 
-        assertEquals( "aa12-m334y-b2b-cc2-c", dataModel.getProperty( PORTLET_NAME ) );
+        assertEquals( "aa12-m334y-b2b-cc-c2-c", dataModel.getProperty( PORTLET_NAME ) );
 
-        assertEquals( "Aa12 M334y B2b Cc2 C", dataModel.getProperty( DISPLAY_NAME ) );
+        assertEquals( "Aa12 M334y B2b Cc C2 C", dataModel.getProperty( DISPLAY_NAME ) );
         
-        assertEquals( "Aa12 M334y B2b Cc2 C", dataModel.getProperty( TITLE ) );
+        assertEquals( "Aa12 M334y B2b Cc C2 C", dataModel.getProperty( TITLE ) );
         
         dataModel.setProperty( PORTLET_NAME, "Aa 12-M334yB_bCC2C" );
         

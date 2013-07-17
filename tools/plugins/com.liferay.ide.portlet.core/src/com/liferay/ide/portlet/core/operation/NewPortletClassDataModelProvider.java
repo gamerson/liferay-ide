@@ -479,7 +479,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
          * then, two options - 1. after this place is: uppercase followed by lowercase. eg: NewJSF_Portlet
          * or 2. before this place is lowercase and after this place is uppercase. eg: New_JSFPortlet
          */
-        final String SPLIT_PATTERN = "(?<!^)(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])";
+        final String SPLIT_PATTERN = "(?<!^)(?=[A-Z][^A-Z])|(?<=[^A-Z])(?=[A-Z])";
         final String[] words = oldName.replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ).split( SPLIT_PATTERN  ); //$NON-NLS-1$
         StringBuilder newName = new StringBuilder();
 
