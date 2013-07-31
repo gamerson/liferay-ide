@@ -400,29 +400,27 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 
     protected Properties getEntryCategories()
     {
-        if( entryCategories == null )
+        final IProject project = (IProject) getProperty( PROJECT );
+
+        if( CoreUtil.isLiferayProject( project ) )
         {
-            final IProject project = (IProject) getProperty( PROJECT );
+            final ILiferayProject liferayProject = LiferayCore.create( project );
 
-            if( CoreUtil.isLiferayProject( project ) )
+            if( liferayProject != null )
             {
-                final ILiferayProject liferayProject = LiferayCore.create( project );
-
-                if( liferayProject != null )
-                {
-                    entryCategories = liferayProject.getPortletEntryCategories();
-                }
+                entryCategories = liferayProject.getPortletEntryCategories();
             }
-            else
+        }
+        else
+        {
+            try
             {
-                try
-                {
-                    ILiferayRuntime runtime = ServerUtil.getLiferayRuntime( getRuntime() );
-                    entryCategories = runtime.getPortletEntryCategories();
-                }
-                catch( CoreException e )
-                {
-                }
+                ILiferayRuntime runtime = ServerUtil.getLiferayRuntime( getRuntime() );
+                entryCategories = runtime.getPortletEntryCategories();
+            }
+            catch( CoreException e )
+            {
+                PortletCore.logError( e );
             }
         }
 
@@ -475,8 +473,8 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
          * then, two options - 1. after this place is: uppercase followed by lowercase. eg: NewJSF_Portlet
          * or 2. before this place is lowercase and after this place is uppercase. eg: New_JSFPortlet
          */
-        final String SPLIT_PATTERN = "(?<!^)(?=[A-Z][^A-Z])|(?<=[^A-Z])(?=[A-Z])";
-        final String[] words = oldName.replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ).split( SPLIT_PATTERN  ); //$NON-NLS-1$
+        final String SPLIT_PATTERN = "(?<!^)(?=[A-Z][^A-Z])|(?<=[^A-Z])(?=[A-Z])"; //$NON-NLS-1$
+        final String[] words = oldName.replaceAll( PORTLET_SUFFIX_PATTERN, StringPool.EMPTY ).split( SPLIT_PATTERN  );
         StringBuilder newName = new StringBuilder();
 
         for( int i = 0; i < words.length; i++ )
@@ -550,22 +548,22 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         {
             if( getProperty( ENTRY_CATEGORY ).equals( "category.my" ) ) //$NON-NLS-1$
             {
-                ILiferayProject liferayProject = LiferayCore.create( getProject() );
-                String version = liferayProject.getPortalVersion();
-                Version portalVersion = Version.parseVersion( version );
-
-                String propertyDescription;
-
-                if( CoreUtil.compareVersions( portalVersion, ILiferayConstants.V620 ) >= 0 )
+                try
                 {
-                    propertyDescription = "My Account Administration";
+                    final ILiferayRuntime runtime = ServerUtil.getLiferayRuntime( getRuntime() );
+                    final Version portalVersion = Version.parseVersion( runtime.getPortalVersion() );
+
+                    if( CoreUtil.compareVersions( portalVersion, ILiferayConstants.V620 ) >= 0 )
+                    {
+                        return new DataModelPropertyDescriptor( "category.my", "My Account Administration" ); //$NON-NLS-1$ //$NON-NLS-2$
+                    }
                 }
-                else
+                catch( CoreException e )
                 {
-                    propertyDescription = "My Account Section";
+                    PortletCore.logError( e );
                 }
 
-                return new DataModelPropertyDescriptor( "category.my", propertyDescription ); //$NON-NLS-1$ //$NON-NLS-2$
+                return new DataModelPropertyDescriptor( "category.my", "My Account Section" ); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
 
@@ -809,7 +807,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 
             if( javaProject != null )
             {
-                final IType portletType = JavaModelUtil.findType( javaProject, "javax.portlet.Portlet" );
+                final IType portletType = JavaModelUtil.findType( javaProject, "javax.portlet.Portlet" ); //$NON-NLS-1$
 
                 final IJavaSearchScope scope =
                     BasicSearchEngine.createStrictHierarchyScope( javaProject, portletType, true, true, null );
