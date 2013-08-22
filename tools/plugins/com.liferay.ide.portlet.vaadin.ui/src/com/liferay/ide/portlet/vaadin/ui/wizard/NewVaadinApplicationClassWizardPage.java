@@ -133,14 +133,9 @@ public class NewVaadinApplicationClassWizardPage extends NewPortletClassWizardPa
 
         if( this.fragment )
         {
-            return new String[]
-            {
-                IArtifactEditOperationDataModelProperties.COMPONENT_NAME,
-                INewJavaClassDataModelProperties.JAVA_PACKAGE,
-                INewJavaClassDataModelProperties.CLASS_NAME,
-                INewJavaClassDataModelProperties.SUPERCLASS,
-                VAADIN_PORTLET_CLASS
-            };
+            return new String[] { IArtifactEditOperationDataModelProperties.COMPONENT_NAME,
+                INewJavaClassDataModelProperties.JAVA_PACKAGE, INewJavaClassDataModelProperties.CLASS_NAME,
+                INewJavaClassDataModelProperties.SUPERCLASS, VAADIN_PORTLET_CLASS };
         }
         else
         {
