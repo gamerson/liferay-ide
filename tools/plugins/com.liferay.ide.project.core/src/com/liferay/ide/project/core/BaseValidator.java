@@ -304,7 +304,8 @@ public abstract class BaseValidator extends AbstractValidator
                             }
                         }
 
-                       if(classResource.contains( "*" )) //$NON-NLS-1$
+                        //IDE-1105
+                       if(classResource.contains( StringPool.ASTERISK ))
                         {
                             String classResourceRegex = classResource.replaceAll( "\\*", ".*" ); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -337,44 +338,6 @@ public abstract class BaseValidator extends AbstractValidator
         }
 
         return null;
-    }
-
-    class ClassResourceVisitor implements IResourceVisitor
-    {
-        IResource classResourceValue = null;
-        IResource entryResource = null;
-        String classResourceRegex = null;
-
-        public IResource visitClassResource( IResource res, String str )
-        {
-            entryResource = res;
-            classResourceRegex = str;
-
-            try
-            {
-                entryResource.accept( this );
-            }
-            catch( CoreException e )
-            {
-                // no error msg
-            }
-
-            return classResourceValue;
-        }
-
-        public boolean visit( IResource res )
-        {
-            String classResource =
-                res.getProjectRelativePath().makeRelativeTo( entryResource.getProjectRelativePath() ).toString();
-
-            if( classResource.matches( classResourceRegex ) )
-            {
-                classResourceValue = res;
-                return false;
-            }
-
-            return true;
-        }
     }
 
     protected void checkDocrootElement(
@@ -541,6 +504,44 @@ public abstract class BaseValidator extends AbstractValidator
     public boolean shouldClearMarkers( ValidationEvent event )
     {
         return true;
+    }
+
+    protected class ClassResourceVisitor implements IResourceVisitor
+    {
+        IResource classResourceValue = null;
+        IResource entryResource = null;
+        String classResourceRegex = null;
+
+        public IResource visitClassResource( IResource res, String str )
+        {
+            entryResource = res;
+            classResourceRegex = str;
+
+            try
+            {
+                entryResource.accept( this );
+            }
+            catch( CoreException e )
+            {
+                // no error msg
+            }
+
+            return classResourceValue;
+        }
+
+        public boolean visit( IResource res )
+        {
+            String classResource =
+                res.getProjectRelativePath().makeRelativeTo( entryResource.getProjectRelativePath() ).toString();
+
+            if( classResource.matches( classResourceRegex ) )
+            {
+                classResourceValue = res;
+                return false;
+            }
+
+            return true;
+        }
     }
 
     private static class Msgs extends NLS
