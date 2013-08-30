@@ -90,4 +90,6 @@ public interface IPluginProjectDataModelProperties
     public static final String[] THEME_TEMPLATE_FRAMEWORKS = { "Velocity", "Freemarker", "JSP" };  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
     public static final String UPDATE_BUILD_XML = "IPluginProjectDataModelProperties.UPDATE_BUILD_XML";  //$NON-NLS-1$
+
+    public static final String PROJECT_TEMP_PATH = "IPluginProjectDataModelProperties.PROJECT_TEMP_PATH"; //$NON-NLS-1$
 }
