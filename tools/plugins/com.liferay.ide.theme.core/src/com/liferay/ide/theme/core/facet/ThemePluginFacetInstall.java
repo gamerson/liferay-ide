@@ -20,7 +20,6 @@ import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.facet.IPluginFacetConstants;
 import com.liferay.ide.project.core.facet.PluginFacetInstall;
 import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.theme.core.ThemeCSSBuilder;
 import com.liferay.ide.theme.core.ThemeCore;
 
@@ -69,6 +68,7 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
 
         if( masterModel != null && masterModel.getBooleanProperty( CREATE_PROJECT_OPERATION ) )
         {
+            /*
             // get the template zip for theme and extract into the project
             SDK sdk = getSDK();
 
@@ -89,6 +89,22 @@ public class ThemePluginFacetInstall extends PluginFacetInstall
 
             // cleanup files
             FileUtil.deleteDir( newThemePath.toFile(), true );
+            */
+            
+            // IDE-1122 SDK creating project has been moved to Class NewPluginProjectWizard
+            String themeName = this.masterModel.getStringProperty( THEME_NAME );
+
+            if( themeName.endsWith( ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                themeName = themeName.substring( 0, themeName.indexOf( ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX ) );
+            }
+
+            IPath themeProjectTempPath = (IPath) masterModel.getProperty( THEME_PROJECT_TEMP_PATH );
+
+            processNewFiles( themeProjectTempPath.append( themeName + ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX ) );
+
+            FileUtil.deleteDir( themeProjectTempPath.toFile(), true );
+            // End IDE-1122
 
             // delete META-INF
             CoreUtil.deleteResource( project.findMember( ISDKConstants.DEFAULT_DOCROOT_FOLDER + "/META-INF" ) ); //$NON-NLS-1$

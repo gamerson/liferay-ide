@@ -90,4 +90,14 @@ public interface IPluginProjectDataModelProperties
     public static final String[] THEME_TEMPLATE_FRAMEWORKS = { "Velocity", "Freemarker", "JSP" };  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 
     public static final String UPDATE_BUILD_XML = "IPluginProjectDataModelProperties.UPDATE_BUILD_XML";  //$NON-NLS-1$
+
+    public static final String EXT_PROJECT_TEMP_PATH = "IPluginProjectDataModelProperties.EXT_PROJECT_TEMP_PATH"; //$NON-NLS-1$
+
+    public static final String HOOK_PROJECT_TEMP_PATH = "IPluginProjectDataModelProperties.HOOK_PROJECT_TEMP_PATH"; //$NON-NLS-1$
+
+    public static final String LAYOUTTPL_PROJECT_TEMP_PATH = "IPluginProjectDataModelProperties.LAYOUTTPL_PROJECT_TEMP_PATH"; //$NON-NLS-1$
+
+    public static final String PORTLET_PROJECT_TEMP_PATH = "IPluginProjectDataModelProperties.PORTLET_PROJECT_TEMP_PATH"; //$NON-NLS-1$
+
+    public static final String THEME_PROJECT_TEMP_PATH = "IPluginProjectDataModelProperties.THEME_PROJECT_TEMP_PATH"; //$NON-NLS-1$
 }
