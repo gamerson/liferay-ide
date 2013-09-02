@@ -79,19 +79,21 @@ public class NewPortletWizard extends NewWebArtifactWizard
     public NewPortletWizard()
     {
         this( (IDataModel) null );
+        setupWizard();
     }
 
     public NewPortletWizard( IDataModel model )
     {
         super( model );
         setDefaultPageImageDescriptor( getImage() );
+        setupWizard();
     }
 
     public NewPortletWizard( IProject project )
     {
         this( (IDataModel) null );
-
         this.initialProject = project;
+        setupWizard();
     }
 
     @Override
@@ -264,6 +266,11 @@ public class NewPortletWizard extends NewWebArtifactWizard
         this.hostPage = hostPage;
     }
 
+    protected void setupWizard()
+    {
+        setNeedsProgressMonitor( true );
+    }
+    
     private static class Msgs extends NLS
     {
         public static String createLiferayPortlet;

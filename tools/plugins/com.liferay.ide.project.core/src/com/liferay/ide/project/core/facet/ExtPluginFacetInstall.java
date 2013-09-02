@@ -21,13 +21,10 @@ import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.LiferayProjectCore;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.server.util.ServerUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -68,29 +65,32 @@ public class ExtPluginFacetInstall extends PluginFacetInstall
 
         if( masterModel != null && masterModel.getBooleanProperty( CREATE_PROJECT_OPERATION ) )
         {
-            // get the template zip for portlets and extract into the project
-            SDK sdk = getSDK();
+            /*
+             * // get the template zip for portlets and extract into the project SDK sdk = getSDK(); String extName =
+             * this.masterModel.getStringProperty( EXT_NAME ); // FIX IDE-450 if( extName.endsWith(
+             * ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX ) ) { extName = extName.substring( 0, extName.indexOf(
+             * ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX ) ); } // END FIX IDE-450 String displayName =
+             * this.masterModel.getStringProperty( DISPLAY_NAME ); Map<String, String> appServerProperties =
+             * ServerUtil.configureAppServerProperties( project ); IPath newExtPath = sdk.createNewExtProject( extName,
+             * displayName, appServerProperties ); IPath tempInstallPath = newExtPath.append( extName +
+             * ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX ); processNewFiles( tempInstallPath ); // cleanup ext temp files
+             * FileUtil.deleteDir( tempInstallPath.toFile(), true );
+             */
 
+            // IDE-1122 SDK creating project has been moved to Class NewPluginProjectWizard
             String extName = this.masterModel.getStringProperty( EXT_NAME );
 
-            // FIX IDE-450
             if( extName.endsWith( ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX ) )
             {
                 extName = extName.substring( 0, extName.indexOf( ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX ) );
             }
-            // END FIX IDE-450
 
-            String displayName = this.masterModel.getStringProperty( DISPLAY_NAME );
+            IPath extProjectTempPath = (IPath) masterModel.getProperty( EXT_PROJECT_TEMP_PATH );
 
-            Map<String, String> appServerProperties = ServerUtil.configureAppServerProperties( project );
+            processNewFiles( extProjectTempPath.append( extName + ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX ) );
 
-            IPath newExtPath = sdk.createNewExtProject( extName, displayName, appServerProperties );
-
-            IPath tempInstallPath = newExtPath.append( extName + ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX );
-
-            processNewFiles( tempInstallPath );
-            // cleanup ext temp files
-            FileUtil.deleteDir( tempInstallPath.toFile(), true );
+            FileUtil.deleteDir( extProjectTempPath.toFile(), true );
+            // End IDE-1122
 
             try
             {

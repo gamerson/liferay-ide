@@ -18,7 +18,6 @@ package com.liferay.ide.project.core.facet;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.LiferayProjectCore;
 import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -48,6 +47,7 @@ public class HookPluginFacetInstall extends PluginFacetInstall
 
         if( masterModel != null && masterModel.getBooleanProperty( CREATE_PROJECT_OPERATION ) )
         {
+           /*
             SDK sdk = getSDK();
 
             String hookName = this.masterModel.getStringProperty( HOOK_NAME );
@@ -69,7 +69,23 @@ public class HookPluginFacetInstall extends PluginFacetInstall
 
             // cleanup hook files
             FileUtil.deleteDir( tempInstallPath.toFile(), true );
+            */
 
+            // IDE-1122 SDK creating project has been moved to Class NewPluginProjectWizard
+            String hookName = this.masterModel.getStringProperty( HOOK_NAME );
+
+            if( hookName.endsWith( ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                hookName = hookName.substring( 0, hookName.indexOf( ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX ) );
+            }
+
+            IPath hookProjectTempPath = (IPath) masterModel.getProperty( HOOK_PROJECT_TEMP_PATH );
+
+            processNewFiles( hookProjectTempPath.append( hookName + ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX ) );
+
+            FileUtil.deleteDir( hookProjectTempPath.toFile(), true );
+            // End IDE-1122
+            
             try
             {
                 this.project.refreshLocal( IResource.DEPTH_INFINITE, monitor );
