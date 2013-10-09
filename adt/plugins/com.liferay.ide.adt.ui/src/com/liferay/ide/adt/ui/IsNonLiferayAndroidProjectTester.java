@@ -27,10 +27,6 @@ import com.liferay.ide.adt.core.ADTUtil;
 public class IsNonLiferayAndroidProjectTester extends PropertyTester
 {
 
-    public IsNonLiferayAndroidProjectTester()
-    {
-    }
-
     @Override
     public boolean test( Object receiver, String property, Object[] args, Object expectedValue )
     {

@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.liferay.ide.adt.core.ADTCore;
 import com.liferay.ide.adt.core.ADTUtil;
 import com.liferay.ide.adt.ui.ADTUI;
 
@@ -45,7 +44,7 @@ public class AddLiferayMobileSdkLibrariesAction implements IObjectActionDelegate
         super();
     }
 
-    @Override
+    // IDE-1179
     public void run( IAction action )
     {
         if( selection instanceof IStructuredSelection )
@@ -56,14 +55,20 @@ public class AddLiferayMobileSdkLibrariesAction implements IObjectActionDelegate
             {
                 try
                 {
-                    new ProgressMonitorDialog( new Shell() ).run( false, false, new IRunnableWithProgress()
+                    new ProgressMonitorDialog( new Shell() ).run( true, false, new IRunnableWithProgress()
                     {
 
                         @Override
                         public void run( IProgressMonitor monitor ) throws InvocationTargetException,
                             InterruptedException
                         {
-                            ADTUtil.addLiferayMobileSdkLibraries( (IProject) elem );
+                            // The adding process runs so fast that monitor cannot even been seen.
+                            monitor.beginTask( "Adding Liferay Mobile SDK Libraires...", 10 );
+
+                            ADTUtil.addLiferayMobileSdkLibraries( (IProject) elem, monitor );
+
+                            monitor.done();
+
                         }
                     } );
                 }

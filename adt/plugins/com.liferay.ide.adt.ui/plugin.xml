@@ -51,7 +51,7 @@
                id="com.liferay.ide.adt.ui.add.liferay.mobile.sdk.libraries.action"
                label="Add Liferay Mobile Sdk Libraries"
                menubarPath="liferayPopupMenuCategory/slot1"
-               tooltip="Add Liferay mobile Sdk Libraries">
+               tooltip="Add Liferay mobile SDK Libraries">
          </action>
          <enablement>
           <adapt type="org.eclipse.core.resources.IProject">

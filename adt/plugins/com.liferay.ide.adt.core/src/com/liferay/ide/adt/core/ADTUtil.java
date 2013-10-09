@@ -16,17 +16,19 @@
 package com.liferay.ide.adt.core;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 import com.liferay.ide.core.util.ZipUtil;
-import com.liferay.ide.core.util.FileUtil;
 
 /**
  * @author Gregory Amerson
@@ -35,63 +37,66 @@ import com.liferay.ide.core.util.FileUtil;
 public class ADTUtil
 {
 
-    /*
-     * IDE-1179 check if there exist project template unzipped files under the same directory as project template zip
-     * file. if that's true, directly copy libraries to appropriate project location. if not, unzip the project 
-     * template file first.
-     */
-    public static void addLiferayMobileSdkLibraries( final IProject project )
+    private static final IPath[] liferayMobileSdkLibs = { 
+        new Path( "libs/liferay-android-sdk.jar" ),
+        new Path( "libs/liferay-android-sdk.jar.properties" ),
+        new Path( "libs/src/liferay-android-sdk-sources.jar" ) };
+
+    // IDE-1179
+    public static void addLiferayMobileSdkLibraries( final IProject project, IProgressMonitor monitor )
     {
-        final File projectTemplate = ADTCore.getProjectTemplateFile();
-
-        final IPath projectTemplateDir = new Path( projectTemplate.getAbsolutePath() ).removeFileExtension();
-
-        if( !projectTemplateDir.toFile().exists() )
-        {
-            projectTemplateDir.toFile().mkdir();
-
-            try
-            {
-                final String topLevelDir = ZipUtil.getFirstZipEntryName( projectTemplate );
-
-                // unzip project template into the same directory.
-                ZipUtil.unzip( projectTemplate, topLevelDir, projectTemplateDir.toFile(), new NullProgressMonitor() );
-            }
-            catch( Exception e )
-            {
-                ADTCore.logError( "Error unzipping Liferay mobile Sdk libraries", e );
-            }
-        }
-
-        // Copy Liferay sdk mobile libraries to non Android Liferay project.
-        File srcLibraryFile = null;
-        File destDir = null;
-
-        for( Path p : getLiferayMobileSdkLibraries() )
-        {
-            srcLibraryFile = projectTemplateDir.append( p ).toFile();
-
-            if( srcLibraryFile.exists() && srcLibraryFile != null )
-            {
-                destDir = project.getLocation().append( p.removeLastSegments( 1 ) ).toFile();
-
-                if( !destDir.exists() && destDir != null )
-                {
-                    destDir.mkdir();
-                }
-
-                FileUtil.copyFileToDir( srcLibraryFile, destDir );
-            }
-        }
+        boolean monitorNull = monitor == null;
 
         try
         {
-            project.refreshLocal( IResource.DEPTH_INFINITE, new NullProgressMonitor() );
+            final ZipFile projectTemplate = new ZipFile( ADTCore.getProjectTemplateFile() );
+            final String zipTopLevelDir = ZipUtil.getFirstZipEntryName( ADTCore.getProjectTemplateFile() );
+
+            IFile libFile = null;
+            InputStream libInputStream = null;
+
+            File libDir = null;
+
+            for( IPath lib : liferayMobileSdkLibs )
+            {
+                //Unzip lib file to project if it doesn't exist.
+                libFile = project.getFile( lib );
+
+                if( !libFile.exists() )
+                {
+                    // Create lib dir if it doesn't exist.
+                    libDir = project.getLocation().append( lib.removeLastSegments( 1 ) ).toFile();
+
+                    if( !libDir.exists() )
+                    {
+                        libDir.mkdirs();
+
+                        project.refreshLocal( IResource.DEPTH_INFINITE, null );
+                    }
+
+                    libInputStream = projectTemplate.getInputStream( new ZipEntry( zipTopLevelDir + lib.toString() ) );
+
+                    libFile.create( libInputStream, IResource.FORCE, null );
+
+                    project.refreshLocal( IResource.DEPTH_INFINITE, null );
+
+                }
+
+                if( !monitorNull )
+                {
+                    monitor.worked( 10 / (liferayMobileSdkLibs.length ) );
+                }
+            }
         }
         catch( CoreException e )
         {
             ADTCore.logError( "Error refreshing local project.", e );
         }
+        catch( Exception e )
+        {
+            ADTCore.logError( "Error copying library files.", e );
+        }
+
     }
 
     public static int extractSdkLevel( String content )
@@ -99,20 +104,11 @@ public class ADTUtil
         return Integer.parseInt( content.substring( content.indexOf( "API " ) + 4, content.indexOf( ":" ) ) );
     }
 
-    private static Path[] getLiferayMobileSdkLibraries()
-    {
-        return new Path[] { new Path( "/libs/liferay-android-sdk.jar" ),
-            new Path( "/libs/liferay-android-sdk.jar.properties" ),
-            new Path( "/libs/src/liferay-android-sdk-sources.jar" ) };
-    }
-
     public static boolean hasLiferayMobileSdkLibraries( final IProject project )
     {
-        final IWorkspaceRoot wr = project.getWorkspace().getRoot();
-
-        for( Path p : getLiferayMobileSdkLibraries() )
+        for( IPath p : liferayMobileSdkLibs )
         {
-            if( !wr.exists( new Path( project.getName() ).append( p ) ) )
+            if( !project.getFile( p ).exists() )
             {
                 return false;
             }
@@ -132,7 +128,6 @@ public class ADTUtil
         }
         catch( CoreException e )
         {
-            ADTCore.logError( "Error opening project.", e );
         }
 
         return retval;
