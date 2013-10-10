@@ -71,15 +71,17 @@ public class ADTUtil
                     {
                         libDir.mkdirs();
 
-                        project.refreshLocal( IResource.DEPTH_INFINITE, null );
+                        try{
+                            project.refreshLocal( IResource.DEPTH_INFINITE, null );
+                        }
+                        catch( CoreException e)
+                        {
+                            ADTCore.logError( "Error refreshing local project.", e );
+                        }
                     }
 
                     libInputStream = projectTemplate.getInputStream( new ZipEntry( zipTopLevelDir + lib.toString() ) );
-
                     libFile.create( libInputStream, IResource.FORCE, null );
-
-                    project.refreshLocal( IResource.DEPTH_INFINITE, null );
-
                 }
 
                 if( !monitorNull )
@@ -87,6 +89,8 @@ public class ADTUtil
                     monitor.worked( 10 / (liferayMobileSdkLibs.length ) );
                 }
             }
+
+            project.refreshLocal( IResource.DEPTH_INFINITE, null );
         }
         catch( CoreException e )
         {
