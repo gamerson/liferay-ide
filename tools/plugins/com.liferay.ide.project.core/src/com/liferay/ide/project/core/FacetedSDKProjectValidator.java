@@ -35,12 +35,16 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
 
     public static final String MARKER_TYPE = "com.liferay.ide.project.core.FacetedSDKProjectMarker"; //$NON-NLS-1$
 
+    public static final String MARKER_LOCATION = "Targeted Runtimes"; //$NON-NLS-1$
+
     public static final String PRIMARY_RUNTIME_NOT_SET = Msgs.primaryRuntimeNotSet;
 
     public static final String PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME = Msgs.primaryRuntimeNotLiferayRuntime;
 
-    // This method validates the SDK project's primary runtime is set and a liferay runtime, 
-    // if necessary, more validation jobs will be added into it in the future.
+    /*
+     * This method validates the SDK project's primary runtime is set and a liferay runtime, if necessary, more
+     * validation jobs will be added into it in the future.
+     */
     public void validate( IFacetedProject fproj ) throws CoreException
     {
         deletePreviousFactedSDKProjectMarkers( fproj );
@@ -53,7 +57,7 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
             }
             else
             {
-                if( !ServerUtil.isLiferayRuntime( (BridgedRuntime)fproj.getPrimaryRuntime() ) )
+                if( !ServerUtil.isLiferayRuntime( (BridgedRuntime) fproj.getPrimaryRuntime() ) )
                 {
                     setErrorMsg( fproj, PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME );
                 }
@@ -65,9 +69,10 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
     {
         try
         {
-            IMarker[] facetedSDKProjectMarkers = fproj.getProject().findMarkers( MARKER_TYPE, true, IResource.DEPTH_INFINITE );
+            IMarker[] facetedSDKProjectMarkers =
+                fproj.getProject().findMarkers( MARKER_TYPE, true, IResource.DEPTH_INFINITE );
 
-            for( IMarker marker: facetedSDKProjectMarkers )
+            for( IMarker marker : facetedSDKProjectMarkers )
             {
                 marker.delete();
             }
@@ -78,7 +83,7 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
         }
     }
 
-    protected void setErrorMsg( IFacetedProject fproj, String errorMsg)
+    protected void setErrorMsg( IFacetedProject fproj, String errorMsg )
     {
         try
         {
@@ -86,6 +91,7 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
 
             marker.setAttribute( IMarker.SEVERITY, IMarker.SEVERITY_ERROR );
             marker.setAttribute( IMarker.MESSAGE, errorMsg );
+            marker.setAttribute( IMarker.LOCATION, MARKER_LOCATION );
         }
         catch( CoreException e )
         {
@@ -95,6 +101,7 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
 
     private static class Msgs extends NLS
     {
+
         public static String primaryRuntimeNotSet;
 
         public static String primaryRuntimeNotLiferayRuntime;

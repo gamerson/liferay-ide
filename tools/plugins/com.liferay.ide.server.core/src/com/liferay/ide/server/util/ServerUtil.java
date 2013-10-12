@@ -15,15 +15,6 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.server.core.ILiferayRuntime;
-import com.liferay.ide.server.core.LiferayServerCore;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,10 +25,12 @@ import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -64,6 +57,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.launching.StandardVMType;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jst.server.core.FacetUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -82,6 +76,15 @@ import org.osgi.framework.Version;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.sdk.core.ISDKConstants;
+import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.core.LiferayServerCore;
 
 /**
  * @author Gregory Amerson
@@ -553,6 +556,24 @@ public class ServerUtil
         {
             return null;
         }
+    }
+
+    public static Set<org.eclipse.wst.common.project.facet.core.runtime.IRuntime> getAvaiableRuntimes()
+    {
+        Set<org.eclipse.wst.common.project.facet.core.runtime.IRuntime> retval =
+            new HashSet<org.eclipse.wst.common.project.facet.core.runtime.IRuntime>();
+
+        IRuntime[] runtimes = ServerCore.getRuntimes();
+
+        for( IRuntime rt : runtimes )
+        {
+            if( isLiferayRuntime( rt ) )
+            {
+                retval.add( FacetUtil.getRuntime( rt ) );
+            }
+        }
+
+        return retval;
     }
 
     public static ILiferayRuntime getLiferayRuntime( IRuntime runtime )
