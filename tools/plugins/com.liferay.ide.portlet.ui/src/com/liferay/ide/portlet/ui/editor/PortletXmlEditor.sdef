@@ -63,7 +63,7 @@
                     <collapsible>false</collapsible>
                     <scroll-vertically>true</scroll-vertically>
                     <scroll-horizontally>true</scroll-horizontally>
-                    <indent>true</indent>
+                    <indent>false</indent>
                 </section>
                 <node>
                     <label>Portlets</label>
@@ -537,7 +537,7 @@
                     </property-editor>
                 </content>
                 <collapsible>false</collapsible>
-                <indent>true</indent>
+                <indent>false</indent>
             </section>
             <label>${( (empty Name AND empty NamespaceURI AND empty LocalPart )
                 ||
