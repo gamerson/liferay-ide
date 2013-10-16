@@ -534,7 +534,7 @@
                     </property-editor>
                 </content>
                 <collapsible>false</collapsible>
-                <indent>true</indent>
+                <!-- <indent>true</indent> -->
             </section>
             <label>${( (empty Name AND empty NamespaceURI AND empty LocalPart )
                 ||
