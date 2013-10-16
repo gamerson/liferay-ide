@@ -57,7 +57,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.launching.StandardVMType;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jst.server.core.FacetUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -90,6 +89,7 @@ import com.liferay.ide.server.core.LiferayServerCore;
  * @author Gregory Amerson
  * @author Cindy Li
  * @author Tao Tao
+ * @author Kuo Zhang
  */
 @SuppressWarnings( "restriction" )
 public class ServerUtil
@@ -558,10 +558,9 @@ public class ServerUtil
         }
     }
 
-    public static Set<org.eclipse.wst.common.project.facet.core.runtime.IRuntime> getAvaiableRuntimes()
+    public static Set<IRuntime> getAvailableLiferayRuntimes()
     {
-        Set<org.eclipse.wst.common.project.facet.core.runtime.IRuntime> retval =
-            new HashSet<org.eclipse.wst.common.project.facet.core.runtime.IRuntime>();
+        Set<IRuntime> retval = new HashSet<IRuntime>();
 
         IRuntime[] runtimes = ServerCore.getRuntimes();
 
@@ -569,7 +568,7 @@ public class ServerUtil
         {
             if( isLiferayRuntime( rt ) )
             {
-                retval.add( FacetUtil.getRuntime( rt ) );
+                retval.add( rt );
             }
         }
 

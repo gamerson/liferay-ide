@@ -40,6 +40,7 @@ import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -86,6 +87,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime
 
 /**
  * @author Gregory Amerson
+ * @author Kuo Zhang
  */
 @SuppressWarnings( "restriction" )
 public class ProjectUtil
@@ -408,6 +410,20 @@ public class ProjectUtil
         fpjwc.commitChanges( monitor );
 
         return fpjwc.getProject();
+    }
+
+    public static void deleteFacetedProjectMarkers( IFacetedProject fproj, String markerType ) throws CoreException
+    {
+        if( fproj.getProject().isOpen())
+        {
+            IMarker[] markers = fproj.getProject().findMarkers( markerType, true, IResource.DEPTH_INFINITE );
+
+            for( IMarker marker : markers )
+            {
+                marker.delete();
+            }
+        }
+
     }
 
     public static IFile findServiceJarForContext( String context )
@@ -1167,6 +1183,18 @@ public class ProjectUtil
                 break;
             }
         }
+    }
+
+    public static void setFacetedProjectMarker(
+        IFacetedProject fproj, String markerType, int markerSeverity, String markerMsg, String markerLocation, String markerSourceId )
+        throws CoreException
+    {
+        IMarker marker = fproj.getProject().createMarker( markerType );
+
+        marker.setAttribute( IMarker.SEVERITY, markerSeverity );
+        marker.setAttribute( IMarker.MESSAGE, markerMsg );
+        marker.setAttribute( IMarker.LOCATION, markerLocation );
+        marker.setAttribute( IMarker.SOURCE_ID, markerSourceId );
     }
 
     public static void setGenerateDD( IDataModel model, boolean generateDD )
