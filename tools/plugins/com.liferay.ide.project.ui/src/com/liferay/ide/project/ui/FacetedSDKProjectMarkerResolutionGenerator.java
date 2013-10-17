@@ -68,18 +68,4 @@ public class FacetedSDKProjectMarkerResolutionGenerator implements IMarkerResolu
         return false;
     }
 
-    // The condition does not occur.
-    private final class PrimaryRuntimeNotLiferayRuntimeResolution implements IMarkerResolution
-    {
-
-        public String getLabel()
-        {
-            return "Have not been implemented"; //$NON-NLS-1$
-        }
-
-        public void run( IMarker marker )
-        {
-        }
-    }
-
 }

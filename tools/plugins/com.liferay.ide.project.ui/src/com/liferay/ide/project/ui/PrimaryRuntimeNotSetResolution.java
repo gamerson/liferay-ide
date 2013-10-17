@@ -74,8 +74,9 @@ public class PrimaryRuntimeNotSetResolution implements IMarkerResolution
             }
 
             /*
-             * Let users confirm when there is only one available Liferay runtime. If the previous judgment block is
-             * executed, the size of available targeted runtimes will increase to 1.
+             * Let users confirm when there is only one available Liferay runtime.
+             * 
+             * If the previous judgment block is executed, the size of available targeted runtimes will increase to 1.
              */
             if( ServerUtil.getAvailableLiferayRuntimes().size() == 1 )
             {
@@ -92,19 +93,11 @@ public class PrimaryRuntimeNotSetResolution implements IMarkerResolution
                     try
                     {
                         fproj.setTargetedRuntimes( availableFacetRuntimes, null );
-                    }
-                    catch( CoreException e )
-                    {
-                        ProjectUIPlugin.logError( "Error setting the targeted runtimes", e ); //$NON-NLS-1$
-                    }
-
-                    try
-                    {
                         fproj.setPrimaryRuntime( (IRuntime) availableFacetRuntimes.toArray()[0], null );
                     }
                     catch( CoreException e )
                     {
-                        ProjectUIPlugin.logError( "Error setting the primary runtime", e ); //$NON-NLS-1$
+                        ProjectUIPlugin.logError( e );
                     }
                 }
             }
