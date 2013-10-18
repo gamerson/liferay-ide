@@ -36,11 +36,11 @@ public class FacetedSDKProjectMarkerResolutionGenerator implements IMarkerResolu
         {
             final String markerSourceId = (String) marker.getAttribute( IMarker.SOURCE_ID );
 
-            if( markerSourceId.equals( FacetedSDKProjectValidator.MARKER_ID_PRIMARY_RUNTIME_NOT_SET ) )
+            if( markerSourceId.equals( FacetedSDKProjectValidator.ID_PRIMARY_RUNTIME_NOT_SET ) )
             {
                 resolution = new PrimaryRuntimeNotSetResolution();
             }
-            else if( markerSourceId.equals( FacetedSDKProjectValidator.MARKER_ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME ) )
+            else if( markerSourceId.equals( FacetedSDKProjectValidator.ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME ) )
             {
                 resolution = new PrimaryRuntimeNotLiferayRuntimeResolution();
             }

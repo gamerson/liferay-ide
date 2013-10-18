@@ -35,14 +35,14 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
 
     public static final String MARKER_TYPE = "com.liferay.ide.project.core.FacetedSDKProjectMarker"; //$NON-NLS-1$
 
-    public static final String MARKER_LOCATION_TARGETED_RUNTIMES = "Targeted Runtimes"; //$NON-NLS-1$
+    public static final String LOCATION_TARGETED_RUNTIMES = "Targeted Runtimes"; //$NON-NLS-1$
 
-    public static final String MARKER_ID_PRIMARY_RUNTIME_NOT_SET = "Primary runtime not set Marker"; //$NON-NLS-1$
-    public static final String MARKER_ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME =
-                                                       "Primary runtime not Liferay runtime Marker"; //$NON-NLS-1$
+    public static final String ID_PRIMARY_RUNTIME_NOT_SET = "primary-runtime-not-set"; //$NON-NLS-1$
+    public static final String ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME =
+                                                       "primary-runtime-not-liferay-runtime"; //$NON-NLS-1$
 
-    public static final String MARKER_MSG_PRIMARY_RUNTIME_NOT_SET = Msgs.primaryRuntimeNotSet;
-    public static final String MARKER_MSG_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME = Msgs.primaryRuntimeNotLiferayRuntime;
+    public static final String MSG_PRIMARY_RUNTIME_NOT_SET = Msgs.primaryRuntimeNotSet;
+    public static final String MSG_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME = Msgs.primaryRuntimeNotLiferayRuntime;
 
     /*
      * This method validates the SDK project's primary runtime is set and a liferay runtime, if necessary, more
@@ -57,16 +57,15 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
             if( fproj.getPrimaryRuntime() == null )
             {
                 setMarker(
-                    fproj, MARKER_MSG_PRIMARY_RUNTIME_NOT_SET, MARKER_LOCATION_TARGETED_RUNTIMES,
-                    MARKER_ID_PRIMARY_RUNTIME_NOT_SET );
+                    fproj, MSG_PRIMARY_RUNTIME_NOT_SET, LOCATION_TARGETED_RUNTIMES, ID_PRIMARY_RUNTIME_NOT_SET );
             }
             else
             {
                 if( !ServerUtil.isLiferayRuntime( (BridgedRuntime) fproj.getPrimaryRuntime() ) )
                 {
                     setMarker(
-                        fproj, MARKER_MSG_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME, MARKER_LOCATION_TARGETED_RUNTIMES,
-                        MARKER_ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME );
+                        fproj, MSG_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME, LOCATION_TARGETED_RUNTIMES,
+                        ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME );
                 }
             }
 
