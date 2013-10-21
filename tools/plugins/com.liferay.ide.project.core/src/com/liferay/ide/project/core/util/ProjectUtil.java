@@ -412,11 +412,11 @@ public class ProjectUtil
         return fpjwc.getProject();
     }
 
-    public static void deleteFacetedProjectMarkers( IFacetedProject fproj, String markerType ) throws CoreException
+    public static void deleteProjectMarkers( IProject proj, String markerType ) throws CoreException
     {
-        if( fproj.getProject().isOpen())
+        if( proj.isOpen())
         {
-            IMarker[] markers = fproj.getProject().findMarkers( markerType, true, IResource.DEPTH_INFINITE );
+            IMarker[] markers = proj.findMarkers( markerType, true, IResource.DEPTH_INFINITE );
 
             for( IMarker marker : markers )
             {
@@ -1185,11 +1185,11 @@ public class ProjectUtil
         }
     }
 
-    public static void setFacetedProjectMarker(
-        IFacetedProject fproj, String markerType, int markerSeverity, String markerMsg, String markerLocation, String markerSourceId )
+    public static void setProjectMarker(
+        IProject proj, String markerType, int markerSeverity, String markerMsg, String markerLocation, String markerSourceId )
         throws CoreException
     {
-        IMarker marker = fproj.getProject().createMarker( markerType );
+        IMarker marker = proj.createMarker( markerType );
 
         marker.setAttribute( IMarker.SEVERITY, markerSeverity );
         marker.setAttribute( IMarker.MESSAGE, markerMsg );

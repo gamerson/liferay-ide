@@ -16,6 +16,7 @@
 package com.liferay.ide.project.core;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -30,10 +31,10 @@ import com.liferay.ide.server.util.ServerUtil;
  * @author Kuo Zhang
  */
 @SuppressWarnings( "restriction" )
-public class FacetedSDKProjectValidator implements IFacetedProjectValidator
+public class PluginsSDKProjectValidator implements IFacetedProjectValidator
 {
 
-    public static final String MARKER_TYPE = "com.liferay.ide.project.core.FacetedSDKProjectMarker"; //$NON-NLS-1$
+    public static final String MARKER_TYPE = "com.liferay.ide.project.core.PluginsSDKProjectMarker"; //$NON-NLS-1$
 
     public static final String LOCATION_TARGETED_RUNTIMES = "Targeted Runtimes"; //$NON-NLS-1$
 
@@ -50,21 +51,23 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
      */
     public void validate( IFacetedProject fproj ) throws CoreException
     {
-        deletePreviousMarkers( fproj );
+        final IProject proj = fproj.getProject();
+
+        deletePreviousMarkers( proj );
 
         if( SDKUtil.isSDKProject( fproj.getProject() ) )
         {
             if( fproj.getPrimaryRuntime() == null )
             {
                 setMarker(
-                    fproj, MSG_PRIMARY_RUNTIME_NOT_SET, LOCATION_TARGETED_RUNTIMES, ID_PRIMARY_RUNTIME_NOT_SET );
+                    proj, MSG_PRIMARY_RUNTIME_NOT_SET, LOCATION_TARGETED_RUNTIMES, ID_PRIMARY_RUNTIME_NOT_SET );
             }
             else
             {
                 if( !ServerUtil.isLiferayRuntime( (BridgedRuntime) fproj.getPrimaryRuntime() ) )
                 {
                     setMarker(
-                        fproj, MSG_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME, LOCATION_TARGETED_RUNTIMES,
+                        proj, MSG_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME, LOCATION_TARGETED_RUNTIMES,
                         ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME );
                 }
             }
@@ -72,11 +75,11 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
         }
     }
 
-    protected void deletePreviousMarkers( IFacetedProject fproj )
+    protected void deletePreviousMarkers( IProject proj )
     {
         try
         {
-            ProjectUtil.deleteFacetedProjectMarkers( fproj, MARKER_TYPE );
+            ProjectUtil.deleteProjectMarkers( proj, MARKER_TYPE );
         }
         catch( CoreException e )
         {
@@ -84,12 +87,12 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
         }
     }
 
-    protected void setMarker( IFacetedProject fproj, String markerMsg, String markerLocation, String markerSourceId )
+    protected void setMarker( IProject proj, String markerMsg, String markerLocation, String markerSourceId )
     {
         try
         {
-            ProjectUtil.setFacetedProjectMarker(
-                fproj, MARKER_TYPE, IMarker.SEVERITY_ERROR, markerMsg, markerLocation, markerSourceId );
+            ProjectUtil.setProjectMarker(
+                proj, MARKER_TYPE, IMarker.SEVERITY_ERROR, markerMsg, markerLocation, markerSourceId );
         }
         catch( CoreException e )
         {
@@ -106,7 +109,7 @@ public class FacetedSDKProjectValidator implements IFacetedProjectValidator
 
         static
         {
-            initializeMessages( FacetedSDKProjectValidator.class.getName(), Msgs.class );
+            initializeMessages( PluginsSDKProjectValidator.class.getName(), Msgs.class );
         }
     }
 

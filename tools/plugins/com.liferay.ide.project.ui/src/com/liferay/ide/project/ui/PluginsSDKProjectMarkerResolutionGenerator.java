@@ -20,12 +20,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
 
-import com.liferay.ide.project.core.FacetedSDKProjectValidator;
+import com.liferay.ide.project.core.PluginsSDKProjectValidator;
 
 /**
  * @author Kuo Zhang
  */
-public class FacetedSDKProjectMarkerResolutionGenerator implements IMarkerResolutionGenerator2
+public class PluginsSDKProjectMarkerResolutionGenerator implements IMarkerResolutionGenerator2
 {
 
     public IMarkerResolution[] getResolutions( IMarker marker )
@@ -36,11 +36,11 @@ public class FacetedSDKProjectMarkerResolutionGenerator implements IMarkerResolu
         {
             final String markerSourceId = (String) marker.getAttribute( IMarker.SOURCE_ID );
 
-            if( markerSourceId.equals( FacetedSDKProjectValidator.ID_PRIMARY_RUNTIME_NOT_SET ) )
+            if( markerSourceId.equals( PluginsSDKProjectValidator.ID_PRIMARY_RUNTIME_NOT_SET ) )
             {
                 resolution = new PrimaryRuntimeNotSetResolution();
             }
-            else if( markerSourceId.equals( FacetedSDKProjectValidator.ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME ) )
+            else if( markerSourceId.equals( PluginsSDKProjectValidator.ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME ) )
             {
                 resolution = new PrimaryRuntimeNotLiferayRuntimeResolution();
             }
@@ -58,7 +58,7 @@ public class FacetedSDKProjectMarkerResolutionGenerator implements IMarkerResolu
     {
         try
         {
-            return marker.getType().equals( FacetedSDKProjectValidator.MARKER_TYPE );
+            return marker.getType().equals( PluginsSDKProjectValidator.MARKER_TYPE );
         }
         catch( CoreException e )
         {
