@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 
-<root available-locales="en_US" default-locale="en_US">
+<root 
+<root 
+ xmlns="urn:liferay.com:liferay-workflow_6.1.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="urn:liferay.com:liferay-workflow_6.1.0 http://www.liferay.com/dtd/liferay-workflow-definition_6_1_0.xsd"
+>
+[2013/10/16  14:31:02] Tao Tao: 
+<root 
+ xmlns="urn:liferay.com:liferay-ddm-structure_6_2_0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="urn:liferay.com:liferay-ddm-structure_6_2_0 https://www.liferay.com/dtd/liferay-ddm-structure_6_2_0.xsd"
+>
+
+	available-locales="en_US" default-locale="en_US"
+>
 	<dynamic-element instance-id="9T65cMfh" name="title" type="text" index-type="">
 		<dynamic-content><![CDATA[Who We Are]]></dynamic-content>
 	</dynamic-element>

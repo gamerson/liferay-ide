@@ -16,43 +16,63 @@
  *******************************************************************************/
 package com.liferay.ide.portal.core.structures.model;
 
+import com.liferay.ide.portal.core.structures.model.internal.CDATAValueBinding;
+
 import org.eclipse.sapphire.Element;
-import org.eclipse.sapphire.ElementHandle;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ElementType;
 import org.eclipse.sapphire.ListProperty;
+import org.eclipse.sapphire.Value;
+import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.annotations.Label;
 import org.eclipse.sapphire.modeling.annotations.Type;
+import org.eclipse.sapphire.modeling.xml.annotations.CustomXmlValueBinding;
+import org.eclipse.sapphire.modeling.xml.annotations.XmlBinding;
 import org.eclipse.sapphire.modeling.xml.annotations.XmlListBinding;
 
-
 /**
- * @author Gregory Amerson
+ * @author Tao Tao
  */
-public interface HasDynamicElements extends Element
+public interface DynamicContent extends Element
 {
 
-    ElementType TYPE = new ElementType( HasDynamicElements.class );
+    ElementType TYPE = new ElementType( DynamicContent.class );
 
-    // *** DynamicElement ***
+    // *** LanguageID ***
 
-    @Type( base = DynamicElement.class )
-    @Label( standard = "dynamic elements" )
+    @Label( standard = "language id" )
+    @XmlBinding( path = "@dynamic-content" )
+    ValueProperty PROP_DYNAMIC_CONTENT = new ValueProperty( TYPE, "language id" ); //$NON-NLS-1$
+
+    Value<String> getLanguageID();
+
+    // *** Value ***
+
+    @Label( standard = "value" )
+    @XmlBinding( path = "" )
+    @CustomXmlValueBinding( impl = CDATAValueBinding.class )
+    ValueProperty PROP_VALUE = new ValueProperty( TYPE, "Value" ); //$NON-NLS-1$
+
+    Value<String> getValue();
+
+    void setValue( String value );
+
+    // *** Options ***
+
+    @Type( base = Option.class )
+    @Label( standard = "options" )
     @XmlListBinding
     (
         mappings =
         {
             @XmlListBinding.Mapping
             (
-                element = "dynamic-element",
-                type = DynamicElement.class
+                element = "option",
+                type = Option.class
             )
         }
     )
-    ListProperty PROP_DYNAMIC_ELEMENTS = new ListProperty( TYPE, "DynamicElements" ); //$NON-NLS-1$
+    ListProperty PROP_OPTIONS = new ListProperty( TYPE, "Options" ); //$NON-NLS-1$
 
-    ElementHandle<DynamicElement> getDynamicElement();
-
-    ElementList<DynamicElement> getDynamicElements();
-
+    ElementList<Option> getOptions();
 }

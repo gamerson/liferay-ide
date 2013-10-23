@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root available-locales="en_US" default-locale="en_US">
+<root 
+	xmlns="urn:liferay.com:liferay-ddm-structure_6.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:liferay.com:liferay-ddm-structure_6.2.0 http://www.liferay.com/dtd/liferay-ddm-structure_6_2_0.xsd"
+
+	available-locales="en_US" default-locale="en_US"
+>
     <dynamic-element dataType="string" name="ClimateForcast_PROGRAM_ID" type="text">
         <meta-data locale="en_US">
             <entry name="label"><![CDATA[metadata.ClimateForcast.PROGRAM_ID]]></entry>

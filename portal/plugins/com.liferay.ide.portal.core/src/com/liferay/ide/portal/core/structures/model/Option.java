@@ -16,43 +16,32 @@
  *******************************************************************************/
 package com.liferay.ide.portal.core.structures.model;
 
-import org.eclipse.sapphire.Element;
-import org.eclipse.sapphire.ElementHandle;
-import org.eclipse.sapphire.ElementList;
-import org.eclipse.sapphire.ElementType;
-import org.eclipse.sapphire.ListProperty;
-import org.eclipse.sapphire.modeling.annotations.Label;
-import org.eclipse.sapphire.modeling.annotations.Type;
-import org.eclipse.sapphire.modeling.xml.annotations.XmlListBinding;
+import com.liferay.ide.portal.core.structures.model.internal.CDATAValueBinding;
 
+import org.eclipse.sapphire.Element;
+import org.eclipse.sapphire.ElementType;
+import org.eclipse.sapphire.Value;
+import org.eclipse.sapphire.ValueProperty;
+import org.eclipse.sapphire.modeling.annotations.Label;
+import org.eclipse.sapphire.modeling.xml.annotations.CustomXmlValueBinding;
+import org.eclipse.sapphire.modeling.xml.annotations.XmlBinding;
 
 /**
- * @author Gregory Amerson
+ * @author Tao Tao
  */
-public interface HasDynamicElements extends Element
+public interface Option extends Element
 {
 
-    ElementType TYPE = new ElementType( HasDynamicElements.class );
+    ElementType TYPE = new ElementType( Option.class );
 
-    // *** DynamicElement ***
+    // *** Value ***
 
-    @Type( base = DynamicElement.class )
-    @Label( standard = "dynamic elements" )
-    @XmlListBinding
-    (
-        mappings =
-        {
-            @XmlListBinding.Mapping
-            (
-                element = "dynamic-element",
-                type = DynamicElement.class
-            )
-        }
-    )
-    ListProperty PROP_DYNAMIC_ELEMENTS = new ListProperty( TYPE, "DynamicElements" ); //$NON-NLS-1$
+    @Label( standard = "value" )
+    @XmlBinding( path = "" )
+    @CustomXmlValueBinding( impl = CDATAValueBinding.class )
+    ValueProperty PROP_VALUE = new ValueProperty( TYPE, "Value" ); //$NON-NLS-1$
 
-    ElementHandle<DynamicElement> getDynamicElement();
+    Value<String> getValue();
 
-    ElementList<DynamicElement> getDynamicElements();
-
+    void setValue( String value );
 }

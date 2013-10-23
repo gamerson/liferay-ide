@@ -16,13 +16,18 @@
  *******************************************************************************/
 package com.liferay.ide.portal.core.structures.model;
 
+import com.liferay.ide.portal.core.structures.model.internal.CDATAValueBinding;
+
+import org.eclipse.sapphire.ElementHandle;
 import org.eclipse.sapphire.ElementList;
+import org.eclipse.sapphire.ElementProperty;
 import org.eclipse.sapphire.ElementType;
 import org.eclipse.sapphire.ListProperty;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.annotations.Label;
 import org.eclipse.sapphire.modeling.annotations.Type;
+import org.eclipse.sapphire.modeling.xml.annotations.CustomXmlValueBinding;
 import org.eclipse.sapphire.modeling.xml.annotations.XmlBinding;
 import org.eclipse.sapphire.modeling.xml.annotations.XmlListBinding;
 
@@ -65,4 +70,34 @@ public interface Root extends HasDynamicElements
 
     void setDefaultLocale( String value );
 
+    // *** Names ***
+
+    @Label( standard = "names" )
+    @XmlBinding( path = "@name" )
+    @CustomXmlValueBinding( impl = CDATAValueBinding.class )
+    ValueProperty PROP_NAME = new ValueProperty( TYPE, "Name" ); //$NON-NLS-1$
+
+    Value<String> getName();
+
+    void setName( String value );
+
+    // *** DESCRIPTION ***
+
+    @Label( standard = "description" )
+    @XmlBinding( path = "@description" )
+    @CustomXmlValueBinding( impl = CDATAValueBinding.class )
+    ValueProperty PROP_DESCRIPTION = new ValueProperty( TYPE, "Description" ); //$NON-NLS-1$
+
+    Value<String> getDescription();
+
+    void setDescription( String value );
+
+    // *** Root ***
+
+    @Type( base = Root.class )
+    @Label( standard = "root" )
+    @XmlBinding( path = "root" )
+    ElementProperty PROP_ROOT = new ElementProperty( TYPE, "Root" ); //$NON-NLS-1$
+
+    ElementHandle<Root> getRoot();
 }

@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 
-<root>
+<root 
+	xmlns="urn:liferay.com:liferay-ddm-structure_6_2_0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:liferay.com:liferay-ddm-structure_6_2_0 http://www.liferay.com/dtd/liferay-ddm-structure_6_2_0.xsd"
+>
 	<dynamic-element name="width" type="text" index-type="" repeatable="false">
 		<meta-data>
 			<entry name="displayAsTooltip"><![CDATA[true]]></entry>

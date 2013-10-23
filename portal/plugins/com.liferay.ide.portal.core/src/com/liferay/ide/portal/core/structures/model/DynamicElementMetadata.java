@@ -17,6 +17,7 @@
 package com.liferay.ide.portal.core.structures.model;
 
 import org.eclipse.sapphire.Element;
+import org.eclipse.sapphire.ElementHandle;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ElementType;
 import org.eclipse.sapphire.ListProperty;
@@ -62,6 +63,8 @@ public interface DynamicElementMetadata extends Element
         }
     )
     ListProperty PROP_ENTRIES = new ListProperty( TYPE, "Entries" ); //$NON-NLS-1$
+
+    ElementHandle<Entry> getEntry();
 
     ElementList<Entry> getEntries();
 

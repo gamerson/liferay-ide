@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 
-<root available-locales="en_US,pt_BR" default-locale="en_US">
+<root 
+	xmlns="urn:liferay.com:liferay-ddm-structure_6.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:liferay.com:liferay-ddm-structure_6.2.0 http://www.liferay.com/dtd/liferay-ddm-structure_6_2_0.xsd"
+
+	available-locales="en_US" default-locale="en_US"
+>
 	<dynamic-element instance-id="RF3do1m5" name="contact" type="text" index-type="text">
 		<dynamic-element instance-id="QK6B0wK9" name="phone" type="text" index-type="text">
 			<dynamic-element instance-id="L67MPqQf" name="ext" type="text" index-type="text">
