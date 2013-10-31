@@ -127,6 +127,28 @@ public class FileUtil
         }
     }
 
+    public static void copyDirToDir( File sourceFile, File targetFile)
+    {
+        if ( sourceFile.isDirectory() ) 
+        {
+            if ( ! targetFile.exists()) 
+            {
+                targetFile.mkdir();
+            }
+
+            String[] children = sourceFile.list();
+
+            for (int i = 0; i < children.length; i++ )
+            {
+                copyDirToDir( new File( sourceFile, children[i] ), new File( targetFile, children[i]) );
+            }
+        }
+        else 
+        {
+            copyFileToDir( sourceFile, targetFile.getParentFile() );
+        }
+    }
+
     public static void deleteDir( File directory, boolean removeAll )
     {
         if( directory == null || !directory.isDirectory() )
