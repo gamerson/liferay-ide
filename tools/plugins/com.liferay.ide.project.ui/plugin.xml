@@ -821,7 +821,7 @@
             category="com.liferay.ide.ui.preferences.liferay"
             class="com.liferay.ide.project.ui.pref.ProjectPreferencePage"
             id="com.liferay.ide.project.ui.ProjectPreferencePage"
-            name="Project">
+            name="Projects">
       </page>
    </extension>
 </plugin>

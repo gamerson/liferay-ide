@@ -34,7 +34,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plugin life cycle
  *
  * @author Greg Amerson
- * @author Siom Jiang
+ * @author Simon Jiang
  */
 public class LiferayProjectCore extends LiferayCore
 {

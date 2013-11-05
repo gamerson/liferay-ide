@@ -42,7 +42,7 @@ public class ProjectProviderDefaultValueService extends DefaultValueService
 
         if( defaultProjectBuildType == null )
         {
-            retval = " ant ";
+            retval = "ant";
         }
         else
         {
