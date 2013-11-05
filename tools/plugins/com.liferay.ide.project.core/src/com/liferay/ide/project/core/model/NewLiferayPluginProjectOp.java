@@ -65,6 +65,7 @@ import org.eclipse.sapphire.modeling.annotations.Whitespace;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public interface NewLiferayPluginProjectOp extends ExecutableElement
 {

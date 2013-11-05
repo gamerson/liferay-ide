@@ -24,7 +24,7 @@ import org.eclipse.sapphire.services.DefaultValueServiceData;
 import com.liferay.ide.project.core.LiferayProjectCore;
 
 /**
- * @author simon jiang
+ * @author Simon Jiang
  */
 public class ProjectProviderDefaultValueService extends DefaultValueService
 {
