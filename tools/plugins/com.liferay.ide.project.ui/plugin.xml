@@ -815,4 +815,13 @@
             class="com.liferay.ide.project.ui.PluginsSDKProjectMarkerResolutionGenerator">
       </markerResolutionGenerator>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="com.liferay.ide.ui.preferences.liferay"
+            class="com.liferay.ide.project.ui.pref.ProjectPreferencePage"
+            id="com.liferay.ide.project.ui.ProjectPreferencePage"
+            name="Project">
+      </page>
+   </extension>
 </plugin>
