@@ -45,7 +45,6 @@ import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.junit.Before;
 import org.junit.Test;
-import org.osgi.framework.Version;
 
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.util.CoreUtil;
@@ -65,7 +64,7 @@ import com.liferay.ide.server.util.ServerUtil;
  * @author Gregory Amerson
  * @author Kuo Zhang
  */
-public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBaseTests
+public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 {
 
     final static IPath tempDownloadsPath = new Path( System.getProperty(
@@ -398,246 +397,10 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testCreateNewExtAntProject() throws Exception
-    {
-        final String projectName = "test-ext-project-sdk";
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectName( projectName );
-        op.setPluginType( PluginType.ext );
-
-        IProject extProject = createAntProject( op );
-
-        final IVirtualFolder webappRoot = CoreUtil.getDocroot( extProject );
-
-        assertNotNull( webappRoot );
-
-        final IVirtualFile extFile = webappRoot.getFile( "WEB-INF/liferay-portlet-ext.xml" );
-
-        assertEquals( true, extFile.exists() );
-    }
-
-    @Test
-    public void testCreateNewHookAntProject() throws Exception
-    {
-        final String projectName = "test-hook-project-sdk";
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectName( projectName );
-        op.setPluginType( PluginType.hook );
-
-        final IProject hookProject = createAntProject( op );
-
-        final IVirtualFolder webappRoot = CoreUtil.getDocroot( hookProject );
-
-        assertNotNull( webappRoot );
-
-        final IVirtualFile hookXml = webappRoot.getFile( "WEB-INF/liferay-hook.xml" );
-
-        assertEquals( true, hookXml.exists() );
-    }
-
-    @Test
-    public void testCreateNewJsfAntProjects() throws Exception
-    {
-        createNewJsfAntProject( "jsf" );
-        createNewJsfAntProject( "liferay_faces_alloy" );
-        createNewJsfAntProject( "icefaces" );
-        createNewJsfAntProject( "primefaces" );
-        createNewJsfAntProject( "richfaces" );
-    }
-
-    @Test
-    public void testCreateNewLayoutAntProject() throws Exception
-    {
-        final String projectName = "test-layouttpl-project-sdk";
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectName( projectName );
-        op.setPluginType( PluginType.layouttpl );
-
-        IProject layouttplProject = createAntProject( op );
-
-        final IVirtualFolder webappRoot = CoreUtil.getDocroot( layouttplProject );
-
-        assertNotNull( webappRoot );
-
-        final IVirtualFile layoutXml = webappRoot.getFile( "WEB-INF/liferay-layout-templates.xml" );
-
-        assertEquals( true, layoutXml.exists() );
-    }
-
-    @Test
-    public void testCreateNewSDKProjectCustomLocation() throws Exception
-    {
-        final IPath customLocationBase = getCustomLocationBase();
-
-        final String testProjectCustomLocationName = "test-project-custom-1-location";
-        final IPath customLocation = customLocationBase.append( testProjectCustomLocationName + "-portlet" );
-
-        final IProject newProject =
-            createNewSDKProjectCustomLocation( newProjectOp( testProjectCustomLocationName ), customLocation );
-
-        assertEquals( "Project not at expected custom location", true, newProject.getLocation().equals( customLocation ) );
-
-        final IFile buildXml = newProject.getFile( "build.xml" );
-
-        assertEquals( true, buildXml.exists() );
-
-        final InputStream contents = buildXml.getContents( true );
-        final String buildXmlContent = CoreUtil.readStreamToString( contents );
-        contents.close();
-
-        final Pattern p =
-            Pattern.compile( ".*<import file=\".*portlets/build-common-portlet.xml\".*", Pattern.MULTILINE |
-                Pattern.DOTALL );
-
-        final Matcher m = p.matcher( buildXmlContent );
-
-        assertEquals( "sdk project build.xml didn't use correct plugin type dir.", true, m.matches() );
-    }
-
-    @Test
-    public void testCreateNewSDKProjectEclipseWorkspace() throws Exception
-    {
-        final NewLiferayPluginProjectOp newProjectOp = newProjectOp( "test-project-in-workspace" );
-        newProjectOp.setUseSdkLocation( false );
-
-        final IProject projectInWorkspace = createAntProject( newProjectOp );
-
-        assertEquals(
-            "project was not located in the eclipse workspace.", true,
-            CoreUtil.getWorkspace().getRoot().getLocation().isPrefixOf( projectInWorkspace.getLocation() ) );
-    }
-
-    @Test
-    public void testCreateNewSDKProjectInSDK() throws Exception
-    {
-        final IProject projectInSDK = createAntProject( newProjectOp( "test-project-in-sdk" ) );
-
-        assertNotNull( projectInSDK );
-
-        assertEquals( true, projectInSDK.exists() );
-
-        final SDK sdk = SDKManager.getInstance().getDefaultSDK();
-
-        assertEquals( true, sdk.getLocation().isPrefixOf( projectInSDK.getLocation() ) );
-
-        final IFile buildXml = projectInSDK.getFile( "build.xml" );
-
-        assertNotNull( buildXml );
-
-        assertEquals( true, buildXml.exists() );
-
-        final String buildXmlContent = CoreUtil.readStreamToString( buildXml.getContents( true ) );
-
-        final Pattern p =
-            Pattern.compile( ".*<import file=\"\\.\\./build-common-portlet.xml\".*", Pattern.MULTILINE | Pattern.DOTALL );
-
-        final Matcher m = p.matcher( buildXmlContent );
-
-        assertEquals( "sdk project build.xml didn't use relative import.", true, m.matches() );
-    }
-
-    @Test
-    public void testCreateNewSDKProjects() throws Exception
-    {
-        createAntProject( newProjectOp( "test-name-1" ) );
-        createAntProject( newProjectOp( "Test With Spaces" ) );
-        createAntProject( newProjectOp( "test_name_1" ) );
-        createAntProject( newProjectOp( "-portlet-portlet" ) );
-        createAntProject( newProjectOp( "-portlet-hook" ) );
-
-        final NewLiferayPluginProjectOp op = newProjectOp( "-hook-hook" );
-        op.setPluginType( PluginType.hook );
-        createAntProject( op );
-    }
-
-    @Test
-    public void testCreateNewThemeProjects() throws Exception
-    {
-        createNewThemeAntProjectDefaults();
-        createNewThemeAntProject( "_unstyled", "Freemarker" );
-        createNewThemeAntProject( "_styled", "Velocity" );
-        createNewThemeAntProject( "classic", "JSP" );
-    }
-
-    @Test
-    public void testCreateNewVaadinAntProject() throws Exception
-    {
-        final String projectName = "test-vaadin-project-sdk";
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectName( projectName );
-        op.setPluginType( PluginType.portlet );
-        op.setPortletFramework( "vaadin" );
-
-        IProject vaadinProject = createAntProject( op );
-
-        final IVirtualFolder webappRoot = CoreUtil.getDocroot( vaadinProject );
-
-        assertNotNull( webappRoot );
-
-        final IVirtualFile application =
-            webappRoot.getFile( "WEB-INF/src/testvaadinprojectsdk/TestVaadinProjectSdkApplication.java" );
-
-        assertEquals( true, application.exists() );
-    }
-
-    @Test
-    public void testCreateProjectCustomLocationPortlet() throws Exception
-    {
-        final IPath customLocationBase = getCustomLocationBase();
-
-        final String testProjectCustomLocationPortletName = "test-project-custom-2-location-portlet";
-        final IPath customLocationPortlet = customLocationBase.append( testProjectCustomLocationPortletName );
-
-        final IProject newProjectPortlet =
-            createNewSDKProjectCustomLocation(
-                newProjectOp( testProjectCustomLocationPortletName ), customLocationPortlet );
-
-        assertEquals(
-            "Project not at expected custom location", true,
-            newProjectPortlet.getLocation().equals( customLocationPortlet ) );
-    }
-
-    @Test
-    public void testCreateProjectCustomLocationWrongSuffix() throws Exception
-    {
-        final IPath customLocationBase = getCustomLocationBase();
-
-        final String testProjectCustomWrongSuffix = "test-project-custom-1-wrong-suffix";
-        final IPath customLocationWrongSuffix = customLocationBase.append( testProjectCustomWrongSuffix );
-
-        final IProject newProjectWrongSuffix =
-            createNewSDKProjectCustomLocation( newProjectOp( testProjectCustomWrongSuffix ), customLocationWrongSuffix );
-
-        assertEquals(
-            "Project not at expected custom location",
-            true,
-            newProjectWrongSuffix.getLocation().equals(
-                customLocationWrongSuffix.append( testProjectCustomWrongSuffix + "-portlet" ) ) );
-    }
-
-    @Test
-    public void testCreateProjectCustomLocationWrongSuffixPortlet() throws Exception
-    {
-        final IPath customLocationBase = getCustomLocationBase();
-
-        final String testProjectCustomWrongSuffix2 = "test-project-custom-2-wrong-suffix";
-        final IPath customLocationWrongSuffix2 = customLocationBase.append( testProjectCustomWrongSuffix2 );
-
-        final IProject newProjectWrongSuffix2 =
-            createNewSDKProjectCustomLocation(
-                newProjectOp( testProjectCustomWrongSuffix2 ), customLocationWrongSuffix2 );
-
-        assertEquals(
-            "Project not at expected custom location",
-            true,
-            newProjectWrongSuffix2.getLocation().equals(
-                customLocationWrongSuffix2.append( testProjectCustomWrongSuffix2 + "-portlet" ) ) );
-    }
-
-    @Test
-    public void testDisplayNameDefaultValueService() throws Exception
+    public void testDisplayNameDefaultValue() throws Exception
     {
         final NewLiferayPluginProjectOp op = newProjectOp();
+
         final DefaultValueService dvs = op.getDisplayName().service( DefaultValueService.class );
 
         final String exceptedDisplayName = "Test Display Name Default Value";
@@ -671,10 +434,11 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testGroupIdValidationService() throws Exception
+    public void testGroupIdValidation() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-group-id-validation" );
         op.setProjectProvider( "maven" );
+
         final ValidationService vs = op.getGroupId().service( ValidationService.class );
 
         op.setGroupId( ".com.liferay.test" );
@@ -709,8 +473,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
 
     }
 
-    @Test
-    public void testLocationListener() throws Exception
+    protected void testLocationListener() throws Exception
     {
         final NewLiferayPluginProjectOp op = newProjectOp();
         op.setProjectProvider( "ant" );
@@ -740,10 +503,9 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testLocationValidationService() throws Exception
+    public void testLocationValidation() throws Exception
     {
-        final NewLiferayPluginProjectOp op = NewLiferayPluginProjectOp.TYPE.instantiate();
-        op.setProjectName( "test-location-validation-service" );
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-location-validation-service" );
         op.setProjectProvider( "maven" );
         op.setPluginType( "protlet" );
         op.setUseDefaultLocation( false );
@@ -764,6 +526,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
         {
             invalidLocation = "/test-location-validation-service";
         }
+
         op.setLocation( invalidLocation );
         assertEquals( "Cannot create project content at " + "\"" + invalidLocation + "\"", vs.validation().message() );
         assertEquals(
@@ -783,7 +546,227 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testPluginsSDKNameDefaultValueService() throws Exception
+    public void testNewExtAntProject() throws Exception
+    {
+        final String projectName = "test-ext-project-sdk";
+        final NewLiferayPluginProjectOp op = newProjectOp();
+        op.setProjectName( projectName );
+        op.setPluginType( PluginType.ext );
+
+        IProject extProject = createAntProject( op );
+
+        final IVirtualFolder webappRoot = CoreUtil.getDocroot( extProject );
+
+        assertNotNull( webappRoot );
+
+        final IVirtualFile extFile = webappRoot.getFile( "WEB-INF/liferay-portlet-ext.xml" );
+
+        assertEquals( true, extFile.exists() );
+    }
+
+    @Test
+    public void testNewHookAntProject() throws Exception
+    {
+        final String projectName = "test-hook-project-sdk";
+        final NewLiferayPluginProjectOp op = newProjectOp();
+        op.setProjectName( projectName );
+        op.setPluginType( PluginType.hook );
+
+        final IProject hookProject = createAntProject( op );
+
+        final IVirtualFolder webappRoot = CoreUtil.getDocroot( hookProject );
+
+        assertNotNull( webappRoot );
+
+        final IVirtualFile hookXml = webappRoot.getFile( "WEB-INF/liferay-hook.xml" );
+
+        assertEquals( true, hookXml.exists() );
+    }
+
+    @Test
+    public void testNewJsfAntProjects() throws Exception
+    {
+        createNewJsfAntProject( "jsf" );
+        createNewJsfAntProject( "liferay_faces_alloy" );
+        createNewJsfAntProject( "icefaces" );
+        createNewJsfAntProject( "primefaces" );
+        createNewJsfAntProject( "richfaces" );
+    }
+
+    @Test
+    public void testNewLayoutAntProject() throws Exception
+    {
+        final String projectName = "test-layouttpl-project-sdk";
+        final NewLiferayPluginProjectOp op = newProjectOp();
+        op.setProjectName( projectName );
+        op.setPluginType( PluginType.layouttpl );
+
+        IProject layouttplProject = createAntProject( op );
+
+        final IVirtualFolder webappRoot = CoreUtil.getDocroot( layouttplProject );
+
+        assertNotNull( webappRoot );
+
+        final IVirtualFile layoutXml = webappRoot.getFile( "WEB-INF/liferay-layout-templates.xml" );
+
+        assertEquals( true, layoutXml.exists() );
+    }
+
+    public void testNewProjectCustomLocationPortlet() throws Exception
+    {
+        final IPath customLocationBase = getCustomLocationBase();
+
+        final String testProjectCustomLocationPortletName = "test-project-custom-2-location-portlet";
+        final IPath customLocationPortlet = customLocationBase.append( testProjectCustomLocationPortletName );
+
+        final IProject newProjectPortlet =
+            createNewSDKProjectCustomLocation(
+                newProjectOp( testProjectCustomLocationPortletName ), customLocationPortlet );
+
+        assertEquals(
+            "Project not at expected custom location", true,
+            newProjectPortlet.getLocation().equals( customLocationPortlet ) );
+    }
+
+    public void testNewProjectCustomLocationWrongSuffix() throws Exception
+    {
+        final IPath customLocationBase = getCustomLocationBase();
+
+        final String testProjectCustomWrongSuffix = "test-project-custom-1-wrong-suffix";
+        final IPath customLocationWrongSuffix = customLocationBase.append( testProjectCustomWrongSuffix );
+
+        final IProject newProjectWrongSuffix =
+            createNewSDKProjectCustomLocation( newProjectOp( testProjectCustomWrongSuffix ), customLocationWrongSuffix );
+
+        assertEquals(
+            "Project not at expected custom location",
+            true,
+            newProjectWrongSuffix.getLocation().equals(
+                customLocationWrongSuffix.append( testProjectCustomWrongSuffix + "-portlet" ) ) );
+    }
+
+    @Test
+    public void testNewProjectCustomLocationWrongSuffixPortlet() throws Exception
+    {
+
+    }
+
+    public void testNewSDKProjectCustomLocation() throws Exception
+    {
+        final IPath customLocationBase = getCustomLocationBase();
+
+        final String testProjectCustomLocationName = "test-project-custom-1-location";
+        final IPath customLocation = customLocationBase.append( testProjectCustomLocationName + "-portlet" );
+
+        final IProject newProject =
+            createNewSDKProjectCustomLocation( newProjectOp( testProjectCustomLocationName ), customLocation );
+
+        assertEquals( "Project not at expected custom location", true, newProject.getLocation().equals( customLocation ) );
+
+        final IFile buildXml = newProject.getFile( "build.xml" );
+
+        assertEquals( true, buildXml.exists() );
+
+        final InputStream contents = buildXml.getContents( true );
+        final String buildXmlContent = CoreUtil.readStreamToString( contents );
+        contents.close();
+
+        final Pattern p =
+            Pattern.compile( ".*<import file=\".*portlets/build-common-portlet.xml\".*", Pattern.MULTILINE |
+                Pattern.DOTALL );
+
+        final Matcher m = p.matcher( buildXmlContent );
+
+        assertEquals( "sdk project build.xml didn't use correct plugin type dir.", true, m.matches() );
+    }
+
+    public void testNewSDKProjectEclipseWorkspace() throws Exception
+    {
+        final NewLiferayPluginProjectOp newProjectOp = newProjectOp( "test-project-in-workspace" );
+        newProjectOp.setUseSdkLocation( false );
+
+        final IProject projectInWorkspace = createAntProject( newProjectOp );
+
+        assertEquals(
+            "project was not located in the eclipse workspace.", true,
+            CoreUtil.getWorkspace().getRoot().getLocation().isPrefixOf( projectInWorkspace.getLocation() ) );
+    }
+
+    @Test
+    public void testNewSDKProjectInSDK() throws Exception
+    {
+        final IProject projectInSDK = createAntProject( newProjectOp( "test-project-in-sdk" ) );
+
+        assertNotNull( projectInSDK );
+
+        assertEquals( true, projectInSDK.exists() );
+
+        final SDK sdk = SDKManager.getInstance().getDefaultSDK();
+
+        assertEquals( true, sdk.getLocation().isPrefixOf( projectInSDK.getLocation() ) );
+
+        final IFile buildXml = projectInSDK.getFile( "build.xml" );
+
+        assertNotNull( buildXml );
+
+        assertEquals( true, buildXml.exists() );
+
+        final String buildXmlContent = CoreUtil.readStreamToString( buildXml.getContents( true ) );
+
+        final Pattern p =
+            Pattern.compile( ".*<import file=\"\\.\\./build-common-portlet.xml\".*", Pattern.MULTILINE | Pattern.DOTALL );
+
+        final Matcher m = p.matcher( buildXmlContent );
+
+        assertEquals( "sdk project build.xml didn't use relative import.", true, m.matches() );
+    }
+
+    @Test
+    public void testNewSDKProjects() throws Exception
+    {
+        createAntProject( newProjectOp( "test-name-1" ) );
+        createAntProject( newProjectOp( "Test With Spaces" ) );
+        createAntProject( newProjectOp( "test_name_1" ) );
+        createAntProject( newProjectOp( "-portlet-portlet" ) );
+        createAntProject( newProjectOp( "-portlet-hook" ) );
+
+        final NewLiferayPluginProjectOp op = newProjectOp( "-hook-hook" );
+        op.setPluginType( PluginType.hook );
+        createAntProject( op );
+    }
+
+    @Test
+    public void testNewThemeProjects() throws Exception
+    {
+        createNewThemeAntProjectDefaults();
+        createNewThemeAntProject( "_unstyled", "Freemarker" );
+        createNewThemeAntProject( "_styled", "Velocity" );
+        createNewThemeAntProject( "classic", "JSP" );
+    }
+
+    @Test
+    public void testNewVaadinAntProject() throws Exception
+    {
+        final String projectName = "test-vaadin-project-sdk";
+        final NewLiferayPluginProjectOp op = newProjectOp();
+        op.setProjectName( projectName );
+        op.setPluginType( PluginType.portlet );
+        op.setPortletFramework( "vaadin" );
+
+        IProject vaadinProject = createAntProject( op );
+
+        final IVirtualFolder webappRoot = CoreUtil.getDocroot( vaadinProject );
+
+        assertNotNull( webappRoot );
+
+        final IVirtualFile application =
+            webappRoot.getFile( "WEB-INF/src/testvaadinprojectsdk/TestVaadinProjectSdkApplication.java" );
+
+        assertEquals( true, application.exists() );
+    }
+
+    @Test
+    public void testPluginsSDKNameDefaultValue() throws Exception
     {
         final SDK originalSDK = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
         originalSDK.setDefault( true );
@@ -795,6 +778,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
 
         NewLiferayPluginProjectOp op = newProjectOp();
         DefaultValueService dvs = op.getPluginsSDKName().service( DefaultValueService.class );
+
         assertEquals( originalSDK.getName(), dvs.value() );
         assertEquals( originalSDK.getName(), op.getPluginsSDKName().content() );
 
@@ -805,6 +789,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
 
         op = newProjectOp();
         dvs = op.getPluginsSDKName().service( DefaultValueService.class );
+
         assertEquals( newSDK.getName(), dvs.value() );
         assertEquals( newSDK.getName(), op.getPluginsSDKName().content() );
 
@@ -814,6 +799,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
 
         op = newProjectOp();
         dvs = op.getPluginsSDKName().service( DefaultValueService.class );
+
         assertEquals( "<None>", dvs.value() );
         assertEquals( "<None>", op.getPluginsSDKName().content() );
     }
@@ -821,9 +807,8 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     @Test
     public void testPluginsSDKNameListener() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
         final String projectName = "test-plugin-sdk-name-listener";
-        op.setProjectName( projectName );
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
         op.setProjectProvider( "ant" );
         op.setPluginType( "portlet" );
         op.setUseDefaultLocation( true );
@@ -842,16 +827,17 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testPluginsSDKNamePossibleValuesService() throws Exception
+    public void testPluginsSDKNamePossibleValues() throws Exception
     {
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-plugins-sdk-name-possbile-values" );
+        op.setProjectProvider( "ant" );
+
         final SDK originSDK = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
         final SDK newSDK = createNewSDK();
 
         Set<String> exceptedSDKNames = new HashSet<String>();
         exceptedSDKNames.add( originSDK.getName() );
         exceptedSDKNames.add( newSDK.getName() );
-
-        final NewLiferayPluginProjectOp op = newProjectOp();
 
         final Set<String> acturalSDKNames = op.getPluginsSDKName().service( PossibleValuesService.class ).values();
 
@@ -860,10 +846,11 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testPluginsSDKNameValidationService() throws Exception
+    public void testPluginsSDKNameValidation() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-plugins-sdk-name-validation" );
         op.setProjectProvider( "ant" );
+
         final ValidationService vs = op.getPluginsSDKName().service( ValidationService.class );
 
         assertEquals( true, vs.validation().ok() );
@@ -894,18 +881,21 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
 
     }
 
-    @Test
-    public void testPluginTypeListener() throws Exception
+    protected void testPluginTypeListener() throws Exception
+    { 
+        this.testPluginTypeListener( false );
+    }
+
+    protected void testPluginTypeListener( Boolean versionRestriction ) throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
         final String projectName = "test-plugin-type-listener";
-        op.setProjectName( projectName );
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
         op.setProjectProvider( "ant" );
         op.setUseDefaultLocation( true );
 
         final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
 
-        final String[] pluginTypes = new String[] { "portlet", "hook", "layouttpl", "theme", "ext" };
+        final String[] pluginTypes = { "portlet", "hook", "layouttpl", "theme", "ext" };
 
         String exceptedLocation = null;
 
@@ -938,7 +928,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
             assertEquals( exceptedLocation, op.getLocation().content().toString() );
         }
 
-        if( CoreUtil.compareVersions( new Version( getRuntimeVersion() ), new Version( "6.2.0" ) ) >= 0 )
+        if( versionRestriction )
         {
             op.setUseSdkLocation( false );
 
@@ -953,8 +943,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
                 }
                 else if( pluginType.equals( "hook" ) )
                 {
-                    exceptedLocation =
-                        CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-hook";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-hook";
                 }
                 else if( pluginType.equals( "layouttpl" ) )
                 {
@@ -963,13 +952,11 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
                 }
                 else if( pluginType.equals( "theme" ) )
                 {
-                    exceptedLocation =
-                        CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-theme";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-theme";
                 }
                 else
                 {
-                    exceptedLocation =
-                        CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-ext";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-ext";
                 }
 
                 assertEquals( exceptedLocation, op.getLocation().content().toString() );
@@ -978,9 +965,9 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testPortletFrameworkAdvancedPossibleValuesService() throws Exception
+    public void testPortletFrameworkAdvancedPossibleValues() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-advanced-possible-values" );
 
         final Set<String> acturalFrameworks =
             op.getPortletFrameworkAdvanced().service( PossibleValuesService.class ).values();
@@ -988,7 +975,6 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
         assertNotNull( acturalFrameworks );
 
         Set<String> exceptedFrameworks = new HashSet<String>();
-
         exceptedFrameworks.add( "jsf" );
         exceptedFrameworks.add( "icefaces" );
         exceptedFrameworks.add( "liferay_faces_alloy" );
@@ -1003,9 +989,10 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testPortletFrameworkPossibleValuesService() throws Exception
+    public void testPortletFrameworkPossibleValues() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-possible-values" );
+        op.setProjectProvider( "ant" );
         op.setPluginType( "portlet" );
 
         final Set<String> acturalFrameworks = op.getPortletFramework().service( PossibleValuesService.class ).values();
@@ -1024,9 +1011,9 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testPortletFrameworkValidationService() throws Exception
+    public void testPortletFrameworkValidation() throws Exception
     {
-        NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-validation-service" );
+        NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-validation" );
         op.setPluginType( "portlet" );
         final ValidationService vs = op.getPortletFramework().service( ValidationService.class );
 
@@ -1047,7 +1034,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
         final IPortletFramework jsf = LiferayProjectCore.getPortletFramework( "jsf" );
 
         op.setProjectProvider( "ant" );
-        op.setPortletFramework( jsf );
+        op.setPortletFramework( "jsf" );
         op.setPluginsSDKName( newSDK.getName() );
 
         assertEquals(
@@ -1061,9 +1048,9 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testPortletFrameworkValueLabelService() throws Exception
+    public void testPortletFrameworkValueLabel() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-value-label" );
 
         final ValueLabelService vls = op.getPortletFramework().service( ValueLabelService.class );
 
@@ -1123,7 +1110,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testProjectNameValidationService() throws Exception
+    public void testProjectNameValidation() throws Exception
     {
         NewLiferayPluginProjectOp op = newProjectOp();
         op.setUseDefaultLocation( true );
@@ -1131,18 +1118,21 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
         ValidationService vs = op.getProjectName().service( ValidationService.class );
 
         final String validProjectName = "test-project-name-validation-service";
+
         op.setProjectName( validProjectName );
         assertEquals( true, vs.validation().ok() );
         assertEquals( true, op.getProjectName().validation().ok() );
 
         op.setProjectName( validProjectName + "-portlet" );
         assertEquals( true, vs.validation().ok() );
+        assertEquals( true, op.getProjectName().validation().ok() );
 
         final IProject proj = createProject( op );
 
         op.dispose();
         op = newProjectOp();
         vs = op.getProjectName().service( ValidationService.class );
+
         op.setProjectName( validProjectName + "-portlet" );
         assertEquals( "A project with that name already exists.", vs.validation().message() );
         assertEquals( "A project with that name already exists.", op.getProjectName().validation().message() );
@@ -1156,6 +1146,7 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
             op.getProjectName().validation().message() );
 
         final IPath dotProjectLocation = proj.getLocation().append( ".project" );
+
         if( dotProjectLocation.toFile().exists() )
         {
             dotProjectLocation.toFile().delete();
@@ -1164,15 +1155,14 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
         op.dispose();
         op = newProjectOp();
         vs = op.getProjectName().service( ValidationService.class );
+
         op.setProjectName( validProjectName );
         assertEquals( "\"" + op.getLocation().content().toOSString() +
             "\" is not a valid because it already contains files.", vs.validation().message() );
         assertEquals( "\"" + op.getLocation().content().toOSString() +
             "\" is not a valid because it already contains files.", op.getProjectName().validation().message() );
 
-        String invalidProjectName = null;
-
-        invalidProjectName = validProjectName + "*";
+        String invalidProjectName = validProjectName + "*";
         op.setProjectName( invalidProjectName );
         assertEquals(
             "* is an invalid character in resource name '" + invalidProjectName + "'.", vs.validation().message() );
@@ -1183,16 +1173,13 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
         assertEquals(
             "'" + invalidProjectName + "' is an invalid name on this platform.",
             op.getProjectName().validation().message() );
-
     }
 
     @Test
     public void testProjectProviderListener() throws Exception
     {
         final String projectName = "test-project-provider-listener";
-
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectName( projectName );
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
         op.setPluginType( "portlet" );
         op.setUseDefaultLocation( true );
 
@@ -1208,9 +1195,9 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testProjectProvidersPossibleValuesService() throws Exception
+    public void testProjectProviderPossibleValues() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-project-provider-possbile-values" );
 
         final Set<String> acturalValues = op.getProjectProvider().service( PossibleValuesService.class ).values();
 
@@ -1225,13 +1212,15 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testProjectProviderValueLabelService() throws Exception
+    public void testProjectProviderValueLabel() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-project-provider-value-lable" );
+
         final ValueLabelService vls = op.getProjectProvider().service( ValueLabelService.class );
 
         final Set<String> acturaProviderShortNames =
             op.getProjectProvider().service( PossibleValuesService.class ).values();
+
         Set<String> acturalLables = new HashSet<String>();
 
         for( String shortName : acturaProviderShortNames )
@@ -1250,9 +1239,9 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testRuntimeNameDefaultValueService() throws Exception
+    public void testRuntimeNameDefaultValue() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-runtime-name-default-value" );
 
         final String originalRuntimeName = getRuntimeVersion();
         IRuntime originalRuntime = ServerCore.findRuntime( originalRuntimeName );
@@ -1271,18 +1260,19 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
         runtimeNames.add( newRuntimeName );
 
         final String defaultRuntimeName = runtimeNames.iterator().next();
+
         assertEquals( defaultRuntimeName, op.getRuntimeName().service( DefaultValueService.class ).value() );
         assertEquals( defaultRuntimeName, op.getRuntimeName().content() );
 
     }
 
     @Test
-    public void testRuntimeNamePossibleValuesService() throws Exception
+    public void testRuntimeNamePossibleValues() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-runtime-possbile-values" );
 
         final String originalRuntimeName = getRuntimeVersion();
-        IRuntime originalRuntime = ServerCore.findRuntime( originalRuntimeName );
+        final IRuntime originalRuntime = ServerCore.findRuntime( originalRuntimeName );
 
         assertNotNull( originalRuntime );
         assertEquals( true, ServerUtil.isLiferayRuntime( originalRuntime ) );
@@ -1305,59 +1295,69 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
     }
 
     @Test
-    public void testRuntimeNameValidationService() throws Exception
+    public void testRuntimeNameValidation() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-runtime-name-validation" );
         op.setProjectProvider( "ant" );
+
         final ValidationService vs = op.getRuntimeName().service( ValidationService.class );
 
         final String newVersion = getRuntimeVersion() + ".0";
 
         op.setRuntimeName( newVersion );
+
         assertEquals( "Liferay runtime must be configured.", vs.validation().message() );
         // Value is not excepted.
         // assertEquals( "Liferay runtime must be configured.", op.getRuntimeName().validation().message() );
     }
 
-    @Test
-    public void testUseDefaultLocationEnablementService() throws Exception
+    protected void testUseDefaultLocationEnablement() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectProvider( "ant" );
+        this.testUseDefaultLocationEnablement( false );
+    }
 
-        if( CoreUtil.compareVersions( new Version( getRuntimeVersion() ), new Version( "6.2.0" ) ) >= 0 )
+    protected void testUseDefaultLocationEnablement( boolean versionRestriction ) throws Exception
+    {
+        final NewLiferayPluginProjectOp op = newProjectOp( "test-use-default-location-enablement" );
+        op.setProjectProvider( "maven" );
+
+        assertEquals( true, op.getUseDefaultLocation().service( EnablementService.class ).enablement() );
+        assertEquals( true, op.getUseDefaultLocation().enabled() );
+
+        if( versionRestriction )
         {
+            op.setProjectProvider( "ant" );
+
             assertEquals( true, op.getUseDefaultLocation().service( EnablementService.class ).enablement() );
             assertEquals( true, op.getUseDefaultLocation().enabled() );
         }
-        else
-        {
-            assertEquals( false, op.getUseDefaultLocation().service( EnablementService.class ).enablement() );
-            assertEquals( false, op.getUseDefaultLocation().enabled() );
-        }
-
-        op.setProjectProvider( "maven" );
-        assertEquals( true, op.getUseDefaultLocation().service( EnablementService.class ).enablement() );
-        assertEquals( true, op.getUseDefaultLocation().enabled() );
     }
 
-    @Test
-    public void testUseDefaultLocationListener() throws Exception
+    protected void testUseDefaultLocationListener() throws Exception
     {
-        final NewLiferayPluginProjectOp op = newProjectOp();
+        this.testUseDefaultLocationListener( false );
+    }
 
+    protected void testUseDefaultLocationListener( boolean versionRestriction ) throws Exception
+    {
         final String projectName = "test-use-default-location-listener";
-        op.setProjectName( projectName );
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+        op.setProjectProvider( "maven" );
 
-        String exceptedLocation = null;
+        op.setUseDefaultLocation( true );
+        String exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName;
+        assertEquals( exceptedLocation, op.getLocation().content().toString() );
 
-        if( CoreUtil.compareVersions( new Version( getRuntimeVersion() ), new Version( "6.2.0" ) ) >= 0 )
+        op.setUseDefaultLocation( false );
+        assertEquals( null, op.getLocation().content() );
+
+        if( versionRestriction )
         {
-            final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
-
             op.setProjectProvider( "ant" );
             op.setPluginType( "portlet" );
             op.setUseDefaultLocation( true );
+
+            final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
 
             exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
             assertEquals( exceptedLocation, op.getLocation().content().toString() );
@@ -1365,43 +1365,28 @@ public abstract class NewLiferayPluginProjectOpBaseTests extends ProjectCoreBase
             op.setUseDefaultLocation( false );
             assertEquals( null, op.getLocation().content() );
         }
-
-        op.setProjectProvider( "maven" );
-        op.setUseDefaultLocation( true );
-
-        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName;
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
-
-        op.setUseDefaultLocation( false );
-        assertEquals( null, op.getLocation().content() );
     }
 
-    @Test
-    public void testUseSdkLocationListener() throws Exception
+    protected void testUseSdkLocationListener() throws Exception
     {
-        if( CoreUtil.compareVersions( new Version( getRuntimeVersion() ), new Version( "6.2.0" ) ) >= 0 )
-        {
-            final NewLiferayPluginProjectOp op = newProjectOp();
-            final String projectName = "test-use-sdk-location-listener";
-            op.setProjectName( projectName );
+        final String projectName = "test-use-sdk-location-listener";
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+        op.setProjectProvider( "ant" );
+        op.setPluginType( "porlet" );
+        op.setUseSdkLocation( true );
 
-            op.setProjectProvider( "ant" );
-            op.setPluginType( "porlet" );
-            op.setUseSdkLocation( true );
+        String acturalLocation = op.getLocation().content().toString();
+        assertNotNull( acturalLocation );
 
-            final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
-            String acturalLocation = op.getLocation().content().toString();
+        final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
 
-            assertNotNull( acturalLocation );
+        String exceptedLocation =
+            sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
+        assertEquals( exceptedLocation, op.getLocation().content().toString() );
 
-            String exceptedLocation =
-                sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
-            assertEquals( exceptedLocation, op.getLocation().content().toString() );
-
-            op.setUseSdkLocation( false );
-            exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-portlet";
-            assertEquals( exceptedLocation, op.getLocation().content().toString() );
-        }
+        op.setUseSdkLocation( false );
+        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-portlet";
+        assertEquals( exceptedLocation, op.getLocation().content().toString() );
     }
 
 }
