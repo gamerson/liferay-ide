@@ -36,7 +36,7 @@ public class NewLiferayPluginProjectOp606Tests extends NewLiferayPluginProjectOp
     @Override
     protected IProject checkNewJsfAntProjectIvyFile( IProject jsfProject, String jsfSuite ) throws Exception
     {
-        // ivy not supported in 6.1.1
+        // ivy not supported in 6.0.6
         return jsfProject;
     }
 
@@ -122,31 +122,25 @@ public class NewLiferayPluginProjectOp606Tests extends NewLiferayPluginProjectOp
     @Override
     public void testNewProjectCustomLocationPortlet() throws Exception
     {
-        // not supported in 6.1.1
+        // not supported in 6.0.6
     }
 
     @Override
     public void testNewProjectCustomLocationWrongSuffix() throws Exception
     {
-        // not supported in 6.1.1
-    }
-
-    @Override
-    public void testNewProjectCustomLocationWrongSuffixPortlet() throws Exception
-    {
-        // not supported in 6.1.1
+        // not supported in 6.0.6
     }
 
     @Override
     public void testNewSDKProjectCustomLocation() throws Exception
     {
-        // not supported in 6.1.1
+        // not supported in 6.0.6
     }
 
     @Override
     public void testNewSDKProjectEclipseWorkspace() throws Exception
     {
-        // not supported in 6.1.1
+        // not supported in 6.0.6
     }
 
     @Override

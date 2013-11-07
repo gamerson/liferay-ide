@@ -96,12 +96,6 @@ public class NewLiferayPluginProjectOp611Tests extends NewLiferayPluginProjectOp
     }
 
     @Override
-    public void testNewProjectCustomLocationWrongSuffixPortlet() throws Exception
-    {
-        // not supported in 6.1.1
-    }
-
-    @Override
     public void testNewSDKProjectCustomLocation() throws Exception
     {
         // not supported in 6.1.1

@@ -264,8 +264,8 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
     protected IPath getCustomLocationBase()
     {
         final IPath customLocationBase =
-            org.eclipse.core.internal.utils.FileUtil.canonicalPath( new Path( System.getProperty( "java.io.tmpdir" ) ) )
-                .append( "custom-project-location-tests" );
+            org.eclipse.core.internal.utils.FileUtil.canonicalPath( new Path( System.getProperty( "java.io.tmpdir" ) ) ).append(
+                "custom-project-location-tests" );
 
         return customLocationBase;
     }
@@ -645,12 +645,6 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
                 customLocationWrongSuffix.append( testProjectCustomWrongSuffix + "-portlet" ) ) );
     }
 
-    @Test
-    public void testNewProjectCustomLocationWrongSuffixPortlet() throws Exception
-    {
-
-    }
-
     public void testNewSDKProjectCustomLocation() throws Exception
     {
         final IPath customLocationBase = getCustomLocationBase();
@@ -813,17 +807,19 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         op.setPluginType( "portlet" );
         op.setUseDefaultLocation( true );
 
+        IPath exceptedLocation = null;
+
         final SDK originalSDK = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
 
-        String exceptedLocation = originalSDK.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = originalSDK.getLocation().append( "portlets" ).append( projectName + "-portlet" );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
         final SDK newSDK = createNewSDK();
 
         op.setPluginsSDKName( newSDK.getName() );
 
-        exceptedLocation = newSDK.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = newSDK.getLocation().append( "portlets" ).append( projectName + "-portlet" );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
     }
 
     @Test
@@ -859,7 +855,7 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         op.setPluginsSDKName( "sdk-must-be-configured" );
         assertEquals( "Plugins SDK must be configured.", vs.validation().message() );
         // Value is not excepted.
-        //assertEquals( "Plugins SDK must be configured.", op.getPluginsSDKName().validation().message() );
+        // assertEquals( "Plugins SDK must be configured.", op.getPluginsSDKName().validation().message() );
 
         // Create a new sdk and delete files of the sdk to make it invalid.
         final SDK newSDK = createNewSDK();
@@ -882,7 +878,7 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
     }
 
     protected void testPluginTypeListener() throws Exception
-    { 
+    {
         this.testPluginTypeListener( false );
     }
 
@@ -897,7 +893,7 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 
         final String[] pluginTypes = { "portlet", "hook", "layouttpl", "theme", "ext" };
 
-        String exceptedLocation = null;
+        IPath exceptedLocation = null;
 
         for( String pluginType : pluginTypes )
         {
@@ -905,27 +901,26 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 
             if( pluginType.equals( "portlet" ) )
             {
-                exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
+                exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" );
             }
             else if( pluginType.equals( "hook" ) )
             {
-                exceptedLocation = sdk.getLocation().append( "hooks" ).append( projectName + "-hook" ).toString();
+                exceptedLocation = sdk.getLocation().append( "hooks" ).append( projectName + "-hook" );
             }
             else if( pluginType.equals( "layouttpl" ) )
             {
-                exceptedLocation =
-                    sdk.getLocation().append( "layouttpl" ).append( projectName + "-layouttpl" ).toString();
+                exceptedLocation = sdk.getLocation().append( "layouttpl" ).append( projectName + "-layouttpl" );
             }
             else if( pluginType.equals( "theme" ) )
             {
-                exceptedLocation = sdk.getLocation().append( "themes" ).append( projectName + "-theme" ).toString();
+                exceptedLocation = sdk.getLocation().append( "themes" ).append( projectName + "-theme" );
             }
             else
             {
-                exceptedLocation = sdk.getLocation().append( "ext" ).append( projectName + "-ext" ).toString();
+                exceptedLocation = sdk.getLocation().append( "ext" ).append( projectName + "-ext" );
             }
 
-            assertEquals( exceptedLocation, op.getLocation().content().toString() );
+            assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
         }
 
         if( versionRestriction )
@@ -938,28 +933,26 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 
                 if( pluginType.equals( "portlet" ) )
                 {
-                    exceptedLocation =
-                        CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-portlet";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName + "-portlet" );
                 }
                 else if( pluginType.equals( "hook" ) )
                 {
-                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-hook";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName + "-hook" );
                 }
                 else if( pluginType.equals( "layouttpl" ) )
                 {
-                    exceptedLocation =
-                        CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-layouttpl";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName + "-layouttpl" );
                 }
                 else if( pluginType.equals( "theme" ) )
                 {
-                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-theme";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( "/" + projectName + "-theme" );
                 }
                 else
                 {
-                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-ext";
+                    exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( "/" + projectName + "-ext" );
                 }
 
-                assertEquals( exceptedLocation, op.getLocation().content().toString() );
+                assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
             }
         }
     }
@@ -1090,23 +1083,25 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         op.setUseDefaultLocation( true );
         op.setPluginType( "portlet" );
 
+        IPath exceptedLocation = null;
+
         op.setProjectName( projectName );
-        String exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
         op.setProjectName( projectName2 );
-        exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName2 + "-portlet" ).toString();
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName2 + "-portlet" );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
         op.setProjectProvider( "maven" );
 
         op.setProjectName( projectName );
-        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName;
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
         op.setProjectName( projectName2 );
-        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName2;
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName2 );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
     }
 
     @Test
@@ -1185,13 +1180,15 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 
         final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
 
+        IPath exceptedLocation = null;
+
         op.setProjectProvider( "ant" );
-        String exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
         op.setProjectProvider( "maven" );
-        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName;
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
     }
 
     @Test
@@ -1344,9 +1341,11 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         final NewLiferayPluginProjectOp op = newProjectOp( projectName );
         op.setProjectProvider( "maven" );
 
+        IPath exceptedLocation = null;
+
         op.setUseDefaultLocation( true );
-        String exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName;
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
         op.setUseDefaultLocation( false );
         assertEquals( null, op.getLocation().content() );
@@ -1359,8 +1358,8 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 
             final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
 
-            exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
-            assertEquals( exceptedLocation, op.getLocation().content().toString() );
+            exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" );
+            assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
             op.setUseDefaultLocation( false );
             assertEquals( null, op.getLocation().content() );
@@ -1375,18 +1374,18 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         op.setPluginType( "porlet" );
         op.setUseSdkLocation( true );
 
-        String acturalLocation = op.getLocation().content().toString();
-        assertNotNull( acturalLocation );
+        assertNotNull( op.getLocation().content() );
+
+        IPath exceptedLocation = null;
 
         final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
 
-        String exceptedLocation =
-            sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" ).toString();
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
 
         op.setUseSdkLocation( false );
-        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().toString() + "/" + projectName + "-portlet";
-        assertEquals( exceptedLocation, op.getLocation().content().toString() );
+        exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName + "-portlet" );
+        assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
     }
 
 }
