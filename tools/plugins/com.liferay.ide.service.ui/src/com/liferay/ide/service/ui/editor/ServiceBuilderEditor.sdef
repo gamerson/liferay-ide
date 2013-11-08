@@ -92,7 +92,6 @@ Test).[/li][/ul]</content>
                                                 </hint>
                                             </property-editor>
                                             <property-editor>
-                                                <visible-when>${ VersionMatches( Root().Version, '[6.1' ) }</visible-when>
                                                 <property>uuidAccessor</property>
                                                 <hint>
                                                     <name>checkbox.layout</name>
@@ -118,7 +117,6 @@ Test).[/li][/ul]</content>
                                                 </hint>
                                             </property-editor>
                                             <property-editor>
-                                                <visible-when>${ VersionMatches( Root().Version, '[6.2' ) }</visible-when>
                                                 <property>trashEnabled</property>
                                                 <hint>
                                                     <name>checkbox.layout</name>
@@ -126,7 +124,6 @@ Test).[/li][/ul]</content>
                                                 </hint>
                                             </property-editor>
                                             <property-editor>
-                                                <visible-when>${ VersionMatches( Root().Version, '[6.2' ) }</visible-when>
                                                 <property>deprecated</property>
                                                 <hint>
                                                     <name>checkbox.layout</name>
@@ -239,7 +236,6 @@ The [b]deprecated[/b] value specifies whether the entity's services are deprecat
                                                         <property-editor>mappingTable</property-editor>
                                                         <property-editor>idType</property-editor>
                                                         <property-editor>
-                                                            <visible-when>${ VersionMatches( Root().Version, '[6.1' ) }</visible-when>
                                                             <property>Accessor</property>
                                                             <hint>
                                                                 <name>checkbox.layout</name>
