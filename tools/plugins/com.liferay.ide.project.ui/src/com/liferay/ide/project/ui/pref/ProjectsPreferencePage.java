@@ -26,9 +26,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PartInitException;
@@ -91,15 +89,10 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
 
             if( LiferayCore.getProvider( LiferayProjectCore.VALUE_PROJECT_MAVEN_BUILD_TYPE ) == null )
             {
-                Group group = new Group( c, SWT.NONE );
-                group.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 1, 1 ) );
-                group.setText( "Maven Install shortcuts" );
-                group.setLayout( new GridLayout( 1, false ) );
-
-                Hyperlink link = new Hyperlink( group, SWT.NULL );
+                Hyperlink link = new Hyperlink( c, SWT.NULL );
                 link.setForeground( c.getDisplay().getSystemColor( SWT.COLOR_BLUE ) );
                 link.setUnderlined( true );
-                link.setText( "Maven Integration (m2e) HomePage" );
+                link.setText( "Liferay IDE Download Page" );
                 link.addHyperlinkListener
                 ( 
                     new HyperlinkAdapter()
@@ -111,19 +104,19 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
                                 IWorkbenchBrowserSupport supoprt = PlatformUI.getWorkbench().getBrowserSupport();
                                 IWebBrowser browser =
                                     supoprt.createBrowser(
-                                        0, "Maven Integration HomePage", "Maven Integration (m2e) HomePage", null );
-                                browser.openURL( new URL( "http://www.eclipse.org/m2e/" ) );
+                                        0, "Liferay IDE Download Page", "Liferay IDE Download Page", null );
+                                browser.openURL( new URL( "https://www.liferay.com/downloads/liferay-projects/liferay-ide" ) );
                             }
                             catch( MalformedURLException malformException )
                             {
                                 MessageDialog.openError(
-                                    ProjectsPreferencePage.this.getShell(), "Liferay Project Preferences",
-                                    "Unable open maven integration page." );
+                                    ProjectsPreferencePage.this.getShell(), "Liferay Projects Preferences",
+                                    "Unable open liferay ide download page." );
                             }
                             catch( PartInitException partInitException )
                             {
                                 MessageDialog.openError(
-                                    ProjectsPreferencePage.this.getShell(), "Liferay Project Preferences",
+                                    ProjectsPreferencePage.this.getShell(), "Liferay Projects Preferences",
                                     "Unable initialize workbench." );
                             }
                         }
