@@ -117,7 +117,15 @@ Test).[/li][/ul]</content>
                                                     <value>leading.label</value>
                                                 </hint>
                                             </property-editor>
-                                             <property-editor>
+                                            <property-editor>
+                                                <visible-when>${ VersionMatches( Root().Version, '[6.2' ) }</visible-when>
+                                                <property>trashEnabled</property>
+                                                <hint>
+                                                    <name>checkbox.layout</name>
+                                                    <value>leading.label</value>
+                                                </hint>
+                                            </property-editor>
+                                            <property-editor>
                                                 <visible-when>${ VersionMatches( Root().Version, '[6.2' ) }</visible-when>
                                                 <property>deprecated</property>
                                                 <hint>
@@ -166,6 +174,8 @@ The [b]cache-enabled[/b] value specifies whether or not to cache this queries fo
 The [b]json-enabled[/b] value specifies whether or not the entity should be annotated
 for JSON serialization. By default, if the remote-service value is true, then
 the json-enabled value is true.
+[br/][br/]
+The [b]trash-enabled[/b] value specifies whether trash related methods should be generated or not.
 [br/][br/]
 The [b]deprecated[/b] value specifies whether the entity's services are deprecated.</content>
                                     <title>Entity</title>
