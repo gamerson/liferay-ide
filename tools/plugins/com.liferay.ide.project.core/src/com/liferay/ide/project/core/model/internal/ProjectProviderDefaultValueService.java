@@ -21,6 +21,9 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.sapphire.services.DefaultValueService;
 import org.eclipse.sapphire.services.DefaultValueServiceData;
+
+import com.liferay.ide.core.ILiferayProjectProvider;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.project.core.LiferayProjectCore;
 
 /**
@@ -32,21 +35,25 @@ public class ProjectProviderDefaultValueService extends DefaultValueService
     @Override
     protected DefaultValueServiceData compute()
     {
-        String retval = null;
+        String retval = "ant";
 
         final IScopeContext[] prefContexts = { DefaultScope.INSTANCE, InstanceScope.INSTANCE };
         final String defaultProjectBuildType =
             Platform.getPreferencesService().getString(
                 LiferayProjectCore.PLUGIN_ID, LiferayProjectCore.PREF_DEFAULT_PROJECT_BUILD_TYPE_OPTION, null,
                     prefContexts );
-
-        if( defaultProjectBuildType == null )
+        
+        if( defaultProjectBuildType != null )
         {
-            retval = "ant";
-        }
-        else
-        {
-            retval = defaultProjectBuildType;
+            ILiferayProjectProvider provider = LiferayCore.getProvider( defaultProjectBuildType );
+            if (provider == null)
+            {
+                retval = "ant";
+            }
+            else
+            {
+                retval = defaultProjectBuildType;
+            }
         }
 
         return new DefaultValueServiceData( retval );
