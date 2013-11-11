@@ -511,6 +511,22 @@
     		<isset property="isUnix" />
     		<then>
     			<if>
+    				<not>
+    					<available file="${eclipse.dir}/eclipse.ini" />
+    				</not>
+    				<then>
+    					<if>
+    						<available file="${eclipse.ini.dir}/eclipse.ini" />
+        					<then>
+        						<replace file="${eclipse.ini.dir}/eclipse.ini" 
+        							token="-Xmx512m" value="-Xmx1024m" />
+        						<replace file="${eclipse.ini.dir}/eclipse.ini" 
+        							token="256m" value="384m" />
+        					</then>
+    					</if>
+    				</then>
+    			</if>
+    			<if>
     				<available file="${work.dir}/eclipse/eclipse" />
     				<then>
     					<exec dir="${work.dir}" executable="tar" failifexecutionfails="false" failonerror="false">
