@@ -60,6 +60,9 @@ public class LiferayProjectCore extends LiferayCore
     // The value of maven build type
     public static final String VALUE_PROJECT_MAVEN_BUILD_TYPE = "maven";
 
+    // The liferay project marker type
+    public static final String LIFERAY_PROJECT_MARKR_TYPE = "com.liferay.ide.project.core.LiferayProjectMarker";
+
     /**
      * Returns the shared instance
      *
