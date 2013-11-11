@@ -126,22 +126,9 @@
 
 		<property name="updatesite.name" value="${toString:updatesite.path}"/>
 
-		<if>
-			<isset property="create.bundles"/>
-			<then>
-				<condition property="check.updatesite" value="true">
-					<matches pattern=".*Liferay_IDE_.*-updatesite\.zip" string="${updatesite.name}" />
-				</condition>
-			</then>
-			<elseif>
-				<isset property="create.adt.bundles"/>
-					<then>
-						<condition property="check.updatesite" value="true">
-							<matches pattern=".*Liferay_IDE_ADT_.*-updatesite\.zip" string="${updatesite.name}" />
-						</condition>
-					</then>
-			</elseif>
-		</if>
+		<condition property="check.updatesite" value="true">
+			<matches pattern=".*Liferay_IDE_.*-updatesite\.zip" string="${updatesite.name}" />
+		</condition>
 
 		<if>
 			<isset property="check.updatesite"/>
