@@ -126,9 +126,22 @@
 
 		<property name="updatesite.name" value="${toString:updatesite.path}"/>
 
-		<condition property="check.updatesite" value="true">
-			<matches pattern=".*Liferay_IDE_.*-updatesite\.zip" string="${updatesite.name}" />
-		</condition>
+		<if>
+			<isset property="create.bundles"/>
+			<then>
+				<condition property="check.updatesite" value="true">
+					<matches pattern=".*Liferay_IDE_.*-updatesite\.zip" string="${updatesite.name}" />
+				</condition>
+			</then>
+			<elseif>
+				<isset property="create.adt.bundles"/>
+					<then>
+						<condition property="check.updatesite" value="true">
+							<matches pattern=".*Liferay_IDE_ADT_.*-updatesite\.zip" string="${updatesite.name}" />
+						</condition>
+					</then>
+			</elseif>
+		</if>
 
 		<if>
 			<isset property="check.updatesite"/>
@@ -497,6 +510,22 @@
     	<if>
     		<isset property="isUnix" />
     		<then>
+    			<if>
+    				<not>
+    					<available file="${eclipse.dir}/eclipse.ini" />
+    				</not>
+    				<then>
+    					<if>
+    						<available file="${eclipse.ini.dir}/eclipse.ini" />
+        					<then>
+        						<replace file="${eclipse.ini.dir}/eclipse.ini" 
+        							token="-Xmx512m" value="-Xmx1024m" />
+        						<replace file="${eclipse.ini.dir}/eclipse.ini" 
+        							token="256m" value="384m" />
+        					</then>
+    					</if>
+    				</then>
+    			</if>
     			<if>
     				<available file="${work.dir}/eclipse/eclipse" />
     				<then>
