@@ -19,6 +19,8 @@ import org.eclipse.jst.j2ee.internal.common.operations.INewJavaClassDataModelPro
 import org.eclipse.jst.j2ee.internal.common.operations.NewJavaClassDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
+import com.liferay.ide.core.util.StringPool;
+
 /**
  * @author Greg Amerson
  */
@@ -26,6 +28,8 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 public class NewEventActionClassDataModelProvider extends NewJavaClassDataModelProvider
     implements INewJavaClassDataModelProperties
 {
+    
+    
     protected IDataModel hookModel;
     protected String qualifiedClassname;
     protected String qualifiedSuperclassname;
@@ -46,9 +50,14 @@ public class NewEventActionClassDataModelProvider extends NewJavaClassDataModelP
         }
         else if( JAVA_PACKAGE.equals( propertyName ) )
         {
+            
             int lastDot = this.qualifiedClassname.lastIndexOf( '.' );
-
+            if( lastDot == -1 )
+            {
+                return StringPool.EMPTY; 
+            }
             return this.qualifiedClassname.substring( 0, lastDot );
+
         }
         else if( JAVA_PACKAGE_FRAGMENT_ROOT.equals( propertyName ) )
         {
