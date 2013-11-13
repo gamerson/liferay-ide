@@ -15,15 +15,18 @@
 
 package com.liferay.ide.sdk.core;
 
+import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.FileUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -574,7 +577,85 @@ public class SDK
 
     public String getVersion()
     {
+        if( version == null )
+        {
+            IPath sdkLocation = getLocation().makeAbsolute();
+
+            if( !sdkLocation.isEmpty() )
+            {
+                try
+                {
+                    version = SDKUtil.readSDKVersion( sdkLocation.toOSString() );
+
+                    if( version.equals( ILiferayConstants.V611 ) )
+                    {
+                        Properties buildProperties = getProperties( sdkLocation.append( "build.properties" ).toFile() ); //$NON-NLS-1$
+
+                        if( validateSDKVersion( buildProperties ) )
+                        {
+                            version = ILiferayConstants.V612.toString();
+                        }
+                    }
+
+                    if( version.equals( ILiferayConstants.V6120 ) )
+                    {
+                        Properties buildProperties = getProperties( sdkLocation.append( "build.properties" ).toFile() ); //$NON-NLS-1$
+
+                        if( validateSDKVersion( buildProperties ) )
+                        {
+                            version = ILiferayConstants.V6130.toString();
+                        }
+                    }
+                }
+                catch( FileNotFoundException e )
+                {
+                    e.printStackTrace();
+                }
+                catch( IOException e )
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         return version;
+    }
+
+    private boolean validateSDKVersion( Properties props )
+    {
+        Enumeration<?> names = props.propertyNames();
+
+        while( names.hasMoreElements() )
+        {
+            String name = names.nextElement().toString();
+
+            if( name.matches( "app.server.tomcat.*" ) ) //$NON-NLS-1$
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Properties getProperties( File file )
+    {
+        Properties properties = new Properties();
+
+        try
+        {
+            properties.load( new FileInputStream( file ) );
+        }
+        catch( FileNotFoundException e )
+        {
+            e.printStackTrace();
+        }
+        catch( IOException e )
+        {
+            e.printStackTrace();
+        }
+
+        return properties;
     }
 
     public boolean hasProjectFile()
@@ -618,7 +699,6 @@ public class SDK
     {
         setName( sdkElement.getString( "name" ) ); //$NON-NLS-1$
         setLocation( Path.fromPortableString( sdkElement.getString( "location" ) ) ); //$NON-NLS-1$
-        setVersion( sdkElement.getString( "version" ) ); //$NON-NLS-1$
         // setRuntime(sdkElement.getString("runtime"));
     }
 

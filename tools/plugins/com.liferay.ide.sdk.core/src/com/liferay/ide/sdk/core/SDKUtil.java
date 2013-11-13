@@ -41,7 +41,6 @@ public class SDKUtil
         {
             SDK sdk = new SDK( path );
 
-            sdk.setVersion( readSDKVersion( path.toString() ) );
             sdk.setName( path.lastSegment() );
 
             return sdk;
