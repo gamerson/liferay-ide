@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -607,13 +608,9 @@ public class SDK
                         }
                     }
                 }
-                catch( FileNotFoundException e )
+                catch( Exception e )
                 {
-                    SDKCorePlugin.logError( e );
-                }
-                catch( IOException e )
-                {
-                    e.printStackTrace();
+                    SDKCorePlugin.logError( "Could not detect the sdk version.", e); //$NON-NLS-1$
                 }
             }
         }
@@ -644,15 +641,13 @@ public class SDK
 
         try
         {
-            properties.load( new FileInputStream( file ) );
+            InputStream propertiesInput = new FileInputStream( file );
+            properties.load( propertiesInput );
+            propertiesInput.close();
         }
-        catch( FileNotFoundException e )
+        catch( Exception e )
         {
             SDKCorePlugin.logError( e );
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
         }
 
         return properties;
