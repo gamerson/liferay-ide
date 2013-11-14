@@ -588,7 +588,7 @@ public class SDK
                 {
                     version = SDKUtil.readSDKVersion( sdkLocation.toOSString() );
 
-                    if( version.equals( ILiferayConstants.V611 ) )
+                    if( version.equals( ILiferayConstants.V611.toString() ) )
                     {
                         Properties buildProperties = getProperties( sdkLocation.append( "build.properties" ).toFile() ); //$NON-NLS-1$
 
@@ -598,7 +598,7 @@ public class SDK
                         }
                     }
 
-                    if( version.equals( ILiferayConstants.V6120 ) )
+                    if( version.equals( ILiferayConstants.V6120.toString() ) )
                     {
                         Properties buildProperties = getProperties( sdkLocation.append( "build.properties" ).toFile() ); //$NON-NLS-1$
 

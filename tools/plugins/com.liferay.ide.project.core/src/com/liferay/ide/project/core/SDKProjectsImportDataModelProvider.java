@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.datamodel.FacetProjectCreationDataModelProvider;
@@ -81,9 +82,14 @@ public class SDKProjectsImportDataModelProvider extends FacetProjectCreationData
 
             try
             {
-                String sdkVersionValue = SDKUtil.readSDKVersion( sdkLoc );
-                Version v = new Version( sdkVersionValue );
-                return v.toString();
+                SDK sdk = SDKUtil.createSDKFromLocation( new Path( sdkLoc ) );
+
+                if( sdk != null )
+                {
+                    Version v = new Version( sdk.getVersion() );
+
+                    return v.toString();
+                }
             }
             catch( Exception e )
             {
