@@ -591,7 +591,7 @@ public class SDK
                     {
                         Properties buildProperties = getProperties( sdkLocation.append( "build.properties" ).toFile() ); //$NON-NLS-1$
 
-                        if( validateSDKVersion( buildProperties ) )
+                        if( hasAppServerSpecificProps( buildProperties ) )
                         {
                             version = ILiferayConstants.V612.toString();
                         }
@@ -601,7 +601,7 @@ public class SDK
                     {
                         Properties buildProperties = getProperties( sdkLocation.append( "build.properties" ).toFile() ); //$NON-NLS-1$
 
-                        if( validateSDKVersion( buildProperties ) )
+                        if( hasAppServerSpecificProps( buildProperties ) )
                         {
                             version = ILiferayConstants.V6130.toString();
                         }
@@ -609,7 +609,7 @@ public class SDK
                 }
                 catch( FileNotFoundException e )
                 {
-                    e.printStackTrace();
+                    SDKCorePlugin.logError( e );
                 }
                 catch( IOException e )
                 {
@@ -621,7 +621,7 @@ public class SDK
         return version;
     }
 
-    private boolean validateSDKVersion( Properties props )
+    private boolean hasAppServerSpecificProps( Properties props )
     {
         Enumeration<?> names = props.propertyNames();
 
@@ -648,7 +648,7 @@ public class SDK
         }
         catch( FileNotFoundException e )
         {
-            e.printStackTrace();
+            SDKCorePlugin.logError( e );
         }
         catch( IOException e )
         {
