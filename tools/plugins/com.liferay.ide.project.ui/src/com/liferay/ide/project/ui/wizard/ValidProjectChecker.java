@@ -36,6 +36,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
  * @author Cindy Li
+ * @author Kuo Zhang
  */
 public class ValidProjectChecker
 {
@@ -57,6 +58,7 @@ public class ValidProjectChecker
     protected boolean isJsfPortlet = false;
     protected String validProjectTypes = null;
     protected String wizardId = null;
+    protected String wizardType = null;
 
     public ValidProjectChecker( String wizardId )
     {
@@ -107,19 +109,22 @@ public class ValidProjectChecker
             hasValidProjectTypes = hasJsfFacet && hasValidProjectTypes;
         }
 
-        if( !hasValidProjectTypes )
+        if( ! hasValidProjectTypes )
         {
             final Shell activeShell = Display.getDefault().getActiveShell();
-            Boolean openNewLiferayProjectWizard =
-                MessageDialog.openQuestion( activeShell, Msgs.newElement, Msgs.noSuitableLiferayProjects );
+
+            Boolean openNewLiferayProjectWizard = 
+                MessageDialog.openQuestion( activeShell, NLS.bind( Msgs.newElement, wizardType ),
+                    NLS.bind( Msgs.noSuitableLiferayProjects, wizardType ) );
 
             if( openNewLiferayProjectWizard )
             {
-                Action[] actions = NewPluginProjectDropDownAction.getNewProjectActions();
+                final Action defaultAction = NewPluginProjectDropDownAction.getDefaultAction();
 
-                if( actions.length > 0 )
+                if( defaultAction != null )
                 {
-                    actions[0].run();
+                    defaultAction.run();
+
                     this.checkValidProjectTypes();
                 }
             }
@@ -156,6 +161,8 @@ public class ValidProjectChecker
             setJsfPortlet( true );
         }
 
+        setWizardType();
+
         IExtensionPoint extensionPoint =
             Platform.getExtensionRegistry().getExtensionPoint( PlatformUI.PLUGIN_ID, TAG_NEW_WIZARDS );
 
@@ -173,6 +180,34 @@ public class ValidProjectChecker
                     break;
                 }
             }
+        }
+    }
+
+    private void setWizardType()
+    {
+        if( isJsfPortlet )
+        {
+            wizardType = "JSF Portlet"; //$NON-NLS-1$
+        }
+        else if( wizardId.equals( "com.liferay.ide.eclipse.portlet.ui.wizard.portlet" ) ) //$NON-NLS-1$
+        {
+            wizardType = "Portlet"; //$NON-NLS-1$
+        }
+        else if( wizardId.equals( "com.liferay.ide.eclipse.portlet.ui.wizard.hook" ) ) //$NON-NLS-1$
+        {
+            wizardType = "Hook Configuration"; //$NON-NLS-1$
+        }
+        else if( wizardId.equals( "com.liferay.ide.eclipse.portlet.ui.wizard.servicebuilder" ) ) //$NON-NLS-1$
+        {
+            wizardType = "Service Builder"; //$NON-NLS-1$
+        }
+        else if( wizardId.equals( "com.liferay.ide.eclipse.layouttpl.ui.wizard.layouttemplate" ) ) //$NON-NLS-1$
+        {
+            wizardType = "Layout Template"; //$NON-NLS-1$
+        }
+        else if( wizardId.equals( "com.liferay.ide.eclipse.portlet.vaadin.ui.wizard.portlet" ) ) //$NON-NLS-1$
+        {
+            wizardType = "Vaadin Portlet"; //$NON-NLS-1$
         }
     }
 
