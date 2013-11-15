@@ -69,11 +69,7 @@ public class EncodeLanguageFilesToDefaultAction implements IObjectActionDelegate
 
                     } );
                 }
-                catch( InvocationTargetException e )
-                {
-                    ProjectUIPlugin.logError( e );
-                }
-                catch( InterruptedException e )
+                catch( Exception e )
                 {
                     ProjectUIPlugin.logError( e );
                 }

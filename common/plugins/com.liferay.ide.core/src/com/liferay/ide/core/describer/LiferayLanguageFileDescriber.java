@@ -15,6 +15,8 @@
 
 package com.liferay.ide.core.describer;
 
+import com.liferay.ide.core.util.CoreUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,15 +24,13 @@ import java.io.Reader;
 import java.lang.reflect.Field;
 
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.ITextContentDescriber;
-
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
 
 /**
  * @author Kuo Zhang
@@ -40,8 +40,10 @@ public class LiferayLanguageFileDescriber implements ITextContentDescriber
 
     public LiferayLanguageFileDescriber()
     {
+        super();
     }
 
+    @SuppressWarnings( "restriction" )
     public int describe( InputStream contents, IContentDescription description ) throws IOException
     {
         int retval = INVALID;
@@ -66,30 +68,21 @@ public class LiferayLanguageFileDescriber implements ITextContentDescriber
 
             final IFileStore fileStore = (IFileStore) fileStoreField.get( inputStream );
 
-            if( fileStore != null )
+            if( fileStore != null && CoreUtil.isValidLiferayLanguageFileName( fileStore.fetchInfo().getName() ) )
             {
-                final File file = new File( fileStore.toURI() );
+                final IFile iFile =
+                    ResourcesPlugin.getWorkspace().getRoot().getFileForLocation( FileUtil.toPath( fileStore.toURI() ));
 
-                if( CoreUtil.isValidLiferayLanguageFileName( file.getName() ) )
+                if( iFile != null && iFile.getProject() != null && CoreUtil.isLiferayProject( iFile.getProject() ) )
                 {
-                    final IFile iFile =
-                        ResourcesPlugin.getWorkspace().getRoot().getFileForLocation( new Path( file.getAbsolutePath() ) );
-
-                    if( iFile != null && iFile.getProject() != null && CoreUtil.isLiferayProject( iFile.getProject() ) )
-                    {
-                        retval = VALID;
-                    }
+                    retval = VALID;
                 }
             }
 
         }
-        catch( NoSuchFieldException e )
+        catch( Exception e )
         {
-            LiferayCore.logError( e );
-        }
-        catch( IllegalAccessException e )
-        {
-            LiferayCore.logError( e );
+            // Do nothing.
         }
 
         return retval;
@@ -102,7 +95,7 @@ public class LiferayLanguageFileDescriber implements ITextContentDescriber
 
     public int describe( Reader contents, IContentDescription description ) throws IOException
     {
-        return VALID;
+        return INVALID;
     }
 
 }

@@ -217,27 +217,24 @@ public class ProjectUtil
             {
                 sourceFolder.accept( new IResourceProxyVisitor()
                 {
-
                     public boolean visit( IResourceProxy proxy ) throws CoreException
                     {
-                        IResource res = proxy.requestResource();
-
-                        if( res instanceof IFile )
+                        if( proxy.getType() == IResource.FILE &&
+                            CoreUtil.isValidLiferayLanguageFileName( proxy.getName() ) )
                         {
-                            final IFile file = (IFile) res;
+                            final IFile file = (IFile) proxy.requestResource();
 
-                            if( CoreUtil.isValidLiferayLanguageFileName( file.getName() ) &&
-                                ! file.getCharset( true ).equals(
-                                    ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
+                            if( ! file.getCharset( true ).equals(
+                                ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
                             {
-                                ( (IFile) res ).setCharset(
+                                file.setCharset(
                                     ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET, new NullProgressMonitor() );
                             }
                         }
 
                         return true;
                     }
-                }, IContainer.INCLUDE_PHANTOMS );
+                }, IResource.DEPTH_INFINITE, IContainer.EXCLUDE_DERIVED );
             }
             catch( CoreException e )
             {
@@ -1051,27 +1048,24 @@ public class ProjectUtil
             {
                 sourceFolder.accept( new IResourceProxyVisitor()
                 {
-
                     public boolean visit( IResourceProxy proxy ) throws CoreException
                     {
-                        IResource res = proxy.requestResource();
-
-                        if( res instanceof IFile )
+                        if( proxy.getType() == IResource.FILE &&
+                            CoreUtil.isValidLiferayLanguageFileName( proxy.getName() ) )
                         {
-                            IFile file = (IFile) res;
+                            final IFile file = (IFile) proxy.requestResource();
 
-                            if( CoreUtil.isValidLiferayLanguageFileName( file.getName() ) &&
-                                ! file.getCharset( true ).equals( ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
+                            if( ! file.getCharset( true ).equals(
+                                ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
                             {
                                 retval[0] = true;
-
                                 return false;
                             }
                         }
 
                         return true;
                     }
-                }, IContainer.INCLUDE_PHANTOMS );
+                }, IResource.DEPTH_INFINITE, IContainer.EXCLUDE_DERIVED);
             }
             catch( CoreException e )
             {
