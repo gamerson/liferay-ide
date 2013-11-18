@@ -15,6 +15,9 @@
 
 package com.liferay.ide.hook.ui.wizard;
 
+import com.liferay.ide.hook.core.operation.NewServiceWrapperClassDataModelProvider;
+import com.liferay.ide.hook.core.operation.NewServiceWrapperClassOperation;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
@@ -30,9 +33,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-
-import com.liferay.ide.hook.core.operation.NewServiceWrapperClassDataModelProvider;
-import com.liferay.ide.hook.core.operation.NewServiceWrapperClassOperation;
 
 /**
  * @author Greg Amerson 
@@ -58,7 +58,7 @@ public class NewServiceWrapperClassDialog extends NewEventActionClassDialog
     protected Button createButton( Composite parent, int id, String label, boolean defaultButton )
     {
         Button button = super.createButton( parent, id, label, defaultButton );
-        getButton( IDialogConstants.OK_ID ).setEnabled( true );
+        this.getButton( IDialogConstants.OK_ID ).setEnabled( true );
         if( IDialogConstants.OK_ID == id )
         {
             String defaultClassname =

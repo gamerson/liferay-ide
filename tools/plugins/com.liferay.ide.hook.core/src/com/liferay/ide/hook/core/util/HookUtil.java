@@ -16,16 +16,16 @@
  *******************************************************************************/
 package com.liferay.ide.hook.core.util;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.hook.core.model.CustomJspDir;
+import com.liferay.ide.hook.core.model.Hook;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
-
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.hook.core.model.CustomJspDir;
-import com.liferay.ide.hook.core.model.Hook;
 
 
 /**

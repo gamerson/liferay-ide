@@ -15,6 +15,10 @@
 
 package com.liferay.ide.hook.ui.wizard;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.hook.core.operation.NewEventActionClassDataModelProvider;
+import com.liferay.ide.hook.core.operation.NewEventActionClassOperation;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IJavaElement;
@@ -52,10 +56,6 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.hook.core.operation.NewEventActionClassDataModelProvider;
-import com.liferay.ide.hook.core.operation.NewEventActionClassOperation;
-
 /**
  * @author Greg Amerson
  * @author Simon Jiang
@@ -90,7 +90,9 @@ public class NewEventActionClassDialog extends Dialog
         {
             return super.createButton( parent, id, Msgs.create, defaultButton );
         }
-        getButton( IDialogConstants.OK_ID ).setEnabled( false );
+        
+        this.getButton( IDialogConstants.OK_ID ).setEnabled( false );
+
         return super.createButton( parent, id, label, defaultButton );
     }
 
@@ -330,7 +332,7 @@ public class NewEventActionClassDialog extends Dialog
             this.errorMessageLabel.setText( "Invalid package name" );
         }
 
-        this.errorMessageLabel.setVisible( ! isPackageNameAndClassNameValid );
+        this.errorMessageLabel.setVisible( !isPackageNameAndClassNameValid );
 
     }
 
