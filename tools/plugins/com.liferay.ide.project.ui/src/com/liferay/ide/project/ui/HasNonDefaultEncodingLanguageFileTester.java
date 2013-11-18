@@ -16,7 +16,7 @@ public class HasNonDefaultEncodingLanguageFileTester extends PropertyTester
 
     public HasNonDefaultEncodingLanguageFileTester()
     {
-
+        super();
     }
 
     public boolean test( Object receiver, String property, Object[] args, Object expectedValue )

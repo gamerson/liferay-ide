@@ -207,7 +207,7 @@ public class ProjectUtil
     }
 
     // IDE-1129
-    public static void encodeLanguageFilesToDefault( IProject proj )
+    public static void encodeLanguageFilesToDefault( IProject proj, final IProgressMonitor monitor )
     {
         final IFolder[] sourceFolders = getSourceFolders( proj );
 
@@ -228,7 +228,7 @@ public class ProjectUtil
                                 ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
                             {
                                 file.setCharset(
-                                    ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET, new NullProgressMonitor() );
+                                    ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET, monitor );
                             }
                         }
 

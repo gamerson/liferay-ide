@@ -17,7 +17,6 @@ package com.liferay.ide.core.describer;
 
 import com.liferay.ide.core.util.CoreUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -27,7 +26,6 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.ITextContentDescriber;
@@ -52,26 +50,20 @@ public class LiferayLanguageFileDescriber implements ITextContentDescriber
         {
             final Field inputStreamField = contents.getClass().getDeclaredField( "in" );
 
-            if( ! inputStreamField.isAccessible() )
-            {
-                inputStreamField.setAccessible( true );
-            }
+            inputStreamField.setAccessible( true );
 
             final InputStream inputStream = (InputStream) inputStreamField.get( contents );
 
             final Field fileStoreField = inputStream.getClass().getDeclaredField( "target" );
 
-            if( ! fileStoreField.isAccessible() )
-            {
-                fileStoreField.setAccessible( true );
-            }
+            fileStoreField.setAccessible( true );
 
             final IFileStore fileStore = (IFileStore) fileStoreField.get( inputStream );
 
             if( fileStore != null && CoreUtil.isValidLiferayLanguageFileName( fileStore.fetchInfo().getName() ) )
             {
                 final IFile iFile =
-                    ResourcesPlugin.getWorkspace().getRoot().getFileForLocation( FileUtil.toPath( fileStore.toURI() ));
+                    ResourcesPlugin.getWorkspace().getRoot().getFileForLocation( FileUtil.toPath( fileStore.toURI() ) );
 
                 if( iFile != null && iFile.getProject() != null && CoreUtil.isLiferayProject( iFile.getProject() ) )
                 {
@@ -82,7 +74,7 @@ public class LiferayLanguageFileDescriber implements ITextContentDescriber
         }
         catch( Exception e )
         {
-            // Do nothing.
+
         }
 
         return retval;

@@ -15,16 +15,19 @@
 
 package com.liferay.ide.project.ui;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.ui.IMarkerResolution;
-
 import com.liferay.ide.project.core.util.ProjectUtil;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.PlatformUI;
+
 /**
- * 
  * @author Kuo Zhang
- *
  */
 public class LanguageFileEncodingNotDefaultResolution implements IMarkerResolution
 {
@@ -33,7 +36,27 @@ public class LanguageFileEncodingNotDefaultResolution implements IMarkerResoluti
     {
         if( marker.getResource() instanceof IProject )
         {
-            ProjectUtil.encodeLanguageFilesToDefault( (IProject) marker.getResource() );
+            final IProject proj = (IProject) marker.getResource();
+
+            try
+            {
+                PlatformUI.getWorkbench().getProgressService().run( true, true, new IRunnableWithProgress()
+                {
+
+                    public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException
+                    {
+                        monitor.beginTask( "Encoding Liferay Language File to Default (UTF-8)... ", 10 );
+
+                        ProjectUtil.encodeLanguageFilesToDefault( proj, monitor );
+
+                        monitor.done();
+                    }
+                } );
+            }
+            catch( Exception e )
+            {
+                ProjectUIPlugin.logError( e );
+            }
         }
     }
 
