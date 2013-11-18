@@ -8,10 +8,12 @@
  * Contributors:
  *    Sonatype, Inc. - initial API and implementation
  *******************************************************************************/
+
 package com.liferay.ide.maven.core.aether;
 
 import com.liferay.ide.maven.core.LiferayMavenCore;
 import com.liferay.ide.maven.core.MavenUtil;
+import com.liferay.ide.project.core.LiferayProjectCore;
 
 import java.util.List;
 
@@ -30,6 +32,10 @@ import org.eclipse.aether.resolution.VersionRangeRequest;
 import org.eclipse.aether.resolution.VersionRangeResolutionException;
 import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.version.Version;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.m2e.core.internal.MavenPluginActivator;
 
 /**
@@ -78,7 +84,8 @@ public class AetherUtil
         final RepositorySystem system = newRepositorySystem();
         final RepositorySystemSession session = newRepositorySystemSession( system );
 
-        final String latestVersion = AetherUtil.getLatestVersion( groupId, artifactId, "6", "6.2.0-GA1", system, session );
+        final String latestVersion =
+            AetherUtil.getLatestVersion( groupId, artifactId, "6", "6.2.0-GA1", system, session );
 
         final Artifact defaultArtifact = new DefaultArtifact( groupId + ":" + artifactId + ":" + latestVersion );
 
@@ -124,7 +131,12 @@ public class AetherUtil
             final Version newestVersion = rangeResult.getHighestVersion();
             final List<Version> versions = rangeResult.getVersions();
 
-            if( versions.size() > 1 && newestVersion.toString().endsWith( "-SNAPSHOT" ) )
+            final IScopeContext[] prefContexts = { DefaultScope.INSTANCE, InstanceScope.INSTANCE };
+            final boolean useSanpshotVersion =
+                Platform.getPreferencesService().getBoolean(
+                    LiferayProjectCore.PLUGIN_ID, LiferayProjectCore.PREF_USE_SNAPSHOT_SDK_VERSION, false, prefContexts );
+
+            if( versions.size() > 1 && newestVersion.toString().endsWith( "-SNAPSHOT" ) && useSanpshotVersion == false )
             {
                 retval = versions.get( versions.size() - 2 ).toString();
             }

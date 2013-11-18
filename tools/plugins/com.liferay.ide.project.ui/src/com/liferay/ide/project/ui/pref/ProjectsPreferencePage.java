@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -53,6 +54,7 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
 
     private ScopedPreferenceStore prefStore;
     private RadioGroupFieldEditor radioGroupEditor;
+    private BooleanFieldEditor useSnapshotSDK;
 
     public ProjectsPreferencePage()
     {
@@ -66,6 +68,9 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
 
         Arrays.sort( providers );
 
+        Composite c = SWTUtil.createComposite( getFieldEditorParent(), 1, 1, SWT.FILL );
+        c.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ) );
+
         if( providers != null )
         {
             String[][] labelAndValues = new String[providers.length][2];
@@ -76,9 +81,6 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
                 labelAndValues[i][0] = provider.getDisplayName();
                 labelAndValues[i][1] = provider.getShortName();
             }
-
-            Composite c = SWTUtil.createComposite( getFieldEditorParent(), 1, 1, SWT.FILL );
-            c.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ) );
 
             radioGroupEditor =
                 new RadioGroupFieldEditor(
@@ -95,29 +97,35 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
                 link.setForeground( c.getDisplay().getSystemColor( SWT.COLOR_BLUE ) );
                 link.setUnderlined( true );
                 link.setText( "To add support for maven, please install the m2e-liferay feature." );
-                link.addHyperlinkListener
-                (
-                    new HyperlinkAdapter()
+                link.addHyperlinkListener( new HyperlinkAdapter()
+                {
+
+                    public void linkActivated( HyperlinkEvent event )
                     {
-                        public void linkActivated( HyperlinkEvent event )
+                        try
                         {
-                            try
-                            {
-                                IWorkbenchBrowserSupport supoprt = PlatformUI.getWorkbench().getBrowserSupport();
-                                IWebBrowser browser =
-                                    supoprt.createBrowser(
-                                        0, "Liferay IDE Download", "Liferay IDE Download Page", null );
-                                browser.openURL( new URL( "https://www.liferay.com/downloads/liferay-projects/liferay-ide" ) );
-                            }
-                            catch( Exception e )
-                            {
-                                ProjectUIPlugin.logError( "Unable to open Liferay IDE download page", e );
-                            }
+                            IWorkbenchBrowserSupport supoprt = PlatformUI.getWorkbench().getBrowserSupport();
+                            IWebBrowser browser =
+                                supoprt.createBrowser( 0, "Liferay IDE Download", "Liferay IDE Download Page", null );
+                            browser.openURL( new URL( "https://www.liferay.com/downloads/liferay-projects/liferay-ide" ) );
+                        }
+                        catch( Exception e )
+                        {
+                            ProjectUIPlugin.logError( "Unable to open Liferay IDE download page", e );
                         }
                     }
-                );
+                } );
             }
         }
+
+        useSnapshotSDK =
+            new BooleanFieldEditor(
+                LiferayProjectCore.PREF_USE_SNAPSHOT_SDK_VERSION, LiferayProjectCore.USE_SNAPSHOT_SDK_VERSION,
+                getFieldEditorParent() );
+
+        useSnapshotSDK.fillIntoGrid( getFieldEditorParent(), 1 );
+
+        addField( useSnapshotSDK );
     }
 
     @Override

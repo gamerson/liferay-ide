@@ -60,6 +60,12 @@ public class LiferayProjectCore extends LiferayCore
     // The value of maven build type
     public static final String VALUE_PROJECT_MAVEN_BUILD_TYPE = "maven";
 
+    // The key of default project build type for creating a new liferay plug in project
+    public static final String PREF_USE_SNAPSHOT_SDK_VERSION = "use-snapshot-artitfact-version";
+
+    // The key of use snapshot version SDK setting
+    public static final String USE_SNAPSHOT_SDK_VERSION = "&Use latest snapshot version SDK";
+
     /**
      * Returns the shared instance
      *
