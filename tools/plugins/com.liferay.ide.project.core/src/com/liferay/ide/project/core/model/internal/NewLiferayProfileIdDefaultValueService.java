@@ -14,6 +14,7 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model.internal;
 
+import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
 import com.liferay.ide.project.core.model.NewLiferayProfile;
@@ -36,6 +37,7 @@ public class NewLiferayProfileIdDefaultValueService extends DefaultValueService
 {
 
     private static final Pattern DUP = Pattern.compile( "(.*)\\(([0-9]+)\\)$" );
+    private final String SPACE = " ";
 
     @Override
     protected void initDefaultValueService()
@@ -79,6 +81,20 @@ public class NewLiferayProfileIdDefaultValueService extends DefaultValueService
             catch( Exception e )
             {
             }
+        }
+
+        if( data.contains( StringPool.SPACE ) )
+        {
+            String[] words = data.split( StringPool.SPACE );
+            StringBuilder newProfileId = new StringBuilder();
+
+            for( String word : words )
+            {
+                newProfileId.append( word );
+                newProfileId.append( StringPool.DASH );
+            }
+
+            data = newProfileId.deleteCharAt( newProfileId.length()-1 ).toString().trim();
         }
 
         return new DefaultValueServiceData( data );

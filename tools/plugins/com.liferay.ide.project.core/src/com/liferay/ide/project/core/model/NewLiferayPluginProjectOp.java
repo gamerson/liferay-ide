@@ -16,6 +16,7 @@ package com.liferay.ide.project.core.model;
 
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.project.core.IPortletFramework;
+import com.liferay.ide.project.core.model.internal.ActiveProfilesValueService;
 import com.liferay.ide.project.core.model.internal.DisplayNameDefaultValueService;
 import com.liferay.ide.project.core.model.internal.GroupIdValidationService;
 import com.liferay.ide.project.core.model.internal.LocationListener;
@@ -280,6 +281,7 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement, HasLiferay
 
     @Label( standard = "active profiles" )
     @Fact( statement = "Supports comma separated list of active profiles" )
+    @Service( impl = ActiveProfilesValueService.class )
     @Whitespace( trim = false )
     ValueProperty PROP_ACTIVE_PROFILES_VALUE = new ValueProperty( TYPE, "ActiveProfilesValue" );
 
