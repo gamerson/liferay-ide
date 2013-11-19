@@ -41,6 +41,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
+import org.eclipse.wst.xml.core.internal.provisional.format.FormatProcessorXML;
 import org.osgi.framework.Version;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -125,13 +126,13 @@ public class VaadinPortletDescriptorHelper extends PortletDescriptorHelper
         {
             Element lastPortletElement = (Element) portletNodes.item( portletNodes.getLength() - 1 );
 
-            Node rnpNode = NodeUtil.appendChildElement( lastPortletElement, "requires-namespaced-parameters", "false" );
-            Node ajaxNode = NodeUtil.appendChildElement( lastPortletElement, "ajaxable", "false" );
             Node hpcNode = lastPortletElement.getElementsByTagName( "header-portlet-css" ).item( 0 );
-            Node fpjNode = lastPortletElement.getElementsByTagName( "footer-portlet-javascript" ).item( 0 );
 
-            lastPortletElement.replaceChild( rnpNode, hpcNode );
-            lastPortletElement.replaceChild( ajaxNode, fpjNode );
+            NodeUtil.insertChildElement( lastPortletElement, hpcNode, "requires-namespaced-parameters", "false" );
+            NodeUtil.insertChildElement( lastPortletElement, hpcNode, "ajaxable", "false" );
+
+            FormatProcessorXML processor = new FormatProcessorXML();
+            processor.formatNode( lastPortletElement );
         }
 
         return Status.OK_STATUS;
