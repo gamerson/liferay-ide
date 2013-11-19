@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -53,6 +54,7 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
 
     private ScopedPreferenceStore prefStore;
     private RadioGroupFieldEditor radioGroupEditor;
+    private BooleanFieldEditor useSnapshotVersion;
 
     public ProjectsPreferencePage()
     {
@@ -96,28 +98,38 @@ public class ProjectsPreferencePage extends FieldEditorPreferencePage implements
                 link.setUnderlined( true );
                 link.setText( "To add support for maven, please install the m2e-liferay feature." );
                 link.addHyperlinkListener
-                (
+                ( 
                     new HyperlinkAdapter()
                     {
+                        @Override
                         public void linkActivated( HyperlinkEvent event )
                         {
                             try
                             {
                                 IWorkbenchBrowserSupport supoprt = PlatformUI.getWorkbench().getBrowserSupport();
                                 IWebBrowser browser =
-                                    supoprt.createBrowser(
-                                        0, "Liferay IDE Download", "Liferay IDE Download Page", null );
-                                browser.openURL( new URL( "https://www.liferay.com/downloads/liferay-projects/liferay-ide" ) );
+                                    supoprt.createBrowser( 0, "Liferay IDE Download", "Liferay IDE Download Page", null );
+                                browser.openURL( 
+                                    new URL( "https://www.liferay.com/downloads/liferay-projects/liferay-ide" ) );
                             }
                             catch( Exception e )
                             {
                                 ProjectUIPlugin.logError( "Unable to open Liferay IDE download page", e );
                             }
                         }
-                    }
+                    } 
                 );
             }
         }
+
+        useSnapshotVersion =
+            new BooleanFieldEditor(
+                LiferayProjectCore.PREF_USE_SNAPSHOT_VERSION, "Allow snapshot versions for new maven projects",
+                getFieldEditorParent() );
+
+        useSnapshotVersion.fillIntoGrid( getFieldEditorParent(), 1 );
+
+        addField( useSnapshotVersion );
     }
 
     @Override
