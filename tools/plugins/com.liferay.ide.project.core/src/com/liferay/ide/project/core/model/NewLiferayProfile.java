@@ -26,7 +26,6 @@ public interface NewLiferayProfile extends Profile, HasLiferayRuntime
 
     // *** RuntimeName ***
 
-    @Required
     ValueProperty PROP_RUNTIME_NAME = new ValueProperty( TYPE, HasLiferayRuntime.PROP_RUNTIME_NAME ); //$NON-NLS-1$
 
     // *** Id ***
@@ -39,7 +38,6 @@ public interface NewLiferayProfile extends Profile, HasLiferayRuntime
         }
     )
     @Label( standard = "new profile id" )
-    @Required
     ValueProperty PROP_ID = new ValueProperty( TYPE, "Id" );
 
 
