@@ -37,7 +37,6 @@ public class NewLiferayProfileIdDefaultValueService extends DefaultValueService
 {
 
     private static final Pattern DUP = Pattern.compile( "(.*)\\(([0-9]+)\\)$" );
-    private final String SPACE = " ";
 
     @Override
     protected void initDefaultValueService()
@@ -83,19 +82,7 @@ public class NewLiferayProfileIdDefaultValueService extends DefaultValueService
             }
         }
 
-        if( data.contains( StringPool.SPACE ) )
-        {
-            String[] words = data.split( StringPool.SPACE );
-            StringBuilder newProfileId = new StringBuilder();
-
-            for( String word : words )
-            {
-                newProfileId.append( word );
-                newProfileId.append( StringPool.DASH );
-            }
-
-            data = newProfileId.deleteCharAt( newProfileId.length()-1 ).toString().trim();
-        }
+        data = data.replaceAll( StringPool.SPACE, StringPool.DASH );
 
         return new DefaultValueServiceData( data );
     }

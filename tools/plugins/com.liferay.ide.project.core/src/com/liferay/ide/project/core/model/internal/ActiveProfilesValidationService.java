@@ -23,7 +23,7 @@ import org.eclipse.sapphire.services.ValidationService;
 /**
  * @author Tao Tao
  */
-public class ActiveProfilesValueService extends ValidationService
+public class ActiveProfilesValidationService extends ValidationService
 {
 
     @Override
@@ -34,7 +34,7 @@ public class ActiveProfilesValueService extends ValidationService
 
         if( activeProfileId !=null && activeProfileId.contains( StringPool.SPACE ) )
         {
-            retval = Status.createErrorStatus( "No spaces are allowed." );
+            retval = Status.createErrorStatus( "No spaces are allowed in profile id values." );
         }
 
         return retval;
