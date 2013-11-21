@@ -124,7 +124,7 @@ public class NewLiferayPluginProjectOpMethods
             {
                 for( String val : vals )
                 {
-                    if( ! possibleProfileIds.contains( val ) )
+                    if( !possibleProfileIds.contains( val ) && !val.contains( StringPool.SPACE ) )
                     {
                         possibleProfileIds.add( val );
                     }
@@ -140,7 +140,7 @@ public class NewLiferayPluginProjectOpMethods
                 {
                     final String val = systemProfileId.toString();
 
-                    if( ! possibleProfileIds.contains( val ) )
+                    if( !possibleProfileIds.contains( val ) && !val.contains( StringPool.SPACE ) )
                     {
                        possibleProfileIds.add( val );
                     }
@@ -154,7 +154,8 @@ public class NewLiferayPluginProjectOpMethods
             {
                 final String newId = newLiferayProfile.getId().content();
 
-                if( ( ! CoreUtil.isNullOrEmpty( newId ) ) && ( ! possibleProfileIds.contains( newId ) ) )
+                if( ( !CoreUtil.isNullOrEmpty( newId ) ) && ( !possibleProfileIds.contains( newId ) ) &&
+                    ( !newId.contains( StringPool.SPACE ) ) )
                 {
                     possibleProfileIds.add( newId );
                 }
