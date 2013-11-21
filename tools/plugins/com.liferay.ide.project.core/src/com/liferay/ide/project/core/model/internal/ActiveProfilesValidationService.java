@@ -17,6 +17,9 @@ package com.liferay.ide.project.core.model.internal;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 
+import org.eclipse.sapphire.Event;
+import org.eclipse.sapphire.FilteredListener;
+import org.eclipse.sapphire.Listener;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.services.ValidationService;
 
@@ -26,18 +29,39 @@ import org.eclipse.sapphire.services.ValidationService;
 public class ActiveProfilesValidationService extends ValidationService
 {
 
+    private Listener listener = null;
+
     @Override
     protected Status compute()
     {
         String activeProfileId = op().getActiveProfilesValue().content();
         Status retval = Status.createOkStatus();
 
-        if( activeProfileId !=null && activeProfileId.contains( StringPool.SPACE ) )
+        if( "maven".equals( op().getProjectProvider().content( true ).getShortName() ) )
         {
-            retval = Status.createErrorStatus( "No spaces are allowed in profile id values." );
+            if( activeProfileId != null && activeProfileId.contains( StringPool.SPACE ) )
+            {
+                retval = Status.createErrorStatus( "No spaces are allowed in profile id values." );
+            }
         }
 
         return retval;
+    }
+
+    @Override
+    protected void initValidationService()
+    {
+        super.initValidationService();
+
+        this.listener = new FilteredListener<Event>()
+        {
+            protected void handleTypedEvent( Event event )
+            {
+                refresh();
+            }
+        };
+
+        context( NewLiferayPluginProjectOp.class ).getProjectProvider().attach( this.listener );
     }
 
     private NewLiferayPluginProjectOp op()
