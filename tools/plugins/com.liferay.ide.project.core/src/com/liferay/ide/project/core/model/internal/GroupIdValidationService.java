@@ -20,6 +20,9 @@ import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.sapphire.FilteredListener;
+import org.eclipse.sapphire.Listener;
+import org.eclipse.sapphire.PropertyContentEvent;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.StatusBridge;
 import org.eclipse.sapphire.services.ValidationService;
@@ -31,20 +34,43 @@ import org.eclipse.sapphire.services.ValidationService;
 public class GroupIdValidationService extends ValidationService
 {
 
+    private Listener listener;
+
     @Override
     protected Status compute()
     {
-        final String groupId = op().getGroupId().content( true );
+        if( "maven".equals( op().getProjectProvider().content( true ).getShortName() ) )
+        {
+            final String groupId = op().getGroupId().content( true );
 
-        final IStatus javaStatus =
-            JavaConventions.validatePackageName( groupId, CompilerOptions.VERSION_1_5, CompilerOptions.VERSION_1_5 );
+            final IStatus javaStatus =
+                JavaConventions.validatePackageName( groupId, CompilerOptions.VERSION_1_5, CompilerOptions.VERSION_1_5 );
 
-        return StatusBridge.create( javaStatus );
+            return StatusBridge.create( javaStatus );
+        }
+
+        return StatusBridge.create( org.eclipse.core.runtime.Status.OK_STATUS );
+    }
+
+    @Override
+    protected void initValidationService()
+    {
+        super.initValidationService();
+
+        this.listener = new FilteredListener<PropertyContentEvent>()
+        {
+
+            protected void handleTypedEvent( final PropertyContentEvent event )
+            {
+                refresh();
+            }
+        };
+
+        op().getProjectProvider().attach( this.listener );
     }
 
     private NewLiferayPluginProjectOp op()
     {
         return context( NewLiferayPluginProjectOp.class );
     }
-
 }
