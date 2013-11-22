@@ -59,8 +59,6 @@ public class ProjectProviderValidationService extends ValidationService
         Status retval = Status.createOkStatus();
 
         final NewLiferayPluginProjectOp op = op();
-        final Status SDKNameStatus = op.getPluginsSDKName().validation();
-        final Status RuntimeNameStatus = op.getRuntimeName().validation();
 
         if( "ant".equals( op.getProjectProvider().content().getShortName() ) && !op.getUseSdkLocation().content() ) //$NON-NLS-1$
         {
@@ -71,13 +69,17 @@ public class ProjectProviderValidationService extends ValidationService
             }
         }
 
-        if( retval.ok() && !SDKNameStatus.ok() )
-        {
-            retval = SDKNameStatus;
+        final Status sdkNameStatus = op.getPluginsSDKName().validation();
 
-            if( retval.ok() && !RuntimeNameStatus.ok() )
+        if( retval.ok() && !sdkNameStatus.ok() )
+        {
+            retval = sdkNameStatus;
+
+            final Status runtimeNameStatus = op.getRuntimeName().validation();
+
+            if( retval.ok() && !runtimeNameStatus.ok() )
             {
-                retval = RuntimeNameStatus;
+                retval = runtimeNameStatus;
             }
         }
 
