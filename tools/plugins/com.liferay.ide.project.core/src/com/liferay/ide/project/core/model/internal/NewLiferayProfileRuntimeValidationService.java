@@ -15,60 +15,42 @@
 package com.liferay.ide.project.core.model.internal;
 
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
 import com.liferay.ide.project.core.model.NewLiferayProfile;
-
-import java.util.Set;
+import com.liferay.ide.server.util.ServerUtil;
 
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.services.ValidationService;
+import org.eclipse.wst.server.core.IRuntime;
 
 
 /**
- * @author Gregory Amerson
+ * @author Tao Tao
  */
-public class NewLiferayProfileIdValidationService extends ValidationService
+public class NewLiferayProfileRuntimeValidationService extends ValidationService
 {
-
-    private Set<String> existingValues;
-
-    @Override
-    protected void initValidationService()
-    {
-        super.initValidationService();
-
-        this.existingValues =
-            NewLiferayPluginProjectOpMethods.getPossibleProfileIds( context( NewLiferayPluginProjectOp.class ), true );
-
-        this.existingValues.remove( profile().getId().content() );
-    }
 
     @Override
     protected Status compute()
     {
         Status retval = Status.createOkStatus();
 
-        final NewLiferayProfile newLiferayProfile = profile();
+        final NewLiferayPluginProjectOp op = context( NewLiferayPluginProjectOp.class );
 
-        if( existingValues.isEmpty() )
-        {
-            retval = Status.createErrorStatus( "Profile id must be specified" );
-        }
 
-        for( String val : this.existingValues )
+        if( "maven".equals( op.getProjectProvider().content( true ).getShortName() ) ) //$NON-NLS-1$
         {
-            if( val != null && val.equals( newLiferayProfile.getId().content() ) )
+            final NewLiferayProfile newLiferayProfile = context( NewLiferayProfile.class );
+
+            final String runtimeName = newLiferayProfile.getRuntimeName().content( true );
+
+            IRuntime runtime = ServerUtil.getRuntime( runtimeName );
+
+            if( runtime == null )
             {
-                retval = Status.createErrorStatus( "Profile already exists." );
-                break;
+                retval = Status.createErrorStatus( "Liferay runtime must be configured." );
             }
         }
 
         return retval;
-    }
-
-    private NewLiferayProfile profile()
-    {
-        return context( NewLiferayProfile.class );
     }
 }
