@@ -8,8 +8,10 @@
 <%@ include file="_imports.template" %>
 
 
+<%@ include file="entry_classHeader.template" %>
 public class <%= model.getClassName() %> extends BaseControlPanelEntry {
 <%@ include file="entry_classHeader.template" %>
+
 <%@ include file="_constructors.template" %>
 
     @Override
