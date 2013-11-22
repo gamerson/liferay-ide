@@ -69,11 +69,11 @@ public class ProjectProviderValidationService extends ValidationService
             }
         }
 
-        if( retval.ok() && !op.getRuntimeName().validation().equals( retval.ok() ) )
+        if( retval.ok() && !op.getPluginsSDKName().validation().ok() )
         {
             retval = op.getRuntimeName().validation();
 
-            if( retval.ok() && !op.getPluginsSDKName().validation().equals( retval.ok() ) )
+            if( retval.ok() && !op.getRuntimeName().validation().ok() )
             {
                 retval = op.getPluginsSDKName().validation();
             }
