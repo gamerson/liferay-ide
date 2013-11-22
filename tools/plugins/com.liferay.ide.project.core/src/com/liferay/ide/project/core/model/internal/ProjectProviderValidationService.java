@@ -71,11 +71,11 @@ public class ProjectProviderValidationService extends ValidationService
 
         if( retval.ok() && !op.getPluginsSDKName().validation().ok() )
         {
-            retval = op.getRuntimeName().validation();
+            retval = op.getPluginsSDKName().validation();
 
             if( retval.ok() && !op.getRuntimeName().validation().ok() )
             {
-                retval = op.getPluginsSDKName().validation();
+                retval = op.getRuntimeName().validation();
             }
         }
 
