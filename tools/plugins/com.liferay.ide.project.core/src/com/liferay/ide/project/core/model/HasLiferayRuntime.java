@@ -16,6 +16,7 @@ package com.liferay.ide.project.core.model;
 
 import com.liferay.ide.project.core.model.internal.RuntimeNameDefaultValueService;
 import com.liferay.ide.project.core.model.internal.RuntimeNamePossibleValuesService;
+import com.liferay.ide.project.core.model.internal.RuntimeMavenValidationService;
 
 import org.eclipse.sapphire.Element;
 import org.eclipse.sapphire.ElementType;
@@ -42,6 +43,7 @@ public interface HasLiferayRuntime extends Element
         {
             @Service( impl = RuntimeNamePossibleValuesService.class ),
             @Service( impl = RuntimeNameDefaultValueService.class ),
+            @Service( impl = RuntimeMavenValidationService.class )
         }
     )
     ValueProperty PROP_RUNTIME_NAME = new ValueProperty( TYPE, "RuntimeName" ); //$NON-NLS-1$

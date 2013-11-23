@@ -10,6 +10,7 @@ import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.annotations.DefaultValue;
 import org.eclipse.sapphire.modeling.annotations.Label;
+import org.eclipse.sapphire.modeling.annotations.Required;
 import org.eclipse.sapphire.modeling.annotations.Service;
 import org.eclipse.sapphire.modeling.annotations.Services;
 import org.eclipse.sapphire.modeling.annotations.Type;
@@ -20,12 +21,16 @@ import org.eclipse.sapphire.modeling.annotations.Type;
  */
 public interface NewLiferayProfile extends Profile, HasLiferayRuntime
 {
+
     ElementType TYPE = new ElementType( NewLiferayProfile.class );
+
+    // *** RuntimeName ***
+
+    ValueProperty PROP_RUNTIME_NAME = new ValueProperty( TYPE, HasLiferayRuntime.PROP_RUNTIME_NAME ); //$NON-NLS-1$
 
     // *** Id ***
 
-    @Services
-    (
+    @Services(
         value =
         {
             @Service( impl = NewLiferayProfileIdDefaultValueService.class ),
@@ -67,6 +72,7 @@ public interface NewLiferayProfile extends Profile, HasLiferayRuntime
             @Service( impl = LiferayVersionDefaultValueService.class )
         }
     )
+    @Required
     ValueProperty PROP_LIFERAY_VERSION = new ValueProperty( TYPE, "LiferayVersion" );
 
     Value<String> getLiferayVersion();
