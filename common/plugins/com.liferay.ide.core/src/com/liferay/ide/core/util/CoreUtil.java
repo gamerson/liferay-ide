@@ -31,7 +31,6 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +44,8 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceProxy;
+import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -53,6 +54,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -72,15 +74,22 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.eclipse.wst.sse.core.StructuredModelManager;
+import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
 import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.osgi.framework.Version;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 
 /**
  * Core Utility methods
  *
  * @author Gregory Amerson
+ * @author Kuo Zhang
  */
 @SuppressWarnings( "restriction" )
 public class CoreUtil
@@ -404,6 +413,191 @@ public class CoreUtil
         return getFirstSrcFolder( project );
     }
 
+    public static IFile[] getLanguagePropertiesFiles( IProject proj )
+    {
+        Set<IFile> retval = new HashSet<IFile>();
+
+        IFolder srcFolder = null;
+
+        final IFolder[] srcFolders = getSrcFolders( proj );
+
+        if( srcFolders.length < 1 )
+        {
+            return null;
+        }
+        else if( srcFolders.length == 1 )
+        {
+            srcFolder = srcFolders[0];
+        }
+        else
+        {
+            // For maven project which has multiple source folders. The "src/main/java" fold is used as defalut
+            // by the portlet.xml and liferay-hook.xml
+            for( IFolder folder : srcFolders )
+            {
+                if( folder.getFullPath().toString().endsWith( "src/main/java" ) )
+                {
+                    srcFolder = folder;
+                    break;
+                }
+            }
+        }
+
+        if( CoreUtil.isLiferayProject( proj ) )
+        {
+            IFile portletXml = null;
+
+            IFile liferayHookXml = null;
+
+            if( proj != null )
+            {
+                final IVirtualFolder webappRoot = CoreUtil.getDocroot( proj );
+
+                if( webappRoot != null )
+                {
+                    for( IContainer container : webappRoot.getUnderlyingFolders() )
+                    {
+                        if( container != null && container.exists() )
+                        {
+                            portletXml = container.getFile( new Path( "WEB-INF/portlet.xml" ) );
+                            liferayHookXml = container.getFile( new Path( "WEB-INF/liferay-hook.xml" ) );
+                        }
+                    }
+                }
+            }
+
+            try
+            {
+                // Search all resource bundle and supported locale files referenced in portlet.xml.
+                if( portletXml != null )
+                {
+                    IStructuredModel model = StructuredModelManager.getModelManager().getModelForRead( portletXml );
+
+                    if( model instanceof IDOMModel )
+                    {
+                        final IDOMDocument document = ( (IDOMModel) model ).getDocument();
+
+                        final NodeList resourceBundles = document.getElementsByTagName( "resource-bundle" );
+
+                        if( resourceBundles.getLength() > 0 )
+                        {
+                            // Portlet.xml only use one resource-bundle element.
+                            final Node resourceBundle = resourceBundles.item( 0 );
+
+                            final String resourceBundleVal = NodeUtil.getTextContent( resourceBundle );
+
+                            IFile resourceBundleFile =
+                                proj.getWorkspace().getRoot().getFile(
+                                    srcFolder.getFullPath().append(
+                                        resourceBundleVal.replaceAll( "\\.", "/" ) + ".properties" ) );
+
+                            if( resourceBundleFile.exists() )
+                            {
+                                retval.add( resourceBundleFile );
+                            }
+
+                            final NodeList supportedLocales = document.getElementsByTagName( "supported-locale" );
+
+                            if( supportedLocales.getLength() > 0 )
+                            {
+                                Node suppportedLocale = null;
+
+                                IFile supportedLocaleFile = null;
+
+                                for( int i = 0; i < supportedLocales.getLength(); i++ )
+                                {
+                                    suppportedLocale = supportedLocales.item( i );
+
+                                    String supportedLocaleVal = NodeUtil.getTextContent( suppportedLocale );
+
+                                    supportedLocaleFile =
+                                        proj.getWorkspace().getRoot().getFile(
+                                            srcFolder.getFullPath().append(
+                                                resourceBundleVal.replaceAll( "\\.", "/" ) + "_" + supportedLocaleVal +
+                                                    ".properties" ) );
+
+                                    if( supportedLocaleFile.exists() )
+                                    {
+                                        retval.add( supportedLocaleFile );
+                                    }
+
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                // Search all language properties files referenced in liferay-hook.xml
+                if( liferayHookXml != null )
+                {
+                    IStructuredModel model = StructuredModelManager.getModelManager().getModelForRead( liferayHookXml );
+
+                    if( model instanceof IDOMModel )
+                    {
+                        final IDOMDocument document = ( (IDOMModel) model ).getDocument();
+
+                        final NodeList languagePropertiesList = document.getElementsByTagName( "language-properties" );
+
+                        if( languagePropertiesList.getLength() > 0 )
+                        {
+                            Node languageProperties = null;
+
+                            for( int i = 0; i < languagePropertiesList.getLength(); i++ )
+                            {
+                                languageProperties = languagePropertiesList.item( i );
+
+                                String languagePropertiesVal = NodeUtil.getTextContent( languageProperties );
+
+                                // In liferay-hook.xml, the content of language-properties can use a wildcard "*", need
+                                // to search all the files whose names match the content.
+                                if( languagePropertiesVal.contains( StringPool.ASTERISK ) )
+                                {
+                                    String languagePropertiesValRegex = languagePropertiesVal.replaceAll( "\\*", ".*" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+                                    IResource entryResource =
+                                        proj.getWorkspace().getRoot().findMember( srcFolder.getFullPath().toString() );
+
+                                    IFile[] languagePropertiesFiles =
+                                        new LanguagePropertiesFileVisitor().visitLanguagePropertiesFile(
+                                            entryResource, languagePropertiesValRegex );
+
+                                    if( languagePropertiesFiles != null && languagePropertiesFiles.length > 0 )
+                                    {
+                                        for( IFile file : languagePropertiesFiles )
+                                        {
+                                            if( file.exists() )
+                                            {
+                                                retval.add( file );
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    IFile languagePropertiesFile =
+                                        proj.getWorkspace().getRoot().getFile(
+                                            srcFolder.getFullPath().append( languagePropertiesVal ) );
+
+                                    if( languagePropertiesFile.exists() )
+                                    {
+                                        retval.add( languagePropertiesFile );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch( Exception e )
+            {
+                LiferayCore.logError( e );
+            }
+        }
+
+        return retval.toArray( new IFile[retval.size()] );
+    }
+
     public static Object getNewObject( Object[] oldObjects, Object[] newObjects )
     {
         if( oldObjects != null && newObjects != null && oldObjects.length < newObjects.length )
@@ -461,9 +655,10 @@ public class CoreUtil
 
     public static IFolder[] getSrcFolders( IProject project )
     {
-        List<IFolder> retval = new ArrayList<IFolder>();
+        Set<IFolder> retval = new HashSet<IFolder>();
 
-        final IPackageFragmentRoot[] sourceFolders = J2EEProjectUtilities.getSourceContainers( project );
+        @SuppressWarnings( "deprecation" )
+        IPackageFragmentRoot[] sourceFolders = J2EEProjectUtilities.getSourceContainers( project );
 
         if( sourceFolders != null && sourceFolders.length > 0 )
         {
@@ -474,6 +669,7 @@ public class CoreUtil
                     retval.add( (IFolder) sourceFolder.getResource() );
                 }
             }
+
         }
 
         return retval.toArray( new IFolder[retval.size()] );
@@ -566,19 +762,6 @@ public class CoreUtil
         }
 
         return true;
-    }
-
-    public static boolean isInSrcFolders( IFile iFile )
-    {
-        for( IFolder srcFolder : getSrcFolders( iFile.getProject() ) )
-        {
-            if( srcFolder.getFile( iFile.getFullPath() ) != null  )
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static boolean isResourceInDocroot( IModuleResource resource )
@@ -782,6 +965,46 @@ public class CoreUtil
         in.close();
         out.flush();
         out.close();
+    }
+
+    private static class LanguagePropertiesFileVisitor implements IResourceProxyVisitor
+    {
+
+        IResource entryResource = null;
+        String relativePathToEntry = null;
+        Set<IFile> resources = new HashSet<IFile>();
+
+        public boolean visit( IResourceProxy resourceProxy )
+        {
+            if( resourceProxy.getType() == IResource.FILE && resourceProxy.getName().endsWith( ".properties" ) )
+            {
+                String relativePath =
+                    resourceProxy.requestFullPath().makeRelativeTo( entryResource.getProjectRelativePath() ).toString();
+
+                if( relativePath.matches( relativePathToEntry ) )
+                {
+                    resources.add( (IFile) resourceProxy.requestResource() );
+                }
+            }
+
+            return true;
+        }
+
+        public IFile[] visitLanguagePropertiesFile( IResource entryResource, String relativePathToSrcFolder )
+        {
+            this.entryResource = entryResource;
+            this.relativePathToEntry = relativePathToSrcFolder;
+
+            try
+            {
+                entryResource.accept( this, IContainer.EXCLUDE_DERIVED );
+            }
+            catch( CoreException e )
+            {
+            }
+
+            return resources.toArray( new IFile[resources.size()] );
+        }
     }
 
 }

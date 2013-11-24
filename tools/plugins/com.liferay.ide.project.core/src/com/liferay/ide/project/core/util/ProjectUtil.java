@@ -17,6 +17,7 @@ package com.liferay.ide.project.core.util;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.NodeUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.LiferayProjectCore;
@@ -33,7 +34,6 @@ import com.liferay.ide.server.util.ServerUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,8 +48,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceProxy;
-import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -91,6 +89,12 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime;
+import org.eclipse.wst.sse.core.StructuredModelManager;
+import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * @author Gregory Amerson
@@ -209,7 +213,7 @@ public class ProjectUtil
     }
 
     // IDE-1129
-    public static void encodePropertyFilesToLiferayDefault( IProject proj, final IProgressMonitor monitor )
+    /*public static void encodeLanguageFilesToDefault( IProject proj, final IProgressMonitor monitor )
     {
         final IFolder[] sourceFolders = getSourceFolders( proj );
 
@@ -282,6 +286,27 @@ public class ProjectUtil
             }
         }
 
+    }*/
+
+    public static void encodeLanguagePropertiesFilesToDefault( IProject proj, final IProgressMonitor monitor )
+    {
+        // Whether check the project type
+        final IFile[] languagePropertiesFiles = CoreUtil.getLanguagePropertiesFiles( proj );
+
+        try 
+        {
+            for( IFile file : languagePropertiesFiles )
+            {
+                if( ! file.getCharset().equals( ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
+                {
+                    file.setCharset( null, monitor );
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+            LiferayProjectCore.logError( e );
+        }
     }
 
     public static String convertToDisplayName( String name )
@@ -826,6 +851,32 @@ public class ProjectUtil
         return null;
     }
 
+    public static IFile getLiferayHookXml( IProject project ) 
+    {
+        if( project != null && ProjectUtil.isLiferayFacetedProject( project ) )
+        {
+            final IVirtualFolder webappRoot = CoreUtil.getDocroot( project );
+
+            if( webappRoot != null )
+            {
+                for( IContainer container : webappRoot.getUnderlyingFolders() )
+                {
+                    if( container != null && container.exists() )
+                    {
+                        IFile file = container.getFile( new Path( "WEB-INF/liferay-hook.xml" ) ); //$NON-NLS-1$
+
+                        if( file.exists() )
+                        {
+                            return file;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public static IProject getProject( IDataModel model )
     {
         if( model != null )
@@ -1077,7 +1128,7 @@ public class ProjectUtil
     }
 
     // IDE-1229
-    public static boolean hasNonLiferayDefaultEncodingPropertyFile( IProject proj )
+    /*public static boolean hasNonDefaultEncodingLanguageFile( IProject proj )
     {
         final IFolder[] sourceFolders = ProjectUtil.getSourceFolders( proj );
 
@@ -1162,6 +1213,28 @@ public class ProjectUtil
         }
 
         return retval[0];
+    }*/
+
+    public static boolean hasNonDefaultEncodingLanguagePropertiesFile( IProject proj )
+    {
+        IFile[] languageFiles = CoreUtil.getLanguagePropertiesFiles( proj );
+
+        try
+        {
+            for( IFile file : languageFiles )
+            {
+                if( ! file.getCharset().equals( ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
+                {
+                    return true;
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+            LiferayProjectCore.logError( e );
+        }
+
+        return false;
     }
 
     public static boolean hasProperty( IDataModel model, String propertyName )

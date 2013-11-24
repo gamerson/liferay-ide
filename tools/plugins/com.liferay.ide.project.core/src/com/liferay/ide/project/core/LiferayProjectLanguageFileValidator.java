@@ -42,7 +42,7 @@ public class LiferayProjectLanguageFileValidator implements IFacetedProjectValid
 
         ProjectUtil.deleteProjectMarkers( proj, LiferayProjectCore.LIFERAY_PROJECT_MARKR_TYPE, getMarkerSourceIds() );
 
-        if( proj != null && ProjectUtil.hasNonLiferayDefaultEncodingPropertyFile( proj ) )
+        if( proj != null && ProjectUtil.hasNonDefaultEncodingLanguagePropertiesFile( proj ) )
         {
             ProjectUtil.setProjectMarker(
                 proj, LiferayProjectCore.LIFERAY_PROJECT_MARKR_TYPE, IMarker.SEVERITY_WARNING,
