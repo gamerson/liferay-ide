@@ -67,6 +67,11 @@ public class NewLiferayProfileIdDefaultValueService extends DefaultValueService
 
         String data = defaultRuntimeName;
 
+        if( data.equals( "<None>" ) )
+        {
+            return new DefaultValueServiceData( StringPool.EMPTY );
+        }
+
         final Set<String> possibleValues =
             NewLiferayPluginProjectOpMethods.getPossibleProfileIds(
                 newLiferayProfile.nearest( NewLiferayPluginProjectOp.class ), false );
