@@ -16,6 +16,7 @@
 package com.liferay.ide.core.describer;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.PropertiesUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +69,7 @@ public class LiferayLanguagePropertiesFileDescriber implements ITextContentDescr
 
                 if( iFile != null && iFile.getProject() != null && CoreUtil.isLiferayProject( iFile.getProject() ) )
                 {
-                    final IFile[] languagePropertiesFiles = CoreUtil.getLanguagePropertiesFiles( iFile.getProject() );
+                    final IFile[] languagePropertiesFiles = PropertiesUtil.getLanguagePropertiesFiles( iFile.getProject() );
 
                     for( IFile propertiesFile : languagePropertiesFiles )
                     {

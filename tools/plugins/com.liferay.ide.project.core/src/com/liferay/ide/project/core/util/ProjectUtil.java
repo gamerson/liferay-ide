@@ -17,7 +17,7 @@ package com.liferay.ide.project.core.util;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.NodeUtil;
+import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.LiferayProjectCore;
@@ -48,7 +48,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -89,12 +88,6 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime;
-import org.eclipse.wst.sse.core.StructuredModelManager;
-import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Gregory Amerson
@@ -290,14 +283,13 @@ public class ProjectUtil
 
     public static void encodeLanguagePropertiesFilesToDefault( IProject proj, final IProgressMonitor monitor )
     {
-        // Whether check the project type
-        final IFile[] languagePropertiesFiles = CoreUtil.getLanguagePropertiesFiles( proj );
+        final IFile[] languagePropertiesFiles = PropertiesUtil.getLanguagePropertiesFiles( proj );
 
         try 
         {
             for( IFile file : languagePropertiesFiles )
             {
-                if( ! file.getCharset().equals( ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
+                if( ! file.getCharset().equals( ILiferayConstants.LIFERAY_LANGUAGE_PROPERTIES_FILE_ENCODING_CHARSET ) )
                 {
                     file.setCharset( null, monitor );
                 }
@@ -828,48 +820,15 @@ public class ProjectUtil
     {
         if( project != null && ProjectUtil.isLiferayFacetedProject( project ) )
         {
-            // IDE-110 IDE-648
-            final IVirtualFolder webappRoot = CoreUtil.getDocroot( project );
+            IFolder defaultDocrootFolder = CoreUtil.getDefaultDocrootFolder( project );
 
-            if( webappRoot != null )
+            if( defaultDocrootFolder != null )
             {
-                for( IContainer container : webappRoot.getUnderlyingFolders() )
+                IFile portletXml = defaultDocrootFolder.getFile( new Path( "WEB-INF/portlet.xml" ) );
+
+                if( portletXml != null && portletXml.exists() )
                 {
-                    if( container != null && container.exists() )
-                    {
-                        IFile file = container.getFile( new Path( "WEB-INF/portlet.xml" ) ); //$NON-NLS-1$
-
-                        if( file.exists() )
-                        {
-                            return file;
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public static IFile getLiferayHookXml( IProject project ) 
-    {
-        if( project != null && ProjectUtil.isLiferayFacetedProject( project ) )
-        {
-            final IVirtualFolder webappRoot = CoreUtil.getDocroot( project );
-
-            if( webappRoot != null )
-            {
-                for( IContainer container : webappRoot.getUnderlyingFolders() )
-                {
-                    if( container != null && container.exists() )
-                    {
-                        IFile file = container.getFile( new Path( "WEB-INF/liferay-hook.xml" ) ); //$NON-NLS-1$
-
-                        if( file.exists() )
-                        {
-                            return file;
-                        }
-                    }
+                    return portletXml;
                 }
             }
         }
@@ -1217,13 +1176,13 @@ public class ProjectUtil
 
     public static boolean hasNonDefaultEncodingLanguagePropertiesFile( IProject proj )
     {
-        IFile[] languageFiles = CoreUtil.getLanguagePropertiesFiles( proj );
+        IFile[] languageFiles = PropertiesUtil.getLanguagePropertiesFiles( proj );
 
         try
         {
             for( IFile file : languageFiles )
             {
-                if( ! file.getCharset().equals( ILiferayConstants.LIFERAY_LANGUAGE_FILE_ENCODING_CHARSET ) )
+                if( ! file.getCharset().equals( ILiferayConstants.LIFERAY_LANGUAGE_PROPERTIES_FILE_ENCODING_CHARSET ) )
                 {
                     return true;
                 }
