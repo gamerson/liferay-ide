@@ -440,6 +440,9 @@
       <validator
             class="com.liferay.ide.project.core.LiferayProjectLanguageFileValidator">
       </validator>
+      <validator
+            class="com.liferay.ide.project.core.FacetedProjectValidator">
+      </validator>      
    </extension>
    <extension
          id="LiferayProjectMarker"
