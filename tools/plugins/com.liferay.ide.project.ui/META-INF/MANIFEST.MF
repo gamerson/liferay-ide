@@ -42,3 +42,4 @@ Export-Package: com.liferay.ide.project.ui,
  com.liferay.ide.project.ui.dialog,
  com.liferay.ide.project.ui.pref,
  com.liferay.ide.project.ui.wizard
+Import-Package: com.liferay.ide.core.tests

@@ -269,4 +269,26 @@
         </content>
         <initial-focus>RuntimeName</initial-focus>
     </dialog>
+    <dialog>
+        <id>ConfigureLiferaySDK</id>
+        <label>Configure plugin SDK</label>
+        <content>
+            <label>Use the following Liferay SDK configuration.</label>
+            <spacer></spacer>
+            <property-editor>
+                <property>PluginsSDKName</property>
+                <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
+                <action>
+                    <id>ConfigureSDKs</id>
+                    <label>Configure SDKs...</label>
+                    <image>configure_16x16.gif</image>
+                </action>
+                <action-handler>
+                    <action>ConfigureSDKs</action>
+                    <id>ConfigureSDKsHandler</id>
+                    <impl>ConfigureSDKsAction</impl>
+                </action-handler>
+            </property-editor>
+         </content>
+    </dialog>
 </definition>

@@ -32,6 +32,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime
 
 /**
  * @author Kuo Zhang
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class PluginsSDKProjectRuntimeValidator implements IFacetedProjectValidator
@@ -43,6 +44,10 @@ public class PluginsSDKProjectRuntimeValidator implements IFacetedProjectValidat
 
     public static final String MSG_PRIMARY_RUNTIME_NOT_SET = Msgs.primaryRuntimeNotSet;
     public static final String MSG_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME = Msgs.primaryRuntimeNotLiferayRuntime;
+
+    public static final String LOCATION_TARGETED_SDK = "Targeted SDK";
+    public static final String ID_PLUGIN_SDK_NOT_SET = "plugin-sdk-not-set";
+    
 
     /*
      * This method validates the SDK project's primary runtime is set and a liferay runtime, if necessary, more
@@ -73,6 +78,12 @@ public class PluginsSDKProjectRuntimeValidator implements IFacetedProjectValidat
                 }
             }
         }
+        else if ( !( proj.hasNature( "org.eclipse.m2e.core.maven2Nature" ) || proj.getFile( "pom.xml" ).exists() ) )
+        {
+            ProjectUtil.setProjectMarker(
+                proj, LiferayProjectCore.LIFERAY_PROJECT_MARKR_TYPE, IMarker.SEVERITY_ERROR, Msgs.pluginSDKNotSet,
+                LOCATION_TARGETED_SDK, ID_PLUGIN_SDK_NOT_SET );
+        }
     }
 
     private Set<String> getMarkerSourceIds()
@@ -81,6 +92,7 @@ public class PluginsSDKProjectRuntimeValidator implements IFacetedProjectValidat
 
         markerSourceIds.add( ID_PRIMARY_RUNTIME_NOT_LIFERAY_RUNTIME );
         markerSourceIds.add( ID_PRIMARY_RUNTIME_NOT_SET );
+        markerSourceIds.add( ID_PLUGIN_SDK_NOT_SET );
 
         return markerSourceIds;
     }
@@ -89,7 +101,8 @@ public class PluginsSDKProjectRuntimeValidator implements IFacetedProjectValidat
     {
         public static String primaryRuntimeNotSet;
         public static String primaryRuntimeNotLiferayRuntime;
-
+        public static String pluginSDKNotSet;
+        
         static
         {
             initializeMessages( PluginsSDKProjectRuntimeValidator.class.getName(), Msgs.class );
