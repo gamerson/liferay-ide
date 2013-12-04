@@ -50,12 +50,14 @@ public class ResourceBundleValidationService extends ValidationService
                 return Status.createErrorStatus( Resources.bind(
                     StringEscapeUtils.unescapeJava( Resources.invalidResourceBundleWithSlash ), new Object[] {
                         "'" + bundle + "'", "'" + correctBundle + "'" } ) );
-            }else if ( bundle != null && ( bundle.startsWith( "." ) || bundle.contains( ".." ) ) ) 
+            }
+            else if ( bundle != null && ( bundle.startsWith( "." ) || bundle.contains( ".." ) ) ) 
             {
                 return Status.createErrorStatus( Resources.bind(
                     StringEscapeUtils.unescapeJava( Resources.invalidResourceBundleFileName ), new Object[] {
                         "'" + bundle + "'" } ) );
             }
+
         }
 
 
