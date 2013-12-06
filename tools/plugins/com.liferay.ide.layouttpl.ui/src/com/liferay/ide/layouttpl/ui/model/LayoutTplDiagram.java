@@ -29,11 +29,28 @@ public class LayoutTplDiagram extends LayoutTplDiagramElement implements IProper
     /** An empty property descriptor. */
     private static final IPropertyDescriptor[] EMPTY_ARRAY = new IPropertyDescriptor[0];
 
-    public static LayoutTplDiagram createDefaultDiagram()
+    protected boolean visualEditorSupported;
+
+    public static LayoutTplDiagram createDefaultDiagram( boolean supported )
     {
-        return new LayoutTplDiagram();
+        return new LayoutTplDiagram( supported );
     }
 
+    public LayoutTplDiagram( )
+    {
+        this( true );
+    } 
+
+    public LayoutTplDiagram( boolean supported )
+    {
+        this.visualEditorSupported = supported;
+    }
+
+    public boolean isVisualEditorSupported()
+    {
+        return visualEditorSupported;
+    }
+    
     public IPropertyDescriptor[] getPropertyDescriptors()
     {
         return EMPTY_ARRAY;

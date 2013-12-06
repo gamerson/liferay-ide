@@ -43,7 +43,7 @@ public class LayoutTplEditPartFactory implements EditPartFactory
     {
         if( modelElement instanceof LayoutTplDiagram )
         {
-            return new LayoutTplDiagramEditPart();
+            return new LayoutTplDiagramEditPart( ( (LayoutTplDiagram) modelElement ).isVisualEditorSupported() );
         }
 
         if( modelElement instanceof PortletLayout )
