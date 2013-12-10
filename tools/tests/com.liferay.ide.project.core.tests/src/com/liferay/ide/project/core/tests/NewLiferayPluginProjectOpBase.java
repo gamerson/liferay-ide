@@ -25,6 +25,8 @@ import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.LiferayProjectCore;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
+import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
+import com.liferay.ide.project.core.model.NewLiferayProfile;
 import com.liferay.ide.project.core.model.PluginType;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKManager;
@@ -42,6 +44,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -63,6 +66,7 @@ import org.junit.Test;
 /**
  * @author Gregory Amerson
  * @author Kuo Zhang
+ * @author Tao Tao
  */
 public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 {
@@ -290,6 +294,17 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 
     protected abstract String getRuntimeVersion();
 
+    protected abstract String getServiceXmlDoctype();
+
+    protected NewLiferayProfile newLiferayProfile( NewLiferayPluginProjectOp op )
+    {
+        op.setProjectProvider( "maven" );
+
+        final NewLiferayProfile newLiferayProfile = op.getNewLiferayProfiles().insert();
+
+        return newLiferayProfile;
+    }
+
     protected NewLiferayPluginProjectOp newProjectOp()
     {
         return NewLiferayPluginProjectOp.TYPE.instantiate();
@@ -306,6 +321,19 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         op.setProjectName( projectName );
 
         return op;
+    }
+
+    protected void removeRuntimes() throws CoreException
+    {
+        IRuntime[] runtimes = ServerCore.getRuntimes();
+
+        if( runtimes != null )
+        {
+            for( IRuntime runtime : runtimes )
+            {
+                runtime.delete();
+            }
+        }
     }
 
     /**
@@ -436,6 +464,21 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
     }
 
     @Test
+    public void testActiveProfilesValidation() throws Exception
+    {
+        final String projectName = "test-active-profile-validation";
+        final String activeProfile = "active profile";
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+        op.setProjectProvider( "maven" );
+        op.setActiveProfilesValue( activeProfile );
+        final ValidationService vs = op.getActiveProfilesValue().service( ValidationService.class );
+
+        final String expected = "No spaces are allowed in profile id values.";
+        assertEquals( expected, vs.validation().message() );
+        assertEquals( expected, op.getActiveProfilesValue().validation().message() );
+    }
+
+    @Test
     public void testDisplayNameDefaultValue() throws Exception
     {
         final NewLiferayPluginProjectOp op = newProjectOp();
@@ -489,6 +532,11 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         final String expected2 = "'life*ray' is not a valid Java identifier";
         assertEquals( expected2, vs.validation().message() );
         assertEquals( expected2, op.getGroupId().validation().message() );
+
+        op.setGroupId( "com.li feray.test" );
+        final String expected3 = "'li feray' is not a valid Java identifier";
+        assertEquals( expected3, vs.validation().message() );
+        assertEquals( expected3, op.getGroupId().validation().message() );
     }
 
     protected void testLocationListener() throws Exception
@@ -589,50 +637,6 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
     }
 
     @Test
-    public void testNewPortletAntProject() throws Exception
-    {
-        final String projectName = "test-portlet-without-servicexml";
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectName( projectName );
-        op.setPluginType( PluginType.portlet );
-
-        final IProject portletProject = createAntProject( op );
-
-        final IVirtualFolder webappRoot = CoreUtil.getDocroot( portletProject );
-
-        assertNotNull( webappRoot );
-
-        final IVirtualFile serviceXml = webappRoot.getFile( "WEB-INF/service.xml" );
-
-        assertEquals( false, serviceXml.exists() );
-    }
-
-    @Test
-    public void testNewServiceBuilderPortletAntProject() throws Exception
-    {
-        final String projectName = "test-portlet-with-servicexml";
-        final NewLiferayPluginProjectOp op = newProjectOp();
-        op.setProjectName( projectName );
-        op.setPluginType( PluginType.servicebuilder );
-
-        final IProject portletProject = createAntProject( op );
-
-        final IVirtualFolder webappRoot = CoreUtil.getDocroot( portletProject );
-
-        assertNotNull( webappRoot );
-
-        final IVirtualFile serviceXml = webappRoot.getFile( "WEB-INF/service.xml" );
-
-        assertEquals( true, serviceXml.exists() );
-
-        final String serviceXmlContent = CoreUtil.readStreamToString( serviceXml.getUnderlyingFile().getContents() );
-
-        assertEquals( true, serviceXmlContent.contains( getServiceXmlDoctype() ) );
-    }
-
-    protected abstract String getServiceXmlDoctype();
-
-    @Test
     public void testNewHookAntProject() throws Exception
     {
         final String projectName = "test-hook-project-sdk";
@@ -660,6 +664,24 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         createNewJsfAntProject( "primefaces", "" );
     }
 
+    private void testNewJsfRichfacesProject( String framework, boolean richfacesEnabled ) throws Exception
+    {
+        final IProject project = createNewJsfAntProject( framework, "rf" );
+
+        final String contents =
+            CoreUtil.readStreamToString( project.getFile( "docroot/WEB-INF/web.xml" ).getContents( true ) );
+
+        assertEquals( richfacesEnabled, contents.contains( "org.richfaces.resourceMapping.enabled" ) );
+
+        assertEquals( richfacesEnabled, contents.contains( "org.richfaces.webapp.ResourceServlet" ) );
+    }
+
+    protected void testNewJsfRichfacesProjects() throws Exception
+    {
+        testNewJsfRichfacesProject( "primefaces", false );
+        testNewJsfRichfacesProject( "richfaces", true );
+    }
+
     @Test
     public void testNewLayoutAntProject() throws Exception
     {
@@ -677,6 +699,92 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         final IVirtualFile layoutXml = webappRoot.getFile( "WEB-INF/liferay-layout-templates.xml" );
 
         assertEquals( true, layoutXml.exists() );
+    }
+
+    @Test
+    public void testNewLiferayProfileIdDefaultValue() throws Exception
+    {
+        final String projectName = "test-new-liferay-profile-dafault-value-service";
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+        final NewLiferayProfile newLiferayProfile = newLiferayProfile( op );
+
+        assertEquals( false, newLiferayProfile.getId().content().contains( " " ) );
+        assertEquals( true, newLiferayProfile.getId().content().contains( "-" ) );
+
+        removeRuntimes();
+        assertEquals( "<None>", newLiferayProfile.getRuntimeName().content() );
+        assertEquals( null, newLiferayProfile.getId().content() );
+    }
+
+    @Test
+    public void testNewLiferayProfileIdValidation() throws Exception
+    {
+        final String projectName = "test-new-liferay-profile-id-validation-service";
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+        final NewLiferayProfile newLiferayProfile = newLiferayProfile( op );
+        final ValidationService vs = newLiferayProfile.getId().service( ValidationService.class );
+
+        removeRuntimes();
+        assertEquals( null, newLiferayProfile.getId().content() );
+
+        final String expected1 = "Profile id can not be empty.";
+        assertEquals( expected1, vs.validation().message() );
+        assertEquals( expected1, newLiferayProfile.getId().validation().message() );
+
+        newLiferayProfile.setId( "" );
+        assertEquals( expected1, vs.validation().message() );
+        assertEquals( expected1, newLiferayProfile.getId().validation().message() );
+
+        final Set<String> profiles = NewLiferayPluginProjectOpMethods.getPossibleProfileIds( op, false );
+        assertNotNull( profiles );
+
+        final String expected2 = "Profile already exists.";
+
+        for( String profile : profiles )
+        {
+            newLiferayProfile.setId( profile );
+
+            assertEquals( expected2, vs.validation().message() );
+            assertEquals( expected2, newLiferayProfile.getId().validation().message() );
+        }
+
+        newLiferayProfile.setId( "profile id" );
+        final String expected3 = "No spaces are allowed in profile id.";
+        assertEquals( expected3, vs.validation().message() );
+        assertEquals( expected3, newLiferayProfile.getId().validation().message() );
+    }
+
+    @Test
+    public void testNewLiferayProfileRuntimeValidation() throws Exception
+    {
+        final String projectName = "test-new-liferay-profile-runtime-validation";
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+        final NewLiferayProfile newLiferayProfile = newLiferayProfile( op );
+        final ValidationService vs = newLiferayProfile.getRuntimeName().service( ValidationService.class );
+
+        removeRuntimes();
+        String expected = "Liferay runtime must be configured.";
+        assertEquals( expected, vs.validation().message() );
+        assertEquals( expected, newLiferayProfile.getRuntimeName().validation().message() );
+    }
+
+    @Test
+    public void testNewPortletAntProject() throws Exception
+    {
+        final String projectName = "test-portlet-without-servicexml";
+        final NewLiferayPluginProjectOp op = newProjectOp();
+        op.setProjectName( projectName );
+        op.setPluginType( PluginType.portlet );
+
+        final IProject portletProject = createAntProject( op );
+
+        final IVirtualFolder webappRoot = CoreUtil.getDocroot( portletProject );
+
+        assertNotNull( webappRoot );
+
+        final IVirtualFile serviceXml = webappRoot.getFile( "WEB-INF/service.xml" );
+
+        assertEquals( false, serviceXml.exists() );
     }
 
     public void testNewProjectCustomLocationPortlet() throws Exception
@@ -794,6 +902,29 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         final NewLiferayPluginProjectOp op = newProjectOp( "-hook-hook" );
         op.setPluginType( PluginType.hook );
         createAntProject( op );
+    }
+
+    @Test
+    public void testNewServiceBuilderPortletAntProject() throws Exception
+    {
+        final String projectName = "test-portlet-with-servicexml";
+        final NewLiferayPluginProjectOp op = newProjectOp();
+        op.setProjectName( projectName );
+        op.setPluginType( PluginType.servicebuilder );
+
+        final IProject portletProject = createAntProject( op );
+
+        final IVirtualFolder webappRoot = CoreUtil.getDocroot( portletProject );
+
+        assertNotNull( webappRoot );
+
+        final IVirtualFile serviceXml = webappRoot.getFile( "WEB-INF/service.xml" );
+
+        assertEquals( true, serviceXml.exists() );
+
+        final String serviceXmlContent = CoreUtil.readStreamToString( serviceXml.getUnderlyingFile().getContents() );
+
+        assertEquals( true, serviceXmlContent.contains( getServiceXmlDoctype() ) );
     }
 
     @Test
@@ -1452,23 +1583,4 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         exceptedLocation = CoreUtil.getWorkspaceRoot().getLocation().append( projectName + "-portlet" );
         assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
     }
-
-    protected void testNewJsfRichfacesProjects() throws Exception
-    {
-        testNewJsfRichfacesProject( "primefaces", false );
-        testNewJsfRichfacesProject( "richfaces", true );
-    }
-
-    private void testNewJsfRichfacesProject( String framework, boolean richfacesEnabled ) throws Exception
-    {
-        final IProject project = createNewJsfAntProject( framework, "rf" );
-
-        final String contents =
-            CoreUtil.readStreamToString( project.getFile( "docroot/WEB-INF/web.xml" ).getContents( true ) );
-
-        assertEquals( richfacesEnabled, contents.contains( "org.richfaces.resourceMapping.enabled" ) );
-
-        assertEquals( richfacesEnabled, contents.contains( "org.richfaces.webapp.ResourceServlet" ) );
-    }
-
 }
