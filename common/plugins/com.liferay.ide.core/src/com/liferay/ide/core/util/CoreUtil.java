@@ -423,7 +423,7 @@ public class CoreUtil
         {
             IContainer container = resource.getParent();
 
-            while( container != null && container.exists() )
+            while( container != null && container.exists() && container.getParent() != null )
             {
                 IFile projectFile = container.getFile( new Path( ".project" ) );
 

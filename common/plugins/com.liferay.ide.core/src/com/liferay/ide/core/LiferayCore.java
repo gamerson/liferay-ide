@@ -17,10 +17,11 @@ package com.liferay.ide.core;
 import com.liferay.ide.core.util.CoreUtil;
 
 import org.eclipse.core.net.proxy.IProxyService;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.JavaCore;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -38,7 +39,7 @@ public class LiferayCore extends Plugin
     // The plugin ID
     public static final String PLUGIN_ID = "com.liferay.ide.core"; //$NON-NLS-1$
 
-    public static LiferayLanguagePropertiesListener liferayLanguagePropertiesListener;
+    public LiferayLanguagePropertiesListener liferayLanguagePropertiesListener;
 
     private static LiferayProjectProviderReader providerReader;
 
@@ -239,8 +240,14 @@ public class LiferayCore extends Plugin
         super.start( context );
         plugin = this;
 
-        liferayLanguagePropertiesListener = new LiferayLanguagePropertiesListener();
-        JavaCore.addElementChangedListener( liferayLanguagePropertiesListener );
+        if( this.liferayLanguagePropertiesListener == null )
+        {
+            this.liferayLanguagePropertiesListener = new LiferayLanguagePropertiesListener();
+
+            ResourcesPlugin.getWorkspace().addResourceChangeListener(
+                this.liferayLanguagePropertiesListener, IResourceChangeEvent.POST_CHANGE );
+        }
+
     }
 
     /*
@@ -254,7 +261,7 @@ public class LiferayCore extends Plugin
 
         if( liferayLanguagePropertiesListener != null )
         {
-            JavaCore.removeElementChangedListener( liferayLanguagePropertiesListener );
+            ResourcesPlugin.getWorkspace().removeResourceChangeListener( liferayLanguagePropertiesListener );
         }
     }
 
