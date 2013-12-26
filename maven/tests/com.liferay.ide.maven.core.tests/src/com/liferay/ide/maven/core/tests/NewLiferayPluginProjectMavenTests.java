@@ -12,7 +12,6 @@
  * details.
  *
  *******************************************************************************/
-
 package com.liferay.ide.maven.core.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -42,6 +41,7 @@ import org.junit.Test;
 
 /**
  * @author Gregory Amerson
+ * @author Tao Tao
  */
 public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
 {
@@ -107,6 +107,26 @@ public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
     }
 
     @Test
+    public void testActiveProfilesValidation() throws Exception
+    {
+        final String projectName = "test-active-profile-validation";
+        final String activeProfile = "active profile";
+        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+
+        op.setProjectProvider( "maven" );
+
+        op.setActiveProfilesValue( activeProfile );
+
+        final ValidationService vs = op.getActiveProfilesValue().service( ValidationService.class );
+
+        final String expected = "No spaces are allowed in profile id values.";
+
+        assertEquals( expected, vs.validation().message() );
+
+        assertEquals( expected, op.getActiveProfilesValue().validation().message() );
+    }
+
+    @Test
     public void testCreateNewxMavenProject() throws Exception
     {
         createMavenProjectName( "test-name-1" );
@@ -131,6 +151,11 @@ public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
         final String expected2 = "'life*ray' is not a valid Java identifier";
         assertEquals( expected2, vs.validation().message() );
         assertEquals( expected2, op.getGroupId().validation().message() );
+
+        op.setGroupId( "com.li feray.test" );
+        final String expected3 = "'li feray' is not a valid Java identifier";
+        assertEquals( expected3, vs.validation().message() );
+        assertEquals( expected3, op.getGroupId().validation().message() );
     }
 
     @Test

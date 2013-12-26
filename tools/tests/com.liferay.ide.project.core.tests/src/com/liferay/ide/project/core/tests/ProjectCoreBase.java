@@ -155,7 +155,7 @@ public abstract class ProjectCoreBase extends BaseTests
 
     protected NewLiferayPluginProjectOp newProjectOp( final String projectName ) throws Exception
     {
-        final NewLiferayPluginProjectOp op = NewLiferayPluginProjectOp.TYPE.instantiate();
+        final NewLiferayPluginProjectOp op = newProjectOp();
         op.setProjectName( projectName );
 
         return op;
@@ -255,7 +255,7 @@ public abstract class ProjectCoreBase extends BaseTests
             final IRuntimeWorkingCopy runtimeWC =
                 ServerCore.findRuntimeType( getRuntimeId() ).createRuntime( runtimeName, npm );
 
-            runtimeWC.setName( runtimeName );
+            runtimeWC.setName( runtimeName.replaceAll( "\\.", " " ) );
             runtimeWC.setLocation( getLiferayRuntimeDir() );
 
             runtime = runtimeWC.save( true, npm );
