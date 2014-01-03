@@ -17,6 +17,7 @@ package com.liferay.ide.portlet.jsf.core;
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.AbstractPortletFramework;
+import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.sdk.core.ISDKConstants;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
@@ -155,7 +156,7 @@ public class JSFPortletFramework extends AbstractPortletFramework
                 return JSFCorePlugin.createErrorStatus( "Could not copy original web.xml from JSF template in SDK.", e ); //$NON-NLS-1$
             }
         }
-        else
+        else if ( !ProjectUtil.isMavenProject( project ) )
         {
             JSFCorePlugin.logError( "Could not modify web.xml in new project" );
         }

@@ -90,6 +90,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime
 /**
  * @author Gregory Amerson
  * @author Kuo Zhang
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class ProjectUtil
@@ -1260,6 +1261,25 @@ public class ProjectUtil
         }
 
         return false;
+    }
+
+    public static boolean isMavenProject( IProject project )
+    {
+        boolean retval = false;
+        
+        try
+        {
+            if( project != null )
+            {
+                retval =
+                    project.hasNature( "org.eclipse.m2e.core.maven2Nature" ) || project.getFile( "pom.xml" ).exists();
+            }
+
+        }
+        catch( Exception e)
+        {
+        }
+        return retval;
     }
 
     public static boolean isParent( IFolder folder, IResource resource )
