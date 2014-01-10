@@ -113,8 +113,6 @@ public class AddHookOperation extends AbstractDataModelOperation implements INew
         return ProjectUtil.getProject( projectName );
     }
 
-
-
     protected IStatus checkDescriptorFile( IProject project )
     {
         IVirtualFolder webappRoot = CoreUtil.getDocroot( project );
@@ -184,7 +182,10 @@ public class AddHookOperation extends AbstractDataModelOperation implements INew
     {
         IProject project = getTargetProject();
 
-        String customFolderValue = dm.getStringProperty( CUSTOM_JSPS_FOLDER );
+        String defaultWebappRootFolderPath =
+            CoreUtil.getDefaultDocrootFolder( project ).getFullPath().toPortableString();
+
+        String customFolderValue = defaultWebappRootFolderPath + dm.getStringProperty( CUSTOM_JSPS_FOLDER );
 
         IFolder customFolder = (IFolder) project.getWorkspace().getRoot().getFolder( new Path( customFolderValue ) );
 

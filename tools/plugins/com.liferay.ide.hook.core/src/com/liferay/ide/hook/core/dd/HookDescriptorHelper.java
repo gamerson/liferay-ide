@@ -16,6 +16,7 @@
 package com.liferay.ide.hook.core.dd;
 
 import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.NodeUtil;
 import com.liferay.ide.hook.core.operation.INewHookDataModelProperties;
 import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
@@ -41,7 +42,9 @@ import org.w3c.dom.NodeList;
 @SuppressWarnings( { "restriction" } )
 public class HookDescriptorHelper extends LiferayDescriptorHelper implements INewHookDataModelProperties
 {
-    private static final String HOOK_DESCRIPTOR_TEMPLATE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" //$NON-NLS-1$
+
+    private static final String HOOK_DESCRIPTOR_TEMPLATE =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" //$NON-NLS-1$
             + "<!DOCTYPE hook PUBLIC \"-//Liferay//DTD Hook {0}//EN\" \"http://www.liferay.com/dtd/liferay-hook_{1}.dtd\">\n\n<hook>\n</hook>"; //$NON-NLS-1$
 
     public HookDescriptorHelper( IProject project )
@@ -55,6 +58,7 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
+
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
@@ -82,6 +86,7 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
+
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
@@ -109,6 +114,7 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         final DOMModelEditOperation operation = new DOMModelEditOperation( descriptorFile )
         {
+
             @Override
             protected void createDefaultFile()
             {
@@ -190,7 +196,8 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
         {
             for( String languageProperty : languageProperties )
             {
-                newLanguageElement = NodeUtil.insertChildElement( rootElement, refChild, "language-properties", languageProperty ); //$NON-NLS-1$
+                newLanguageElement =
+                    NodeUtil.insertChildElement( rootElement, refChild, "language-properties", languageProperty ); //$NON-NLS-1$
 
                 processor.formatNode( newLanguageElement );
             }
@@ -211,8 +218,12 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
         // <hook> element
         Element rootElement = document.getDocumentElement();
 
+        String defaultWebappRootFolderPath =
+            CoreUtil.getDefaultDocrootFolder( project ).getFullPath().toPortableString();
+
         String relativeJspFolderPath =
-            ProjectUtil.getRelativePathFromDocroot( this.project, model.getStringProperty( CUSTOM_JSPS_FOLDER ) );
+            ProjectUtil.getRelativePathFromDocroot(
+                this.project, defaultWebappRootFolderPath + model.getStringProperty( CUSTOM_JSPS_FOLDER ) );
 
         Element customJspElement = null;
 
@@ -237,7 +248,8 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
             if( serviceTags != null && serviceTags.getLength() > 0 )
             {
                 customJspElement =
-                    NodeUtil.insertChildElement( rootElement, serviceTags.item( 0 ), "custom-jsp-dir", relativeJspFolderPath ); //$NON-NLS-1$
+                    NodeUtil.insertChildElement(
+                        rootElement, serviceTags.item( 0 ), "custom-jsp-dir", relativeJspFolderPath ); //$NON-NLS-1$
             }
             else
             {
@@ -279,7 +291,8 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
         else
         {
             portalPropertiesElement =
-                NodeUtil.insertChildElement( rootElement, rootElement.getFirstChild(), "portal-properties", propertiesFile ); //$NON-NLS-1$
+                NodeUtil.insertChildElement(
+                    rootElement, rootElement.getFirstChild(), "portal-properties", propertiesFile ); //$NON-NLS-1$
         }
 
         // format the new node added to the model;
@@ -298,6 +311,7 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelReadOperation( descriptorFile )
         {
+
             protected IStatus doExecute( IDOMDocument document )
             {
                 retval[0] = readCustomJSPFolder( document, model );
@@ -341,6 +355,7 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
+
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
@@ -368,6 +383,7 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
+
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
