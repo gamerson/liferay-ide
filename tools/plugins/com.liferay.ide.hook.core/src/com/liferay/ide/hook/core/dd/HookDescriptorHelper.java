@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -216,12 +217,13 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
         // <hook> element
         Element rootElement = document.getDocumentElement();
 
-        String defaultWebappRootFolderPath =
-            CoreUtil.getDefaultDocrootFolder( project ).getFullPath().toPortableString();
+        IPath defaultWebappRootFolderFullPath = CoreUtil.getDefaultDocrootFolder( project ).getFullPath();
+
+        String customJSPsFolder = model.getStringProperty( CUSTOM_JSPS_FOLDER );
 
         String relativeJspFolderPath =
             ProjectUtil.getRelativePathFromDocroot(
-                this.project, defaultWebappRootFolderPath + model.getStringProperty( CUSTOM_JSPS_FOLDER ) );
+                this.project, defaultWebappRootFolderFullPath.append( customJSPsFolder ).toPortableString() );
 
         Element customJspElement = null;
 

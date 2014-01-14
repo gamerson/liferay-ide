@@ -183,10 +183,11 @@ public class AddHookOperation extends AbstractDataModelOperation implements INew
     {
         IProject project = getTargetProject();
 
-        String defaultWebappRootFolderPath =
-            CoreUtil.getDefaultDocrootFolder( project ).getFullPath().toPortableString();
+        IFolder defaultWebappRootFolder = CoreUtil.getDefaultDocrootFolder( project );
 
-        String customFolderValue = defaultWebappRootFolderPath + dm.getStringProperty( CUSTOM_JSPS_FOLDER );
+        String customJSPsFolder = dm.getStringProperty( CUSTOM_JSPS_FOLDER );
+
+        String customFolderValue = defaultWebappRootFolder.getFullPath().append( customJSPsFolder ).toPortableString();
 
         IFolder customFolder = (IFolder) project.getWorkspace().getRoot().getFolder( new Path( customFolderValue ) );
 

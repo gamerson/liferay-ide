@@ -165,25 +165,15 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
 
         SWTUtil.createLabel( composite, SWT.LEAD, Msgs.selectedProject, 1 );
 
-        selectedProject = SWTUtil.createText( composite, 1 );
+        selectedProject = SWTUtil.createText( composite, 2 );
 
         selectedProject.setEditable( false );
 
         this.synchHelper.synchText( selectedProject, SELECTED_PROJECT, null );
-    }
-
-    protected void createWebRootFolderGroup( Composite topComposite )
-    {
-        Composite composite = SWTUtil.createTopComposite( topComposite, 3 );
-
-        GridLayout gl = new GridLayout( 3, false );
-
-        composite.setLayout( gl );
-        composite.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 3, 1 ) );
 
         SWTUtil.createLabel( composite, SWT.LEAD, Msgs.webRootFolder, 1 );
 
-        webRootFolder = SWTUtil.createText( composite, 1 );
+        webRootFolder = SWTUtil.createText( composite, 2 );
 
         webRootFolder.setEditable( false );
 
@@ -196,8 +186,6 @@ public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements 
         Composite topComposite = SWTUtil.createTopComposite( parent, 3 );
 
         createSelectedProjectGroup( topComposite );
-
-        createWebRootFolderGroup( topComposite );
 
         createJSPFolderGroup( topComposite );
 
