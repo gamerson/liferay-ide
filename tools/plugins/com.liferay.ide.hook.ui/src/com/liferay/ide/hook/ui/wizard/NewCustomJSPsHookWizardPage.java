@@ -56,6 +56,7 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPa
 
 /**
  * @author Greg Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
 public class NewCustomJSPsHookWizardPage extends DataModelWizardPage implements INewHookDataModelProperties

@@ -38,6 +38,7 @@ import org.w3c.dom.NodeList;
 /**
  * @author Gregory Amerson
  * @author Cindy Li
+ * @author Terry Jia
  */
 @SuppressWarnings( { "restriction" } )
 public class HookDescriptorHelper extends LiferayDescriptorHelper implements INewHookDataModelProperties
@@ -58,7 +59,6 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
-
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
@@ -86,7 +86,6 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
-
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
@@ -114,7 +113,6 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         final DOMModelEditOperation operation = new DOMModelEditOperation( descriptorFile )
         {
-
             @Override
             protected void createDefaultFile()
             {
@@ -311,7 +309,6 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelReadOperation( descriptorFile )
         {
-
             protected IStatus doExecute( IDOMDocument document )
             {
                 retval[0] = readCustomJSPFolder( document, model );
@@ -355,7 +352,6 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
-
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );
@@ -383,7 +379,6 @@ public class HookDescriptorHelper extends LiferayDescriptorHelper implements INe
 
         DOMModelOperation operation = new DOMModelEditOperation( descriptorFile )
         {
-
             protected void createDefaultFile()
             {
                 createDefaultDescriptor( HOOK_DESCRIPTOR_TEMPLATE, getDescriptorVersion() );

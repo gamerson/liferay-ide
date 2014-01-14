@@ -19,6 +19,7 @@ import org.eclipse.wst.common.componentcore.internal.operation.IArtifactEditOper
 
 /**
  * @author Greg Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
 public interface INewHookDataModelProperties extends IArtifactEditOperationDataModelProperties

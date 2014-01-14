@@ -46,6 +46,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
 /**
  * @author Greg Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings( { "restriction", "unchecked", "rawtypes" } )
 public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProvider
