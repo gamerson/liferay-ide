@@ -127,6 +127,11 @@ public class PortalPropertiesBindingImpl extends HookListBindingImpl
                 PortalPropertiesBindingImpl.this.portalPropertiesConfiguration.clearProperty( oldName );
             }
 
+            if( name == null )
+            {
+                name = ""; //$NON-NLS-1$
+            }
+
             this.nameValue.setName( name );
             // set the value again incase the name is being switched to a valid name
             setValue( this.nameValue.getValue() );

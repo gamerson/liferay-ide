@@ -25,6 +25,7 @@ import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.annotations.Image;
 import org.eclipse.sapphire.modeling.annotations.NoDuplicates;
+import org.eclipse.sapphire.modeling.annotations.Required;
 import org.eclipse.sapphire.modeling.annotations.Service;
 
 /**
@@ -39,6 +40,7 @@ public interface PortalProperty extends Element
     // *** Name ***
 
     @NoDuplicates
+    @Required
     @Service( impl = PortalPropertyNamePossibleValuesService.class )
     ValueProperty PROP_NAME = new ValueProperty( TYPE, "Name" ); //$NON-NLS-1$
 
