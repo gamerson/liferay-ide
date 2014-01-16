@@ -37,7 +37,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jst.common.project.facet.IJavaFacetInstallDataModelProperties;
+import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.jst.common.project.facet.core.JavaFacetInstallConfig;
+import org.eclipse.jst.j2ee.project.facet.IJ2EEFacetConstants;
 import org.eclipse.jst.j2ee.web.project.facet.IWebFacetInstallDataModelProperties;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -101,6 +103,38 @@ public class SDKPluginFacetUtil
                     }
                 }
             }
+        }
+    }
+
+    private static void checkFacets( IFacetedProjectWorkingCopy fpjwc )
+    {
+        Set<IProjectFacetVersion> currentProjectFacetVersions = fpjwc.getProjectFacets();
+
+        IProjectFacetVersion javaFacet = null;
+        IProjectFacetVersion webFacet = null;
+
+        for( IProjectFacetVersion currentFacetVersion : currentProjectFacetVersions )
+        {
+            if( ProjectUtil.isDynamicWebFacet( currentFacetVersion ) )
+            {
+                webFacet = currentFacetVersion;
+            }
+            else if( ProjectUtil.isJavaFacet( currentFacetVersion ) )
+            {
+                javaFacet = currentFacetVersion;
+            }
+        }
+
+        IProjectFacetVersion dynamicWeb25 = IJ2EEFacetConstants.DYNAMIC_WEB_25;
+        IProjectFacetVersion dynamicWeb30 = IJ2EEFacetConstants.DYNAMIC_WEB_30;
+        IProjectFacetVersion dynamicWeb31 = IJ2EEFacetConstants.DYNAMIC_WEB_31;
+        IProjectFacetVersion java15 = JavaFacet.VERSION_1_5;
+
+        if( ( ( javaFacet != null ) && javaFacet.equals( java15 ) ) &&
+            ( ( webFacet != null ) && ( webFacet.equals( dynamicWeb30 ) || webFacet.equals( dynamicWeb31 ) ) ) )
+        {
+            fpjwc.removeProjectFacet( webFacet );
+            fpjwc.addProjectFacet( dynamicWeb25 );
         }
     }
 
@@ -293,6 +327,8 @@ public class SDKPluginFacetUtil
                     configureWebFacet( fpjwc, requiredFacet, preset );
                 }
             }
+
+            checkFacets(fpjwc);
         }
     }
 
@@ -471,6 +507,7 @@ public class SDKPluginFacetUtil
             }
         }
     }
+
 
     private static class Msgs extends NLS
     {
