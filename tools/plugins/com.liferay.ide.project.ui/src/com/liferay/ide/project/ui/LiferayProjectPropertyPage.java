@@ -15,6 +15,20 @@
 
 package com.liferay.ide.project.ui;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.LiferayProjectCore;
+import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
+import com.liferay.ide.project.core.model.LiferayPluginSDKOp;
+import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKCorePlugin;
+import com.liferay.ide.sdk.core.SDKUtil;
+import com.liferay.ide.sdk.ui.SDKsPreferencePage;
+import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.util.ServerUtil;
+import com.liferay.ide.ui.util.SWTUtil;
+import com.liferay.ide.ui.util.UIUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,20 +72,6 @@ import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.osgi.service.prefs.BackingStoreException;
-
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.LiferayProjectCore;
-import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
-import com.liferay.ide.project.core.model.LiferayPluginSDKOp;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKCorePlugin;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.sdk.ui.SDKsPreferencePage;
-import com.liferay.ide.server.core.ILiferayRuntime;
-import com.liferay.ide.server.util.ServerUtil;
-import com.liferay.ide.ui.util.SWTUtil;
-import com.liferay.ide.ui.util.UIUtil;
 
 /**
  * @author Greg Amerson
