@@ -100,8 +100,7 @@ public class JSFPortletDescriptorHelper extends PortletDescriptorHelper
 
         return status;
     }
-    
-    
+
     @Override
     protected String getPortletClassText( IDataModel model )
     {
