@@ -4,7 +4,7 @@
 
 <template name="sb-column" autoinsert="true" context="xml_tag" id="servicebuilder.column" deleted="false" description="a column for an entity" enabled="true" >&lt;column name="${name}" type="${String}" /&gt;</template>
 
-<template name="sb-columnp-rimary" autoinsert="true" context="xml_tag" id="servicebuilder.columnprimary" deleted="false" description="a primary column for an entity" enabled="true" >&lt;column name="${name}" type="Long" primary="true" /&gt;</template>
+<template name="sb-columnp-primary" autoinsert="true" context="xml_tag" id="servicebuilder.columnprimary" deleted="false" description="a primary column for an entity" enabled="true" >&lt;column name="${name}" type="Long" primary="true" /&gt;</template>
 
 <template name="sb-entity" autoinsert="true" context="xml_tag" id="servicebuilder.entity" deleted="false" description="an entity element" enabled="true" >
 &lt;entity name="${name}" local-service="${true}" remote-service="${false}"&gt;
