@@ -104,7 +104,7 @@ public class NewJSFPortletClassDataModelProvider extends NewPortletClassDataMode
         }
         else if( LIFERAY_FACES_ALLOY.equals( propertyName ) )
         {
-            return true;
+            return false;
         }
         else if( PRIME_FACES.equals( propertyName ) )
         {
@@ -116,7 +116,7 @@ public class NewJSFPortletClassDataModelProvider extends NewPortletClassDataMode
         }
         else if( STANDARD_JSF.equals( propertyName ) )
         {
-            return false;
+            return true;
         }
 
         return super.getDefaultProperty( propertyName );

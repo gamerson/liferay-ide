@@ -22,7 +22,6 @@ import com.liferay.ide.ui.util.SWTUtil;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -56,8 +55,8 @@ public class NewJSFPortletOptionsWizardPage extends NewPortletOptionsWizardPage
     {
         super.createJSPsField( parent );
 
-        createJspsButton.setText( Msgs.createXhtmlFiles );
-        jspLabel.setText( Msgs.xhtmlFolder );
+        createJspsButton.setText( Msgs.createViewFiles );
+        jspLabel.setText( Msgs.viewFolder );
     }
 
     @Override
@@ -102,6 +101,9 @@ public class NewJSFPortletOptionsWizardPage extends NewPortletOptionsWizardPage
 
         group.setLayoutData( gd );
 
+        standardJSFRadio = new Button( group, SWT.RADIO );
+        standardJSFRadio.setText( Msgs.standardJSF );
+
         iceFacesRadio = new Button( group, SWT.RADIO );
         iceFacesRadio.setText( Msgs.iceFaces );
 
@@ -114,26 +116,23 @@ public class NewJSFPortletOptionsWizardPage extends NewPortletOptionsWizardPage
         richFacesRadio = new Button( group, SWT.RADIO );
         richFacesRadio.setText( Msgs.richFaces );
 
-        standardJSFRadio = new Button( group, SWT.RADIO );
-        standardJSFRadio.setText( Msgs.standardJSF );
-
+        synchHelper.synchRadio( standardJSFRadio, STANDARD_JSF, null );
         synchHelper.synchRadio( iceFacesRadio, ICE_FACES, null );
         synchHelper.synchRadio( liferayFacesAlloyRadio, LIFERAY_FACES_ALLOY, null );
         synchHelper.synchRadio( primeFacesRadio, PRIME_FACES, null );
         synchHelper.synchRadio( richFacesRadio, RICH_FACES, null );
-        synchHelper.synchRadio( standardJSFRadio, STANDARD_JSF, null );
     }
 
     private static class Msgs extends NLS
     {
-        public static String createXhtmlFiles;
+        public static String createViewFiles;
         public static String iceFaces;
         public static String liferayFacesAlloy;
         public static String primeFaces;
         public static String richFaces;
         public static String standardJSF;
         public static String viewTemplate;
-        public static String xhtmlFolder;
+        public static String viewFolder;
 
         static
         {
