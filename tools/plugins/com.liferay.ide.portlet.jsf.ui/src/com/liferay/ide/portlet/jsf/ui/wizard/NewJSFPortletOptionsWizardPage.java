@@ -21,6 +21,8 @@ import com.liferay.ide.ui.util.SWTUtil;
 
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -57,6 +59,20 @@ public class NewJSFPortletOptionsWizardPage extends NewPortletOptionsWizardPage
 
         createJspsButton.setText( Msgs.createViewFiles );
         jspLabel.setText( Msgs.viewFolder );
+
+        createJspsButton.addSelectionListener( new SelectionAdapter()
+        {
+
+            @Override
+            public void widgetSelected( SelectionEvent e )
+            {
+                standardJSFRadio.setEnabled( createJspsButton.getSelection() );
+                iceFacesRadio.setEnabled( createJspsButton.getSelection() );
+                liferayFacesAlloyRadio.setEnabled( createJspsButton.getSelection() );
+                primeFacesRadio.setEnabled( createJspsButton.getSelection() );
+                richFacesRadio.setEnabled( createJspsButton.getSelection() );
+            }
+        } );
     }
 
     @Override

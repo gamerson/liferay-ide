@@ -102,6 +102,7 @@ public class AddJSFPortletOperation extends AddPortletOperation implements INewJ
         if( getDataModel().getBooleanProperty( ICE_FACES ) )
         {
             jsfNamespaces.append( "\txmlns:ace=\"http://www.icefaces.org/icefaces/components\"\n" );
+            jsfNamespaces.append( "\txmlns:icecore=\"http://www.icefaces.org/icefaces/core\"\n" );
         }
 
         if( getDataModel().getBooleanProperty( LIFERAY_FACES_ALLOY ) )
