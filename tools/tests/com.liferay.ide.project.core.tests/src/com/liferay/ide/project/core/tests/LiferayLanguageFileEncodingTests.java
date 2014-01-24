@@ -190,21 +190,30 @@ public class LiferayLanguageFileEncodingTests extends ProjectCoreBase
         assertEquals( true, isLanguagePropertiesFile( removeThisLineTest ) );
 
         // test the filename without underscore
+        validateEncoding( fileNameWithoutUnderscore );
         assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore ) );
+        validateEncoding( fileNameWithoutUnderscore_CorrectEncoding );
         assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore_CorrectEncoding ) );
+        validateEncoding( fileNameWithoutUnderscore_IncorrectEncoding );
         assertEquals( true, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding ) );
 
         // test the filename with underscore
+        validateEncoding( fileNameWithUnderscore_CorrectEncoding );
         assertEquals( false, hasEncodingMarker( fileNameWithUnderscore_CorrectEncoding ) );
+        validateEncoding( fileNameWithUnderscore_IncorrectEncoding );
         assertEquals( true, hasEncodingMarker( fileNameWithUnderscore_IncorrectEncoding ) );
 
         // test the filename with a wildcard "*"
+        validateEncoding( fileNameWithStar );
         assertEquals( false, hasEncodingMarker( fileNameWithStar ) );
+        validateEncoding( fileNameWithStarCorrectEncoding );
         assertEquals( false, hasEncodingMarker( fileNameWithStarCorrectEncoding ) );
+        validateEncoding( fileNameWithStarIncorrectEncoding );
         assertEquals( true, hasEncodingMarker( fileNameWithStarIncorrectEncoding ) );
 
         // test an incorrect encoding file referenced by liferay-hook.xml
         // remove the reference line, the marker will disappear.
+        validateEncoding( removeThisLineTest );
         assertEquals( true, hasEncodingMarker( removeThisLineTest ) );
 
         final IFile liferayHookXml = CoreUtil.getDescriptorFile( hookProject, ILiferayConstants.LIFERAY_HOOK_XML_FILE );
@@ -286,18 +295,27 @@ public class LiferayLanguageFileEncodingTests extends ProjectCoreBase
         assertEquals( true, isLanguagePropertiesFile( supportedLocaleEncoding_zh_CN ) );
 
         // test filename with underscore
+        validateEncoding( fileNameWithUnderscore_CorrectEncoding );
         assertEquals( false, hasEncodingMarker( fileNameWithUnderscore_CorrectEncoding ) );
+        validateEncoding( fileNameWithUnderscore_IncorrectEncoding );
         assertEquals( true, hasEncodingMarker( fileNameWithUnderscore_IncorrectEncoding ) );
 
         // test filename without underscore
+        validateEncoding( fileNameWithoutUnderscore );
         assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore ) );
+        validateEncoding( fileNameWithoutUnderscore_CorrectEncoding );
         assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore_CorrectEncoding ) );
+        validateEncoding( fileNameWithoutUnderscore_IncorrectEncoding );
         assertEquals( true, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding ) );
+        validateEncoding( fileNameWithoutUnderscore_IncorrectEncoding1 );
         assertEquals( true, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding1 ) );
 
         // test supported locale
+        validateEncoding( supportedLocaleEncoding );
         assertEquals( false, hasEncodingMarker( supportedLocaleEncoding ) );
+        validateEncoding( supportedLocaleEncoding_en_US );
         assertEquals( false, hasEncodingMarker( supportedLocaleEncoding_en_US ) );
+        validateEncoding( supportedLocaleEncoding_zh_CN );
         assertEquals( false, hasEncodingMarker( supportedLocaleEncoding_zh_CN ) );
 
         // test encoding one file to default, take FileNameWithUnderscore_IncorrectEncoding.properties for example.
