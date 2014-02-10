@@ -33,6 +33,7 @@ import org.eclipse.sapphire.services.ValidationService;
 /**
  * @author Gregory Amerson
  * @author Kuo Zhang
+ * @author Simon Jiang
  */
 public class ProjectNameValidationService extends ValidationService
 {
@@ -75,7 +76,7 @@ public class ProjectNameValidationService extends ValidationService
             {
                 retval = StatusBridge.create( nameStatus );
             }
-            else if( CoreUtil.getProject( currentProjectName ).exists() )
+            else if( checkExistProject( currentProjectName, op ) )
             {
                 retval = Status.createErrorStatus( "A project with that name already exists." );
             }
@@ -114,6 +115,19 @@ public class ProjectNameValidationService extends ValidationService
         return retval;
     }
 
+    private boolean checkExistProject( String projectName, NewLiferayPluginProjectOp op )
+    {
+        if ( "ant".equals( op.getProjectProvider().content().getShortName() ))
+        {
+            return CoreUtil.getProject( projectName + "-" + op.getPluginType().content().toString() ).exists();
+        }
+        else
+        {
+            return CoreUtil.getProject( projectName ).exists();
+        }
+    }
+
+    
     @Override
     public void dispose()
     {
