@@ -180,6 +180,11 @@ public class NewJSFPortletClassDataModelProvider extends NewPortletClassDataMode
                 return JSFCorePlugin.createErrorStatus( Msgs.jsfPortletClassValid );
             }
         }
+        
+        if( SUPERCLASS.equals( propertyName ) )
+        {
+            return Status.OK_STATUS;
+        }
 
         return super.validate( propertyName );
     }
