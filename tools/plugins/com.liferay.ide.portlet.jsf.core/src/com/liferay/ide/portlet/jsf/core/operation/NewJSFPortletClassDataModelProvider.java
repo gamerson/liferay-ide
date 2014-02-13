@@ -180,6 +180,7 @@ public class NewJSFPortletClassDataModelProvider extends NewPortletClassDataMode
                 return JSFCorePlugin.createErrorStatus( Msgs.jsfPortletClassValid );
             }
         }
+
         //IDE-1412
         //Because JSF Portlet wizard doesn't need to to check MVCPortlet super class, just return OK.
         if( SUPERCLASS.equals( propertyName ) )
