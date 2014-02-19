@@ -28,10 +28,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -237,6 +240,26 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
             {
                 return HookCore.createErrorStatus( Msgs.customJSPsFolderNotConfigured );
             }
+
+            IProject project = getTargetProject();
+
+            IFolder defaultWebappRootFolder = CoreUtil.getDefaultDocrootFolder( project );
+
+            if( defaultWebappRootFolder != null )
+            {
+                Folder rootFolder = (Folder) defaultWebappRootFolder;
+
+                String jspFolderPath = rootFolder.getFullPath().append( jspFolder ).toPortableString();
+
+                try
+                {
+                    rootFolder.checkValidPath( new Path( jspFolderPath ), IResource.FOLDER, true );
+                }
+                catch( CoreException e )
+                {
+                    return HookCore.createErrorStatus( Msgs.customJSPsFolderIncludedInvalidCharacter );
+                }
+            }
         }
         else if( CUSTOM_JSPS_ITEMS.equals( propertyName ) && getBooleanProperty( CREATE_CUSTOM_JSPS ) )
         {
@@ -433,6 +456,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
 
         public static String contentFolderNotConfigured;
         public static String customJSPsFolderNotConfigured;
+        public static String customJSPsFolderIncludedInvalidCharacter;
         public static String portalPropertiesFileNotConfigured;
         public static String specifyOneEventActionProperty;
         public static String specifyOneItem;
