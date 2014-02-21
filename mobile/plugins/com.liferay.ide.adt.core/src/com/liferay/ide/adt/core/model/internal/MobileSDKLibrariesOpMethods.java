@@ -27,6 +27,7 @@ import org.eclipse.sapphire.modeling.Status;
 
 /**
  * @author Gregory Amerson
+ * @author Kuo Zhang
  */
 public class MobileSDKLibrariesOpMethods
 {
@@ -50,7 +51,10 @@ public class MobileSDKLibrariesOpMethods
 
                 if( ! containsInstance( op, previousServerInstances ) )
                 {
-                    op.getPreviousServerInstances().insert().copy( op );
+                    if( "OK".equals( op.getStatus().content() ) )
+                    {
+                        op.getPreviousServerInstances().insert().copy( op );
+                    }
                 }
 
                 op.resource().save();
@@ -73,5 +77,11 @@ public class MobileSDKLibrariesOpMethods
         }
 
         return false;
+    }
+
+    public static void updateServerStatus( MobileSDKLibrariesOp op )
+    {
+        op.getStatus().service( StatusDerivedValueService.class ).updateStatus();
+        op.getSummary().service( SummaryDerivedValueService.class ).updateStatus();
     }
 }
