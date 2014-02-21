@@ -164,7 +164,8 @@
             </content>
             <description>Create a new project configured as a Liferay plugin</description>
             <scale-vertically>true</scale-vertically>
-            <margin-right>10</margin-right>
+            <scroll-vertically>true</scroll-vertically>
+            <margin-left>0</margin-left>
         </page>
         <description>Create a new project configured as a Liferay plugin</description>
         <page>
