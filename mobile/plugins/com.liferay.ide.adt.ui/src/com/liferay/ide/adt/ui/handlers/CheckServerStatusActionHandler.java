@@ -12,30 +12,35 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.adt.core.model.internal;
-
+package com.liferay.ide.adt.ui.handlers;
 import com.liferay.ide.adt.core.model.MobileSDKLibrariesOp;
 
-import org.eclipse.sapphire.modeling.ProgressMonitor;
-import org.eclipse.sapphire.modeling.Status;
+import org.eclipse.sapphire.ui.Presentation;
+import org.eclipse.sapphire.ui.SapphireActionHandler;
 
 
 /**
- * @author Gregory Amerson
  * @author Kuo Zhang
  */
-public class MobileSDKLibrariesOpMethods
+public class CheckServerStatusActionHandler extends SapphireActionHandler
 {
 
-    public static final Status execute( final MobileSDKLibrariesOp op, final ProgressMonitor monitor )
+    public CheckServerStatusActionHandler()
     {
-        // TODO perform op
-        return Status.createOkStatus();
+        super();
     }
 
-    public static void updateServerStatus( MobileSDKLibrariesOp op )
+    @Override
+    protected Object run( Presentation context )
     {
-        op.getStatus().service( StatusDerivedValueService.class ).updateStatus();
-        op.getSummary().service( SummaryDerivedValueService.class ).updateStatus();
+        op( context ).updateServerStatus();
+
+        return null;
     }
+
+    private MobileSDKLibrariesOp op(  Presentation context )
+    {
+        return context.part().getModelElement().nearest( MobileSDKLibrariesOp.class );
+    }
+
 }
