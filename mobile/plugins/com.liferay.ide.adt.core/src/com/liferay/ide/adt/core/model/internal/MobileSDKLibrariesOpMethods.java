@@ -14,14 +14,9 @@
  *******************************************************************************/
 package com.liferay.ide.adt.core.model.internal;
 
-import com.liferay.ide.adt.core.ADTCore;
 import com.liferay.ide.adt.core.model.MobileSDKLibrariesOp;
-import com.liferay.ide.adt.core.model.ServerInstance;
-import com.liferay.ide.core.util.CoreUtil;
 
-import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
-import org.eclipse.sapphire.modeling.ResourceStoreException;
 import org.eclipse.sapphire.modeling.Status;
 
 
@@ -34,49 +29,8 @@ public class MobileSDKLibrariesOpMethods
 
     public static final Status execute( final MobileSDKLibrariesOp op, final ProgressMonitor monitor )
     {
-        saveWizardSettings( op );
-
         // TODO perform op
-
         return Status.createOkStatus();
-    }
-
-    private static void saveWizardSettings( final MobileSDKLibrariesOp op )
-    {
-        if( ! CoreUtil.isNullOrEmpty( op.getUrl().content() ) )
-        {
-            try
-            {
-                final ElementList<ServerInstance> previousServerInstances = op.getPreviousServerInstances();
-
-                if( ! containsInstance( op, previousServerInstances ) )
-                {
-                    if( "OK".equals( op.getStatus().content() ) )
-                    {
-                        op.getPreviousServerInstances().insert().copy( op );
-                    }
-                }
-
-                op.resource().save();
-            }
-            catch( ResourceStoreException e )
-            {
-                ADTCore.logError( "Unable to persist wizard settings", e );
-            }
-        }
-    }
-
-    private static boolean containsInstance( MobileSDKLibrariesOp op, ElementList<ServerInstance> instances )
-    {
-        for( ServerInstance instance : instances )
-        {
-            if( instance.getUrl().content().equals( op.getUrl().content() ) )
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static void updateServerStatus( MobileSDKLibrariesOp op )
