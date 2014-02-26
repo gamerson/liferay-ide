@@ -14,6 +14,7 @@
  *******************************************************************************/
 package com.liferay.ide.adt.core.model;
 
+import com.liferay.ide.adt.core.model.internal.JavaPackageNameDefaultValueService;
 import com.liferay.ide.adt.core.model.internal.JavaProjectConversionService;
 import com.liferay.ide.adt.core.model.internal.MobileSDKLibrariesOpMethods;
 import com.liferay.ide.adt.core.model.internal.StatusDerivedValueService;
@@ -40,6 +41,7 @@ import org.eclipse.sapphire.modeling.annotations.Type;
 
 /**
  * @author Gregory Amerson
+ * @author Kuo Zhang
  */
 @Service( impl = JavaProjectConversionService.class )
 public interface MobileSDKLibrariesOp extends ServerInstance, ExecutableElement
@@ -93,6 +95,7 @@ public interface MobileSDKLibrariesOp extends ServerInstance, ExecutableElement
     // *** Package ***
 
     @Type( base = JavaPackageName.class )
+    @Service( impl = JavaPackageNameDefaultValueService.class )
     ValueProperty PROP_PACKAGE = new ValueProperty( TYPE, "Package" );
 
     Value<JavaPackageName> getPackage();
@@ -115,4 +118,7 @@ public interface MobileSDKLibrariesOp extends ServerInstance, ExecutableElement
 
     @DelegateImplementation( MobileSDKLibrariesOpMethods.class )
     Status execute( ProgressMonitor monitor );
+
+    @DelegateImplementation( MobileSDKLibrariesOpMethods.class )
+    void updateServerStatus();
 }
