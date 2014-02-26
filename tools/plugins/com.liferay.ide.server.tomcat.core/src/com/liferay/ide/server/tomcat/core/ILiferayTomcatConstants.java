@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 /**
  * @author Greg Amerson
+ * @author Terry Jia
  */
 public interface ILiferayTomcatConstants
 {
@@ -38,7 +39,16 @@ public interface ILiferayTomcatConstants
 
     String DEFAULT_USER_TIMEZONE = _defaultPrefs.get( "default.user.timezone", "GMT" ); //$NON-NLS-1$ //$NON-NLS-2$
 
+    int DEVELOPMENT_SERVER_MODEL = 2;
+
+    String LABEL_STANDARD_SERVER_MODEL = "Standard Server Model"; //$NON-NLS-1$
+
+    String LABEL_DEVELOPMENT_SERVER_MODEL = "Development Server Model"; //$NON-NLS-1$
+
     String[] LIB_EXCLUDES = _defaultPrefs.get( "tomcat.lib.excludes", StringPool.EMPTY ).split( StringPool.COMMA ); //$NON-NLS-1$
 
     boolean PREVENT_MULTI_EXT_PLUGINS_DEPLOY = _defaultPrefs.getBoolean( "prevent.multi.ext.plugins.deploy", false ); //$NON-NLS-1$
+
+    int STANDARD_SERVER_MODEL = 1;
+
 }
