@@ -131,7 +131,7 @@ public class ComponentAPIsCustomPart extends FormComponentPart
                 ADTUI.imageDescriptorFromPlugin( ADTUI.PLUGIN_ID, "/icons/e16/portlet_16x16.png" ) );
             imageRegistry.put(
                 API,
-                ADTUI.imageDescriptorFromPlugin( ADTUI.PLUGIN_ID, "/icons/e16/portlet_16x16.png" ) );
+                ADTUI.imageDescriptorFromPlugin( ADTUI.PLUGIN_ID, "/icons/e16/api_16x16.gif" ) );
         }
 
         @Override

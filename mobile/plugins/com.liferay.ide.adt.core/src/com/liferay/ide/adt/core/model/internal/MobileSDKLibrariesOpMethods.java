@@ -17,7 +17,6 @@ package com.liferay.ide.adt.core.model.internal;
 import com.liferay.ide.adt.core.ADTCore;
 import com.liferay.ide.adt.core.model.Library;
 import com.liferay.ide.adt.core.model.MobileSDKLibrariesOp;
-import com.liferay.ide.adt.core.model.ServerInstance;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.mobile.sdk.core.MobileSDKCore;
@@ -34,7 +33,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
-import org.eclipse.sapphire.modeling.ResourceStoreException;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
 import org.eclipse.sapphire.platform.StatusBridge;
@@ -70,24 +68,9 @@ public class MobileSDKLibrariesOpMethods
         }
     }
 
-    private static boolean containsInstance( MobileSDKLibrariesOp op, ElementList<ServerInstance> instances )
-    {
-        for( ServerInstance instance : instances )
-        {
-            if( instance.getUrl().content().equals( op.getUrl().content() ) )
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public static final Status execute( final MobileSDKLibrariesOp op, final ProgressMonitor monitor )
     {
         Status retval = null;
-
-        saveWizardSettings( op );
 
         final IProject project = CoreUtil.getProject( op.getProjectName().content() );
 
@@ -119,28 +102,6 @@ public class MobileSDKLibrariesOpMethods
         }
 
         return retval;
-    }
-
-    private static void saveWizardSettings( final MobileSDKLibrariesOp op )
-    {
-        if( ! CoreUtil.isNullOrEmpty( op.getUrl().content() ) )
-        {
-            try
-            {
-                final ElementList<ServerInstance> previousServerInstances = op.getPreviousServerInstances();
-
-                if( ! containsInstance( op, previousServerInstances ) )
-                {
-                    op.getPreviousServerInstances().insert().copy( op );
-                }
-
-                op.resource().save();
-            }
-            catch( ResourceStoreException e )
-            {
-                ADTCore.logError( "Unable to persist wizard settings", e );
-            }
-        }
     }
 
     public static void updateServerStatus( MobileSDKLibrariesOp op )
