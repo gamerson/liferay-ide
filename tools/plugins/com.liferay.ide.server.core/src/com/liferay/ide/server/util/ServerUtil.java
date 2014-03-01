@@ -35,6 +35,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -67,6 +68,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.launching.StandardVMType;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jst.server.core.FacetUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -198,6 +200,21 @@ public class ServerUtil
         {
             throw new CoreException( LiferayServerCore.createErrorStatus( e1 ) );
         }
+    }
+
+
+    public static Set<org.eclipse.wst.common.project.facet.core.runtime.IRuntime> convertToFacetRuntimes( Set<org.eclipse.wst.server.core.IRuntime> serverRuntimes )
+    {
+        Set<org.eclipse.wst.common.project.facet.core.runtime.IRuntime> facetRuntimes = new HashSet<org.eclipse.wst.common.project.facet.core.runtime.IRuntime>();
+
+        Iterator<org.eclipse.wst.server.core.IRuntime> it = serverRuntimes.iterator();
+
+        while( it.hasNext() )
+        {
+            facetRuntimes.add( FacetUtil.getRuntime( it.next() ) );
+        }
+
+        return facetRuntimes;
     }
 
     public static IStatus createErrorStatus( String msg )

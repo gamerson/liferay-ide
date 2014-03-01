@@ -42,6 +42,7 @@ import org.osgi.framework.Bundle;
  */
 public class LautRunner
 {
+
     private static final String _LAUT_VERSION = "1.0.6";
     private static final String LAUT_ENTRY = "laut-" + _LAUT_VERSION;
     private static final String LAUT_PATH = "com.liferay.laut.LautRunnerPath";

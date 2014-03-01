@@ -12,51 +12,66 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.alloy.ui.action;
+package com.liferay.ide.alloy.ui.handlers;
 
 import com.liferay.ide.alloy.core.util.AlloyUtil;
 import com.liferay.ide.alloy.ui.wizard.AlloyUIUpgradeWizard;
-import com.liferay.ide.ui.action.AbstractObjectAction;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.action.IAction;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.internal.AbstractEnabledHandler;
 
 
 /**
- * @author Gregory Amerson
  * @author Simon Jiang
  */
-public class UpgradeToolAction extends AbstractObjectAction
+@SuppressWarnings( "restriction" )
+public class AlloyUIUpgradeHandler extends AbstractEnabledHandler
 {
 
     @Override
-    public void run( IAction action )
+    public Object execute( ExecutionEvent event ) throws ExecutionException
     {
-        if( fSelection instanceof IStructuredSelection )
+        final ISelection selection = HandlerUtil.getCurrentSelection( event );
+        ArrayList<IProject> projectList = new ArrayList<IProject>();
+        if ( selection instanceof IStructuredSelection)
         {
-            ArrayList<IProject> projectList = new ArrayList<IProject>();
-            for(Iterator<?> it = ((IStructuredSelection) fSelection).iterator(); it.hasNext();)
+            for(Iterator<?> it = ((IStructuredSelection) selection).iterator(); it.hasNext();)
             {
                 IProject project = null;
                 Object o = it.next();
-                if( o instanceof IProject)
+                if( o instanceof IJavaProject)
                 {
-                    project = ( (IProject) o ).getProject() ;
+                    project = ( (IJavaProject) o ).getProject() ;
                 }
                 AlloyUtil.addLiferaySDKProject(project, projectList);
-
             }
-            if( projectList != null )
-            {
-                final AlloyUIUpgradeWizard wizard = new AlloyUIUpgradeWizard( projectList.toArray( new IProject[projectList.size()] ) );
-                new WizardDialog( getDisplay().getActiveShell(), wizard ).open();
-            }
-
         }
+        final AlloyUIUpgradeWizard wizard = new AlloyUIUpgradeWizard( projectList.toArray( new IProject[projectList.size()] ) );
+        new WizardDialog( HandlerUtil.getActiveShellChecked( event ), wizard ).open();
+
+        return null;
     }
+
+    @Override
+    public boolean isEnabled()
+    {
+        if (AlloyUtil.getAllLiferaySDKProject().length > 0 )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
 }

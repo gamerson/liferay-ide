@@ -66,7 +66,6 @@ public class AlloyCore extends Plugin
         return plugin;
     }
 
-
     public static LautRunner getLautRunner()
     {
         if( lautRunner == null )

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*******************************************************************************
+ * Copyright (c) 2000-2014 Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ *******************************************************************************/
+ -->
+<definition>
+    <import>
+        <package>org.eclipse.sapphire.ui.renderers.swt</package>
+        <package>com.liferay.ide.project.ui.action</package>
+        <package>com.liferay.ide.project.ui.wizard</package>
+        <package>org.eclipse.sapphire.ui.forms.swt</package>
+        <package>com.liferay.ide.alloy.ui.wizard</package>
+    </import>
+    <wizard>
+        <id>AlloyUIUpgradeWizard</id>
+        <element-type>com.liferay.ide.alloy.core.model.AlloyUIUpgradeOp</element-type>
+        <label>Liferay Plugin Project Upgrade</label>
+        <page>
+            <id>AlloyUIUpgradeProjectPage</id>
+            <label>Upgrade</label>
+            <content>
+                <label>Select which plugin projects to upgrade</label>
+                <property-editor>
+                    <property>SelectedProjects</property>
+                    <show-label>false</show-label>
+                    <hint>
+                        <name>factory</name>
+                        <value>LiferayCheckBoxListPropertyEditorPresentation$Factory</value>
+                    </hint>
+                    <span>true</span>
+                    <scale-vertically>true</scale-vertically>
+                    <hint>
+                        <name>show.header</name>
+                        <value>false</value>
+                    </hint>
+	                <action>
+                        <id>com.liferay.ide.core.alloy.select.project</id>
+                        <label>Select All</label>
+                        <key-binding-behavior>local</key-binding-behavior>
+                        
+                        <image>com/liferay/ide/alloy/ui/wizard/selectAll.gif</image>
+                        <location>after:com.liferay.ide.core.alloy.select.project</location>
+                        <type>PUSH</type>
+                    </action>
+                    <action>
+                        <id>com.liferay.ide.core.alloy.deselect.project</id>
+                        <label>Deselect All</label>
+                        <image>com/liferay/ide/alloy/ui/wizard/deselectAll.gif</image>
+                        <location>after:com.liferay.ide.core.alloy.select.project</location>
+                    </action>                    
+                </property-editor>
+                <spacer></spacer>
+                <property-editor>
+                    <property>RuntimeName</property>
+                    <label>Target runtime</label>
+                    <action>
+                        <id>NewLiferayRuntime</id>
+                        <label>New Liferay runtime...</label>
+                        <image>server_new.png</image>
+                    </action>
+                    <action-handler>
+                        <action>NewLiferayRuntime</action>
+                        <id>NewLiferayRuntimeHandler</id>
+                        <impl>NewLiferayRuntimeAction</impl>
+                    </action-handler>
+                    <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
+                </property-editor>
+            </content>
+            <description>Upgrade plugin projects to latest Liferay Portal 6.2</description>
+            <image>AlloyUIUpgradeWizard.png</image>
+            <scale-vertically>true</scale-vertically>
+            <scroll-vertically>false</scroll-vertically>
+        </page>
+        <page>
+            <id>ActionsSetting</id>
+            <description>Upgrade plugin projects to latest Liferay Portal 6.2</description>
+            <label>Upgrade</label>
+            <image>AlloyUIUpgradeWizard.png</image>
+            <scale-vertically>true</scale-vertically>
+            <scroll-vertically>false</scroll-vertically>
+            <content>
+                <label>Select which upgrade actions to perform to each project </label>
+                <property-editor>
+                    <property>SelectedActions</property>
+                    <style>Sapphire.PropertyEditor.CheckBoxGroup.Vertical</style>
+                    <hint>
+                        <name>browse.only</name>
+                        <value>true</value>
+                    </hint>
+                    <hint>
+                        <name>checkbox.layout</name>
+                    </hint>
+                    <hint>
+                        <name>show.header</name>
+                        <value>false</value>
+                    </hint>
+                    <show-label>false</show-label>
+                </property-editor>
+             </content>
+        </page>
+        <description>Upgrade Liferay Project </description>
+    </wizard>
+</definition>

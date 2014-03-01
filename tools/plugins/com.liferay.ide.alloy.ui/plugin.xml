@@ -2,6 +2,64 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="com.liferay.ide.newWizards"
+            icon="icons/e16/laut.png"
+            id="com.liferay.ide.alloy.ui.wizard.AlloyUIUpgradeWizard"
+            name="%upgrade.project.wizard.name"
+            project="true">
+         <class class="com.liferay.ide.alloy.ui.wizard.AlloyUIUpgradeWizard">
+         </class>
+
+         <description>
+            %new.project.wizard.description
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="com.liferay.ide.alloy.ui.handlers"
+            description="AlloyUI Upgrade."
+            id="com.liferay.ide.alloy.ui.handlers.alloyUIUpgrade"
+            name="AlloyUI Upgrade">
+      </command>
+      <category
+            description="AlloyUI Upgrade"
+            id="com.liferay.ide.alloy.ui.handlers"
+            name="AlloyUI Upgrade">
+      </category>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:project?after=additions">
+         <command
+               commandId="com.liferay.ide.alloy.ui.handlers.alloyUIUpgrade"
+               icon="icons/e16/laut.png"
+               label="AlloyUI Upgrade"
+               style="push"
+               tooltip="Upgrade portal runtime to latest.">
+         </command>
+      </menuContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="com.liferay.ide.alloy.ui.handlers.AlloyUIUpgradeHandler"
+            commandId="com.liferay.ide.alloy.ui.handlers.alloyUIUpgrade">
+      </handler>
+   </extension>
+
+   <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"
@@ -22,29 +80,12 @@
             objectClass="org.eclipse.core.resources.IResource">
          <action
                class="com.liferay.ide.alloy.ui.action.UpgradeToolAction"
-               enablesFor="1"
+               enablesFor="*"
                icon="icons/e16/laut.png"
                id="com.liferay.ide.alloy.ui.popup.laut"
                label="Run Liferay AUI Upgrade Tool"
                menubarPath="liferayPopupMenuCategory/slot1">
          </action>
-         <enablement>
-             <adapt type="org.eclipse.core.resources.IResource">
-                <and>
-                   <adapt type="org.eclipse.core.resources.IProject">
-                       <test forcePluginActivation="true"
-                           property="org.eclipse.wst.common.project.facet.core.projectFacet"
-                           value="liferay.portlet" />
-                   </adapt>
-                   <test
-                        args="6.2.0"
-                        forcePluginActivation="true"
-                        property="com.liferay.ide.core.minimumRequiredPortalVersion"
-                        value="true">
-                   </test>
-                </and>
-             </adapt>
-         </enablement>
       </objectContribution>
    </extension>
 
