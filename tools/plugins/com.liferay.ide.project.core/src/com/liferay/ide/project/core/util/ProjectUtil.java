@@ -28,6 +28,7 @@ import com.liferay.ide.project.core.facet.PluginFacetProjectCreationDataModelPro
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.PluginType;
 import com.liferay.ide.sdk.core.ISDKConstants;
+import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.ByteArrayInputStream;
@@ -950,6 +951,27 @@ public class ProjectUtil
         }
 
         return pluginType;
+    }
+
+
+    public static IProject[] getWorkspaceLiferaySDKProject()
+    {
+        final List<IProject> sdkProjects = new ArrayList<IProject>();
+
+        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+
+        for (IProject project : projects)
+        {
+            if ( ProjectUtil.isLiferayFacetedProject( project ) )
+            {
+                if (SDKUtil.isSDKProject( project ) )
+                {
+                    sdkProjects.add( project );
+                }
+            }
+        }
+
+        return sdkProjects.toArray( new IProject[sdkProjects.size()]);
     }
 
     public static boolean hasFacet( IProject project, IProjectFacet checkProjectFacet )
