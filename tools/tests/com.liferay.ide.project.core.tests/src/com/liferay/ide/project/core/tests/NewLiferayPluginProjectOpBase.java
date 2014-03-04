@@ -18,6 +18,7 @@ package com.liferay.ide.project.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.IPortletFramework;
@@ -47,12 +48,17 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.sse.core.StructuredModelManager;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.junit.Test;
+import org.w3c.dom.NodeList;
 
 /**
  * @author Gregory Amerson
  * @author Kuo Zhang
  */
+@SuppressWarnings( "restriction" )
 public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 {
 
@@ -164,6 +170,17 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         return checkNewThemeAntProject( op, project, "build-theme-defaults.xml" );
     }
 
+    protected NodeList getElements( IFile file, String elementName ) throws Exception
+    {
+        final IDOMModel domModel = (IDOMModel) StructuredModelManager.getModelManager().getModelForRead( file );
+        final IDOMDocument document = domModel.getDocument();
+
+        final NodeList nodeList = document.getElementsByTagName( elementName );
+        domModel.releaseFromRead();
+
+        return nodeList;
+    }
+
     protected abstract String getServiceXmlDoctype();
 
     @Test
@@ -201,6 +218,51 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
             assertEquals( exceptedDisplayName, op.getDisplayName().content() );
             assertEquals( exceptedDisplayName, dvs.value() );
         }
+    }
+
+    @Test
+    public void testIncludeSampleCode() throws Exception
+    {
+        // test portlet project
+        NewLiferayPluginProjectOp op = newProjectOp("test-include-sample-code-portlet");
+
+        // the default value of include-sample-code is true
+        assertEquals( true, op.getIncludeSampleCode().content() );
+
+        op.setIncludeSampleCode( false );
+        op.setPluginType( PluginType.portlet );
+
+        IProject project = createAntProject( op );
+
+        IFile portletXml = CoreUtil.getDescriptorFile( project, ILiferayConstants.PORTLET_XML_FILE );
+        IFile liferayPortletXml = CoreUtil.getDescriptorFile( project, ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
+        IFile liferayDisplayXml = CoreUtil.getDescriptorFile( project, ILiferayConstants.LIFERAY_DISPLAY_XML_FILE );
+
+        assertEquals( 0, getElements( portletXml, "portlet" ).getLength() );
+        assertEquals( 0, getElements( liferayPortletXml, "portlet" ).getLength() );
+        assertEquals( 0, getElements( liferayDisplayXml, "category" ).getLength() );
+
+        // test service-builder project
+        op = newProjectOp("test-include-sample-code-service-builder");
+
+        // the default value of include-sample-code is false, because the preference was stored after the last project
+        // was created successfully.
+        assertEquals( false, op.getIncludeSampleCode().content() );
+
+        op.setIncludeSampleCode( false );
+        op.setPluginType( PluginType.servicebuilder );
+
+        project = createAntProject( op );
+
+        portletXml = CoreUtil.getDescriptorFile( project, ILiferayConstants.PORTLET_XML_FILE );
+        liferayPortletXml = CoreUtil.getDescriptorFile( project, ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
+        liferayDisplayXml = CoreUtil.getDescriptorFile( project, ILiferayConstants.LIFERAY_DISPLAY_XML_FILE );
+        IFile serviceXml = CoreUtil.getDescriptorFile( project, ILiferayConstants.LIFERAY_SERVICE_BUILDER_XML_FILE );
+
+        assertEquals( 0, getElements( portletXml, "portlet" ).getLength() );
+        assertEquals( 0, getElements( liferayPortletXml, "portlet" ).getLength() );
+        assertEquals( 0, getElements( liferayDisplayXml, "category" ).getLength() );
+        assertEquals( 0, getElements( serviceXml, "entity" ).getLength() );
     }
 
     protected void testLocationListener() throws Exception
@@ -310,6 +372,7 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals( true, layoutXml.exists() );
     }
 
+
     @Test
     public void testNewPortletAntProject() throws Exception
     {
@@ -327,6 +390,7 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals( false, serviceXml.exists() );
     }
 
+
     protected void testNewProjectCustomLocationPortlet() throws Exception
     {
         final IPath customLocationBase = getCustomLocationBase();
@@ -340,7 +404,6 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals(
             "Project not at expected custom location", newProjectPortlet.getLocation(), customLocationPortlet );
     }
-
 
     protected void testNewProjectCustomLocationWrongSuffix() throws Exception
     {
@@ -358,7 +421,6 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
             newProjectWrongSuffix.getLocation().equals(
                 customLocationWrongSuffix.append( testProjectCustomWrongSuffix + "-portlet" ) ) );
     }
-
 
     protected void testNewSDKProjectCustomLocation() throws Exception
     {
@@ -492,6 +554,8 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals( true, application.exists() );
     }
 
+
+
     @Test
     public void testPluginsSDKNameDefaultValue() throws Exception
     {
@@ -526,6 +590,7 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals( "<None>", op2.getPluginsSDKName().content() );
     }
 
+
     @Test
     public void testPluginsSDKNameListener() throws Exception
     {
@@ -550,8 +615,6 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
     }
 
-
-
     @Test
     public void testPluginsSDKNamePossibleValues() throws Exception
     {
@@ -570,7 +633,6 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals( true, exceptedSDKNames.containsAll( acturalSDKNames ) );
         assertEquals( true, acturalSDKNames.containsAll( exceptedSDKNames ) );
     }
-
 
     @Test
     public void testPluginsSDKNameValidation() throws Exception
@@ -712,6 +774,8 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
 
     }
 
+
+
     @Test
     public void testPortletFrameworkPossibleValues() throws Exception
     {
@@ -763,8 +827,6 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         assertEquals( true, exceptedLables.containsAll( acturalLables ) );
         assertEquals( true, acturalLables.containsAll( exceptedLables ) );
     }
-
-
 
     protected void testProjectNameValidation( final String initialProjectName ) throws Exception
     {
