@@ -109,4 +109,12 @@
             required="true">
       </templateVariable>
    </extension>
+   <extension
+         id="com.liferay.ide.service.core.serviceBuilderDescriptorHelper"
+         point="com.liferay.ide.project.core.liferayDescriptorHelpers">
+      <liferayDescriptorHelper
+            class="com.liferay.ide.service.core.operation.ServiceBuilderDescriptorHelper"
+            id="com.liferay.ide.service.core.serviceBuilderDescriptorHelper">
+      </liferayDescriptorHelper>
+   </extension>
 </plugin>
