@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -62,7 +61,7 @@ public class MavenProjectRemoteServerPublisher extends AbstractRemoteServerPubli
 
         if( runMavenGoal( projectFacade, getMavenDeployGoals(), monitor ) )
         {
-            final String targetFolder = projectFacade.getMavenProject( new NullProgressMonitor() ).getBuild().getDirectory();
+            final String targetFolder = projectFacade.getMavenProject().getBuild().getDirectory();
             final String targetWar = projectFacade.getMavenProject().getBuild().getFinalName() + "." +
                     projectFacade.getMavenProject().getPackaging();
 
