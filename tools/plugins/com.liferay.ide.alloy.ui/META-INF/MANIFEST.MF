@@ -8,6 +8,15 @@ Bundle-Vendor: %bundle.vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  com.liferay.ide.ui;bundle-version="2.0.0",
- com.liferay.ide.alloy.core;bundle-version="2.0.0"
+ com.liferay.ide.project.core,
+ org.eclipse.sapphire.ui,
+ com.liferay.ide.project.ui,
+ org.eclipse.ui.workbench,
+ com.liferay.ide.project.core,
+ com.liferay.ide.alloy.core;bundle-version="2.1.0",
+ com.liferay.ide.service.ui,
+ com.liferay.ide.service.core,
+ com.liferay.ide.portlet.core,
+ org.apache.commons.lang;bundle-version="2.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
