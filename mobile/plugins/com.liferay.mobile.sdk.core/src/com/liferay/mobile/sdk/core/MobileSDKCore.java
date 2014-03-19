@@ -201,6 +201,7 @@ public class MobileSDKCore extends Plugin
                         }
                         catch( Exception e )
                         {
+                            logError( e.getMessage(), e );
                         }
                     }
                 }
@@ -208,6 +209,7 @@ public class MobileSDKCore extends Plugin
         }
         catch( Exception e )
         {
+            logError( e.getMessage(), e );
         }
 
         return apis.toArray( new MobileAPI[0] );
