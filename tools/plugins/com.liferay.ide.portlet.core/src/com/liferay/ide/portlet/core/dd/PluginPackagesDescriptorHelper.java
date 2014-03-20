@@ -13,46 +13,47 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.portlet.vaadin.core.dd;
+package com.liferay.ide.portlet.core.dd;
 
-import com.liferay.ide.portlet.core.dd.PortletDescriptorHelper;
-import com.liferay.ide.portlet.vaadin.core.operation.INewVaadinPortletClassDataModelProperties;
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 /**
- * Helper for editing various portlet configuration XML files, to add Vaadin portlet configuration to them. Also
- * supports adding a dependency to Vaadin in liferay-plugin-package.properties (if necessary).
- *
- * @author Henri Sara
- * @author Tao Tao
+ * @author Gregory Amerson
+ * @author Cindy Li
+ * @author Simon Jiang
  * @author Kuo Zhang
  */
-public class VaadinPortletDescriptorHelper extends PortletDescriptorHelper
-    implements INewVaadinPortletClassDataModelProperties
+public class PluginPackagesDescriptorHelper extends LiferayDescriptorHelper implements PortletBehavior
 {
-
-    public VaadinPortletDescriptorHelper()
+    public PluginPackagesDescriptorHelper()
     {
         super();
     }
 
-    public VaadinPortletDescriptorHelper( IProject project )
+    public PluginPackagesDescriptorHelper( IProject project )
     {
         super( project );
     }
 
-    @Override
-    public boolean canAddNewPortlet( IDataModel model )
+    public IFile getDescriptorFile()
     {
-        return model.getID().contains( "NewVaadinPortlet" );
+        return this.project == null ? null : getDescriptorFile( ILiferayConstants.LIFERAY_PLUGIN_PACKAGE_PROPERTIES_FILE );
     }
 
-    @Override
-    protected String getPortletClassText( IDataModel model )
+    public IStatus addNewPortlet( IDataModel dataModel )
     {
-        return model.getStringProperty( VAADIN_PORTLET_CLASS );
+        return Status.OK_STATUS;
     }
 
+    public IStatus removeAllPortlets()
+    {
+        return Status.OK_STATUS;
+    }
 }
