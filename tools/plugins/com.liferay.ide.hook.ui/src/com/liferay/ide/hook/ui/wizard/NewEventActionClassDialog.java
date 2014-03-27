@@ -322,21 +322,17 @@ public class NewEventActionClassDialog extends Dialog
             packageNameStatus = IStatus.WARNING;
         }
 
-        if ( classText.getText().indexOf( '.' ) != -1 )
-        {
-            classNameStatus = IStatus.ERROR;
-        }
-
         boolean isPackageNameAndClassNameValid =
-            ( ( packageNameStatus != IStatus.ERROR ) && ( classNameStatus != IStatus.ERROR ) );
+            ( packageNameStatus != IStatus.ERROR && classNameStatus != IStatus.ERROR && classNameStatus != IStatus.WARNING );
 
         this.getButton( IDialogConstants.OK_ID ).setEnabled( isPackageNameAndClassNameValid );
 
-        if( classNameStatus == IStatus.ERROR && packageNameStatus == IStatus.ERROR )
+        if( ( ( classNameStatus == IStatus.ERROR ) || ( classNameStatus == IStatus.WARNING ) ) &&
+            packageNameStatus == IStatus.ERROR )
         {
             this.errorMessageLabel.setText( "Invalid package and class name" );
         }
-        else if( classNameStatus == IStatus.ERROR )
+        else if( ( classNameStatus == IStatus.ERROR ) || ( classNameStatus == IStatus.WARNING ) )
         {
             this.errorMessageLabel.setText( "Invalid class name" );
         }
