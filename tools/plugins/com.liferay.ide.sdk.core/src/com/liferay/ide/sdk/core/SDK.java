@@ -242,7 +242,7 @@ public class SDK
 
             Map<String, String> properties = new HashMap<String, String>();
 
-            IPath workPath = new Path( appServerDir ).removeLastSegments( 2 );
+            IPath workPath = new Path( appServerProperties.get( appServerDir ) ).removeLastSegments( 2 );
 
             properties.put( ISDKConstants.PROPERTY_APP_ZIP_NAME, bundleZipLocation.toOSString() );
             properties.put( ISDKConstants.PROPERTY_EXT_WORK_DIR, workPath.toOSString() );
