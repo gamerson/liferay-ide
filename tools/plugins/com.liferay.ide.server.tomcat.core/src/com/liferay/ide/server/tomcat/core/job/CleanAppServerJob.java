@@ -96,8 +96,10 @@ public class CleanAppServerJob extends SDKJob
 
             Map<String, String> appServerProperties = ServerUtil.configureAppServerProperties( project );
 
-            String appServerDir =
+            String appServerDirKey =
                 ServerUtil.getAppServerPropertyKey( ISDKConstants.PROPERTY_APP_SERVER_DIR, portalTomcatRuntime );
+
+            String appServerDir = appServerProperties.get( appServerDirKey );
 
             IStatus status =
                 getSDK().cleanAppServer( project, bundleZipLocation, appServerDir, appServerProperties, monitor );
