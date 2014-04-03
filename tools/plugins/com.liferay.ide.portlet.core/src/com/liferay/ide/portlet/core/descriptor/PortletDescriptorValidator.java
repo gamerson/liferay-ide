@@ -18,6 +18,7 @@ package com.liferay.ide.portlet.core.descriptor;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.NodeUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
+import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.portlet.core.PortletCore;
 import com.liferay.ide.project.core.BaseValidator;
 import com.liferay.ide.project.core.LiferayProjectCore;
@@ -53,6 +54,7 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 
 /**
  * @author Gregory Amerson
@@ -213,7 +215,8 @@ public class PortletDescriptorValidator extends BaseValidator
                                                        String preferenceNodeQualifier,
                                                        IScopeContext[] preferenceScopes )
     {
-        String classResource = NodeUtil.getTextContent( classResourceSpecifier );
+        String classResource =
+            NodeUtil.getTextContent( classResourceSpecifier ).replaceAll( "(^\\s*)|(\\s*$)", StringPool.EMPTY );
 
         if( classResource == null || classResource.length() == 0 )
         {
