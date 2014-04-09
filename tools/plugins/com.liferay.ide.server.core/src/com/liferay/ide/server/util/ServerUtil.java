@@ -92,12 +92,13 @@ import org.w3c.dom.NodeList;
  * @author Cindy Li
  * @author Tao Tao
  * @author Kuo Zhang
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class ServerUtil
 {
 
-    private static void addRemoveProps(
+    public static void addRemoveProps(
         IPath deltaPath, IResource deltaResource, ZipOutputStream zip, Map<ZipEntry, String> deleteEntries,
         String deletePrefix ) throws IOException
     {
@@ -132,7 +133,7 @@ public class ServerUtil
         deleteEntries.put( zipEntry, ( existingFiles != null ? existingFiles : StringPool.EMPTY ) + ( file + "\n" ) ); //$NON-NLS-1$
     }
 
-    private static void addToZip( IPath path, IResource resource, ZipOutputStream zip, boolean adjustGMTOffset )
+    public static void addToZip( IPath path, IResource resource, ZipOutputStream zip, boolean adjustGMTOffset )
         throws IOException, CoreException
     {
         switch( resource.getType() )
@@ -896,7 +897,7 @@ public class ServerUtil
 
     }
 
-    private static void processResourceDeltasZip(
+    public static void processResourceDeltasZip(
         IModuleResourceDelta[] deltas, ZipOutputStream zip, Map<ZipEntry, String> deleteEntries, String deletePrefix,
         String deltaPrefix, boolean adjustGMTOffset ) throws IOException, CoreException
     {
