@@ -23,8 +23,11 @@ import com.liferay.ide.server.remote.AbstractRemoteServerPublisher;
 import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -32,6 +35,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
 /**
  * @author Simon Jiang
@@ -80,5 +84,15 @@ public class SDKProjectRemoteServerPublisher extends AbstractRemoteServerPublish
 
         return new Path( warFile.getAbsolutePath() );
     }
+
+    @Override
+    public void processResourceDeltasZip(
+        IModuleResourceDelta[] deltas, ZipOutputStream zip, Map<ZipEntry, String> deleteEntries, String deletePrefix,
+        String deltaPrefix, boolean adjustGMTOffset ) throws IOException, CoreException
+    {
+            ServerUtil.processResourceDeltasZip( deltas, zip, deleteEntries, deletePrefix, deltaPrefix, adjustGMTOffset );
+    }
+
+
 
 }
