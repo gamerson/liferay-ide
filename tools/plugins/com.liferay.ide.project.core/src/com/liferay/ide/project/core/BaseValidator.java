@@ -259,7 +259,7 @@ public abstract class BaseValidator extends AbstractValidator
                         if( srcFolder != null && srcFolder.exists() )
                         {
                             String[] languagePropertiesVals = PropertiesUtil.
-                                generateLanguagePropertiesPatterns( classResource, classResourceSpecifier.getNodeName() );
+                                generatePropertitiesNamePatterns( classResource, classResourceSpecifier.getNodeName() );
 
                             for( String val : languagePropertiesVals )
                             {

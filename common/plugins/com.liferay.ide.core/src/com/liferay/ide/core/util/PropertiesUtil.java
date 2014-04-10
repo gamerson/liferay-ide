@@ -154,7 +154,7 @@ public class PropertiesUtil
                             if( languagePropertiesValue.endsWith( PROPERTIES_FILE_SUFFIX ) )
                             {
                                 final String[] languagePropertiesPatterns =
-                                    generateLanguagePropertiesPatterns(
+                                    generatePropertitiesNamePatterns(
                                         languagePropertiesValue, ELEMENT_LANGUAGE_PROPERTIES );
 
                                 for( String pattern : languagePropertiesPatterns )
@@ -352,7 +352,7 @@ public class PropertiesUtil
                             if( !CoreUtil.isNullOrEmpty( resourceBundleValue ) )
                             {
                                 final String[] resourceBundlesPatterns =
-                                    generateLanguagePropertiesPatterns( resourceBundleValue, ELEMENT_RESOURCE_BUNDLE );
+                                    generatePropertitiesNamePatterns( resourceBundleValue, ELEMENT_RESOURCE_BUNDLE );
 
                                 for( String pattern : resourceBundlesPatterns )
                                 {
@@ -409,18 +409,14 @@ public class PropertiesUtil
      *  The return values is: String[0] is base value of normal format without suffix, String[1] is a regex.
      *  Both may be null, check them before using them.
      */
-    public static String[] generateLanguagePropertiesPatterns( String baseValue, String elementName )
+    public static String[] generatePropertitiesNamePatterns( String baseValue, String elementName )
     {
         String regex = null;
 
+        baseValue = baseValue.replace( PROPERTIES_FILE_SUFFIX, "" );
+
         if( elementName.equals( ELEMENT_RESOURCE_BUNDLE ) )
         {
-            // Usually the content of <resource-bundle> doesn't contain ".properties", if it does, replace that with empty string.
-            if( baseValue.endsWith( PROPERTIES_FILE_SUFFIX ) )
-            {
-                baseValue.replace( PROPERTIES_FILE_SUFFIX, "" );
-            }
-
             baseValue = baseValue.replace(".", "/");
 
             if( ! baseValue.contains( "_" ) )
@@ -430,8 +426,6 @@ public class PropertiesUtil
         }
         else if( elementName.equals( ELEMENT_LANGUAGE_PROPERTIES ) )
         {
-            baseValue = baseValue.replace( PROPERTIES_FILE_SUFFIX, "" );
-
             if( baseValue.contains( "*" ) )
             {
                 regex = baseValue.replace( "*", ".*" );
