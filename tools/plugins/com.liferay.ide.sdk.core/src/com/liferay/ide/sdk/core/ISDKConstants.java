@@ -25,6 +25,7 @@ import org.osgi.framework.Version;
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public interface ISDKConstants
 {
@@ -145,11 +146,17 @@ public interface ISDKConstants
 
     public static final String PROPERTY_LAYOUTTPL_TEMPLATE_NAME = "layouttpl.template.name"; //$NON-NLS-1$
 
+    public static final String PROPERTY_LP_VERSION = "lp.version";
+
+    public static final String PROPERTY_LP_VERSION_SUFFIX = "lp.version.file.suffix";
+
     public static final String PROPERTY_NAME = "sdk-name"; //$NON-NLS-1$
 
     public static final String PROPERTY_PLUGIN_FILE = "plugin.file"; //$NON-NLS-1$
 
     public static final String PROPERTY_PLUGIN_FILE_DEFAULT = "plugin.file.default"; //$NON-NLS-1$
+
+    public static final String PROPERTY_PLUGIN_VERSION = "plugin.version";
 
     public static final String PROPERTY_PORTLET_DISPLAY_NAME = "portlet.display.name"; //$NON-NLS-1$
 
