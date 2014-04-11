@@ -17,6 +17,7 @@ package com.liferay.ide.project.core;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.sdk.core.ISDKConstants;
 import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.remote.AbstractRemoteServerPublisher;
@@ -49,7 +50,7 @@ public class SDKProjectRemoteServerPublisher extends AbstractRemoteServerPublish
     public IPath publishModuleFull( IProgressMonitor monitor ) throws CoreException
     {
         final IPath deployPath = LiferayServerCore.getTempLocation( "direct-deploy", StringPool.EMPTY ); //$NON-NLS-1$
-        final File warFile = deployPath.append( getProject().getName() + ".war" ).toFile(); //$NON-NLS-1$
+        File warFile = deployPath.append( getProject().getName() + ".war" ).toFile(); //$NON-NLS-1$
         warFile.getParentFile().mkdirs();
 
         final Map<String, String> properties = new HashMap<String, String>();
@@ -62,10 +63,14 @@ public class SDKProjectRemoteServerPublisher extends AbstractRemoteServerPublish
 
         properties.put( appServerDeployDirProp, deployPath.toOSString() );
 
-        properties.put( ISDKConstants.PROPERTY_PLUGIN_FILE, warFile.getAbsolutePath() );
-
         // IDE-1073 LPS-37923
         properties.put( ISDKConstants.PROPERTY_PLUGIN_FILE_DEFAULT, warFile.getAbsolutePath() );
+
+        properties.put( ISDKConstants.PROPERTY_PLUGIN_FILE, warFile.getAbsolutePath() );
+
+        final String fileTimeStamp = System.currentTimeMillis() + "";
+
+        properties.put( ISDKConstants.PROPERTY_LP_VERSION, fileTimeStamp );
 
         final Map<String, String> appServerProperties = ServerUtil.configureAppServerProperties( getProject() );
 
@@ -75,9 +80,17 @@ public class SDKProjectRemoteServerPublisher extends AbstractRemoteServerPublish
 
         if( !directDeployStatus.isOK() || ( !warFile.exists() ) )
         {
-            throw new CoreException( directDeployStatus );
-        }
 
+            SDK sdk = SDKUtil.getSDK( this.getProject() );
+
+            warFile = sdk.getLocation().append( "dist" ).append( getProject().getName() + "-" + fileTimeStamp + ".1.war" ).toFile();
+
+            if ( !warFile.exists() )
+            {
+                throw new CoreException( directDeployStatus );
+            }
+
+        }
         return new Path( warFile.getAbsolutePath() );
     }
 
