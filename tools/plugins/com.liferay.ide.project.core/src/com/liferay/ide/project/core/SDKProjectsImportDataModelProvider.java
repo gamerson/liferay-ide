@@ -290,9 +290,14 @@ public class SDKProjectsImportDataModelProvider extends FacetProjectCreationData
     {
         if( sdkVersion != null && runtime != null )
         {
+            final Version liferaySdkVersion = new Version( sdkVersion );
+
             String runtimeVersion = ServerUtil.getLiferayRuntime( (BridgedRuntime) runtime ).getPortalVersion();
 
-            if( sdkVersion.equals( runtimeVersion ) )
+            final Version liferayRuntimeVersion = new Version( runtimeVersion );
+
+            if( liferaySdkVersion.getMajor() == liferayRuntimeVersion.getMajor() &&
+                            liferaySdkVersion.getMinor()== liferayRuntimeVersion.getMinor() )
             {
                 return true;
             }
