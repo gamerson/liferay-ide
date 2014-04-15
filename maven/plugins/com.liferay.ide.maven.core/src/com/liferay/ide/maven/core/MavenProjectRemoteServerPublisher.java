@@ -14,11 +14,20 @@
  *******************************************************************************/
 package com.liferay.ide.maven.core;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.LaunchHelper;
 import com.liferay.ide.server.remote.AbstractRemoteServerPublisher;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import org.apache.maven.project.MavenProject;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,6 +39,8 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
 /**
  * @author Simon Jiang
@@ -114,4 +125,75 @@ public class MavenProjectRemoteServerPublisher extends AbstractRemoteServerPubli
         }
     }
 
+    @Override
+    public void processResourceDeltasZip(
+        IModuleResourceDelta[] deltas, ZipOutputStream zip, Map<ZipEntry, String> deleteEntries, String deletePrefix,
+        String deltaPrefix, boolean adjustGMTOffset ) throws IOException, CoreException
+    {
+        for( IModuleResourceDelta delta : deltas )
+        {
+            int deltaKind = delta.getKind();
+            IResource deltaResource = (IResource) delta.getModuleResource().getAdapter( IResource.class );
+
+            IProject deltaProject = deltaResource.getProject();
+
+            IVirtualFolder webappRoot = CoreUtil.getDocroot( deltaProject );
+
+            boolean deltaZip = false;
+            IPath deltaPath = null;
+
+            final IPath deltaFullPath = deltaResource.getFullPath();
+
+            if( webappRoot != null )
+            {
+                for( IContainer container : webappRoot.getUnderlyingFolders() )
+                {
+                    if( container != null && container.exists()  )
+                    {
+                        final IPath containerFullPath = container.getFullPath();
+
+                        if ( containerFullPath.isPrefixOf( deltaFullPath ))
+                        {
+                            deltaZip = true;
+                            deltaPath = new Path( deltaPrefix + deltaFullPath.makeRelativeTo( containerFullPath ) );
+                        }
+                    }
+                }
+
+
+                if ( deltaZip ==false )
+                {
+                    IFolder[] folders = CoreUtil.getSrcFolders( deltaProject );
+                    for( IFolder folder : folders )
+                    {
+                        IPath folderPath = folder.getFullPath();
+
+                        if ( folderPath.isPrefixOf( deltaFullPath ) || new Path("WEB-INF").isPrefixOf( delta.getModuleRelativePath() ))
+                        {
+                            deltaZip = true;
+                            deltaPath = new Path( "WEB-INF").append( deltaFullPath.removeFirstSegments( 2 ) );
+                        }
+                    }
+                }
+            }
+
+            if ( deltaZip )
+            {
+                if( deltaKind == IModuleResourceDelta.ADDED || deltaKind == IModuleResourceDelta.CHANGED )
+                {
+                    addToZip( deltaPath, deltaResource, zip, adjustGMTOffset );
+                }
+                else if( deltaKind == IModuleResourceDelta.REMOVED )
+                {
+                    addRemoveProps( deltaPath, deltaResource, zip, deleteEntries, deletePrefix );
+                }
+                else if( deltaKind == IModuleResourceDelta.NO_CHANGE )
+                {
+                    IModuleResourceDelta[] children = delta.getAffectedChildren();
+                    processResourceDeltasZip( children, zip, deleteEntries, deletePrefix, deltaPrefix, adjustGMTOffset );
+                }
+            }
+
+        }
+    }
 }
