@@ -15,23 +15,48 @@
 
 package com.liferay.ide.server.core;
 
+import com.liferay.ide.core.util.StringPool;
+
 import java.net.URL;
+
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 /**
  * @author Greg Amerson
+ * @author Terry Jia
  */
 public interface ILiferayServer
 {
 
-    URL getPortalHomeUrl();
+    public static final IEclipsePreferences defaultPrefs = DefaultScope.INSTANCE.getNode( LiferayServerCore.PLUGIN_ID );
+
+    String ATTR_PASSWORD = "password";
+
+    String ATTR_USERNAME = "username";
+
+    String DEFAULT_PASSWORD = defaultPrefs.get( "default.password", StringPool.EMPTY );
+
+    String DEFAULT_USERNAME = defaultPrefs.get( "default.username", StringPool.EMPTY );
 
     URL getWebServicesListURL();
 
+    String getPassword();
+
     URL getPluginContextURL( String context );
+
+    URL getPortalHomeUrl();
+
+    String getUsername();
 
     String getHttpPort();
 
     String getId();
 
     String getHost();
+
+    void setPassword( String password );
+
+    void setUsername( String username );
+
 }
