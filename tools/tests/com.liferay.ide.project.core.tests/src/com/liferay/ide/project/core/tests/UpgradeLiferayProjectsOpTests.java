@@ -17,6 +17,7 @@ package com.liferay.ide.project.core.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ZipUtil;
@@ -90,6 +91,7 @@ public class UpgradeLiferayProjectsOpTests extends ProjectCoreBase
             IFile[] metaFiles = getUpgradeDTDFiles(project);
             for(IFile file : metaFiles)
             {
+                file.refreshLocal( IResource.DEPTH_ZERO, new NullProgressMonitor() );
                 IStructuredModel readtModel = StructuredModelManager.getModelManager().getModelForRead( file ) ;
                 if( readtModel != null && readtModel instanceof IDOMModel )
                 {
@@ -126,8 +128,8 @@ public class UpgradeLiferayProjectsOpTests extends ProjectCoreBase
             PropertiesConfiguration  pluginPackageProperties= new PropertiesConfiguration();
             pluginPackageProperties.load( osfile );
             String value = (String) pluginPackageProperties.getProperty( propertyName );
-            assertEquals( propertiesValue , value );
-            file.refreshLocal( IResource.DEPTH_ZERO, new NullProgressMonitor() );
+            assertTrue( value.contains( propertiesValue ) );
+
         }
         catch( Exception e )
         {
@@ -365,6 +367,12 @@ public class UpgradeLiferayProjectsOpTests extends ProjectCoreBase
 
         CoreUtil.writeStreamFromString( ".aui-field-select{}", new FileOutputStream( mainCss.getUnderlyingFile().getLocation().toFile() ) );
 
+        mainCss.getUnderlyingFile().refreshLocal( IResource.DEPTH_ZERO, new NullProgressMonitor() );
+
+        String cssContent = CoreUtil.readStreamToString( mainCss.getUnderlyingFile().getContents() );
+
+        assertEquals( true, cssContent.contains( "aui" ) );
+
         List<String> actionString = new ArrayList<String>();
         List<String> projectString = new ArrayList<String>();
 
@@ -378,15 +386,13 @@ public class UpgradeLiferayProjectsOpTests extends ProjectCoreBase
 
         UpgradeLiferayProjectsOpMethods.performUpgrade( projectString, actionString, op.getRuntimeName().content(), new NullProgressMonitor() );
 
-        mainCss.getUnderlyingFile().refreshLocal( IResource.DEPTH_ZERO, new NullProgressMonitor() );
+        final IVirtualFile newMainCss = webappRoot.getFile( "css/main.css" );
+        assertEquals( true, newMainCss.exists() );
 
-        final IVirtualFile serviceJarXml = webappRoot.getFile( "css/main.css" );
+        newMainCss.getUnderlyingFile().refreshLocal( IResource.DEPTH_ZERO, new NullProgressMonitor() );
 
-        assertEquals( true, serviceJarXml.exists() );
-
-        String cssContent = CoreUtil.readStreamToString( mainCss.getUnderlyingFile().getContents() );
-
-        assertEquals( false, cssContent.contains( "aui" ) );
+        String newCssContent = CoreUtil.readStreamToString( newMainCss.getUnderlyingFile().getContents() );
+        assertEquals( false, newCssContent.contains( "aui" ) );
     }
 
     @Test
