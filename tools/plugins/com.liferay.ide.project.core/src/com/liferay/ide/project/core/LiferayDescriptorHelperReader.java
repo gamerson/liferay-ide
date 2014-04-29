@@ -17,7 +17,11 @@ package com.liferay.ide.project.core;
 import com.liferay.ide.core.ExtensionReader;
 import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.content.IContentType;
 
 
 /**
@@ -42,8 +46,23 @@ public class LiferayDescriptorHelperReader extends ExtensionReader<LiferayDescri
         return helper;
     }
 
-    public LiferayDescriptorHelper[] getHelpers()
+    public LiferayDescriptorHelper[] getAllHelpers()
     {
         return getExtensions().toArray( new LiferayDescriptorHelper[0] );
+    }
+
+    public LiferayDescriptorHelper[] getHelpers( IContentType contentType )
+    {
+        List<LiferayDescriptorHelper> retval = new ArrayList<LiferayDescriptorHelper>();
+
+        for( LiferayDescriptorHelper helper : getAllHelpers() )
+        {
+            if( contentType.equals( helper.getContentType() ) )
+            {
+                retval.add( helper );
+            }
+        }
+
+        return retval.toArray( new LiferayDescriptorHelper[0] );
     }
 }
