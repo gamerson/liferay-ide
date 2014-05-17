@@ -64,4 +64,19 @@ public class SearchFilesVisitor implements IResourceProxyVisitor
 
         return resources;
     }
+
+    public IFile searchFile( IResource container, String searchFileName )
+    {
+        this.searchFileName = searchFileName;
+        try
+        {
+            container.accept( this, IContainer.EXCLUDE_DERIVED );
+        }
+        catch( CoreException e )
+        {
+            LiferayCore.logError( e );
+        }
+
+        return resources.get( 0 );
+    }
 }
