@@ -405,10 +405,12 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 
             try
             {
-                if( !isSuccess( json ) )
+                if( isSuccess( json ) )
                 {
-                    System.out.println("uninstallApplication: success"); //$NON-NLS-1$
-
+                    System.out.println( "uninstallApplication: success" ); //$NON-NLS-1$
+                }
+                else
+                {
                     return json;
                 }
             }
