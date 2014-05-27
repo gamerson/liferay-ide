@@ -16,9 +16,11 @@
 package com.liferay.ide.core.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,19 +36,31 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sapphire.Element;
 import org.eclipse.sapphire.ElementType;
 import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
+
+import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.project.core.LiferayProjectCore;
+import com.liferay.ide.server.tomcat.core.ILiferayTomcatRuntime;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
 public class BaseTests
 {
+
+    private final static String liferayBundlesDir = System.getProperty( "liferay.bundles.dir" );
+    private static IPath liferayBundlesPath;
 
     protected final IFile createFile( final IProject project, final String path ) throws Exception
     {
@@ -128,6 +142,13 @@ public class BaseTests
         }
     }
 
+    protected void failTest( Exception e )
+    {
+        StringWriter s = new StringWriter();
+        e.printStackTrace(new PrintWriter(s));
+        fail(s.toString());
+    }
+
     protected Element getElementFromFile( IProject project, IPath filePath, ElementType type ) throws Exception
     {
         final String filePathValue = filePath.toOSString();
@@ -143,24 +164,100 @@ public class BaseTests
         return element;
     }
 
+    protected IPath getLiferayRuntimeDir()
+    {
+        return LiferayProjectCore.getDefault().getStateLocation().append( "liferay-portal-6.2.0-ce-ga1/tomcat-7.0.42" );
+    }
+
+    protected IPath getLiferayBundlesPath()
+    {
+        if( liferayBundlesPath == null )
+        {
+            liferayBundlesPath = new Path( liferayBundlesDir );
+        }
+
+        return liferayBundlesPath;
+    }
+
+    protected IPath getLiferayRuntimeZip()
+    {
+        return getLiferayBundlesPath().append( "liferay-portal-tomcat-6.2.0-ce-ga1-20131101192857659.zip" );
+    }
+
+    protected String getRuntimeId()
+    {
+        return "com.liferay.ide.server.62.tomcat.runtime.70";
+    }
+
+    protected String getRuntimeVersion()
+    {
+        return "6.2.0";
+    }
+
     protected static IProject project( final String name )
     {
         return workspaceRoot().getProject( name );
     }
 
+    protected IRuntime setupRuntime() throws Exception
+    {
+        assertNotNull(
+            "Expected System.getProperty(\"liferay.bundles.dir\") to not be null",
+            System.getProperty( "liferay.bundles.dir" ) );
+
+        assertNotNull( "Expected liferayBundlesDir to not be null", liferayBundlesDir );
+
+        assertEquals(
+            "Expected liferayBundlesPath to exist: " + getLiferayBundlesPath().toOSString(), true,
+            getLiferayBundlesPath().toFile().exists() );
+
+        // Testing liferay runtime start
+        final File liferayRuntimeDirFile = getLiferayRuntimeDir().toFile();
+
+        if( !liferayRuntimeDirFile.exists() )
+        {
+            final File liferayRuntimeZipFile = getLiferayRuntimeZip().toFile();
+
+            assertEquals(
+                "Expected file to exist: " + liferayRuntimeZipFile.getAbsolutePath(), true,
+                liferayRuntimeZipFile.exists() );
+
+            ZipUtil.unzip( liferayRuntimeZipFile, LiferayProjectCore.getDefault().getStateLocation().toFile() );
+        }
+
+        assertEquals( true, liferayRuntimeDirFile.exists() );
+
+        final NullProgressMonitor npm = new NullProgressMonitor();
+
+        final String runtimeName = getRuntimeVersion();
+
+        IRuntime runtime = ServerCore.findRuntime( runtimeName );
+
+        if( runtime == null )
+        {
+            final IRuntimeWorkingCopy runtimeWC =
+                ServerCore.findRuntimeType( getRuntimeId() ).createRuntime( runtimeName, npm );
+
+            runtimeWC.setName( runtimeName );
+            runtimeWC.setLocation( getLiferayRuntimeDir() );
+
+            runtime = runtimeWC.save( true, npm );
+        }
+
+        assertNotNull( runtime );
+
+        final ILiferayTomcatRuntime liferayRuntime =
+            (ILiferayTomcatRuntime) ServerCore.findRuntime( runtimeName ).loadAdapter( ILiferayTomcatRuntime.class, npm );
+
+        assertNotNull( liferayRuntime );
+        // Testing liferay runtime end
+
+        return runtime;
+    }
+
     protected String stripCarriageReturns( String value )
     {
         return value.replaceAll( "\r", "" );
-    }
-
-    protected static IWorkspace workspace()
-    {
-        return ResourcesPlugin.getWorkspace();
-    }
-
-    protected static IWorkspaceRoot workspaceRoot()
-    {
-        return workspace().getRoot();
     }
 
     protected void waitForBuildAndValidation(IProject project) throws Exception
@@ -175,7 +272,7 @@ public class BaseTests
     {
         IWorkspaceRoot root = null;
 
-        try 
+        try
         {
             ResourcesPlugin.getWorkspace().checkpoint(true);
             Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor());
@@ -193,7 +290,7 @@ public class BaseTests
         {
             failTest( e );
         }
-        catch (OperationCanceledException e) 
+        catch (OperationCanceledException e)
         {
             failTest( e );
         }
@@ -205,10 +302,14 @@ public class BaseTests
         }
     }
 
-    protected void failTest( Exception e )
+    protected static IWorkspace workspace()
     {
-        StringWriter s = new StringWriter();
-        e.printStackTrace(new PrintWriter(s));
-        fail(s.toString());
-    } 
+        return ResourcesPlugin.getWorkspace();
+    }
+
+    protected static IWorkspaceRoot workspaceRoot()
+    {
+        return workspace().getRoot();
+    }
+
 }
