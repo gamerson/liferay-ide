@@ -54,7 +54,6 @@ import org.junit.Before;
 public abstract class ProjectCoreBase extends BaseTests
 {
     private final static String liferayBundlesDir = System.getProperty( "liferay.bundles.dir" );
-    private static IPath liferayBundlesPath;
 
     protected IProject createAntProject( NewLiferayPluginProjectOp op ) throws Exception
     {
@@ -197,16 +196,6 @@ public abstract class ProjectCoreBase extends BaseTests
         return getLiferayBundlesPath().append( "ivy-cache.zip" );
     }
 
-    protected IPath getLiferayBundlesPath()
-    {
-        if( liferayBundlesPath == null )
-        {
-            liferayBundlesPath = new Path( liferayBundlesDir );
-        }
-
-        return liferayBundlesPath;
-    }
-
     protected IPath getLiferayPluginsSdkDir()
     {
         return LiferayProjectCore.getDefault().getStateLocation().append( "liferay-plugins-sdk-6.2.0" );
@@ -222,24 +211,9 @@ public abstract class ProjectCoreBase extends BaseTests
         return "liferay-plugins-sdk-6.2.0/";
     }
 
-    protected IPath getLiferayRuntimeDir()
-    {
-        return LiferayProjectCore.getDefault().getStateLocation().append( "liferay-portal-6.2.0-ce-ga1/tomcat-7.0.42" );
-    }
-
     protected IPath getLiferayRuntimeZip()
     {
         return getLiferayBundlesPath().append( "liferay-portal-tomcat-6.2.0-ce-ga1-20131101192857659.zip" );
-    }
-
-    protected String getRuntimeId()
-    {
-        return "com.liferay.ide.server.62.tomcat.runtime.70";
-    }
-
-    protected String getRuntimeVersion()
-    {
-        return "6.2.0";
     }
 
     protected NewLiferayPluginProjectOp newProjectOp( final String projectName ) throws Exception
