@@ -18,6 +18,10 @@ package com.liferay.ide.server.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.liferay.ide.server.remote.IServerManagerConnection;
+import com.liferay.ide.server.remote.ServerManagerConnection;
+import com.liferay.ide.server.util.SocketUtil;
+
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -31,9 +35,6 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.liferay.ide.server.remote.IServerManagerConnection;
-import com.liferay.ide.server.remote.ServerManagerConnection;
 
 /**
  * @author Terry Jia
@@ -127,6 +128,10 @@ public class ServerManagerTests extends ServerCoreBase
 
         final IServer server = getServer();
 
+        assertEquals(
+            "Expected the port " + liferayServerPort + " is available", true,
+            SocketUtil.isPortAvailable( liferayServerPort ) );
+
         changeServerXmlPort( "8080", liferayServerPort );
 
         copyFileToServer( server, "deploy", "files", remoteIDEConnectorLPKGFileName );
@@ -191,17 +196,21 @@ public class ServerManagerTests extends ServerCoreBase
     }
 
     @Test
-    public void testDeployApplication() throws Exception
+    public void testInstallUpdateUninstallApplication() throws Exception
     {
         final NullProgressMonitor npm = new NullProgressMonitor();
-
-        assertEquals( "Expected the server doesn't have debug port", -1, service.getDebugPort() );
 
         assertEquals( "Expected the server state is started", "STARTED", service.getServerState() );
 
         Object result = service.installApplication( getTestApplicationWar().getAbsolutePath(), "test-application", npm );
 
+        File testApplicationFolder = getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).toFile();
+
         assertEquals( "Expected the Test Application has been installed", null, result );
+
+        assertEquals(
+            "Expected the Test Application Folder to exist:" + testApplicationFolder.toPath(), true,
+            testApplicationFolder.exists() );
 
         result = service.isAppInstalled( "test-application" );
 
@@ -213,7 +222,12 @@ public class ServerManagerTests extends ServerCoreBase
             service.updateApplication(
                 "test-application", getTestApplicationPartialModificationWar().getAbsolutePath(), npm );
 
+        File testJspFile =
+            getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).append( "view.jsp" ).toFile();
+
         assertEquals( "Expected uploading the Modified Test Portlet is success", null, result );
+
+        assertEquals( "Expected the view jsp file to exist:" + testJspFile.toPath(), true, testJspFile.exists() );
 
         result =
             service.updateApplication(
@@ -221,9 +235,19 @@ public class ServerManagerTests extends ServerCoreBase
 
         assertEquals( "Expected uploading the Deletion Test Portlet is success", null, result );
 
+        File testIconFile =
+            getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).append( "icon.png" ).toFile();
+
+        assertEquals( "Expected the icon png has been deleted", false, testIconFile.exists() );
+
         result = service.uninstallApplication( "test-application", npm );
 
         assertEquals( "Expected uninstall the Test Portlet is success", null, result );
+
+        File testApplicationUnistallFolder =
+            getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).toFile();
+
+        assertEquals( "Expected the Test Portlet has been uninstalled", false, testApplicationUnistallFolder.exists() );
     }
 
 }

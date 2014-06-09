@@ -18,6 +18,8 @@ package com.liferay.ide.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import com.liferay.ide.core.util.FileUtil;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +44,6 @@ import org.eclipse.sapphire.ElementType;
 import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
-
-import com.liferay.ide.core.util.FileUtil;
 
 /**
  * @author Gregory Amerson
