@@ -18,27 +18,22 @@ package com.liferay.ide.server.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import com.liferay.ide.server.remote.IServerManagerConnection;
+import com.liferay.ide.server.remote.ServerManagerConnection;
+import com.liferay.ide.server.util.SocketUtil;
 
-import org.eclipse.core.runtime.CoreException;
+import java.io.File;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.liferay.ide.server.remote.IServerManagerConnection;
-import com.liferay.ide.server.remote.ServerManagerConnection;
-
 /**
  * @author Terry Jia
  */
-@SuppressWarnings( "restriction" )
 public class ServerManagerTests extends ServerCoreBase
 {
 
@@ -51,73 +46,17 @@ public class ServerManagerTests extends ServerCoreBase
 
     protected File getTestApplicationWar()
     {
-        return getProjectFile( "files", testApplicationWarFileName );
+        return createTempFile( "files", testApplicationWarFileName );
     }
 
     protected File getTestApplicationPartialModificationWar()
     {
-        return getProjectFile( "files", testApplicationPartialModificationWarFileName );
+        return createTempFile( "files", testApplicationPartialModificationWarFileName );
     }
 
     protected File getTestApplicationPartialDeletionWar()
     {
-        return getProjectFile( "files", testApplicationPartialDeletionWarFileName );
-    }
-
-    protected void ping( Server server )
-    {
-        int count = 0;
-
-        boolean stop = false;
-
-        while( !stop )
-        {
-            try
-            {
-                if( count == 1000 )
-                {
-                    try
-                    {
-                        server.stop( false );
-                    }
-                    catch( Exception e )
-                    {
-                    }
-
-                    stop = true;
-
-                    break;
-                }
-                count++;
-
-                URL pingUrl = new URL( "http://localhost:" + liferayServerPort );
-
-                URLConnection conn = pingUrl.openConnection();
-                ( (HttpURLConnection) conn ).setInstanceFollowRedirects( false );
-                ( (HttpURLConnection) conn ).getResponseCode();
-
-                if( !stop )
-                {
-                    Thread.sleep( 200 );
-                    server.setServerState( IServer.STATE_STARTED );
-                }
-
-                stop = true;
-            }
-            catch( Exception e )
-            {
-                if( !stop )
-                {
-                    try
-                    {
-                        Thread.sleep( 250 );
-                    }
-                    catch( Exception e2 )
-                    {
-                    }
-                }
-            }
-        }
+        return createTempFile( "files", testApplicationPartialDeletionWarFileName );
     }
 
     @Before
@@ -127,6 +66,10 @@ public class ServerManagerTests extends ServerCoreBase
 
         final IServer server = getServer();
 
+        assertEquals(
+            "Expected the port " + liferayServerPort + " is available", true,
+            SocketUtil.isPortAvailable( liferayServerPort ) );
+
         changeServerXmlPort( "8080", liferayServerPort );
 
         copyFileToServer( server, "deploy", "files", remoteIDEConnectorLPKGFileName );
@@ -135,24 +78,18 @@ public class ServerManagerTests extends ServerCoreBase
 
         if( server.getServerState() == IServer.STATE_STOPPED )
         {
-            Thread serverThread = new Thread( "Server Thread" )
+            server.start( ILaunchManager.DEBUG_MODE, npm );
+
+            int i = 0;
+
+            do
             {
+                Thread.sleep( 30000 );
 
-                public void run()
-                {
-                    try
-                    {
-                        server.start( ILaunchManager.DEBUG_MODE, npm );
-                    }
-                    catch( CoreException e )
-                    {
-                    }
-                }
-            };
-
-            serverThread.start();
-
-            ping( (Server) server );
+                i++;
+            }
+            while( ( server.getServerState() != IServer.STATE_STARTED ) &&
+                ( server.getServerState() == IServer.STATE_STARTING ) && ( i < 20 ) );
         }
 
         assertEquals( "Expected server has started", IServer.STATE_STARTED, server.getServerState() );
@@ -191,17 +128,21 @@ public class ServerManagerTests extends ServerCoreBase
     }
 
     @Test
-    public void testDeployApplication() throws Exception
+    public void testInstallUpdateUninstallApplication() throws Exception
     {
         final NullProgressMonitor npm = new NullProgressMonitor();
-
-        assertEquals( "Expected the server doesn't have debug port", -1, service.getDebugPort() );
 
         assertEquals( "Expected the server state is started", "STARTED", service.getServerState() );
 
         Object result = service.installApplication( getTestApplicationWar().getAbsolutePath(), "test-application", npm );
 
+        File testApplicationFolder = getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).toFile();
+
         assertEquals( "Expected the Test Application has been installed", null, result );
+
+        assertEquals(
+            "Expected the Test Application Folder to exist:" + testApplicationFolder.toPath(), true,
+            testApplicationFolder.exists() );
 
         result = service.isAppInstalled( "test-application" );
 
@@ -213,7 +154,12 @@ public class ServerManagerTests extends ServerCoreBase
             service.updateApplication(
                 "test-application", getTestApplicationPartialModificationWar().getAbsolutePath(), npm );
 
+        File testJspFile =
+            getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).append( "view.jsp" ).toFile();
+
         assertEquals( "Expected uploading the Modified Test Portlet is success", null, result );
+
+        assertEquals( "Expected the view jsp file to exist:" + testJspFile.toPath(), true, testJspFile.exists() );
 
         result =
             service.updateApplication(
@@ -221,9 +167,19 @@ public class ServerManagerTests extends ServerCoreBase
 
         assertEquals( "Expected uploading the Deletion Test Portlet is success", null, result );
 
+        File testIconFile =
+            getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).append( "icon.png" ).toFile();
+
+        assertEquals( "Expected the icon png has been deleted", false, testIconFile.exists() );
+
         result = service.uninstallApplication( "test-application", npm );
 
         assertEquals( "Expected uninstall the Test Portlet is success", null, result );
+
+        File testApplicationUnistallFolder =
+            getLiferayRuntimeDir().append( "webapps" ).append( "test-application" ).toFile();
+
+        assertEquals( "Expected the Test Portlet has been uninstalled", false, testApplicationUnistallFolder.exists() );
     }
 
 }

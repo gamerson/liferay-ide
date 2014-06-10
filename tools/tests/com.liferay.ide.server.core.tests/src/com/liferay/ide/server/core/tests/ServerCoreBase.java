@@ -18,11 +18,19 @@ package com.liferay.ide.server.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.liferay.ide.core.tests.BaseTests;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.project.core.LiferayProjectCore;
+import com.liferay.ide.server.tomcat.core.ILiferayTomcatRuntime;
+import com.liferay.ide.server.util.ServerUtil;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -34,13 +42,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.junit.Before;
-
-import com.liferay.ide.core.tests.BaseTests;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.ZipUtil;
-import com.liferay.ide.project.core.LiferayProjectCore;
-import com.liferay.ide.server.tomcat.core.ILiferayTomcatRuntime;
-import com.liferay.ide.server.util.ServerUtil;
 
 /**
  * @author Terry Jia
@@ -81,13 +82,13 @@ public abstract class ServerCoreBase extends BaseTests
     public void copyFileToServer( IServer server, String targetFolderLocation, String fileDir, String fileName )
         throws IOException
     {
-        final File file = getProjectFile( fileDir, fileName );
+        InputStream is = getClass().getResourceAsStream( fileDir + "/" + fileName );
+
+        assertNotNull( is );
 
         final IRuntime runtime = server.getRuntime();
 
         IPath portalBundleFolder = runtime.getLocation().removeLastSegments( 1 );
-
-        assertEquals( "Expected" + fileName + "to exist:" + file.getAbsolutePath(), true, file.exists() );
 
         IPath folderPath = portalBundleFolder.append( targetFolderLocation );
 
@@ -99,9 +100,13 @@ public abstract class ServerCoreBase extends BaseTests
         }
 
         assertEquals(
-            "Expected the " + targetFolderLocation + "to exist:" + folderPath.toOSString(), true, folder.exists() );
+            "Expected the " + targetFolderLocation + " to exist:" + folderPath.toOSString(), true, folder.exists() );
 
-        FileUtils.moveFile( file, folderPath.append( fileName ).toFile() );
+        File file = folderPath.append( fileName ).toFile();
+
+        FileUtil.writeFileFromStream( file, is );
+
+        assertEquals( "Expected the " + file.getName() + " to exist:" + file.getAbsolutePath(), true, file.exists() );
     }
 
     protected IPath getLiferayBundlesPath()

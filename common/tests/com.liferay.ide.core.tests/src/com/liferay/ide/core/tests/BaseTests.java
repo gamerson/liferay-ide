@@ -18,6 +18,9 @@ package com.liferay.ide.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.FileUtil;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +45,6 @@ import org.eclipse.sapphire.ElementType;
 import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
-
-import com.liferay.ide.core.util.FileUtil;
 
 /**
  * @author Gregory Amerson
@@ -155,11 +156,11 @@ public class BaseTests
         return element;
     }
 
-    protected final File getProjectFile( final String fileDir, final String fileName )
+    protected final File createTempFile( final String fileDir, final String fileName )
     {
         try
         {
-            File tempFile = File.createTempFile( System.currentTimeMillis() + "", fileName );
+            File tempFile = LiferayCore.getDefault().getStateLocation().append( fileName ).toFile();
 
             FileUtil.writeFileFromStream( tempFile, getClass().getResourceAsStream( fileDir + "/" + fileName ) );
 
