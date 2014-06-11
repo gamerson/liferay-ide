@@ -141,7 +141,7 @@ public class ServerManagerTests extends ServerCoreBase
         assertEquals( "Expected the Test Application has been installed", null, result );
 
         assertEquals(
-            "Expected the Test Application Folder to exist:" + testApplicationFolder.toPath(), true,
+            "Expected the Test Application Folder to exist:" + testApplicationFolder.getAbsolutePath(), true,
             testApplicationFolder.exists() );
 
         result = service.isAppInstalled( "test-application" );
@@ -159,7 +159,7 @@ public class ServerManagerTests extends ServerCoreBase
 
         assertEquals( "Expected uploading the Modified Test Portlet is success", null, result );
 
-        assertEquals( "Expected the view jsp file to exist:" + testJspFile.toPath(), true, testJspFile.exists() );
+        assertEquals( "Expected the view jsp file to exist:" + testJspFile.getAbsolutePath(), true, testJspFile.exists() );
 
         result =
             service.updateApplication(
