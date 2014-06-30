@@ -15,7 +15,7 @@
 package com.liferay.ide.project.core;
 
 import com.liferay.ide.core.ExtensionReader;
-import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
+import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
 
 import java.util.ArrayList;
 import java.util.List;
