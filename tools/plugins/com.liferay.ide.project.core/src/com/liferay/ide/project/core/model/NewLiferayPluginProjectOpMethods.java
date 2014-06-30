@@ -19,10 +19,9 @@ import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.LiferayProjectCore;
+import com.liferay.ide.project.core.descriptor.LiferayDescriptorOperator;
+import com.liferay.ide.project.core.descriptor.RemoveSampleElementsOperation;
 import com.liferay.ide.project.core.model.internal.LocationListener;
-import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
-import com.liferay.ide.project.core.util.LiferayDescriptorHelperManager;
-import com.liferay.ide.project.core.util.ISampleElementsOperation;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKManager;
 
@@ -281,23 +280,8 @@ public class NewLiferayPluginProjectOpMethods
 
             if( project != null && project.exists() )
             {
-                final LiferayDescriptorHelper[] helpers =
-                    LiferayDescriptorHelperManager.getInstance().getDescriptorHelpers( project );
-
-                for( LiferayDescriptorHelper helper : helpers )
-                {
-                    if( helper instanceof ISampleElementsOperation )
-                    {
-                        status = ( (ISampleElementsOperation) helper ).removeSampleElements();
-
-                        if( !status.isOK() )
-                        {
-                            LiferayProjectCore.getDefault().getLog().log( status );
-                            return status;
-                        }
-                    }
-                }
-           }
+                LiferayDescriptorOperator.getInstance().operate( project, RemoveSampleElementsOperation.class );
+            }
         }
 
         return status;

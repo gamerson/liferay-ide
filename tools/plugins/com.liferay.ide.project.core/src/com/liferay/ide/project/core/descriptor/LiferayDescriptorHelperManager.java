@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.core.util;
+package com.liferay.ide.project.core.descriptor;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
@@ -218,5 +218,4 @@ public class LiferayDescriptorHelperManager implements ILiferayConstants
         return null;
     }
 
-    // TODO, get helpers of other type
 }
