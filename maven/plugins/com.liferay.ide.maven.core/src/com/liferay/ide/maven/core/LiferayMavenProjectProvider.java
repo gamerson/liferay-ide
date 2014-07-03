@@ -20,13 +20,12 @@ import com.liferay.ide.maven.core.aether.AetherUtil;
 import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.LiferayProjectCore;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.descriptor.LiferayDescriptorOperator;
+import com.liferay.ide.project.core.descriptor.UpdateDescriptorVersionOperation;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.NewLiferayProfile;
 import com.liferay.ide.project.core.model.PluginType;
 import com.liferay.ide.project.core.model.ProfileLocation;
-import com.liferay.ide.project.core.util.IDescriptorVersionUpdateOperation;
-import com.liferay.ide.project.core.util.LiferayDescriptorHelper;
-import com.liferay.ide.project.core.util.LiferayDescriptorHelperManager;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 
 import java.io.File;
@@ -715,15 +714,8 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
                 }
             }
 
-            for( LiferayDescriptorHelper helper :
-                 LiferayDescriptorHelperManager.getInstance().getDescriptorHelpers( project ) )
-            {
-                if( helper instanceof IDescriptorVersionUpdateOperation )
-                {
-                    ( (IDescriptorVersionUpdateOperation) helper ).update( new org.osgi.framework.Version(
-                        archetypeVesion ), new org.osgi.framework.Version( dtdVersion ) );
-                }
-            }
+            LiferayDescriptorOperator.getInstance().operate( project, UpdateDescriptorVersionOperation.class,
+                new org.osgi.framework.Version( archetypeVesion ), new org.osgi.framework.Version( dtdVersion ) );
 
         }
         catch( Exception e )
