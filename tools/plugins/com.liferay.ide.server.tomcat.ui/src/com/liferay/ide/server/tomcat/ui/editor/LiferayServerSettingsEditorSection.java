@@ -18,6 +18,7 @@ import com.liferay.ide.server.tomcat.core.ILiferayTomcatServer;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatServer;
 import com.liferay.ide.server.tomcat.ui.command.SetExternalPropertiesCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetMemoryArgsCommand;
+import com.liferay.ide.server.tomcat.ui.command.SetPortalLocaleCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetServerModeCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetUserTimezoneCommand;
 import com.liferay.ide.server.ui.LiferayServerUIPlugin;
@@ -103,6 +104,7 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 	protected IPath defaultDeployPath;
     protected Text password;
     protected Text username;
+    protected Text portalLocale;
 
 	protected boolean allowRestrictedEditing;
 	protected IPath tempDirPath;
@@ -166,6 +168,11 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
                     int s = (Integer) event.getNewValue();
                     standardServerMode.setSelection( s == ILiferayTomcatConstants.STANDARD_SERVER_MODE );
                     developmentServerMode.setSelection( s == ILiferayTomcatConstants.DEVELOPMENT_SERVER_MODE );
+                    validate();
+                }
+				else if (ILiferayTomcatServer.PROPERTY_PORTAL_LOCALE.equals(event.getPropertyName())) {
+                    String s = (String) event.getNewValue();
+                    LiferayServerSettingsEditorSection.this.portalLocale.setText(s);
                     validate();
                 }
 
@@ -402,6 +409,32 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 
 		});
 
+        label = createLabel( toolkit, composite, StringPool.EMPTY );
+        data = new GridData( SWT.BEGINNING, SWT.CENTER, false, false );
+        label.setLayoutData( data );
+
+        label = createLabel( toolkit, composite, Msgs.portalLocaleLabel );
+        data = new GridData( SWT.BEGINNING, SWT.CENTER, false, false );
+        label.setLayoutData( data );
+
+        portalLocale = toolkit.createText( composite, null );
+        data = new GridData( SWT.FILL, SWT.CENTER, true, false );
+        portalLocale.setLayoutData( data );
+        portalLocale.addModifyListener( new ModifyListener()
+        {
+
+            public void modifyText( ModifyEvent e )
+            {
+                if( updating )
+                    return;
+                updating = true;
+                execute( new SetPortalLocaleCommand( tomcatServer, portalLocale.getText().trim() ) );
+                updating = false;
+                validate();
+            }
+
+        } );
+
 		label = createLabel(toolkit, composite, StringPool.EMPTY);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
 		label.setLayoutData(data);
@@ -619,6 +652,8 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 				memoryArgs.setText(ILiferayTomcatConstants.DEFAULT_MEMORY_ARGS);
 				execute(new SetUserTimezoneCommand(tomcatServer, ILiferayTomcatConstants.DEFAULT_USER_TIMEZONE));
 				userTimezone.setText(ILiferayTomcatConstants.DEFAULT_USER_TIMEZONE);
+                execute(new SetPortalLocaleCommand(tomcatServer, ILiferayTomcatConstants.DEFAULT_PORTAL_LOCALE));
+                portalLocale.setText(ILiferayTomcatConstants.DEFAULT_PORTAL_LOCALE);
 				execute(new SetExternalPropertiesCommand(tomcatServer, StringPool.EMPTY));
 				externalProperties.setText(StringPool.EMPTY);
 //				execute(new SetAutoDeployDirectoryCommand(tomcatServer, ILiferayTomcatConstants.DEFAULT_AUTO_DEPLOYDIR));
@@ -722,6 +757,7 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 //		deployDir.setText(tomcatServer.getDeployDirectory());
 		memoryArgs.setText(tomcatServer.getMemoryArgs());
 		userTimezone.setText(tomcatServer.getUserTimezone());
+		portalLocale.setText(tomcatServer.getPortalLocale());
 		externalProperties.setText(tomcatServer.getExternalProperties());
 //		autoDeployDir.setText(tomcatServer.getAutoDeployDirectory());
 //		autoDeployInterval.setText(tomcatServer.getAutoDeployInterval());
@@ -1009,6 +1045,7 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
         public static String liferaySettings;
         public static String memoryArgsLabel;
         public static String password;
+        public static String portalLocaleLabel;
 //      public static String millisecondsLabel;
         public static String restoreDefaultsLink;
 //      public static String serverEditorBrowseDeployMessage;

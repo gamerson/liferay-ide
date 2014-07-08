@@ -38,6 +38,8 @@ public interface ILiferayTomcatServer extends ILiferayServerWorkingCopy, ITomcat
 
     String PROPERTY_MEMORY_ARGS = "memoryArgs"; //$NON-NLS-1$
 
+    String PROPERTY_PORTAL_LOCALE = "portalLocale"; //$NON-NLS-1$
+
     String PROPERTY_SERVER_MODE = "serverMode"; //$NON-NLS-1$
 
     String PROPERTY_USER_TIMEZONE = "userTimezone"; //$NON-NLS-1$
@@ -49,6 +51,8 @@ public interface ILiferayTomcatServer extends ILiferayServerWorkingCopy, ITomcat
     String getExternalProperties();
 
     String getMemoryArgs();
+
+    String getPortalLocale();
 
     int getServerMode();
 
