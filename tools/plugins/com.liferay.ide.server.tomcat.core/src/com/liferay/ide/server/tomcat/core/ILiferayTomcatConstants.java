@@ -37,6 +37,8 @@ public interface ILiferayTomcatConstants
 
     String DEFAULT_MEMORY_ARGS = _defaultPrefs.get( "default.memory.args", "-Xmx1024m -XX:MaxPermSize=256m" ); //$NON-NLS-1$ //$NON-NLS-2$
 
+    String DEFAULT_PORTAL_LOCALE = _defaultPrefs.get( "default.portal.locale", "en_US" ); //$NON-NLS-1$ //$NON-NLS-2$
+
     String DEFAULT_USER_TIMEZONE = _defaultPrefs.get( "default.user.timezone", "GMT" ); //$NON-NLS-1$ //$NON-NLS-2$
 
     int DEVELOPMENT_SERVER_MODE = 2;

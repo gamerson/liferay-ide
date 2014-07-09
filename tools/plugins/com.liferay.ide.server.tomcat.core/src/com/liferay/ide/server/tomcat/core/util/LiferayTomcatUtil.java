@@ -310,6 +310,8 @@ public class LiferayTomcatUtil
             }
 
             props.put( "auto.deploy.interval", portalServer.getAutoDeployInterval() ); //$NON-NLS-1$
+
+            props.put( "company.default.locale", portalServer.getPortalLocale() );
         }
 
         // props.put( "json.service.public.methods", "*" );

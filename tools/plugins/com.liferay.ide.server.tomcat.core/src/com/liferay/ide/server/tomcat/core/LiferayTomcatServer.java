@@ -152,6 +152,11 @@ public class LiferayTomcatServer extends TomcatServer
         }
     }
 
+    public String getPortalLocale()
+    {
+        return getAttribute( PROPERTY_PORTAL_LOCALE, ILiferayTomcatConstants.DEFAULT_PORTAL_LOCALE );
+    }
+
     public String getPassword()
     {
         return getAttribute( ATTR_PASSWORD, DEFAULT_PASSWORD );
@@ -403,6 +408,11 @@ public class LiferayTomcatServer extends TomcatServer
     public void setPassword( String password )
     {
         setAttribute( ATTR_PASSWORD, password );
+    }
+
+    public void setPortalLocale( String portalLocale )
+    {
+        setAttribute( PROPERTY_PORTAL_LOCALE, portalLocale );
     }
 
     public void setServerMode( int serverMode )
