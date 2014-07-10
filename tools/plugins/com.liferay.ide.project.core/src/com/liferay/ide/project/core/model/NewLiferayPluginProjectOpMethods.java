@@ -31,10 +31,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.sapphire.ElementList;
@@ -296,6 +299,21 @@ public class NewLiferayPluginProjectOpMethods
                             return status;
                         }
                     }
+                }
+
+                // delete file view.jsp
+                try
+                {
+                    final IFile viewJSP = CoreUtil.getDefaultDocrootFolder( project ).getFile( "view.jsp" );
+
+                    if( viewJSP != null && viewJSP.exists() )
+                    {
+                        viewJSP.delete( true, new NullProgressMonitor() );
+                    }
+                }
+                catch( CoreException e )
+                {
+                    LiferayProjectCore.logError( "Error deleting file view.jsp", e );
                 }
            }
         }
