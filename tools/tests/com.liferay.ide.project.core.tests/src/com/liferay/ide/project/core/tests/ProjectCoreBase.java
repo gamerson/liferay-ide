@@ -48,6 +48,7 @@ import org.junit.Before;
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class ProjectCoreBase extends ServerCoreBase
 {
@@ -174,6 +175,43 @@ public class ProjectCoreBase extends ServerCoreBase
             assertEquals( "liferay." + pluginTypeValue, liferayFacet.getId() );
         }
 
+
+        return newLiferayPluginProject;
+    }
+
+    public IProject createProject( NewLiferayPluginProjectOp op, String projectName )
+    {
+        Status status = op.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+
+        assertNotNull( status );
+
+        assertEquals(
+            status.toString(), Status.createOkStatus().message().toLowerCase(), status.message().toLowerCase() );
+
+        final IProject newLiferayPluginProject = project( projectName );
+
+        assertNotNull( newLiferayPluginProject );
+
+        assertEquals( true, newLiferayPluginProject.exists() );
+
+        final IFacetedProject facetedProject = ProjectUtil.getFacetedProject( newLiferayPluginProject );
+
+        assertNotNull( facetedProject );
+
+        final IProjectFacet liferayFacet = ProjectUtil.getLiferayFacet( facetedProject );
+
+        assertNotNull( liferayFacet );
+
+        final PluginType pluginTypeValue = op.getPluginType().content( true );
+
+        if( pluginTypeValue.equals( PluginType.servicebuilder ) )
+        {
+            assertEquals( "liferay.portlet", liferayFacet.getId() );
+        }
+        else
+        {
+            assertEquals( "liferay." + pluginTypeValue, liferayFacet.getId() );
+        }
 
         return newLiferayPluginProject;
     }
