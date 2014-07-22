@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition>
+    <editor-page>
+        <element-type>com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement</element-type>
+        <page-name>Design</page-name>
+        <page-header-text>Layout Template</page-header-text>
+        <root-node>
+             <node>
+                <section>
+                    <content>
+                        <property-editor>ClassName</property-editor>
+                        <property-editor>Role</property-editor>
+                        <property-editor>Id</property-editor>
+                        <property-editor>
+                            <scale-vertically>false</scale-vertically>
+                            <property>PortletLayouts</property>
+                            <show-label>false</show-label>
+                            <visible-when>false</visible-when>
+                        </property-editor>
+                    </content>
+                </section>
+                <node-include>PortletLayoutsList</node-include>
+                <label>Layout ${Size(PortletLayouts)&gt;0 ? Concat(&quot;(&quot;,Size(PortletLayouts),(Size(PortletLayouts)&gt;1?&quot; Rows&quot;:&quot; Row&quot;),&quot;)&quot;) : &quot;&quot;}</label>
+            </node>
+        </root-node>
+        <id>designPage</id>
+    </editor-page>
+    <node-factory>
+        <id>PortletLayoutsList</id>
+        <property>PortletLayouts</property>
+        <case>
+            <section>
+                <label>Portlet Layout</label>
+                <content>
+                    <property-editor>
+                        <property>PortletColumns</property>
+                        <child-property>
+                            <label>${Root().BootstrapStyle ? &quot;Spans&quot;: &quot;Weight&quot;}</label>
+                            <property>Weight</property>
+                        </child-property>
+                        <scale-vertically>true</scale-vertically>
+                        <child-property>
+                            <property>First</property>
+                            <hint>
+                                <name>read.only</name>
+                                <value>true</value>
+                            </hint>
+                        </child-property>
+                        <child-property>
+                            <property>Last</property>
+                            <hint>
+                                <name>read.only</name>
+                                <value>true</value>
+                            </hint>
+                        </child-property>
+                        <child-property>
+                            <property>Only</property>
+                            <hint>
+                                <name>read.only</name>
+                                <value>true</value>
+                            </hint>
+                        </child-property>
+                    </property-editor>
+                </content>
+            </section>
+            <node-include>PortletColumnsList</node-include>
+            <element-type>com.liferay.ide.layouttpl.core.model.PortletLayoutElement</element-type>
+            <label>Row ${Size(PortletColumns)&gt;0 ? Concat(&quot;(&quot;,Size(PortletColumns),(Size(PortletColumns)&gt;1?&quot; Columns&quot;:&quot; Column&quot;),&quot;)&quot;) : &quot;&quot;}</label>
+        </case>
+    </node-factory>
+    <node-factory>
+        <id>PortletColumnsList</id>
+        <property>PortletColumns</property>
+        <case>
+            <label>Column (${Root().BootstrapStyle ? Concat(Weight, Weight&gt;1 ? &quot; Spans&quot; : &quot; Span&quot;) : Concat(&quot;Weight &quot;, Weight)})</label>
+            <section>
+                <label>Portlet Column</label>
+                <content>
+                    <property-editor>
+                        <visible-when>false</visible-when>
+                        <property>PortletLayouts</property>
+                    </property-editor>
+                    <property-editor>
+                        <label>${Root().BootstrapStyle ? &quot;Span(s)&quot;: &quot;Weight&quot;}</label>
+                        <property>Weight</property>
+                    </property-editor>
+                </content>
+            </section>
+            <node-include>PortletLayoutsList</node-include>
+            <element-type>com.liferay.ide.layouttpl.core.model.PortletColumnElement</element-type>
+        </case>
+    </node-factory>
+</definition>
