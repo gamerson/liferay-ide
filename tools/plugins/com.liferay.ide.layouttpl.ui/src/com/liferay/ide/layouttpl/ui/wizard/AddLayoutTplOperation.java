@@ -15,6 +15,8 @@
 
 package com.liferay.ide.layouttpl.ui.wizard;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
@@ -44,6 +46,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
@@ -158,7 +161,9 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
 
     protected LayoutTplDiagram createLayoutTplDigram( IDataModel dm )
     {
-        LayoutTplDiagram diagram = new LayoutTplDiagram();
+        final Version version = new Version( LiferayCore.create( getTargetProject() ).getPortalVersion() );
+
+        LayoutTplDiagram diagram = new LayoutTplDiagram( version );
 
         if( dm.getBooleanProperty( LAYOUT_IMAGE_BLANK_COLUMN ) )
         {
@@ -166,95 +171,217 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 100 ), 0 );
+            PortletLayout row = new PortletLayout( version );
+            if( ge62( version ) )
+            {
+                row.addColumn( new PortletColumn( 12, version ), 0 );
+            }
+            else
+            {
+                row.addColumn( new PortletColumn( 100, version ), 0 );
+            }
+
             diagram.addRow( row );
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_2_I_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 100 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
 
-            PortletLayout row2 = new PortletLayout();
-            row2.addColumn( new PortletColumn( 70 ), 0 );
-            row2.addColumn( new PortletColumn( 30 ), 0 );
+                row.addColumn( new PortletColumn( 12, version ), 0 );
 
-            diagram.addRow( row );
-            diagram.addRow( row2 );
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 8, version ), 0 );
+                row2.addColumn( new PortletColumn( 4, version ), 0 );
+
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+
+                row.addColumn( new PortletColumn( 100, version ), 0 );
+
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 70, version ), 0 );
+                row2.addColumn( new PortletColumn( 30, version ), 0 );
+
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+            }
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_2_II_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 100 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 12, version ), 0 );
 
-            PortletLayout row2 = new PortletLayout();
-            row2.addColumn( new PortletColumn( 30 ), 0 );
-            row2.addColumn( new PortletColumn( 70 ), 0 );
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 4, version ), 0 );
+                row2.addColumn( new PortletColumn( 8, version ), 0 );
 
-            diagram.addRow( row );
-            diagram.addRow( row2 );
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 100, version ), 0 );
+
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 30, version ), 0 );
+                row2.addColumn( new PortletColumn( 70, version ), 0 );
+
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+            }
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_1_2_1_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 100 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 12, version ), 0 );
 
-            PortletLayout row2 = new PortletLayout();
-            row2.addColumn( new PortletColumn( 50 ), 0 );
-            row2.addColumn( new PortletColumn( 50 ), 0 );
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 6, version ), 0 );
+                row2.addColumn( new PortletColumn( 6, version ), 0 );
 
-            PortletLayout row3 = new PortletLayout();
-            row3.addColumn( new PortletColumn( 100 ), 0 );
+                PortletLayout row3 = new PortletLayout( version );
+                row3.addColumn( new PortletColumn( 12, version ), 0 );
 
-            diagram.addRow( row );
-            diagram.addRow( row2 );
-            diagram.addRow( row3 );
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+                diagram.addRow( row3 );
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 100, version ), 0 );
+
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 50,version ), 0 );
+                row2.addColumn( new PortletColumn( 50,version ), 0 );
+
+                PortletLayout row3 = new PortletLayout( version );
+                row3.addColumn( new PortletColumn( 100, version ), 0 );
+
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+                diagram.addRow( row3 );
+            }
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_2_I_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 50 ), 0 );
-            row.addColumn( new PortletColumn( 50 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 6, version ), 0 );
+                row.addColumn( new PortletColumn( 6, version ), 0 );
 
-            diagram.addRow( row );
+                diagram.addRow( row );
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 50, version ), 0 );
+                row.addColumn( new PortletColumn( 50, version ), 0 );
+
+                diagram.addRow( row );
+
+            }
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_2_II_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 70 ), 0 );
-            row.addColumn( new PortletColumn( 30 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 8, version ), 0 );
+                row.addColumn( new PortletColumn( 4, version ), 0 );
 
-            diagram.addRow( row );
+                diagram.addRow( row );
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 70, version ), 0 );
+                row.addColumn( new PortletColumn( 30, version ), 0 );
+
+                diagram.addRow( row );
+            }
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_2_III_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 30 ), 0 );
-            row.addColumn( new PortletColumn( 70 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 4, version ), 0 );
+                row.addColumn( new PortletColumn( 8, version ), 0 );
 
-            diagram.addRow( row );
+                diagram.addRow( row );
+
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 30, version ), 0 );
+                row.addColumn( new PortletColumn( 70, version ), 0 );
+
+                diagram.addRow( row );
+            }
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_2_2_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 30 ), 0 );
-            row.addColumn( new PortletColumn( 70 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 4, version ), 0 );
+                row.addColumn( new PortletColumn( 8, version ), 0 );
 
-            PortletLayout row2 = new PortletLayout();
-            row2.addColumn( new PortletColumn( 70 ), 0 );
-            row2.addColumn( new PortletColumn( 30 ), 0 );
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 4, version ), 0 );
+                row2.addColumn( new PortletColumn( 8, version ), 0 );
 
-            diagram.addRow( row );
-            diagram.addRow( row2 );
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 30, version ), 0 );
+                row.addColumn( new PortletColumn( 70, version ), 0 );
+
+                PortletLayout row2 = new PortletLayout( version );
+                row2.addColumn( new PortletColumn( 70, version ), 0 );
+                row2.addColumn( new PortletColumn( 30, version ), 0 );
+
+                diagram.addRow( row );
+                diagram.addRow( row2 );
+            }
         }
         else if( dm.getBooleanProperty( LAYOUT_IMAGE_3_COLUMN ) )
         {
-            PortletLayout row = new PortletLayout();
-            row.addColumn( new PortletColumn( 33 ), 0 );
-            row.addColumn( new PortletColumn( 33 ), 0 );
-            row.addColumn( new PortletColumn( 33 ), 0 );
+            if( ge62( version ) )
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 4, version ), 0 );
+                row.addColumn( new PortletColumn( 4, version ), 0 );
+                row.addColumn( new PortletColumn( 4, version ), 0 );
 
-            diagram.addRow( row );
+                diagram.addRow( row );
+            }
+            else
+            {
+                PortletLayout row = new PortletLayout( version );
+                row.addColumn( new PortletColumn( 33, version ), 0 );
+                row.addColumn( new PortletColumn( 33, version ), 0 );
+                row.addColumn( new PortletColumn( 33, version ), 0 );
+
+                diagram.addRow( row );
+            }
         }
 
         return diagram;
@@ -265,6 +392,11 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
         String projectName = model.getStringProperty( PROJECT_NAME );
 
         return ProjectUtil.getProject( projectName );
+    }
+
+    private boolean ge62( Version version )
+    {
+        return CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >= 0 ;
     }
 
 }

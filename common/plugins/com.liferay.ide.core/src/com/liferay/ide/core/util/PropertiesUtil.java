@@ -409,8 +409,8 @@ public class PropertiesUtil
     /*
      *  Convert the element values of <resource-bundle> in portlet.xml and <language-properties> in liferay-hook.xml
      *  to the corresponding regular expression to match the local files.
-     *  The return values is: String[0] is base value of normal format without suffix, String[1] is a regex.
-     *  Both may be null, check them before using them.
+     *  The return values: String[0] is base value of normal format without suffix, String[1] is a regex.
+     *  Both may be null, check them before using.
      */
     public static String[] generatePropertiesNamePatternsForEncoding( String baseValue, String elementName )
     {

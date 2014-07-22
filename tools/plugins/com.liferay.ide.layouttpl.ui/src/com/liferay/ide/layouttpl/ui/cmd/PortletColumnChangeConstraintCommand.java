@@ -17,6 +17,8 @@
 
 package com.liferay.ide.layouttpl.ui.cmd;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.model.PortletColumnElement;
 import com.liferay.ide.layouttpl.ui.model.LayoutConstraint;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
@@ -73,15 +75,18 @@ public class PortletColumnChangeConstraintCommand extends Command
             PortletColumnElement refColumn = layoutConstraint.refColumn;
             int newWeight = refColumn.getWeight() + diffWeight;
 
-            //IDE-800 to avoid changing one column from 66% to 65% but the refColumn stay 33%
-            //since diffWeight is only 1% not enough to get 35% according to adjustWeight
-            //the conflict is caused by 33% + 66% < 100%
-            if( refColumn.getWeight() == 33 )
+            if( CoreUtil.compareVersions( column.getVersion(), ILiferayConstants.V620 ) < 0 )
             {
-                newWeight = newWeight + 1;
-            }
+                //IDE-800 to avoid changing one column from 66% to 65% but the refColumn stay 33%
+                //since diffWeight is only 1% not enough to get 35% according to adjustWeight
+                //the conflict is caused by 33% + 66% < 100%
+                if( refColumn.getWeight() == 33 )
+                {
+                    newWeight = newWeight + 1;
+                }
 
-            newWeight = LayoutTplUIUtil.adjustWeight( newWeight );
+                newWeight = LayoutTplUIUtil.adjustWeight( newWeight );
+            }
 
             refColumn.setWeight( newWeight );
         }
@@ -96,12 +101,15 @@ public class PortletColumnChangeConstraintCommand extends Command
         PortletColumnElement refColumn = layoutConstraint.refColumn;
         int newWeight = refColumn.getWeight() - diffWeight;
 
-        if( refColumn.getWeight() == 33 )
+        if( CoreUtil.compareVersions( column.getVersion(), ILiferayConstants.V620 ) < 0 )
         {
-            newWeight = newWeight + 1;
-        }
+            if( refColumn.getWeight() == 33 )
+            {
+                newWeight = newWeight + 1;
+            }
 
-        newWeight = LayoutTplUIUtil.adjustWeight( newWeight );
+            newWeight = LayoutTplUIUtil.adjustWeight( newWeight );
+        }
 
         refColumn.setWeight( newWeight );
     }

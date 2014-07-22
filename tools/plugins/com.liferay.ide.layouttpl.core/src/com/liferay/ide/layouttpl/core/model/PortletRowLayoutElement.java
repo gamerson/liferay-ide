@@ -20,6 +20,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.osgi.framework.Version;
+
 /**
  * @author Cindy Li
  */
@@ -30,6 +32,12 @@ public class PortletRowLayoutElement extends ModelElement implements PropertyCha
     public static final String ROW_REMOVED_PROP = "LayoutTplDiagram.RowRemoved"; //$NON-NLS-1$
 
     protected List<ModelElement> rows = new ArrayList<ModelElement>();
+    protected Version version;
+
+    public PortletRowLayoutElement( Version version )
+    {
+         this.version = version; 
+    }
 
     public void addRow( PortletLayoutElement newRow )
     {
@@ -154,5 +162,15 @@ public class PortletRowLayoutElement extends ModelElement implements PropertyCha
         }
 
         return numIdCount;
+    }
+
+    public Version getVersion()
+    {
+        return this.version;
+    }
+
+    public void setVersion( Version version )
+    {
+        this.version = version;
     }
 }

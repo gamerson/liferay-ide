@@ -15,6 +15,8 @@
 
 package com.liferay.ide.layouttpl.ui.policies;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.model.PortletRowLayoutElement;
 import com.liferay.ide.layouttpl.ui.cmd.PortletColumnChangeConstraintCommand;
 import com.liferay.ide.layouttpl.ui.cmd.PortletColumnCreateCommand;
@@ -42,6 +44,7 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
@@ -54,10 +57,12 @@ public class PortletLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolicy
     // public static final int DEFAULT_FEEDBACK_HEIGHT = 100;
 
     protected IFigure feedbackFigure;
+    protected Version version;
 
-    public PortletLayoutLayoutEditPolicy()
+    public PortletLayoutLayoutEditPolicy( Version version )
     {
         super();
+        this.version = version;
     }
 
     @Override
@@ -273,8 +278,13 @@ public class PortletLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolicy
                 }
             }
 
+            // for version before 62:
             // find the nearest(right first) >5% column as ref column; if all columns are 5%, make command invalid
+            // for version 62 and greater:
+            // find the nearest(right first) >1  column as ref column; if all columns are 1, make command invalid
             PortletColumnEditPart refColumnPart = null;
+
+            int weightUnit = CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >=0 ? 1 : 5;
 
             for( int i = 0; i < numColumns; i++ )
             {
@@ -282,7 +292,7 @@ public class PortletLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolicy
                 {
                     PortletColumnEditPart ref = (PortletColumnEditPart) columns.get( constraint.newColumnIndex + i );
 
-                    if( ref.getCastedModel().getWeight() > 5 )
+                    if( ref.getCastedModel().getWeight() > weightUnit )
                     {
                         refColumnPart = ref;
                         break;
@@ -293,7 +303,7 @@ public class PortletLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolicy
                 {
                     PortletColumnEditPart ref = (PortletColumnEditPart) columns.get( constraint.newColumnIndex - 1 - i );
 
-                    if( ref.getCastedModel().getWeight() > 5 )
+                    if( ref.getCastedModel().getWeight() > weightUnit )
                     {
                         refColumnPart = ref;
                         break;
@@ -314,10 +324,15 @@ public class PortletLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolicy
             }
             else
             {
-                newWeight = 50; // 50%
+                newWeight = refColumnPart.getCastedModel().getFullWeight() / 2 ;
             }
 
-            constraint.weight = LayoutTplUIUtil.adjustWeight( newWeight );
+            if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) < 0 )
+            {
+                newWeight = LayoutTplUIUtil.adjustWeight( newWeight );
+            }
+
+            constraint.weight = newWeight;
             constraint.refColumn = refColumnPart.getCastedModel();
         }
 
@@ -393,7 +408,15 @@ public class PortletLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolicy
 
         // get new weight based on resize
         int rowWidth = getHostFigure().getSize().width - ( PortletLayoutEditPart.LAYOUT_MARGIN * 2 );
-        constraint.weight = LayoutTplUIUtil.adjustWeight( (int) ( (double) rect.width / (double) rowWidth * 100d ) );
+
+        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) < 0 )
+        {
+            constraint.weight = LayoutTplUIUtil.adjustWeight( (int) ( (double) rect.width / (double) rowWidth * 100d ) );
+        }
+        else
+        {
+            constraint.weight = (int) ( (double) rect.width / (double) rowWidth * 12d );
+        }
 
         return constraint;
     }
@@ -415,14 +438,14 @@ public class PortletLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolicy
 
         if( childClass == PortletColumn.class )
         {
-            return new PortletColumnCreateCommand(
-                (PortletColumn) request.getNewObject(), getRowLayout(), (LayoutConstraint) getConstraintFor( request ) );
+            return new PortletColumnCreateCommand( version, new PortletColumn( version ),
+                getRowLayout(), (LayoutConstraint) getConstraintFor( request ) );
         }
 
         if( childClass == PortletLayout.class )
         {
-            return new PortletLayoutCreateCommand(
-                (PortletLayout) request.getNewObject(), getRowLayout(), (LayoutConstraint) getConstraintFor( request ) );
+            return new PortletLayoutCreateCommand( version, new PortletLayout( version ),
+                getRowLayout(), (LayoutConstraint) getConstraintFor( request ) );
         }
 
         return null;

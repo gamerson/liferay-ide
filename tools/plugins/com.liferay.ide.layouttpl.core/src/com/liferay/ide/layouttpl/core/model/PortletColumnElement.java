@@ -15,61 +15,26 @@
 
 package com.liferay.ide.layouttpl.core.model;
 
+import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.layouttpl.core.util.LayoutTplUtil;
 
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
  * @author Cindy Li
+ * @author Kuo Zhang
  */
-@SuppressWarnings( "restriction" )
 public class PortletColumnElement extends PortletRowLayoutElement
 {
     public static final int DEFAULT_WEIGHT = -1;
+    public static final String DEFAULT_CLASS_NAME = "portlet-column";
     public static final String WEIGHT_PROP = "PortletColumn.weight"; //$NON-NLS-1$
 
     // public static final String SIZE_PROP = "PortletColumn.size";
     // public static final String LOCATION_PROP = "PortletColumn.location";
-
-    public static PortletColumnElement createFromElement( IDOMElement portletColumnElement, ILayoutTplDiagramFactory factory )
-    {
-        if( portletColumnElement == null )
-        {
-            return null;
-        }
-
-        PortletColumnElement newPortletColumn = factory.newPortletColumn();
-
-        String existingClassName = portletColumnElement.getAttribute( "class" ); //$NON-NLS-1$
-
-        if( ( !CoreUtil.isNullOrEmpty( existingClassName ) ) && existingClassName.contains( "portlet-column" ) ) //$NON-NLS-1$
-        {
-            newPortletColumn.setClassName( existingClassName );
-        }
-        else
-        {
-            newPortletColumn.setClassName( "portlet-column" ); //$NON-NLS-1$
-        }
-
-        newPortletColumn.setWeight( LayoutTplUtil.getWeightValue( portletColumnElement, -1 ) );
-
-        IDOMElement[] portletLayoutElements =
-            LayoutTplUtil.findChildElementsByClassName( portletColumnElement, "div", "portlet-layout" ); //$NON-NLS-1$ //$NON-NLS-2$
-
-        if( !CoreUtil.isNullOrEmpty( portletLayoutElements ) )
-        {
-            for( IDOMElement portletLayoutElement : portletLayoutElements )
-            {
-                PortletLayoutElement newPortletLayout = factory.newPortletLayoutFromElement( portletLayoutElement );
-                newPortletColumn.addRow( newPortletLayout );
-            }
-        }
-
-        return newPortletColumn;
-    }
 
     protected String className;
     protected boolean first = false;
@@ -77,27 +42,39 @@ public class PortletColumnElement extends PortletRowLayoutElement
     protected int numId = 0;
     protected int weight;
 
-    public PortletColumnElement()
+    public PortletColumnElement( int weight, String className, Version version )
     {
-        this( DEFAULT_WEIGHT, "portlet-column" ); //$NON-NLS-1$
-    }
-
-    public PortletColumnElement( int weight )
-    {
-        this( weight, "portlet-column" ); //$NON-NLS-1$
-    }
-
-    public PortletColumnElement( int weight, String className )
-    {
-        super();
+        super( version );
 
         this.weight = weight;
         this.className = className;
     }
 
+    public PortletColumnElement( int weight, Version version )
+    {
+        this( weight, DEFAULT_CLASS_NAME, version ); //$NON-NLS-1$
+    }
+
+    public PortletColumnElement( Version version )
+    {
+        this( DEFAULT_WEIGHT, DEFAULT_CLASS_NAME, version ); //$NON-NLS-1$
+    }
+
     public String getClassName()
     {
         return className;
+    }
+
+    public String getDefaultChildClassName()
+    {
+        if( LayoutTplUtil.ge62( version ) )
+        {
+            return "portlet-layout row-fluid";
+        }
+        else
+        {
+            return "portlet-layout";
+        }
     }
 
     public int getNumId()
@@ -109,17 +86,31 @@ public class PortletColumnElement extends PortletRowLayoutElement
     {
         if( WEIGHT_PROP.equals( propertyId ) )
         {
-            if( getWeight() == DEFAULT_WEIGHT )
+            if( LayoutTplUtil.ge62( version ) )
             {
-                return "100%"; //$NON-NLS-1$
+                if( getWeight() == DEFAULT_WEIGHT )
+                {
+                    return 12;
+                }
+                else
+                {
+                    return Integer.toString( getWeight() );
+                }
             }
             else
             {
-                return Integer.toString( getWeight() ) + "%"; //$NON-NLS-1$
+                if( getWeight() == DEFAULT_WEIGHT )
+                {
+                    return "100%"; //$NON-NLS-1$
+                }
+                else
+                {
+                    return Integer.toString( getWeight() ) + "%";
+                }
             }
         }
 
-        return super.getPropertyValue( propertyId );
+        return null;
     }
 
     public int getWeight()
@@ -166,13 +157,28 @@ public class PortletColumnElement extends PortletRowLayoutElement
     {
         if( WEIGHT_PROP.equals( propertyId ) )
         {
-            String val = value.toString().replaceAll( "%", StringPool.EMPTY ); //$NON-NLS-1$
-            int weight = Integer.parseInt( val );
-            setWeight( weight );
-        }
-        else
-        {
-            super.setPropertyValue( propertyId, value );
+            try
+            {
+                if( LayoutTplUtil.ge62( version ) )
+                {
+                    int weight = Integer.parseInt( value.toString() );
+
+                    if( weight > 0 && weight <= 12 )
+                    {
+                        setWeight( weight );
+                    }
+                }
+                else
+                {
+                    String val = value.toString().replaceAll( "%", StringPool.EMPTY );
+                    int weight = Integer.parseInt( val );
+                    setWeight( weight );
+                }
+            }
+            catch( NumberFormatException ex )
+            {
+                // do nothing
+            }
         }
     }
 
@@ -183,4 +189,27 @@ public class PortletColumnElement extends PortletRowLayoutElement
         firePropertyChange( WEIGHT_PROP, oldValue, this.weight );
     }
 
+    public void setFullWeight()
+    {
+        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >= 0 )
+        {
+            setWeight( 12 );
+        }
+        else
+        {
+            setWeight( 100 );
+        }
+    }
+
+    public int getFullWeight()
+    {
+        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >= 0 )
+        {
+            return 12;
+        }
+        else
+        {
+            return 100;
+        }
+    }
 }

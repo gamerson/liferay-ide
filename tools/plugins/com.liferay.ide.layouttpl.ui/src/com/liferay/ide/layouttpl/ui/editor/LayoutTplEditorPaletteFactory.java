@@ -15,6 +15,7 @@
 
 package com.liferay.ide.layouttpl.ui.editor;
 
+import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
 import com.liferay.ide.layouttpl.ui.model.PortletLayout;
@@ -30,6 +31,7 @@ import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.requests.SimpleFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
+import org.osgi.framework.Version;
 
 /**
  * Utility class that can create a GEF Palette.
@@ -66,7 +68,7 @@ public class LayoutTplEditorPaletteFactory
      * 
      * @return a new PaletteRoot
      */
-    static PaletteRoot createPalette()
+    static PaletteRoot createPalette( Version version )
     {
         PaletteRoot palette = new PaletteRoot();
         palette.add( createToolsGroup( palette ) );
@@ -114,7 +116,7 @@ public class LayoutTplEditorPaletteFactory
         CombinedTemplateCreationEntry component3 =
             new CombinedTemplateCreationEntry(
                 Msgs.Columns5050, Msgs.create2ColumnRow5050,
-                new PortletLayoutTemplate( 2, 50, 50 ), new PortletLayoutFactory( 2, 50, 50 ), desc, large );
+                new PortletLayoutTemplate( 2, 50, 50 ), new PortletLayoutFactory( ILiferayConstants.V610, 2, 50, 50 ), desc, large );
 
         group2.add( component3 );
 
@@ -128,7 +130,7 @@ public class LayoutTplEditorPaletteFactory
         CombinedTemplateCreationEntry component4 =
             new CombinedTemplateCreationEntry(
                 Msgs.Columns3070, Msgs.create2ColumnRow3070,
-                new PortletLayoutTemplate( 2, 30, 70 ), new PortletLayoutFactory( 2, 30, 70 ), desc, large );
+                new PortletLayoutTemplate( 2, 30, 70 ), new PortletLayoutFactory( version, 2, 30, 70 ), desc, large );
 
         group2.add( component4 );
 
@@ -142,7 +144,7 @@ public class LayoutTplEditorPaletteFactory
         CombinedTemplateCreationEntry component5 =
             new CombinedTemplateCreationEntry(
                 Msgs.Columns7030, Msgs.create2ColumnRow7030,
-                new PortletLayoutTemplate( 2, 70, 30 ), new PortletLayoutFactory( 2, 70, 30 ), desc, large );
+                new PortletLayoutTemplate( 2, 70, 30 ), new PortletLayoutFactory( version, 2, 70, 30 ), desc, large );
 
         group2.add( component5 );
 
@@ -156,7 +158,7 @@ public class LayoutTplEditorPaletteFactory
         CombinedTemplateCreationEntry component6 =
             new CombinedTemplateCreationEntry(
                 Msgs.threeColumns, Msgs.create3ColumnRow,
-                new PortletLayoutTemplate( 3, 33, 33, 33 ), new PortletLayoutFactory( 3, 33, 33, 33 ), desc, large );
+                new PortletLayoutTemplate( 3, 33, 33, 33 ), new PortletLayoutFactory( version, 3, 33, 33, 33 ), desc, large );
 
         group2.add( component6 );
 

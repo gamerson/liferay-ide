@@ -15,6 +15,8 @@
 
 package com.liferay.ide.layouttpl.ui.parts;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
 import com.liferay.ide.layouttpl.ui.policies.PortletColumnComponentEditPolicy;
@@ -63,13 +65,27 @@ public class PortletColumnTreeEditPart extends BaseTreeEditPart
     {
         String text = Msgs.portletColumn;
 
-        if( getCastedModel().getWeight() == PortletColumn.DEFAULT_WEIGHT )
+        if( CoreUtil.compareVersions( getCastedModel().getVersion(), ILiferayConstants.V620 ) < 0 )
         {
-            text += " - 100%"; //$NON-NLS-1$
+            if( getCastedModel().getWeight() == PortletColumn.DEFAULT_WEIGHT )
+            {
+                text += " - 100%"; //$NON-NLS-1$
+            }
+            else
+            {
+                text += " - " + getCastedModel().getWeight() + "%"; //$NON-NLS-1$ //$NON-NLS-2$
+            }
         }
         else
         {
-            text += " - " + getCastedModel().getWeight() + "%"; //$NON-NLS-1$ //$NON-NLS-2$
+            if( getCastedModel().getWeight() == PortletColumn.DEFAULT_WEIGHT )
+            {
+                text += " - 12"; //$NON-NLS-1$
+            }
+            else
+            {
+                text += " - " + getCastedModel().getWeight();//$NON-NLS-1$ //$NON-NLS-2$
+            }
         }
 
         return text;

@@ -84,7 +84,7 @@ public class LayoutTplUIUtil
             return false;
         }
 
-        if( !( ( (CreateRequest) request ).getNewObject().getClass() == class1 ) )
+        if( !( ( (CreateRequest) request ).getNewObjectType() == class1 ) )
         {
             return false;
         }

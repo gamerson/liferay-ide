@@ -52,7 +52,7 @@ public class PortletColumnEditPart extends PortletRowLayoutEditPart
     {
         // allow removal of the associated model element
         installEditPolicy( EditPolicy.COMPONENT_ROLE, new PortletColumnComponentEditPolicy() );
-        installEditPolicy( EditPolicy.LAYOUT_ROLE, new PortletColumnLayoutEditPolicy() );
+        installEditPolicy( EditPolicy.LAYOUT_ROLE, new PortletColumnLayoutEditPolicy( getCastedModel().getVersion() ) );
     }
 
     protected IFigure createFigure()
@@ -181,12 +181,12 @@ public class PortletColumnEditPart extends PortletRowLayoutEditPart
 
         if( columnWeight == PortletColumn.DEFAULT_WEIGHT )
         {
-            columnWeight = 100;
+            columnWeight = getCastedModel().getFullWeight();
         }
 
         if( getFigure() instanceof ColumnFigure )
         {
-            ( (ColumnFigure) getFigure() ).setText( columnWeight + "%" ); //$NON-NLS-1$
+            ( (ColumnFigure) getFigure() ).setText( getCastedModel().getWeightValue() ); //$NON-NLS-1$
         }
     }
 }

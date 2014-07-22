@@ -15,6 +15,8 @@
 
 package com.liferay.ide.layouttpl.ui.parts;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.model.ModelElement;
 import com.liferay.ide.layouttpl.ui.draw2d.PortletLayoutPanel;
 import com.liferay.ide.layouttpl.ui.model.LayoutTplDiagram;
@@ -123,7 +125,7 @@ public class PortletLayoutEditPart extends BaseGraphicalEditPart
     @Override
     protected void createEditPolicies()
     {
-        installEditPolicy( EditPolicy.LAYOUT_ROLE, new PortletLayoutLayoutEditPolicy() );
+        installEditPolicy( EditPolicy.LAYOUT_ROLE, new PortletLayoutLayoutEditPolicy( getCastedModel().getVersion() ) );
     }
 
     @Override
@@ -209,6 +211,9 @@ public class PortletLayoutEditPart extends BaseGraphicalEditPart
             // get width of our own part to calculate new width
             int rowWidth = this.getFigure().getSize().width - ( PortletLayoutEditPart.LAYOUT_MARGIN * 2 );
 
+            double widthBaseNumber =
+                CoreUtil.compareVersions( getCastedModel().getVersion(), ILiferayConstants.V620 ) >= 0 ? 12d : 100d;  
+
             if( rowWidth > 0 )
             {
                 for( Object col : columns )
@@ -220,7 +225,7 @@ public class PortletLayoutEditPart extends BaseGraphicalEditPart
                     // }
                     GridData rowData = portletColumnPart.createGridData();
 
-                    double percent = column.getWeight() / 100d;
+                    double percent = column.getWeight() / widthBaseNumber;
                     rowData.widthHint = (int) ( percent * rowWidth ) - ( COLUMN_SPACING * 2 );
                     this.setLayoutConstraint( portletColumnPart, portletColumnPart.getFigure(), rowData );
                 }

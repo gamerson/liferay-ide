@@ -15,6 +15,7 @@
 
 package com.liferay.ide.layouttpl.core.tests;
 
+import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.tests.BaseTests;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
@@ -32,11 +33,14 @@ import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
  * @author Cindy Li
+ * @author Kuo Zhang
  */
+@SuppressWarnings( { "restriction", "deprecation" } )
 public class LayoutTplCoreTests extends BaseTests
 {
     private static final String FILES_PREFIX = "files/";
@@ -134,13 +138,13 @@ public class LayoutTplCoreTests extends BaseTests
         row1.removeColumn( ( PortletColumnElement ) row1.getColumns().get( 0 ) );
         model.removeRow( row1 );
 
-        row3_c1_r1.addColumn( new PortletColumnElement( 20 ) );
+        row3_c1_r1.addColumn( new PortletColumnElement( 20, version612() ) );
         ( ( PortletColumnElement ) row3_c1_r1.getColumns().get( 0 )).setWeight( 80 );
 
         row2.removeColumn( (PortletColumnElement) row2.getColumns().get( 0 ) );
         ( ( PortletColumnElement ) row2.getColumns().get( 0 ) ).setWeight( 66 );
 
-        row3_c1_r2_c2_r1.addColumn( new PortletColumnElement( 10 ) );
+        row3_c1_r2_c2_r1.addColumn( new PortletColumnElement( 10, version612() ) );
         ( ( PortletColumnElement ) row3_c1_r2_c2_r1.getColumns().get( 0 ) ).setWeight( 90 );
 
         evalModelWithFile( "1_3_2_nest_columns.tpl", refTplFile, model );
@@ -150,30 +154,30 @@ public class LayoutTplCoreTests extends BaseTests
     {
         LayoutTplDiagramElement tpl = new LayoutTplDiagramElement();
 
-        PortletLayoutElement row1 = new PortletLayoutElement();
-        row1.addColumn( new PortletColumnElement( 100 ) );
+        PortletLayoutElement row1 = new PortletLayoutElement( version612() );
+        row1.addColumn( new PortletColumnElement( 100, version612() ) );
 
-        PortletLayoutElement row2 = new PortletLayoutElement();
-        row2.addColumn( new PortletColumnElement( 33 ) );
-        row2.addColumn( new PortletColumnElement( 33 ) );
-        row2.addColumn( new PortletColumnElement( 33 ) );
+        PortletLayoutElement row2 = new PortletLayoutElement( version612() );
+        row2.addColumn( new PortletColumnElement( 33, version612() ) );
+        row2.addColumn( new PortletColumnElement( 33, version612() ) );
+        row2.addColumn( new PortletColumnElement( 33, version612() ) );
 
-        PortletLayoutElement row3 = new PortletLayoutElement();
+        PortletLayoutElement row3 = new PortletLayoutElement( version612() );
 
-        PortletColumnElement column1 = new PortletColumnElement( 66 );
+        PortletColumnElement column1 = new PortletColumnElement( 66, version612() );
 
-        PortletLayoutElement row31 = new PortletLayoutElement();
-        row31.addColumn( new PortletColumnElement( 100 ) );
+        PortletLayoutElement row31 = new PortletLayoutElement( version612() );
+        row31.addColumn( new PortletColumnElement( 100, version612() ) );
 
         column1.addRow( row31  );
 
-        PortletLayoutElement row32 = new PortletLayoutElement();
-        row32.addColumn( new PortletColumnElement( 50 ) );
+        PortletLayoutElement row32 = new PortletLayoutElement( version612() );
+        row32.addColumn( new PortletColumnElement( 50, version612() ) );
 
-        PortletColumnElement column11 = new PortletColumnElement( 50 );
+        PortletColumnElement column11 = new PortletColumnElement( 50, version612() );
 
-        PortletLayoutElement row321 = new PortletLayoutElement();
-        row321.addColumn( new PortletColumnElement( 100 ) );
+        PortletLayoutElement row321 = new PortletLayoutElement( version612() );
+        row321.addColumn( new PortletColumnElement( 100, version612() ) );
 
         column11.addRow( row321  );
 
@@ -182,7 +186,7 @@ public class LayoutTplCoreTests extends BaseTests
         column1.addRow( row32   );
         row3.addColumn( column1 );
 
-        row3.addColumn( new PortletColumnElement( 33 ) );
+        row3.addColumn( new PortletColumnElement( 33, version612() ) );
 
         tpl.addRow( row1 );
         tpl.addRow( row2 );
@@ -239,6 +243,11 @@ public class LayoutTplCoreTests extends BaseTests
         Assert.assertEquals( true, templateFile.exists() );
 
         return templateFile;
+    }
+
+    protected Version version612()
+    {
+        return ILiferayConstants.V612;
     }
 
 }

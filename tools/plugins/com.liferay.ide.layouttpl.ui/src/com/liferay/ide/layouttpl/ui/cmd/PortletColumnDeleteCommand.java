@@ -17,6 +17,7 @@
 
 package com.liferay.ide.layouttpl.ui.cmd;
 
+import com.liferay.ide.layouttpl.core.model.PortletRowLayoutElement;
 import com.liferay.ide.layouttpl.ui.model.LayoutTplDiagram;
 import com.liferay.ide.layouttpl.ui.model.PortletColumn;
 import com.liferay.ide.layouttpl.ui.model.PortletLayout;
@@ -26,6 +27,7 @@ import org.eclipse.osgi.util.NLS;
 
 /**
  * @author Gregory Amerson
+ * @author Kuo Zhang
  */
 public class PortletColumnDeleteCommand extends Command
 {
@@ -67,15 +69,27 @@ public class PortletColumnDeleteCommand extends Command
 
         if( columnsNum == 0 )
         {
-            diagram = (LayoutTplDiagram) parent.getParent();
-            parentIndex = diagram.getRows().indexOf( parent );
-            diagram.removeChild( parent );
+            if( parent.getParent() instanceof PortletRowLayoutElement )
+            {
+                PortletRowLayoutElement rowLayoutElement = (PortletRowLayoutElement) parent.getParent();
+                parentIndex = rowLayoutElement .getRows().indexOf( parent );
+                rowLayoutElement.removeChild( parent );
+            }
+
+            // TODO there a bug here when deleting the nested rows or columns
+
+            /*else if( parent.getParent() instanceof PortletColumn )
+            {
+                PortletColumn column = (PortletColumn)parent.getParent();
+                parentIndex =  column.getRows().indexOf( parent );
+                column.removeChild( parent );
+            }*/
         }
         else if( columnsNum == 1 )
         {
             adjustedColumn = ((PortletColumn) parent.getColumns().get( 0 ));
             adjustedColumnWeight = adjustedColumn.getWeight() + child.getWeight();
-            adjustedColumn.setWeight( 100 );
+            adjustedColumn.setFullWeight();
         }
         else
         {

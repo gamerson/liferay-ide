@@ -19,6 +19,7 @@ import com.liferay.ide.layouttpl.core.model.PortletLayoutElement;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.osgi.framework.Version;
 
 
 /**
@@ -26,6 +27,12 @@ import org.eclipse.ui.views.properties.IPropertySource;
  */
 public class PortletLayout extends PortletLayoutElement implements IPropertySource
 {
+
+    public PortletLayout( Version version )
+    {
+        super( version );
+    }
+
     /** An empty property descriptor. */
     private static final IPropertyDescriptor[] EMPTY_ARRAY = new IPropertyDescriptor[0];
 
@@ -33,4 +40,5 @@ public class PortletLayout extends PortletLayoutElement implements IPropertySour
     {
         return EMPTY_ARRAY;
     }
+
 }

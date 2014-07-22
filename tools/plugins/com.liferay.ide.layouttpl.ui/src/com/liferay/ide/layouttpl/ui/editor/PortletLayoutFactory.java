@@ -19,16 +19,19 @@ import com.liferay.ide.layouttpl.ui.model.PortletColumn;
 import com.liferay.ide.layouttpl.ui.model.PortletLayout;
 
 import org.eclipse.gef.requests.CreationFactory;
+import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
+ * @author Kuo Zhang
  */
 public class PortletLayoutFactory implements CreationFactory
 {
     protected int numColumns;
     protected int[] weights;
+    protected Version version;
 
-    public PortletLayoutFactory( int numCols, int... weights )
+    public PortletLayoutFactory( Version version, int numCols, int... weights )
     {
         if( numCols < 1 )
         {
@@ -40,17 +43,18 @@ public class PortletLayoutFactory implements CreationFactory
             throw new IllegalArgumentException( "Number of weight args must match number of columns." ); //$NON-NLS-1$
         }
 
+        this.version = version;
         this.numColumns = numCols;
         this.weights = weights;
     }
 
     public Object getNewObject()
     {
-        PortletLayout newRow = new PortletLayout();
+        PortletLayout newRow = new PortletLayout( version );
 
         for( int i = 0; i < numColumns; i++ )
         {
-            PortletColumn newColumn = new PortletColumn();
+            PortletColumn newColumn = new PortletColumn( version );
             newColumn.setWeight( weights[i] );
 
             newRow.addColumn( newColumn );

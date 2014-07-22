@@ -18,12 +18,8 @@ package com.liferay.ide.layouttpl.ui.parts;
 import com.liferay.ide.layouttpl.ui.policies.LayoutTplDiagramLayoutEditPolicy;
 
 import org.eclipse.draw2d.Panel;
-import org.eclipse.draw2d.ToolbarLayout;
-import org.eclipse.draw2d.text.FlowPage;
-import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Color;
 
 /**
@@ -34,34 +30,16 @@ import org.eclipse.swt.graphics.Color;
 public class LayoutTplDiagramEditPart extends PortletRowLayoutEditPart
 {
     public static final int DIAGRAM_MARGIN = 10;
-    public boolean visualEditorSupported;
 
     public LayoutTplDiagramEditPart()
     {
-    }
-
-    public LayoutTplDiagramEditPart( boolean supported )
-    {
-        this.visualEditorSupported = supported;
     }
 
     @Override
     protected void configurePanel( Panel panel )
     {
         super.configurePanel( panel );
-
-        if( visualEditorSupported )
-        {
-            panel.setBackgroundColor( new Color( null, 10, 10, 10 ) );
-        }
-        else
-        {
-            panel.setBackgroundColor( new Color( null, 196, 196, 196 ) );
-            panel.setLayoutManager( new ToolbarLayout() );
-            FlowPage fp = new FlowPage();
-            fp.add( new TextFlow( Msgs.layoutTplNotSupported ) );
-            panel.add( fp );
-        }
+        panel.setBackgroundColor( new Color( null, 10, 10, 10 ) );
     }
 
     protected void createEditPolicies()
@@ -71,22 +49,12 @@ public class LayoutTplDiagramEditPart extends PortletRowLayoutEditPart
 
         // handles constraint changes (e.g. moving and/or resizing) of model
         // elements and creation of new model elements
-        installEditPolicy( EditPolicy.LAYOUT_ROLE, new LayoutTplDiagramLayoutEditPolicy() );
+        installEditPolicy( EditPolicy.LAYOUT_ROLE, new LayoutTplDiagramLayoutEditPolicy( getCastedModel().getVersion() ) );
     }
 
     @Override
     public int getMargin()
     {
         return DIAGRAM_MARGIN;
-    }
-
-    private static class Msgs extends NLS
-    {
-        public static String layoutTplNotSupported;
-
-        static
-        {
-            initializeMessages( LayoutTplDiagramEditPart.class.getName(), Msgs.class );
-        }
     }
 }
