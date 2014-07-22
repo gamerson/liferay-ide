@@ -14,9 +14,12 @@
  *******************************************************************************/
 package com.liferay.ide.layouttpl.core.util;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.LayoutTplCore;
-import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
+import com.liferay.ide.layouttpl.core.model.LayoutTplElement;
 import com.liferay.ide.templates.core.ITemplateContext;
 import com.liferay.ide.templates.core.ITemplateOperation;
 import com.liferay.ide.templates.core.TemplatesCore;
@@ -28,10 +31,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.ArrayStack;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.osgi.framework.Version;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -40,18 +44,18 @@ import org.w3c.dom.NodeList;
 /**
  * @author Gregory Amerson
  * @author Cindy Li
+ * @author Kuo Zhang
  */
 @SuppressWarnings( "restriction" )
 public class LayoutTplUtil
 {
 
-    private static void createLayoutTplContext( ITemplateOperation op, LayoutTplDiagramElement tplDiagramElement, String templateName )
+    private static void createLayoutTplContext( ITemplateOperation op, LayoutTplElement layouttpl )
     {
         final ITemplateContext ctx = op.getContext();
 
-        ctx.put( "root", tplDiagramElement ); //$NON-NLS-1$
-        ctx.put( "templateName", templateName ); //$NON-NLS-1$
-        ctx.put( "stack", new ArrayStack() ); //$NON-NLS-1$
+        ctx.put( "root", layouttpl );
+        ctx.put( "stack", new ArrayStack() );
     }
 
     public static IDOMElement[] findChildElementsByClassName( IDOMElement parentElement,
@@ -131,15 +135,26 @@ public class LayoutTplUtil
         return retval;
     }
 
-    public static String getTemplateSource( LayoutTplDiagramElement diagram, String templateName )
+    public static String getTemplateSource( LayoutTplElement layouttpl )
     {
         final StringBuffer buffer = new StringBuffer();
 
         try
         {
-            ITemplateOperation templateOperation =
-                TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.defaultLayoutTemplate" );
-            createLayoutTplContext( templateOperation, diagram, templateName );
+            ITemplateOperation templateOperation = null;
+
+            if( layouttpl.getBootstrapStyle().content() )
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.layouttpl.bootstrap" );
+            }
+            else
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.layouttpl.legacy" );
+            }
+
+            createLayoutTplContext( templateOperation, layouttpl );
 
             templateOperation.setOutputBuffer( buffer );
             templateOperation.execute( new NullProgressMonitor() );
@@ -168,60 +183,107 @@ public class LayoutTplUtil
             return weightValue;
         }
 
-        Pattern pattern = Pattern.compile( ".*aui-w([-\\d]+).*" ); //$NON-NLS-1$
-        Matcher matcher = pattern.matcher( classAttr );
+        Matcher matcher = Pattern.compile( "(.*span)(\\d+)" ).matcher( classAttr );
 
         if( matcher.matches() )
         {
-            String weightString = matcher.group( 1 );
+            String weightString = matcher.group(2);
 
-            if( !CoreUtil.isNullOrEmpty( weightString ) )
+            if( !CoreUtil.isNullOrEmpty( weightString ))
             {
-                try
-                {
-                    weightValue = Integer.parseInt( weightString );
-                }
-                catch( NumberFormatException e )
-                {
-                    // if we have a 1-2 then we have a fraction
-                    int index = weightString.indexOf( '-' );
-
-                    if( index > 0 )
-                    {
-                        try
-                        {
-                            int numerator = Integer.parseInt( weightString.substring( 0, index ) );
-                            int denominator =
-                                Integer.parseInt( weightString.substring( index + 1, weightString.length() ) );
-                            weightValue = (int) ( (float) numerator / denominator * 100 );
-                        }
-                        catch( NumberFormatException ex )
-                        {
-                            // best effort
-                        }
-                    }
-                }
+                weightValue = Integer.parseInt( weightString );
+                // according to the Bootstrap, the max value is 12
+                weightValue = weightValue <= 12 ? weightValue : 12;
             }
+        }
+        else
+        {
+            matcher = Pattern.compile( ".*aui-w([-\\d]+).*" ).matcher( classAttr );
 
-            int remainder = weightValue % 5;
-
-            if( remainder != 0 )
+            if( matcher.matches() )
             {
-                if( weightValue != 33 && weightValue != 66 )
+                String weightString = matcher.group( 1 );
+
+                if( !CoreUtil.isNullOrEmpty( weightString ) )
                 {
-                    if( remainder < 3 )
+                    try
                     {
-                        weightValue -= remainder;
+                        weightValue = Integer.parseInt( weightString );
                     }
-                    else
+                    catch( NumberFormatException e )
                     {
-                        weightValue += remainder;
+                        // if we have a 1-2 then we have a fraction
+                        int index = weightString.indexOf( '-' );
+
+                        if( index > 0 )
+                        {
+                            try
+                            {
+                                int numerator = Integer.parseInt( weightString.substring( 0, index ) );
+                                int denominator =
+                                    Integer.parseInt( weightString.substring( index + 1, weightString.length() ) );
+                                weightValue = (int) ( (float) numerator / denominator * 100 );
+                            }
+                            catch( NumberFormatException ex )
+                            {
+                                // best effort
+                            }
+                        }
+                    }
+                }
+
+                int remainder = weightValue % 5;
+
+                if( remainder != 0 )
+                {
+                    if( weightValue != 33 && weightValue != 66 )
+                    {
+                        if( remainder < 3 )
+                        {
+                            weightValue -= remainder;
+                        }
+                        else
+                        {
+                            weightValue += remainder;
+                        }
                     }
                 }
             }
         }
 
         return weightValue;
+    }
+
+    public static Version getPortalVersion( String location )
+    {
+        Version retval = ILiferayConstants.V620;
+
+        final IFile tplFile = CoreUtil.getWorkspaceRoot().getFile( new Path( location ) );
+
+        final ILiferayProject lrp= LiferayCore.create( tplFile.getProject() );
+
+        if( !CoreUtil.isNullOrEmpty( lrp.getPortalVersion() ) )
+        {
+            retval = new Version( lrp.getPortalVersion() ); 
+        }
+
+        return retval;
+    }
+
+    public static String getPortalVersion_2( String location )
+    {
+        String retval = null;
+
+        final IFile tplFile = CoreUtil.getWorkspaceRoot().getFile( new Path( location ) );
+
+        final ILiferayProject lrp= LiferayCore.create( tplFile.getProject() );
+
+        if( !CoreUtil.isNullOrEmpty( lrp.getPortalVersion() ) )
+        {
+            retval = lrp.getPortalVersion();
+        }
+
+        return retval; 
     }
 
     public static boolean hasClassName( IDOMElement domElement, String className )
@@ -241,21 +303,21 @@ public class LayoutTplUtil
         return retval;
     }
 
-    public static void saveToFile( LayoutTplDiagramElement diagram, IFile file, IProgressMonitor monitor )
+    public static ITemplateOperation getTemplateOperation( LayoutTplElement layoutTpl )
     {
-        try
+        if( layoutTpl.getBootstrapStyle().content() )
         {
-            ITemplateOperation op = TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.defaultLayoutTemplate" ); //$NON-NLS-1$
-            String name = file.getFullPath().removeFileExtension().lastSegment();
-            createLayoutTplContext( op, diagram, name );
+            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.layouttpl.bootstrap" );
+        }
+        else
+        {
+            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.layouttpl.legacy" );
+        }
+    }
 
-            op.setOutputFile( file );
-            op.execute( monitor );
-        }
-        catch( Exception e )
-        {
-            LayoutTplCore.logError( e );
-        }
+    public static boolean isBootstrapStyle( Version version )
+    {
+        return CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >= 0;
     }
 
 }

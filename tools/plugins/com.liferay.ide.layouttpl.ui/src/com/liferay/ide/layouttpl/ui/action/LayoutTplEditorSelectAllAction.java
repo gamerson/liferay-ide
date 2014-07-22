@@ -14,7 +14,7 @@
 
 package com.liferay.ide.layouttpl.ui.action;
 
-import com.liferay.ide.layouttpl.ui.editor.LayoutTplEditor;
+import com.liferay.ide.layouttpl.ui.editor.LayoutTplPreviewEditor;
 import com.liferay.ide.layouttpl.ui.parts.PortletColumnEditPart;
 
 import org.eclipse.gef.EditPart;
@@ -28,9 +28,9 @@ import org.eclipse.gef.ui.actions.SelectAllAction;
 public class LayoutTplEditorSelectAllAction extends SelectAllAction
 {
 
-    private LayoutTplEditor editor;
+    private LayoutTplPreviewEditor editor;
 
-    public LayoutTplEditorSelectAllAction( LayoutTplEditor editor )
+    public LayoutTplEditorSelectAllAction( LayoutTplPreviewEditor editor )
     {
         super( editor );
         this.editor = editor;
