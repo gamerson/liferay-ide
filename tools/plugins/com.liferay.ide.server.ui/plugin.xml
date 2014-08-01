@@ -95,6 +95,34 @@
       </objectContribution>
       <objectContribution
             adaptable="true"
+            id="com.liferay.ide.server.tomcat.ui.popup.server"
+            objectClass="org.eclipse.wst.server.core.IServer">
+         <visibility>
+            <and>
+                <objectState
+                      name="serverType"
+                      value="com.liferay.*">
+                </objectState>
+            </and>
+         </visibility>
+         <action
+               class="com.liferay.ide.server.tomcat.ui.action.CreateDBConnectAction"
+               enablesFor="1"
+               icon="icons/e16/jdbc_16.gif"
+               id="com.liferay.ide.server.tomcat.ui.action.createDBConnectAction"
+               label="%create.database.connection.action.label">
+         </action>
+         <!--
+         <enablement>
+            <test
+                  property="com.liferay.ide.server.tomcat.ui.hasConfiguration"
+                  value="true">
+            </test>
+         </enablement>
+         -->
+      </objectContribution>
+      <objectContribution
+            adaptable="true"
             id="com.liferay.ide.server.ui.popup.module"
             objectClass="org.eclipse.wst.server.ui.IServerModule">
          
