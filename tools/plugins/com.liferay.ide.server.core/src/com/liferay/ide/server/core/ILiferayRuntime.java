@@ -55,4 +55,6 @@ public interface ILiferayRuntime extends IJavaRuntime
 
     IPath[] getUserLibs();
 
+    IPath getLiferayHome();
+
 }
