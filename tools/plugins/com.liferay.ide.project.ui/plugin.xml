@@ -884,7 +884,6 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            categoryId="com.liferay.ide.project.ui.handlers"
             description="Upgrade Liferay Projects"
             id="com.liferay.ide.project.ui.handlers.projectUpgrade"
             name="Upgrade Liferay Projects">
