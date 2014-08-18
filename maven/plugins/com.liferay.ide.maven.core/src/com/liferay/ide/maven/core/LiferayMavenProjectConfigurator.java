@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -73,13 +74,16 @@ import org.osgi.framework.Version;
  * @author Gregory Amerson
  * @author Simon Jiang
  * @author Kuo Zhang
+ * @author Kamesh Sampath
  */
 @SuppressWarnings( "restriction" )
 public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator implements IJavaProjectConfigurator
 {
 
     private static final IPath ROOT_PATH = new Path("/");  //$NON-NLS-1$
-
+    private static final String MAVEN_WAR_PLUGIN_KEY = "org.apache.maven.plugins:maven-war-plugin";
+    private static final String WAR_SOURCE_FOLDER = "/src/main/webapp"; //$NON-NLS-1$
+    private static final String WAR_PACKAGING = "war"; //$NON-NLS-1$
     private IMavenMarkerManager mavenMarkerManager;
 
     public LiferayMavenProjectConfigurator()
@@ -191,7 +195,7 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 
         final Plugin liferayMavenPlugin = MavenUtil.getLiferayMavenPlugin( request.getMavenProjectFacade(), monitor );
 
-        if( ! shouldConfigure( liferayMavenPlugin ) )
+        if( ! shouldConfigure( liferayMavenPlugin,request ) )
         {
             monitor.done();
             return;
@@ -533,15 +537,68 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
                                                ILiferayMavenConstants.LIFERAY_MAVEN_MARKER_CONFIGURATION_WARNING_ID );
     }
 
-    private boolean shouldConfigure( Plugin liferayMavenPlugin )
+    /*
+     * IDE-1489 Fixes, if the liferay maven plugin not found the project will be scanned for liferay specific files
+     */
+    private boolean shouldConfigure( Plugin liferayMavenPlugin, ProjectConfigurationRequest request )
     {
-        return liferayMavenPlugin != null;
-    }
+        final IProject project = request.getProject();
+        final MavenProject mavenProject = request.getMavenProject();
 
+        boolean configureAsLiferayPlugin = ( liferayMavenPlugin != null );
+
+        if( WAR_PACKAGING.equals( mavenProject.getPackaging() ) )
+        {
+            if( liferayMavenPlugin == null )
+            {
+
+                final IPath baseDir = warSourceDirectory( project, mavenProject ).getRawLocation();
+                final String[] includes = { "**/liferay*.xml", "**/liferay*.properties" };
+
+                final DirectoryScanner dirScanner = new DirectoryScanner();
+                dirScanner.setBasedir( baseDir.toFile() );
+                dirScanner.setIncludes( includes );
+                dirScanner.scan();
+
+                final String[] liferayProjectFiles = dirScanner.getIncludedFiles();
+                configureAsLiferayPlugin =
+                    configureAsLiferayPlugin || ( liferayProjectFiles != null && liferayProjectFiles.length > 0 );
+            }
+        }
+
+        return configureAsLiferayPlugin;
+    }
+  
     private boolean shouldInstallNewLiferayFacet( IFacetedProject facetedProject )
     {
         return getLiferayProjectFacet( facetedProject ) == null;
     }
+    
+    private IFolder warSourceDirectory( final IProject project, final MavenProject mavenProject )
+    {
+        final Xpp3Dom warPluginConfiguration =
+            (Xpp3Dom) mavenProject.getPlugin( MAVEN_WAR_PLUGIN_KEY ).getConfiguration();
+
+        if( warPluginConfiguration != null )
+        {
+
+            final Xpp3Dom[] warSourceDirs = warPluginConfiguration.getChildren( "warSourceDirectory" );
+
+            if( warSourceDirs != null && warSourceDirs.length > 0 )
+            {
+                final String resourceLocation = warSourceDirs[0].getValue();
+                return project.getFolder( resourceLocation );
+            }
+
+        }
+        else
+        {
+            return project.getFolder( WAR_SOURCE_FOLDER );
+        }
+
+        return null;
+    }
+
 
     private static class Msgs extends NLS
     {
