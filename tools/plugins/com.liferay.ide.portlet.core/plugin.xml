@@ -30,6 +30,10 @@
             priority="high">
          <describer
                class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="liferay-portlet-app">
+            </parameter>
          </describer>
       </content-type>
       <content-type
