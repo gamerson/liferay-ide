@@ -918,6 +918,18 @@
             commandId="com.liferay.ide.project.ui.handlers.projectUpgrade">
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.wst.sse.ui.completionProposal">
+      <proposalComputer
+            activate="false"
+            categoryId="org.eclipse.jst.jsp.ui.proposalCategory.jsp"
+            class="com.liferay.ide.project.ui.contentassist.LiferayMessageErrorTagCompletionProposalComputer"
+            id="com.liferay.ide.project.ui.contentassist.proposalComputer.liferayMessageErrorTag">
+         <contentType
+               id="org.eclipse.jst.jsp.core.jspsource">
+         </contentType>
+      </proposalComputer>
+   </extension>
 
 <!--  
 
