@@ -19,6 +19,7 @@ import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.LayoutTplCore;
+import com.liferay.ide.layouttpl.core.model.LayoutTpl;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
 import com.liferay.ide.templates.core.ITemplateContext;
 import com.liferay.ide.templates.core.ITemplateOperation;
@@ -57,6 +58,15 @@ public class LayoutTplUtil
         ctx.put( "root", tplDiagramElement ); //$NON-NLS-1$
         ctx.put( "templateName", templateName ); //$NON-NLS-1$
         ctx.put( "stack", new ArrayStack() ); //$NON-NLS-1$
+    }
+
+    private static void createLayoutTplContext( ITemplateOperation op, LayoutTpl layouttpl )
+    {
+        final ITemplateContext ctx = op.getContext();
+
+        ctx.put( "root", layouttpl );
+        ctx.put( "templateName", layouttpl.getClassName().content() );
+        ctx.put( "stack", new ArrayStack() );
     }
 
     public static IDOMElement[] findChildElementsByClassName( IDOMElement parentElement,
@@ -134,6 +144,38 @@ public class LayoutTplUtil
         }
 
         return retval;
+    }
+
+    public static String getTemplateSource( LayoutTpl layouttpl )
+    {
+        final StringBuffer buffer = new StringBuffer();
+
+        try
+        {
+            ITemplateOperation templateOperation = null;
+
+            if( layouttpl.getVersion().content().compareTo( new org.eclipse.sapphire.Version( "6.2" ) ) >=0  )
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.sapphire.current" );
+            }
+            else
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.sapphire.old" );
+            }
+
+            createLayoutTplContext( templateOperation, layouttpl );
+
+            templateOperation.setOutputBuffer( buffer );
+            templateOperation.execute( new NullProgressMonitor() );
+        }
+        catch( Exception ex )
+        {
+            LayoutTplCore.logError( "Error getting template source.", ex ); //$NON-NLS-1$
+        }
+
+        return buffer.toString();
     }
 
     public static String getTemplateSource( LayoutTplDiagramElement diagram, String templateName )

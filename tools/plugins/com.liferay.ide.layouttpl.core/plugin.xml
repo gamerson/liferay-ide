@@ -154,5 +154,24 @@
 	          required="true">
 	    </templateVariable>
  	</extension>
+ 	<extension
+        point="com.liferay.ide.templates.core.templateDefinition">
+        <template
+              id="com.liferay.ide.layouttpl.core.LayoutTemplate.sapphire.current"
+              name="Current Sapphire Layout Template"
+              resource="layouttpl_sapphire.ftl">
+        </template>
+        <templatesFolder
+              path="templates/">
+        </templatesFolder>
+        <templateVariable
+              name="root"
+              required="true">
+        </templateVariable>
+        <templateVariable
+              name="templateName"
+              required="true">
+        </templateVariable>
+    </extension>
 
 </plugin>

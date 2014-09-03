@@ -18,9 +18,12 @@ package com.liferay.ide.layouttpl.core.tests;
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.tests.BaseTests;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.layouttpl.core.model.LayoutTpl;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramFactory;
+import com.liferay.ide.layouttpl.core.model.PortletColumn;
 import com.liferay.ide.layouttpl.core.model.PortletColumnElement;
+import com.liferay.ide.layouttpl.core.model.PortletLayout;
 import com.liferay.ide.layouttpl.core.model.PortletLayoutElement;
 import com.liferay.ide.layouttpl.core.util.LayoutTplUtil;
 
@@ -51,6 +54,38 @@ public class LayoutTplCoreTests extends BaseTests
     {
         deleteProject( "a" );
         this.a = createProject( "a" );
+    }
+
+    @Test
+    public void foo() throws Exception
+    {
+        LayoutTpl layouttpl = LayoutTpl.TYPE.instantiate();
+
+        layouttpl.setClassName( "layouttpl620" );
+        layouttpl.setVersion( new org.eclipse.sapphire.Version( "6.2" ));
+
+        PortletLayout portletLayout = layouttpl.getPortletLayouts().insert();
+        PortletColumn portletColumn1 = portletLayout.getPortletColumns().insert();
+        PortletColumn portletColumn2 = portletLayout.getPortletColumns().insert();
+
+        portletColumn1.setWeight( 6 );
+        portletColumn2.setWeight( 6 );
+
+
+        PortletLayout nestedPortletLayout = portletColumn1.getPortletLayouts().insert();
+
+        PortletColumn nestedPortletColumns1 = nestedPortletLayout.getPortletColumns().insert();
+        PortletColumn nestedPortletColumns2 = nestedPortletLayout.getPortletColumns().insert();
+
+        nestedPortletColumns1.setWeight( 6 );
+        nestedPortletColumns2.setWeight( 6 );
+
+        String actualTemplateSource = LayoutTplUtil.getTemplateSource( layouttpl );
+
+        System.out.println( actualTemplateSource );
+
+        Assert.assertNotNull( actualTemplateSource );
+
     }
 
     @Test
