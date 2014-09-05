@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
 /*******************************************************************************
  * Copyright (c) 2000-2014 Liferay, Inc. All rights reserved.
  *
@@ -17,24 +15,29 @@
  *      Kamesh Sampath - initial implementation
  *      Gregory Amerson - initial implementation review and ongoing maintenance
  *******************************************************************************/
--->
-<definition>
-	<editor-page>
-		<id>portlet-app.editor</id>
-		<page-name>Overview</page-name>
-		<page-header-text>Liferay Portlet Application</page-header-text>
-		<page-header-image>images/portlet.png</page-header-image>
-		<initial-selection>Portlets</initial-selection>
-	</editor-page>
-	<import>
-		<package>com.liferay.ide.portlet.core.model.lfrportlet.common</package>
-		<package>com.liferay.ide.portlet.core.model.lfrportlet600</package>
-		<package>com.liferay.ide.portlet.core.model.lfrportlet610</package>
-		<package>com.liferay.ide.portlet.ui</package>
-		<package>com.liferay.ide.portlet.ui.action</package>
-		<package>com.liferay.ide.portlet.ui.parts</package>
-		<package>com.liferay.ide.portlet.ui.action.filters
-		</package>
-		<package>com.liferay.ide.portlet.ui.editor.internal</package>
-	</import>
-</definition>
+
+package com.liferay.ide.portlet.ui.editor;
+
+import com.liferay.ide.portlet.core.model.LiferayPortletXml;
+
+import org.eclipse.sapphire.ui.def.DefinitionLoader;
+import org.eclipse.sapphire.ui.swt.xml.editor.SapphireEditorForXml;
+
+/**
+ * @author Kuo Zhang
+ * @author Simon Jiang
+ */
+public class LiferayPortletXmlEditor extends SapphireEditorForXml
+{
+
+    public static final String ID = "com.liferay.ide.eclipse.portlet.ui.editor.LiferayPortletXmlEditor"; //$NON-NLS-1$
+
+    public LiferayPortletXmlEditor()
+    {
+        super( 
+            LiferayPortletXml.TYPE, 
+            DefinitionLoader
+                .sdef( LiferayPortletXmlEditor.class )
+                .page( "liferay-portlet-app.editor" ) );
+    }
+}
