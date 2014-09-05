@@ -1,39 +1,35 @@
-<#assign appendIndent="">
+<#assign appendIndent="" layoutTplElement="div" layoutElement="div" columnElement="div" newLine="\n">
 <#macro printLayout this>
-<#assign rowElement="div" trBegin="" trEnd="" columnElement="div" columnNewline="\n">
+<#if (this.getPortletLayouts().size()>0)>
+<#assign appendIndent=stack.push(appendIndent)+"\t\t">
 <#assign rowCounter=0>
-<#if !this.getRows().isEmpty()>
-<#list this.getRows() as row>
-<#assign rowCounter = rowCounter + 1>
-	${appendIndent}<${rowElement} class="${row.className}">${trBegin}
-<#list row.getColumns() as col>
-<#if row.getColumns().size() == 1>
-<#assign columnContentDescriptor = " portlet-column-content-only" columnDescriptor = " portlet-column-only">
-<#elseif (row.getColumns().size() > 1)>
-<#if col.isFirst()>
-<#assign columnContentDescriptor = " portlet-column-content-first" columnDescriptor = " portlet-column-first">
-<#elseif col.isLast()><#rt>
-<#assign columnContentDescriptor = " portlet-column-content-last" columnDescriptor = " portlet-column-last">
-<#else><#rt>
-<#assign columnContentDescriptor = "" columnDescriptor = "">
+<#list this.getPortletLayouts() as row>
+<#if (this.getPortletLayouts().indexOf(row)>0)>
+
 </#if>
+${appendIndent}<${layoutElement} class="${row.getClassName().content()}">
+<#if (row.getPortletColumns().size()>0)>
+<#assign appendIndent=stack.push(appendIndent)+"\t\t">
+<#assign colCounter=0>
+<#list row.getPortletColumns() as col>
+<#if (row.getPortletColumns().indexOf(col)>0)>
+
 </#if>
-		${appendIndent}<${columnElement} class="portlet-column${columnDescriptor} span${col.getWeight()}"<#if !(col.numId==0)> id="column-${col.numId}"</#if>>
-<#if !col.getRows().isEmpty()>
-<#assign appendIndent = stack.push(appendIndent) + "\t\t">
+${appendIndent}<${columnElement} class="portlet-column<#if (col.getColumnDescriptor().content()?exists)> ${col.getColumnDescriptor().content()}</#if> span${col.getWeight().content()}"<#if !(col.getNumId().content()==0)> id="column-${col.getNumId().content()}"</#if>>
+<#if (col.getPortletLayouts().size()>0)>
 <@printLayout this=col/>
-<#assign appendIndent = stack.pop()>
 <#else>
-			${appendIndent}$processor.processColumn("column-${col.numId}", "portlet-column-content${columnContentDescriptor}")
+${appendIndent+"\t\t"}$processor.processColumn("column-${col.getNumId().content()}", "portlet-column-content<#if (col.getColumnContentDescriptor().content()?exists) > ${col.getColumnContentDescriptor().content()}</#if>")
 </#if>
-		${appendIndent}</${columnElement}>
+${appendIndent}</${columnElement}>
 </#list>
-	${trEnd}${appendIndent}</${rowElement}>
+<#assign appendIndent=stack.pop()>
+</#if>
+${appendIndent}</${layoutElement}>
 </#list>
+<#assign appendIndent=stack.pop()>
 </#if>
 </#macro>
-<#if (root.getRows().size() >= 0)>
-<div class="${templateName}" id="${root.id}" role="${root.role}">
+<${layoutTplElement} class="${root.getClassName().content()}" id="${root.getId().content()}" role="${root.getRole().content()}">
 <@printLayout this=root/>
-</div><#rt>
-</#if>
+</${layoutTplElement}>

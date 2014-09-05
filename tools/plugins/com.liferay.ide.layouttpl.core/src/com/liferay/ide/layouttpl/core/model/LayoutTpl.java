@@ -51,6 +51,7 @@ public interface LayoutTpl extends CanAddPortletLayouts
 
     // *** Class Name ***
     @Required
+    @DefaultValue( text = "" )
     ValueProperty PROP_ClASS_NAME = new ValueProperty( TYPE, "ClassName" );
 
     Value<String> getClassName();
@@ -60,6 +61,7 @@ public interface LayoutTpl extends CanAddPortletLayouts
 
     @Type( base = Version.class )
     @Required
+    @DefaultValue( text = "6.2" )
     ValueProperty PROP_VERSION = new ValueProperty( TYPE, "Version" );
 
     Value<Version> getVersion();

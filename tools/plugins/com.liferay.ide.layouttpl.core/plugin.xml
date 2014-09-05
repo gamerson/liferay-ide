@@ -116,50 +116,12 @@
       </content-type>
    </extension>
 
-   <extension
-		point="com.liferay.ide.templates.core.templateDefinition">
+    <extension
+    	point="com.liferay.ide.templates.core.templateDefinition">
     	<template
-	          id="com.liferay.ide.layouttpl.core.LayoutTemplate.old"
-	          name="Old Layout Template"
-	          resource="layouttpl_old.ftl">
-	    </template>
-	    <templatesFolder
-	          path="templates/">
-	    </templatesFolder>
-	    <templateVariable
-	          name="root"
-	          required="true">
-	    </templateVariable>
-	    <templateVariable
-	          name="templateName"
-	          required="true">
-	    </templateVariable>
- 	</extension>
- 	<extension
-		point="com.liferay.ide.templates.core.templateDefinition">
-    	<template
-	          id="com.liferay.ide.layouttpl.core.LayoutTemplate.current"
-	          name="Current Layout Template"
-	          resource="layouttpl_current.ftl">
-	    </template>
-	    <templatesFolder
-	          path="templates/">
-	    </templatesFolder>
-	    <templateVariable
-	          name="root"
-	          required="true">
-	    </templateVariable>
-	    <templateVariable
-	          name="templateName"
-	          required="true">
-	    </templateVariable>
- 	</extension>
- 	<extension
-        point="com.liferay.ide.templates.core.templateDefinition">
-        <template
-              id="com.liferay.ide.layouttpl.core.LayoutTemplate.sapphire.current"
-              name="Current Sapphire Layout Template"
-              resource="layouttpl_sapphire.ftl">
+              id="com.liferay.ide.layouttpl.core.oldLayoutTemplate"
+              name="Old Layout Template"
+              resource="layouttpl_old.ftl">
         </template>
         <templatesFolder
               path="templates/">
@@ -168,8 +130,19 @@
               name="root"
               required="true">
         </templateVariable>
+    </extension>
+    <extension
+        point="com.liferay.ide.templates.core.templateDefinition">
+        <template
+              id="com.liferay.ide.layouttpl.core.currentLayoutTemplate"
+              name="Current Layout Template"
+              resource="layouttpl_current.ftl">
+        </template>
+        <templatesFolder
+              path="templates/">
+        </templatesFolder>
         <templateVariable
-              name="templateName"
+              name="root"
               required="true">
         </templateVariable>
     </extension>

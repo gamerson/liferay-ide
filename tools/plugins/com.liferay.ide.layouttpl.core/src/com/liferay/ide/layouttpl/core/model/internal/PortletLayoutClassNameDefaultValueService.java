@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ *******************************************************************************/
+
+
 package com.liferay.ide.layouttpl.core.model.internal;
 
 import com.liferay.ide.layouttpl.core.model.LayoutTpl;
@@ -16,11 +32,20 @@ public class PortletLayoutClassNameDefaultValueService extends DefaultValueServi
     @Override
     protected String compute()
     {
-        final Version version = context( Element.class ).nearest( LayoutTpl.class ).getVersion().content();
+        LayoutTpl layoutTpl = context( Element.class ).nearest( LayoutTpl.class ); 
 
-        if( version.compareTo( new Version( "6.2" ) ) >=0  )
+        if( layoutTpl != null )
         {
-            return "portlet-layout row-fluid";
+            final Version version = layoutTpl.getVersion().content();
+
+            if( version.compareTo( new Version( "6.2" ) ) >=0  )
+            {
+                return "portlet-layout row-fluid";
+            }
+            else
+            {
+                return "portlet-layout";
+            }
         }
         else
         {

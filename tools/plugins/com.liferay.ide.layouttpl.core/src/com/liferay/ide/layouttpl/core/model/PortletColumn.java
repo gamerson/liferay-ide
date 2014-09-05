@@ -1,9 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ *******************************************************************************/
+
 package com.liferay.ide.layouttpl.core.model;
 
-import com.liferay.ide.layouttpl.core.model.internal.ColumnContentDescriptorDefaultService;
-import com.liferay.ide.layouttpl.core.model.internal.ColumnDescriptorDefaultValueService;
 import com.liferay.ide.layouttpl.core.model.internal.PortletColumnFirstListener;
-import com.liferay.ide.layouttpl.core.model.internal.PortletColumnIsOnlyDefaultValueService;
 import com.liferay.ide.layouttpl.core.model.internal.PortletColumnWeightDefaultValueService;
 import com.liferay.ide.layouttpl.core.model.internal.PortletColumnWeightValidationService;
 
@@ -50,7 +62,6 @@ public interface PortletColumn extends CanAddPortletLayouts
         value = 
         { 
             @Service( impl = PortletColumnWeightDefaultValueService.class ) ,
-//             not sure if it should belong to PortletLayout#PortletColumns or here ?
             @Service( impl = PortletColumnWeightValidationService.class )
         }
     )
@@ -64,7 +75,7 @@ public interface PortletColumn extends CanAddPortletLayouts
 
     // *** Is First ***
     @Required
-    @Listeners( PortletColumnFirstListener.class  )
+    @Listeners( PortletColumnFirstListener.class )
 //    @Service( impl = PortletColumnFirstValidationService.class )
     @DefaultValue( text = "false" )
     @Type( base = Boolean.class )
@@ -86,7 +97,7 @@ public interface PortletColumn extends CanAddPortletLayouts
 
     // *** Is Only ***
     @Required
-    @Service( impl = PortletColumnIsOnlyDefaultValueService.class )
+    @DefaultValue( text = "false" )
     @Type( base = Boolean.class )
     ValueProperty PROP_ONLY = new ValueProperty( TYPE, "Only");
 
@@ -96,7 +107,7 @@ public interface PortletColumn extends CanAddPortletLayouts
 
     // *** Column Descriptor ***
     @Required
-    @Service( impl = ColumnDescriptorDefaultValueService.class )
+    @DefaultValue( text = "" )
     ValueProperty PROP_COLUMN_DESCRIPTOR = new ValueProperty( TYPE, "ColumnDescriptor" );
 
     Value<String> getColumnDescriptor();
@@ -104,7 +115,7 @@ public interface PortletColumn extends CanAddPortletLayouts
 
     // *** Column Content Descriptor ***
     @Required
-    @Service( impl = ColumnContentDescriptorDefaultService.class )
+    @DefaultValue( text = "" )
     ValueProperty PROP_COLUMN_CONTENT_DESCRIPTOR = new ValueProperty( TYPE, "ColumnContentDescriptor" );
 
     Value<String> getColumnContentDescriptor();

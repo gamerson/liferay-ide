@@ -56,7 +56,6 @@ public class LayoutTplUtil
         final ITemplateContext ctx = op.getContext();
 
         ctx.put( "root", tplDiagramElement ); //$NON-NLS-1$
-        ctx.put( "templateName", templateName ); //$NON-NLS-1$
         ctx.put( "stack", new ArrayStack() ); //$NON-NLS-1$
     }
 
@@ -65,7 +64,6 @@ public class LayoutTplUtil
         final ITemplateContext ctx = op.getContext();
 
         ctx.put( "root", layouttpl );
-        ctx.put( "templateName", layouttpl.getClassName().content() );
         ctx.put( "stack", new ArrayStack() );
     }
 
@@ -157,12 +155,12 @@ public class LayoutTplUtil
             if( layouttpl.getVersion().content().compareTo( new org.eclipse.sapphire.Version( "6.2" ) ) >=0  )
             {
                 templateOperation =
-                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.sapphire.current" );
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.currentLayoutTemplate" );
             }
             else
             {
                 templateOperation =
-                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.sapphire.old" );
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.oldLayoutTemplate" );
             }
 
             createLayoutTplContext( templateOperation, layouttpl );
@@ -226,28 +224,22 @@ public class LayoutTplUtil
             return weightValue;
         }
 
-        // TODO, not sure if it works?
-        Version version = getPortalVersion( portletColumnElement.getModel().getBaseLocation() );
+        Matcher matcher = Pattern.compile( "(.*span)(\\d+)" ).matcher( classAttr );
 
-        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >= 0 )
+        if( matcher.matches() )
         {
-            Matcher matcher = Pattern.compile( "(.*span)(\\d+)" ).matcher( classAttr );
+            String weightString = matcher.group(2);
 
-            if( matcher.matches() )
+            if( !CoreUtil.isNullOrEmpty( weightString ))
             {
-                String weightString = matcher.group(2);
-
-                if( !CoreUtil.isNullOrEmpty( weightString ))
-                {
-                    weightValue = Integer.parseInt( weightString );
-                    // according to the Bootstrap, the max value is 12
-                    weightValue = weightValue <= 12 ? weightValue : 12;
-                }
+                weightValue = Integer.parseInt( weightString );
+                // according to the Bootstrap, the max value is 12
+                weightValue = weightValue <= 12 ? weightValue : 12;
             }
         }
         else
         {
-            Matcher matcher = Pattern.compile( ".*aui-w([-\\d]+).*" ).matcher( classAttr );
+            matcher = Pattern.compile( ".*aui-w([-\\d]+).*" ).matcher( classAttr );
 
             if( matcher.matches() )
             {
@@ -319,6 +311,22 @@ public class LayoutTplUtil
         return retval;
     }
 
+    public static String getPortalVersion_2( String location )
+    {
+        String retval = null;
+
+        final IFile tplFile = CoreUtil.getWorkspaceRoot().getFile( new Path( location ) );
+
+        final ILiferayProject lrp= LiferayCore.create( tplFile.getProject() );
+
+        if( !CoreUtil.isNullOrEmpty( lrp.getPortalVersion() ) )
+        {
+            retval = lrp.getPortalVersion();
+        }
+
+        return retval; 
+    }
+
     public static boolean hasClassName( IDOMElement domElement, String className )
     {
         boolean retval = false;
@@ -368,11 +376,11 @@ public class LayoutTplUtil
     {
         if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) < 0 )
         {
-            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.old" );
+            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.oldLayoutTemplate" );
         }
         else
         {
-            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayouTemplate.current" );
+            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.currentLayouTemplate" );
         }
     }
 
