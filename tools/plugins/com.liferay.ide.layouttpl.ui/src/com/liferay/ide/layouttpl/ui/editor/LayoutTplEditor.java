@@ -17,6 +17,8 @@
 
 package com.liferay.ide.layouttpl.ui.editor;
 
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
 import com.liferay.ide.layouttpl.core.util.LayoutTplUtil;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
@@ -28,6 +30,7 @@ import com.liferay.ide.layouttpl.ui.parts.LayoutTplRootEditPart;
 
 import java.util.EventObject;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -70,6 +73,7 @@ import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
 import org.eclipse.wst.sse.ui.StructuredTextEditor;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
+import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
@@ -82,11 +86,10 @@ public class LayoutTplEditor extends GraphicalEditorWithFlyoutPalette
     protected static PaletteRoot PALETTE_MODEL;
     protected LayoutTplDiagramElement diagram;
     protected StructuredTextEditor sourceEditor;
-    protected boolean visualEditorSupported;
+    protected Version version;
 
-    public LayoutTplEditor( StructuredTextEditor sourceEditor, boolean supported )
+    public LayoutTplEditor( StructuredTextEditor sourceEditor )
     {
-        visualEditorSupported = supported;
         setEditDomain( new DefaultEditDomain( this ) );
         this.sourceEditor = sourceEditor;
     }
@@ -188,11 +191,6 @@ public class LayoutTplEditor extends GraphicalEditorWithFlyoutPalette
 
     public void refreshSourceModel()
     {
-        if( ! visualEditorSupported )
-        {
-            return;
-        }
-
         IDOMModel domModel = getSourceModel();
         domModel.aboutToChangeModel();
         String name = getSourceFileName();
@@ -207,20 +205,17 @@ public class LayoutTplEditor extends GraphicalEditorWithFlyoutPalette
     {
         diagram = null;
 
-        if( visualEditorSupported )
-        {
-            IDOMModel domModel = getSourceModel( true );
+        IDOMModel domModel = getSourceModel( true );
 
-            if( domModel != null )
-            {
-                diagram = LayoutTplDiagramElement.createFromModel( domModel, LayoutTplDiagramUIFactory.INSTANCE );
-                domModel.releaseFromRead();
-            }
+        if( domModel != null )
+        {
+            diagram = LayoutTplDiagramUIFactory.INSTANCE.newLayoutTplDiagramFromModel( domModel );
+            domModel.releaseFromRead();
         }
 
         if( diagram == null )
         {
-            diagram = LayoutTplDiagram.createDefaultDiagram();
+            diagram = LayoutTplDiagram.createDefaultDiagram( getPortalVersion() );
         }
 
         final GraphicalViewer viewer = getGraphicalViewer();
@@ -258,8 +253,8 @@ public class LayoutTplEditor extends GraphicalEditorWithFlyoutPalette
 
         GraphicalViewer viewer = getGraphicalViewer();
 
-        viewer.setEditPartFactory( new LayoutTplEditPartFactory( this.visualEditorSupported ) );
-
+//        viewer.setEditPartFactory( new LayoutTplEditPartFactory( this.visualEditorSupported ) );
+        viewer.setEditPartFactory( new LayoutTplEditPartFactory() );
         // viewer.setRootEditPart(new ScalableRootEditPart());
         viewer.setRootEditPart( new LayoutTplRootEditPart() );
         viewer.setKeyHandler( new GraphicalViewerKeyHandler( viewer ) );
@@ -318,7 +313,7 @@ public class LayoutTplEditor extends GraphicalEditorWithFlyoutPalette
                 {
                     PortletLayoutTemplate portletLayoutTemplate = (PortletLayoutTemplate) template;
 
-                    return new PortletLayoutFactory(
+                    return new PortletLayoutFactory( getPortalVersion(), 
                         portletLayoutTemplate.getNumCols(), portletLayoutTemplate.getWeights() );
                 }
 
@@ -345,16 +340,7 @@ public class LayoutTplEditor extends GraphicalEditorWithFlyoutPalette
 
     protected PaletteRoot getPaletteRoot()
     {
-        if( visualEditorSupported )
-        {
-            PALETTE_MODEL = LayoutTplEditorPaletteFactory.createPalette();
-        }
-        else
-        {
-            PALETTE_MODEL = new PaletteRoot();
-        }
-
-        return PALETTE_MODEL;
+        return LayoutTplEditorPaletteFactory.createPalette( version );
     }
 
     protected String getSourceFileName()
@@ -440,6 +426,39 @@ public class LayoutTplEditor extends GraphicalEditorWithFlyoutPalette
         // catch (Exception e) {
         // LayoutTplUI.logError(e);
         // }
+    }
+
+    protected Version getPortalVersion()
+    {
+        if( version == null )
+        {
+            try
+            {
+                final IEditorInput editorInput = getEditorInput();
+
+                IPath path = null;
+
+                if( editorInput instanceof IFileEditorInput )
+                {
+                    path = ( (IFileEditorInput) editorInput ).getFile().getFullPath();
+                }
+                else if( editorInput instanceof FileStoreEditorInput )
+                {
+                    path = new Path( ( (FileStoreEditorInput) editorInput ).getURI().getPath() );
+                }
+
+                if( path != null )
+                {
+                    final IFile editorFile = CoreUtil.getWorkspaceRoot().getFile( path );
+                    version = new Version( LiferayCore.create( editorFile.getProject() ).getPortalVersion() );
+                }
+            }
+            catch( Exception e )
+            {
+            }
+        }
+
+        return version;
     }
 
 }

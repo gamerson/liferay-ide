@@ -15,7 +15,6 @@
 
 package com.liferay.ide.layouttpl.core.model;
 
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.util.LayoutTplUtil;
 
 import java.beans.PropertyChangeEvent;
@@ -23,61 +22,28 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
+ * @author Kuo Zhang
  */
-@SuppressWarnings( "restriction" )
 public class PortletLayoutElement extends ModelElement implements PropertyChangeListener
 {
 
     public static final String CHILD_COLUMN_WEIGHT_CHANGED_PROP = "PortletLayout.ChildColumnWeightChanged"; //$NON-NLS-1$
-
     public static final String COLUMN_ADDED_PROP = "PortletLayout.ColumnAdded"; //$NON-NLS-1$
-
     public static final String COLUMN_REMOVED_PROP = "PortletLayout.ColumnRemoved"; //$NON-NLS-1$
 
-    public static PortletLayoutElement createFromElement( IDOMElement portletLayoutElement, ILayoutTplDiagramFactory factory )
-    {
-        if( portletLayoutElement == null )
-        {
-            return null;
-        }
-
-        PortletLayoutElement newPortletLayout = factory.newPortletLayout();
-
-        String existingClassName = portletLayoutElement.getAttribute( "class" ); //$NON-NLS-1$
-
-        if( ( !CoreUtil.isNullOrEmpty( existingClassName ) ) && existingClassName.contains( "portlet-layout" ) ) //$NON-NLS-1$
-        {
-            newPortletLayout.setClassName( existingClassName );
-        }
-        else
-        {
-            newPortletLayout.setClassName( "portlet-layout" ); //$NON-NLS-1$
-        }
-
-        IDOMElement[] portletColumnElements =
-            LayoutTplUtil.findChildElementsByClassName( portletLayoutElement, "div", "portlet-column" ); //$NON-NLS-1$ //$NON-NLS-2$
-
-        for( IDOMElement portletColumnElement : portletColumnElements )
-        {
-            PortletColumnElement newPortletColumn = factory.newPortletColumnFromElement( portletColumnElement );
-            newPortletLayout.addColumn( newPortletColumn );
-        }
-
-        return newPortletLayout;
-    }
-
     protected String className;
-
+    protected Version version;
     protected List<ModelElement> columns = new ArrayList<ModelElement>();
 
-    public PortletLayoutElement()
+    public PortletLayoutElement( Version version )
     {
         super();
-        this.className = "portlet-layout"; //$NON-NLS-1$
+        this.version = version;
+        setDefaultClassName();
     }
 
     public boolean addColumn( PortletColumnElement newColumn )
@@ -119,6 +85,11 @@ public class PortletLayoutElement extends ModelElement implements PropertyChange
         return columns;
     }
 
+    public Version getVersion()
+    {
+        return this.version;
+    }
+
     public void propertyChange( PropertyChangeEvent evt )
     {
         String prop = evt.getPropertyName();
@@ -153,6 +124,23 @@ public class PortletLayoutElement extends ModelElement implements PropertyChange
     public void setClassName( String className )
     {
         this.className = className;
+    }
+
+    private void setDefaultClassName()
+    {
+        if( LayoutTplUtil.ge62( version ) )
+        {
+            this.className = "portlet-layout row-fluid";
+        }
+        else
+        {
+            this.className = "portlet-layout";
+        }
+    }
+
+    public void setVersion( Version version )
+    {
+        this.version = version;
     }
 
 }

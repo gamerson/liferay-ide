@@ -24,6 +24,7 @@ import com.liferay.ide.layouttpl.ui.model.PortletLayout;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.osgi.util.NLS;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
@@ -34,9 +35,12 @@ public class PortletLayoutCreateCommand extends Command
     protected PortletRowLayoutElement rowLayout;
     protected LayoutConstraint layoutConstraint;
     protected PortletLayout newLayout;
+    protected Version version;
 
-    public PortletLayoutCreateCommand( PortletLayout newLayout, PortletRowLayoutElement rowLayout, LayoutConstraint constraint )
+    public PortletLayoutCreateCommand( Version version, PortletLayout newLayout, 
+                                       PortletRowLayoutElement rowLayout, LayoutConstraint constraint )
     {
+        this.version = version;
         this.newLayout = newLayout;
         this.rowLayout = rowLayout;
         this.layoutConstraint = constraint;
@@ -57,7 +61,8 @@ public class PortletLayoutCreateCommand extends Command
     {
         if( newLayout.getColumns().size() == 0 )
         {
-            PortletColumn newColumn = new PortletColumn( 100 );
+            PortletColumn newColumn = new PortletColumn( version );
+            newColumn.setFullWeight();
             newLayout.addColumn( newColumn );
         }
 

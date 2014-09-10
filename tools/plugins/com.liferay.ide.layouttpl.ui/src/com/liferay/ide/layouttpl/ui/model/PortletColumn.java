@@ -15,6 +15,8 @@
 
 package com.liferay.ide.layouttpl.ui.model;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.model.PortletColumnElement;
 
 import org.eclipse.jface.viewers.ICellEditorValidator;
@@ -22,6 +24,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
@@ -67,14 +70,14 @@ public class PortletColumn extends PortletColumnElement implements IPropertySour
         }
     }
 
-    public PortletColumn( int i )
+    public PortletColumn( int weight, Version version )
     {
-        super( i );
+        super( weight, version );
     }
 
-    public PortletColumn()
+    public PortletColumn( Version version )
     {
-        super();
+        super( version );
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors()
@@ -82,5 +85,16 @@ public class PortletColumn extends PortletColumnElement implements IPropertySour
         return descriptors;
     }
 
+    public String getWeightValue()
+    {
+        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >= 0 )
+        {
+            return "span" + weight;
+        }
+        else
+        {
+            return weight + "%";
+        }
+    }
 
 }

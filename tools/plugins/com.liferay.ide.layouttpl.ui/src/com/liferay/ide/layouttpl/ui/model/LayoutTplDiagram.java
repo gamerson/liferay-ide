@@ -19,6 +19,7 @@ import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
@@ -29,9 +30,14 @@ public class LayoutTplDiagram extends LayoutTplDiagramElement implements IProper
     /** An empty property descriptor. */
     private static final IPropertyDescriptor[] EMPTY_ARRAY = new IPropertyDescriptor[0];
 
-    public static LayoutTplDiagram createDefaultDiagram()
+    public LayoutTplDiagram( Version version )
     {
-        return new LayoutTplDiagram();
+        super( version );
+    }
+
+    public static LayoutTplDiagram createDefaultDiagram( Version version )
+    {
+        return new LayoutTplDiagram( version );
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors()

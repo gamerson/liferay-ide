@@ -14,8 +14,12 @@
  *******************************************************************************/
 package com.liferay.ide.layouttpl.core.util;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.LayoutTplCore;
+import com.liferay.ide.layouttpl.core.model.LayoutTpl;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
 import com.liferay.ide.templates.core.ITemplateContext;
 import com.liferay.ide.templates.core.ITemplateOperation;
@@ -30,8 +34,10 @@ import org.apache.commons.collections.ArrayStack;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.osgi.framework.Version;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -50,8 +56,15 @@ public class LayoutTplUtil
         final ITemplateContext ctx = op.getContext();
 
         ctx.put( "root", tplDiagramElement ); //$NON-NLS-1$
-        ctx.put( "templateName", templateName ); //$NON-NLS-1$
         ctx.put( "stack", new ArrayStack() ); //$NON-NLS-1$
+    }
+
+    private static void createLayoutTplContext( ITemplateOperation op, LayoutTpl layouttpl )
+    {
+        final ITemplateContext ctx = op.getContext();
+
+        ctx.put( "root", layouttpl );
+        ctx.put( "stack", new ArrayStack() );
     }
 
     public static IDOMElement[] findChildElementsByClassName( IDOMElement parentElement,
@@ -131,14 +144,57 @@ public class LayoutTplUtil
         return retval;
     }
 
+    public static String getTemplateSource( LayoutTpl layouttpl )
+    {
+        final StringBuffer buffer = new StringBuffer();
+
+        try
+        {
+            ITemplateOperation templateOperation = null;
+
+            if( layouttpl.getVersion().content().compareTo( new org.eclipse.sapphire.Version( "6.2" ) ) >=0  )
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.currentLayoutTemplate" );
+            }
+            else
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.oldLayoutTemplate" );
+            }
+
+            createLayoutTplContext( templateOperation, layouttpl );
+
+            templateOperation.setOutputBuffer( buffer );
+            templateOperation.execute( new NullProgressMonitor() );
+        }
+        catch( Exception ex )
+        {
+            LayoutTplCore.logError( "Error getting template source.", ex ); //$NON-NLS-1$
+        }
+
+        return buffer.toString();
+    }
+
     public static String getTemplateSource( LayoutTplDiagramElement diagram, String templateName )
     {
         final StringBuffer buffer = new StringBuffer();
 
         try
         {
-            ITemplateOperation templateOperation =
-                TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.defaultLayoutTemplate" );
+            ITemplateOperation templateOperation = null;
+
+            if( ge62( diagram.getVersion() ) )
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.current" );
+            }
+            else
+            {
+                templateOperation =
+                    TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.old" );
+            }
+
             createLayoutTplContext( templateOperation, diagram, templateName );
 
             templateOperation.setOutputBuffer( buffer );
@@ -168,60 +224,107 @@ public class LayoutTplUtil
             return weightValue;
         }
 
-        Pattern pattern = Pattern.compile( ".*aui-w([-\\d]+).*" ); //$NON-NLS-1$
-        Matcher matcher = pattern.matcher( classAttr );
+        Matcher matcher = Pattern.compile( "(.*span)(\\d+)" ).matcher( classAttr );
 
         if( matcher.matches() )
         {
-            String weightString = matcher.group( 1 );
+            String weightString = matcher.group(2);
 
-            if( !CoreUtil.isNullOrEmpty( weightString ) )
+            if( !CoreUtil.isNullOrEmpty( weightString ))
             {
-                try
-                {
-                    weightValue = Integer.parseInt( weightString );
-                }
-                catch( NumberFormatException e )
-                {
-                    // if we have a 1-2 then we have a fraction
-                    int index = weightString.indexOf( '-' );
-
-                    if( index > 0 )
-                    {
-                        try
-                        {
-                            int numerator = Integer.parseInt( weightString.substring( 0, index ) );
-                            int denominator =
-                                Integer.parseInt( weightString.substring( index + 1, weightString.length() ) );
-                            weightValue = (int) ( (float) numerator / denominator * 100 );
-                        }
-                        catch( NumberFormatException ex )
-                        {
-                            // best effort
-                        }
-                    }
-                }
+                weightValue = Integer.parseInt( weightString );
+                // according to the Bootstrap, the max value is 12
+                weightValue = weightValue <= 12 ? weightValue : 12;
             }
+        }
+        else
+        {
+            matcher = Pattern.compile( ".*aui-w([-\\d]+).*" ).matcher( classAttr );
 
-            int remainder = weightValue % 5;
-
-            if( remainder != 0 )
+            if( matcher.matches() )
             {
-                if( weightValue != 33 && weightValue != 66 )
+                String weightString = matcher.group( 1 );
+
+                if( !CoreUtil.isNullOrEmpty( weightString ) )
                 {
-                    if( remainder < 3 )
+                    try
                     {
-                        weightValue -= remainder;
+                        weightValue = Integer.parseInt( weightString );
                     }
-                    else
+                    catch( NumberFormatException e )
                     {
-                        weightValue += remainder;
+                        // if we have a 1-2 then we have a fraction
+                        int index = weightString.indexOf( '-' );
+
+                        if( index > 0 )
+                        {
+                            try
+                            {
+                                int numerator = Integer.parseInt( weightString.substring( 0, index ) );
+                                int denominator =
+                                    Integer.parseInt( weightString.substring( index + 1, weightString.length() ) );
+                                weightValue = (int) ( (float) numerator / denominator * 100 );
+                            }
+                            catch( NumberFormatException ex )
+                            {
+                                // best effort
+                            }
+                        }
+                    }
+                }
+
+                int remainder = weightValue % 5;
+
+                if( remainder != 0 )
+                {
+                    if( weightValue != 33 && weightValue != 66 )
+                    {
+                        if( remainder < 3 )
+                        {
+                            weightValue -= remainder;
+                        }
+                        else
+                        {
+                            weightValue += remainder;
+                        }
                     }
                 }
             }
         }
 
         return weightValue;
+    }
+
+    public static Version getPortalVersion( String location )
+    {
+        Version retval = ILiferayConstants.V620;
+
+        final IFile tplFile = CoreUtil.getWorkspaceRoot().getFile( new Path( location ) );
+
+        final ILiferayProject lrp= LiferayCore.create( tplFile.getProject() );
+
+        if( !CoreUtil.isNullOrEmpty( lrp.getPortalVersion() ) )
+        {
+            retval = new Version( lrp.getPortalVersion() ); 
+        }
+
+        return retval;
+    }
+
+    public static String getPortalVersion_2( String location )
+    {
+        String retval = null;
+
+        final IFile tplFile = CoreUtil.getWorkspaceRoot().getFile( new Path( location ) );
+
+        final ILiferayProject lrp= LiferayCore.create( tplFile.getProject() );
+
+        if( !CoreUtil.isNullOrEmpty( lrp.getPortalVersion() ) )
+        {
+            retval = lrp.getPortalVersion();
+        }
+
+        return retval; 
     }
 
     public static boolean hasClassName( IDOMElement domElement, String className )
@@ -245,8 +348,19 @@ public class LayoutTplUtil
     {
         try
         {
-            ITemplateOperation op = TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.defaultLayoutTemplate" ); //$NON-NLS-1$
+            ITemplateOperation op = null;
+
+            if( ge62( diagram.getVersion()) )
+            {
+                op = TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.current" ); //$NON-NLS-1$
+            }
+            else
+            {
+                op = TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.LayoutTemplate.old" ); //$NON-NLS-1$
+            }
+
             String name = file.getFullPath().removeFileExtension().lastSegment();
+
             createLayoutTplContext( op, diagram, name );
 
             op.setOutputFile( file );
@@ -256,6 +370,23 @@ public class LayoutTplUtil
         {
             LayoutTplCore.logError( e );
         }
+    }
+
+    public static ITemplateOperation getTemplateOperation( Version version )
+    {
+        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) < 0 )
+        {
+            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.oldLayoutTemplate" );
+        }
+        else
+        {
+            return TemplatesCore.getTemplateOperation( "com.liferay.ide.layouttpl.core.currentLayouTemplate" );
+        }
+    }
+
+    public static boolean ge62( Version version )
+    {
+        return CoreUtil.compareVersions( version, ILiferayConstants.V620 ) >= 0;
     }
 
 }

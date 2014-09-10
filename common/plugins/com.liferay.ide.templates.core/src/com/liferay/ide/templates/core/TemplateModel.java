@@ -42,7 +42,6 @@ public class TemplateModel
     public TemplateModel( String bundleId,
                           Configuration config,
                           String id,
-                          String name,
                           String resource,
                           String templateFolder,
                           TemplateVariable[] vars )
@@ -51,7 +50,6 @@ public class TemplateModel
         this.bundleId = bundleId;
         this.config = config;
         this.id = id;
-        this.name = name;
         this.resource = resource;
         this.templateFolder = templateFolder;
         this.vars = vars;
@@ -70,11 +68,6 @@ public class TemplateModel
     public String getId()
     {
         return id;
-    }
-
-    public String getName()
-    {
-        return name;
     }
 
     public String[] getRequiredVarNames()

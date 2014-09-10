@@ -15,19 +15,12 @@
 
 package com.liferay.ide.layouttpl.ui.editor;
 
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.LayoutTplCore;
 import com.liferay.ide.layouttpl.ui.ILayoutTplUIPreferenceNames;
 import com.liferay.ide.layouttpl.ui.LayoutTplUI;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
@@ -37,12 +30,10 @@ import org.eclipse.ui.IEditorActionBarContributor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
@@ -51,7 +42,6 @@ import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.wst.html.core.internal.provisional.contenttype.ContentTypeIdForHTML;
 import org.eclipse.wst.sse.ui.StructuredTextEditor;
-import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
@@ -98,8 +88,6 @@ public class LayoutTplMultiPageEditor extends MultiPageEditorPart implements ISe
     protected StructuredTextEditor sourceEditor;
 
     protected LayoutTplEditor visualEditor;
-
-    protected boolean visualEditorSupported;
 
     public LayoutTplMultiPageEditor()
     {
@@ -286,16 +274,7 @@ public class LayoutTplMultiPageEditor extends MultiPageEditorPart implements ISe
                 ( (MultiPageEditorActionBarContributor) contributor ).setActiveEditor( this );
             }
 
-            int activePageIndex = 0;
-
-            if( visualEditorSupported )
-            {
-                activePageIndex = getPreferenceStore().getInt( ILayoutTplUIPreferenceNames.LAST_ACTIVE_PAGE );
-            }
-            else
-            {
-                activePageIndex = 1;
-            }
+            int activePageIndex = getPreferenceStore().getInt( ILayoutTplUIPreferenceNames.LAST_ACTIVE_PAGE );
 
             if( ( activePageIndex >= 0 ) && ( activePageIndex < getPageCount() ) )
             {
@@ -367,7 +346,7 @@ public class LayoutTplMultiPageEditor extends MultiPageEditorPart implements ISe
 
     protected LayoutTplEditor createVisualEditor()
     {
-        this.visualEditor = new LayoutTplEditor( this.sourceEditor, visualEditorSupported );
+        this.visualEditor = new LayoutTplEditor( this.sourceEditor );
 
         return this.visualEditor;
     }
@@ -408,51 +387,12 @@ public class LayoutTplMultiPageEditor extends MultiPageEditorPart implements ISe
         super.setInput( input );
 
         setPartName( input.getName() );
-
-        setVisualEditorSupported();
     }
 
     void gotoMarker( IMarker marker )
     {
         setActivePage( 1 );
         IDE.gotoMarker( sourceEditor, marker );
-    }
-
-    // IDE-1192, This is a temporary solution, for the layout template editor does not yet support 6.2 style layouts
-    // (bootstrap 12 column). It will be removed in the future when 6.2 style layouts are supported.
-    protected void setVisualEditorSupported()
-    {
-        visualEditorSupported = true;
-
-        try
-        {
-            final IEditorInput editorInput = getEditorInput();
-
-            IPath path = null;
-
-            if( editorInput instanceof IFileEditorInput )
-            {
-                path = ( (IFileEditorInput) editorInput ).getFile().getFullPath();
-            }
-            else if( editorInput instanceof FileStoreEditorInput )
-            {
-                path = new Path( ( (FileStoreEditorInput) editorInput ).getURI().getPath() );
-            }
-
-            if( path != null )
-            {
-                final IFile editorFile = CoreUtil.getWorkspaceRoot().getFile( path );
-                final ILiferayProject lproj = LiferayCore.create( editorFile.getProject() );
-
-                if( CoreUtil.compareVersions( ILiferayConstants.V620, new Version( lproj.getPortalVersion() ) ) <= 0 )
-                {
-                    visualEditorSupported = false;
-                }
-            }
-        }
-        catch( Exception e )
-        {
-        }
     }
 
     private static class Msgs extends NLS

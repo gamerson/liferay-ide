@@ -15,6 +15,8 @@
 
 package com.liferay.ide.layouttpl.ui.policies;
 
+import org.osgi.framework.Version;
+
 
 /**
  * @author Greg Amerson
@@ -22,9 +24,9 @@ package com.liferay.ide.layouttpl.ui.policies;
  */
 public class LayoutTplDiagramLayoutEditPolicy extends PortletRowLayoutLayoutEditPolicy
 {
-    public LayoutTplDiagramLayoutEditPolicy()
+    public LayoutTplDiagramLayoutEditPolicy( Version version )
     {
-        super();
+        super( version );
     }
 
 }

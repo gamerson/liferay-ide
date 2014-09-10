@@ -17,6 +17,8 @@
 
 package com.liferay.ide.layouttpl.ui.cmd;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.model.ModelElement;
 import com.liferay.ide.layouttpl.core.model.PortletRowLayoutElement;
 import com.liferay.ide.layouttpl.ui.model.LayoutConstraint;
@@ -26,6 +28,7 @@ import com.liferay.ide.layouttpl.ui.util.LayoutTplUIUtil;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.osgi.util.NLS;
+import org.osgi.framework.Version;
 
 /**
  * @author Greg Amerson
@@ -37,9 +40,11 @@ public class PortletColumnCreateCommand extends Command
     protected LayoutConstraint layoutConstraint;
     protected PortletColumn newColumn;
     protected int refColumnOldWeight = 0;
+    protected Version version;
 
-    public PortletColumnCreateCommand( PortletColumn newColumn, PortletRowLayoutElement rowLayout, LayoutConstraint constraint )
+    public PortletColumnCreateCommand( Version version, PortletColumn newColumn, PortletRowLayoutElement rowLayout, LayoutConstraint constraint )
     {
+        this.version = version;
         this.newColumn = newColumn;
         this.rowLayout = rowLayout;
         this.layoutConstraint = constraint;
@@ -60,8 +65,8 @@ public class PortletColumnCreateCommand extends Command
     {
         if( layoutConstraint.equals( LayoutConstraint.EMPTY ) || layoutConstraint.newColumnIndex == -1 )
         {
-            PortletLayout portletLayout = new PortletLayout();
-            newColumn.setWeight( 100 );
+            PortletLayout portletLayout = new PortletLayout( version );
+            newColumn.setFullWeight();
             portletLayout.addColumn( newColumn );
 
             rowLayout.addRow( portletLayout, layoutConstraint.newRowIndex );
@@ -74,9 +79,16 @@ public class PortletColumnCreateCommand extends Command
             {
                 refColumnOldWeight = layoutConstraint.refColumn.getWeight();
 
-                //- 1 is for 33% to get 15% ref column not 20% after adjust weight
-                int newRefWeight = refColumnOldWeight - layoutConstraint.weight - 1;
-                layoutConstraint.refColumn.setWeight( LayoutTplUIUtil.adjustWeight( newRefWeight ) );
+                if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) < 0 )
+                {
+                    //- 1 is for 33% to get 15% ref column not 20% after adjust weight
+                    int newRefWeight = refColumnOldWeight - layoutConstraint.weight - 1;
+                    layoutConstraint.refColumn.setWeight( LayoutTplUIUtil.adjustWeight( newRefWeight ) );
+                }
+                else
+                {
+                    layoutConstraint.refColumn.setWeight( refColumnOldWeight - layoutConstraint.weight );
+                }
             }
 
             newColumn.setWeight( layoutConstraint.weight );
@@ -94,7 +106,7 @@ public class PortletColumnCreateCommand extends Command
 
     public void undo()
     {
-        if( layoutConstraint.equals( LayoutConstraint.EMPTY ) || layoutConstraint.newColumnIndex == -1  )
+        if( layoutConstraint.equals( LayoutConstraint.EMPTY ) || layoutConstraint.newColumnIndex == -1 )
         {
             for( ModelElement row : rowLayout.getRows() )
             {

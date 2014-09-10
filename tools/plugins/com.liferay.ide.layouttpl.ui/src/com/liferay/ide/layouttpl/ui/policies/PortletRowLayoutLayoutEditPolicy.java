@@ -41,6 +41,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
+import org.osgi.framework.Version;
 
 /**
  * @author Cindy Li
@@ -51,10 +52,12 @@ public class PortletRowLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolic
     public static final int DEFAULT_FEEDBACK_HEIGHT = 20;
 
     protected IFigure layoutFeedbackFigure;
+    protected Version version;
 
-    public PortletRowLayoutLayoutEditPolicy()
+    public PortletRowLayoutLayoutEditPolicy( Version version )
     {
         super();
+        this.version = version;
     }
 
     @Override
@@ -229,15 +232,15 @@ public class PortletRowLayoutLayoutEditPolicy extends ConstrainedLayoutEditPolic
 
         if( childClass == PortletColumn.class )
         {
-            return new PortletColumnCreateCommand(
-                (PortletColumn) request.getNewObject(), (PortletRowLayoutElement) getHost().getModel(),
+            return new PortletColumnCreateCommand( version, new PortletColumn( version ),
+                (PortletRowLayoutElement) getHost().getModel(),
                 (LayoutConstraint) getConstraintFor( request ) );
         }
 
         if( childClass == PortletLayout.class )
         {
-            return new PortletLayoutCreateCommand(
-                (PortletLayout) request.getNewObject(), (PortletRowLayoutElement) getHost().getModel(),
+            return new PortletLayoutCreateCommand( version, new PortletLayout( version ),
+                (PortletRowLayoutElement) getHost().getModel(),
                 (LayoutConstraint) getConstraintFor( request ) );
         }
 

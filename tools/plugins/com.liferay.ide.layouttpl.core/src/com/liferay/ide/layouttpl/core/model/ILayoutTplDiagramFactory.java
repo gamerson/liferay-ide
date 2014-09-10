@@ -14,7 +14,10 @@
  *******************************************************************************/
 package com.liferay.ide.layouttpl.core.model;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
@@ -23,13 +26,17 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 public interface ILayoutTplDiagramFactory
 {
 
-    LayoutTplDiagramElement newLayoutTplDiagram();
+    LayoutTplDiagramElement newLayoutTplDiagram( Version version );
 
-    PortletColumnElement newPortletColumn();
+    LayoutTplDiagramElement newLayoutTplDiagramFromFile( IFile file );
+
+    LayoutTplDiagramElement newLayoutTplDiagramFromModel( IDOMModel model );
+
+    PortletColumnElement newPortletColumn( Version version );
 
     PortletColumnElement newPortletColumnFromElement( IDOMElement portletColumnElement );
 
-    PortletLayoutElement newPortletLayout();
+    PortletLayoutElement newPortletLayout( Version version );
 
     PortletLayoutElement newPortletLayoutFromElement( IDOMElement portletLayoutElement );
 

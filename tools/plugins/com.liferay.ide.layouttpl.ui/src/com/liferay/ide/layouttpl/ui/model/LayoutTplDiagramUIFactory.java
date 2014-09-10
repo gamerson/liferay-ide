@@ -18,6 +18,8 @@ import com.liferay.ide.layouttpl.core.model.ILayoutTplDiagramFactory;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramElement;
 import com.liferay.ide.layouttpl.core.model.LayoutTplDiagramFactory;
 
+import org.osgi.framework.Version;
+
 
 /**
  * @author Gregory Amerson
@@ -27,19 +29,19 @@ public class LayoutTplDiagramUIFactory extends LayoutTplDiagramFactory
 
     public static final ILayoutTplDiagramFactory INSTANCE = new LayoutTplDiagramUIFactory();
 
-    public LayoutTplDiagramElement newLayoutTplDiagram()
+    public LayoutTplDiagramElement newLayoutTplDiagram( Version version )
     {
-        return new LayoutTplDiagram();
+        return new LayoutTplDiagram( version );
     }
 
-    public PortletColumn newPortletColumn()
+    public PortletColumn newPortletColumn( Version version )
     {
-        return new PortletColumn();
+        return new PortletColumn( version );
     }
 
-    public PortletLayout newPortletLayout()
+    public PortletLayout newPortletLayout( Version version )
     {
-        return new PortletLayout();
+        return new PortletLayout( version );
     }
 
 }
