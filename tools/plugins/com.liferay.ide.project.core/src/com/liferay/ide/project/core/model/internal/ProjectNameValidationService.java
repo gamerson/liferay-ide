@@ -18,6 +18,7 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.PluginType;
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.sdk.core.ISDKConstants;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
@@ -34,6 +35,7 @@ import org.eclipse.sapphire.services.ValidationService;
  * @author Gregory Amerson
  * @author Kuo Zhang
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class ProjectNameValidationService extends ValidationService
 {
@@ -76,7 +78,7 @@ public class ProjectNameValidationService extends ValidationService
             {
                 retval = StatusBridge.create( nameStatus );
             }
-            else if( CoreUtil.getProject( currentProjectName ).exists() )
+            else if( CoreUtil.getProject( getProjectNameWithSuffix( currentProjectName, op.getPluginType().content() ) ).exists() )
             {
                 retval = Status.createErrorStatus( "A project with that name already exists." );
             }
@@ -122,6 +124,49 @@ public class ProjectNameValidationService extends ValidationService
         super.dispose();
 
         op().detach( listener, "*" );
+    }
+
+    private String getProjectNameWithSuffix( final String projectName, final PluginType pluginType )
+    {
+        String pluginTypeValue;
+
+        switch( pluginType )
+        {
+        case servicebuilder:
+        case portlet:
+            pluginTypeValue = ISDKConstants._PORTLET_PLUGIN_PROJECT_SUFFIX;
+            break;
+
+        case hook:
+            pluginTypeValue = ISDKConstants._HOOK_PLUGIN_PROJECT_SUFFIX;
+            break;
+
+        case ext:
+            pluginTypeValue = ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX;
+            break;
+
+        case layouttpl:
+            pluginTypeValue = ISDKConstants._LAYOUTTPL_PLUGIN_PROJECT_SUFFIX;
+            break;
+
+        case theme:
+            pluginTypeValue = ISDKConstants._THEME_PLUGIN_PROJECT_SUFFIX;
+            break;
+
+        case web:
+            pluginTypeValue = ISDKConstants._WEB_PLUGIN_PROJECT_SUFFIX;
+            break;
+
+        default:
+            pluginTypeValue = ISDKConstants._PORTLET_PLUGIN_PROJECT_SUFFIX;
+        }
+
+        if( !projectName.endsWith( pluginTypeValue ) )
+        {
+            return projectName + pluginTypeValue;
+        }
+
+        return projectName;
     }
 
     private boolean hasValidDisplayName( String currentProjectName )
