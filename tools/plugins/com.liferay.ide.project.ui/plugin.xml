@@ -886,6 +886,13 @@
             id="com.liferay.ide.project.ui.pluginValidationSettingsPage"
             name="%plugin.validation.page.name">
       </page>
+      <page
+            category="com.liferay.ide.ui.preferences.liferay"
+            class="com.liferay.ide.project.ui.pref.ProjectMavenPreferencePage"
+            id="com.liferay.ide.project.ui.projectMavenPreferencePage"
+            name="Maven">
+      </page>
+      
    </extension>
 
    <extension

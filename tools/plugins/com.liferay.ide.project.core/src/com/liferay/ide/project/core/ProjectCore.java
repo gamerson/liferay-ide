@@ -74,6 +74,9 @@ public class ProjectCore extends Plugin
     // The key of using snapshot vresion stored in prefernce store
     public static final String PREF_USE_SNAPSHOT_VERSION = "use-snapshot-version";
 
+    // The key of disable customJspValidation checking
+    public static final String PREF_DISABLE_CUSTOM_JSP_VALIDATION = "disable-custom-jsp-validation";
+
     public static final String USE_PROJECT_SETTINGS = "use-project-settings"; //$NON-NLS-1$
 
     // The value of ant build type
