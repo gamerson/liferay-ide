@@ -13,38 +13,41 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.layouttpl.ui.parts;
 
-import org.eclipse.draw2d.Panel;
-import org.eclipse.swt.graphics.Color;
+package com.liferay.ide.layouttpl.core.model.internal;
+
+import com.liferay.ide.layouttpl.core.model.LayoutTplElement;
+
+import org.eclipse.sapphire.DefaultValueService;
+import org.eclipse.sapphire.Element;
+
 
 /**
- * @author Gregory Amerson
- * @author Cindy Li
+ * @author Kuo Zhang
  */
-public class LayoutTplDiagramEditPart extends PortletRowLayoutEditPart
+public class PortletLayoutClassNameDefaultValueService extends DefaultValueService
 {
-    public static final int DIAGRAM_MARGIN = 10;
-
-    public LayoutTplDiagramEditPart()
-    {
-    }
 
     @Override
-    protected void configurePanel( Panel panel )
+    protected String compute()
     {
-        super.configurePanel( panel );
-        panel.setBackgroundColor( new Color( null, 10, 10, 10 ) );
+        LayoutTplElement layoutTpl = context( Element.class ).nearest( LayoutTplElement.class ); 
+
+        if( layoutTpl != null )
+        {
+            if( layoutTpl.getBootstrapStyle().content() )
+            {
+                return "portlet-layout row-fluid";
+            }
+            else
+            {
+                return "portlet-layout";
+            }
+        }
+        else
+        {
+            return "portlet-layout";
+        }
     }
 
-    @Override
-    protected void createEditPolicies()
-    {
-    }
-
-    @Override
-    public int getMargin()
-    {
-        return DIAGRAM_MARGIN;
-    }
 }

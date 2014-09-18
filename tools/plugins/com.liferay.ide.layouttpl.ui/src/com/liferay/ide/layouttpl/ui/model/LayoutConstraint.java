@@ -25,8 +25,8 @@ public class LayoutConstraint
     public int rowIndex = -1;
     public int newRowIndex = -1;
     public int newColumnIndex = -1;
-    public int weight = PortletColumn.DEFAULT_WEIGHT;
-    public PortletColumn refColumn = null;
+    public int weight = -1;
+//    public PortletColumn refColumn = null;
 
     @Override
     public boolean equals( Object obj )
@@ -38,9 +38,10 @@ public class LayoutConstraint
 
         LayoutConstraint constraint = (LayoutConstraint) obj;
 
-        return this.rowIndex == constraint.rowIndex && this.newRowIndex == constraint.newRowIndex &&
-            this.newColumnIndex == constraint.newColumnIndex && this.weight == constraint.weight &&
-            this.refColumn == constraint.refColumn;
+//        return this.rowIndex == constraint.rowIndex && this.newRowIndex == constraint.newRowIndex &&
+//            this.newColumnIndex == constraint.newColumnIndex && this.weight == constraint.weight &&
+//            this.refColumn == constraint.refColumn;
+        return false;
     }
 
     @Override
