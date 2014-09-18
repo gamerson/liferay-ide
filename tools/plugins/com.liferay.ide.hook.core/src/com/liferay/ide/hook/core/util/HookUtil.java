@@ -20,10 +20,13 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.hook.core.HookCore;
 import com.liferay.ide.hook.core.model.CustomJspDir;
 import com.liferay.ide.hook.core.model.Hook;
+import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.sdk.core.SDKUtil;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
@@ -43,14 +46,27 @@ import org.w3c.dom.DocumentType;
  * @author Gregory Amerson
  * @author Simon Jiang
  */
-@SuppressWarnings( "restriction" )
+@SuppressWarnings( { "restriction", "deprecation" } )
 public class HookUtil
 {
 
-    public static void configureJSPSyntaxValidationExclude( IProject project, IFolder customFolder, boolean isNewRule  )
+    
+    public static void configureJSPSyntaxValidationExclude( IProject project, IFolder customFolder )
     {
         try
         {
+            final Preferences defaultPrefs = ProjectCore.getDefault().getPluginPreferences();
+
+            final boolean disableCustomJspValidation =
+                defaultPrefs.getBoolean( ProjectCore.PREF_DISABLE_CUSTOM_JSP_VALIDATION );
+
+            final boolean isSDKProject = SDKUtil.isSDKProject( project );
+
+            if( disableCustomJspValidation && !isSDKProject )
+            {
+                return;
+            }
+
             final Validator[] vals =
                 ValManager.getDefault().getValidatorsConfiguredForProject( project, UseProjectPreferences.MustUse );
 
@@ -82,11 +98,8 @@ public class HookUtil
 
                     if( excludeGroup == null )
                     {
-                        if( isNewRule )
-                        {
-                            excludeGroup = FilterGroup.create( true, new FilterRule[] { folderRule } );
-                            validators[i].add( excludeGroup );
-                        }
+                        excludeGroup = FilterGroup.create( true, new FilterRule[] { folderRule } );
+                        validators[i].add( excludeGroup );
                     }
                     else
                     {
@@ -96,11 +109,9 @@ public class HookUtil
                         {
                             if( customJSPFolderPattern.equals( rule.getPattern() ) )
                             {
-                                if( ! isNewRule )
-                                {
-                                    FilterGroup newExcludeGroup = FilterGroup.removeRule( excludeGroup, rule );
-                                    validators[i].replaceFilterGroup( excludeGroup, newExcludeGroup );
-                                }
+                                FilterGroup newExcludeGroup = FilterGroup.removeRule( excludeGroup, rule );
+                                validators[i].replaceFilterGroup(
+                                    excludeGroup, FilterGroup.addRule( newExcludeGroup, folderRule ) );
 
                                 hasCustomJSPFolderRule = true;
                                 break;

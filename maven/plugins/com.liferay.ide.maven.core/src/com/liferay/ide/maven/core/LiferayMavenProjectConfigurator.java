@@ -325,7 +325,7 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
                     final IPath pathValue = docFolder.getFullPath().append( newPath );
 
                     HookUtil.configureJSPSyntaxValidationExclude(
-                        project, project.getFolder( pathValue.makeRelativeTo( project.getFullPath() ) ), false );
+                        project, project.getFolder( pathValue.makeRelativeTo( project.getFullPath() ) ) );
                 }
             }
         }
