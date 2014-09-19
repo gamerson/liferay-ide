@@ -33,6 +33,9 @@ public class LiferayMavenCore extends Plugin
     // The plug-in ID
     public static final String PLUGIN_ID = "com.liferay.ide.maven.core"; //$NON-NLS-1$
 
+    // The key of disable customJspValidation checking
+    public static final String PREF_DISABLE_CUSTOM_JSP_VALIDATION = "disable-custom-jsp-validation";
+
     public static Status createErrorStatus( String msg )
     {
         return new Status( IStatus.ERROR, PLUGIN_ID, msg, null );
