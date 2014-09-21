@@ -15,117 +15,55 @@
 
 package com.liferay.ide.layouttpl.core.model;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.layouttpl.core.LayoutTplCore;
-import com.liferay.ide.layouttpl.core.util.LayoutTplUtil;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.wst.sse.core.StructuredModelManager;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
+import org.eclipse.sapphire.ElementType;
+import org.eclipse.sapphire.Value;
+import org.eclipse.sapphire.ValueProperty;
+import org.eclipse.sapphire.modeling.annotations.DefaultValue;
+import org.eclipse.sapphire.modeling.annotations.Required;
+import org.eclipse.sapphire.modeling.annotations.Type;
 
 /**
- * @author Gregory Amerson
- * @author Cindy Li
+ * @author Kuo Zhang
  */
-@SuppressWarnings( "restriction" )
-public class LayoutTplDiagramElement extends PortletRowLayoutElement
+public interface LayoutTplDiagramElement extends CanAddPortletLayouts
 {
-    public static LayoutTplDiagramElement createDefaultDiagram()
-    {
-        return new LayoutTplDiagramElement();
-    }
 
-    public static LayoutTplDiagramElement createFromFile( IFile file, ILayoutTplDiagramFactory factory )
-    {
-        if( file == null || !( file.exists() ) )
-        {
-            return null;
-        }
+    ElementType TYPE = new ElementType( LayoutTplDiagramElement.class );
 
-        LayoutTplDiagramElement model = null;
+    // *** Role ***
 
-        try
-        {
-            IDOMModel domModel = (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit( file );
-            model = createFromModel( domModel, factory );
-        }
-        catch( Exception e )
-        {
-            LayoutTplCore.logError( "Unable to read layout template file " + file.getName(), e ); //$NON-NLS-1$
-            model = new LayoutTplDiagramElement();
-        }
+    @DefaultValue( text = "main" )
+    ValueProperty PROP_ROLE = new ValueProperty( TYPE, "Role" );
 
-        return model;
-    }
+    Value<String> getRole();
+    void setRole( String role );
 
-    public static LayoutTplDiagramElement createFromModel( IDOMModel model, ILayoutTplDiagramFactory factory )
-    {
-        if( model == null )
-        {
-            return null;
-        }
+    // *** Id ***
 
-        // look for element that is a div with id of "main-content"
-        LayoutTplDiagramElement newDiagram = factory.newLayoutTplDiagram();
-        IDOMDocument rootDocument = model.getDocument();
-        IDOMElement mainContentElement = LayoutTplUtil.findMainContentElement( rootDocument );
+    @DefaultValue( text = "main-content" )
+    ValueProperty PROP_ID = new ValueProperty( TYPE, "Id" );
 
-        newDiagram.setId( "main-content" ); //$NON-NLS-1$
+    Value<String> getId();
+    void setId( String id );
 
-        if( mainContentElement != null )
-        {
-            newDiagram.setRole( LayoutTplUtil.getRoleValue( mainContentElement, "main" ) ); //$NON-NLS-1$
+    // *** Class Name ***
 
-            IDOMElement[] portletLayoutElements =
-                LayoutTplUtil.findChildElementsByClassName( mainContentElement, "div", "portlet-layout" ); //$NON-NLS-1$ //$NON-NLS-2$
+    @Required
+    ValueProperty PROP_ClASS_NAME = new ValueProperty( TYPE, "ClassName" );
 
-            if( !CoreUtil.isNullOrEmpty( portletLayoutElements ) )
-            {
-                for( IDOMElement portletLayoutElement : portletLayoutElements )
-                {
-                    PortletLayoutElement newPortletLayout = factory.newPortletLayoutFromElement( portletLayoutElement );
-                    newDiagram.addRow( newPortletLayout );
-                }
-            }
-        }
-        else
-        {
-            newDiagram.setRole( "main" ); //$NON-NLS-1$
-        }
+    Value<String> getClassName();
+    void setClassName( String className );
 
-        return newDiagram;
-    }
+    // *** Style ***
 
-    protected String id;
-    protected String role;
+    // only two styles, use Boolean, if there are more styles in the future, use Enum type 
+    @Required
+    @Type( base = Boolean.class )
+    @DefaultValue( text = "true" )
+    ValueProperty PROP_BOOTSTRAP_STYLE = new ValueProperty( TYPE, "BootstrapStyle" );
 
-    public LayoutTplDiagramElement()
-    {
-        super();
+    Value<Boolean> getBootstrapStyle();
+    void setBootstrapStyle( String value );
+    void setBootstrapStyle( Boolean value );
 
-        this.id = "main-content"; //$NON-NLS-1$
-        this.role = "main"; //$NON-NLS-1$
-    }
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public String getRole()
-    {
-        return role;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
-    }
-
-    public void setRole( String role )
-    {
-        this.role = role;
-    }
 }
