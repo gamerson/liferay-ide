@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.m2e.core.internal.IMavenConstants;
@@ -76,7 +77,7 @@ import org.osgi.framework.Version;
  * @author Kuo Zhang
  * @author Kamesh Sampath
  */
-@SuppressWarnings( "restriction" )
+@SuppressWarnings( { "restriction", "deprecation" } )
 public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator implements IJavaProjectConfigurator
 {
 
@@ -324,8 +325,16 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
                     final IPath newPath = Path.fromOSString( customJSPFolder.substring( 1 ) );
                     final IPath pathValue = docFolder.getFullPath().append( newPath );
 
-                    HookUtil.configureJSPSyntaxValidationExclude(
-                        project, project.getFolder( pathValue.makeRelativeTo( project.getFullPath() ) ), false );
+                    final Preferences defaultPrefs = LiferayMavenCore.getDefault().getPluginPreferences();
+
+                    final boolean disableCustomJspValidation =
+                        defaultPrefs.getBoolean( LiferayMavenCore.PREF_DISABLE_CUSTOM_JSP_VALIDATION );
+
+                    if( !disableCustomJspValidation )
+                    {
+                        HookUtil.configureJSPSyntaxValidationExclude(
+                            project, project.getFolder( pathValue.makeRelativeTo( project.getFullPath() ) ) );
+                    }
                 }
             }
         }
