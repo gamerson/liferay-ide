@@ -19,10 +19,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.BundleContext;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class LiferayMavenCore extends Plugin
 {
@@ -32,6 +35,9 @@ public class LiferayMavenCore extends Plugin
 
     // The plug-in ID
     public static final String PLUGIN_ID = "com.liferay.ide.maven.core"; //$NON-NLS-1$
+
+    // The key of disable customJspValidation checking
+    public static final String PREF_DISABLE_CUSTOM_JSP_VALIDATION = "disable-custom-jsp-validation";
 
     public static Status createErrorStatus( String msg )
     {
@@ -62,6 +68,11 @@ public class LiferayMavenCore extends Plugin
     public static LiferayMavenCore getDefault()
     {
         return plugin;
+    }
+
+    public static IEclipsePreferences getDefaultPrefs()
+    {
+        return InstanceScope.INSTANCE.getNode( PLUGIN_ID );
     }
 
     public static void log( IStatus status )
