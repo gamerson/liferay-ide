@@ -50,6 +50,61 @@ import org.w3c.dom.DocumentType;
 public class HookUtil
 {
 
+    public static boolean checkJSPSyntaxValidationExclude( IProject project, IFolder customFolder )
+    {
+        boolean hasCustomJSPFolderRule = false;
+
+        try
+        {
+            final Validator[] vals =
+                ValManager.getDefault().getValidatorsConfiguredForProject( project, UseProjectPreferences.MustUse );
+
+            final ValidatorMutable[] validators = new ValidatorMutable[vals.length];
+
+            for( int i = 0; i < vals.length; i++ )
+            {
+                validators[i] = new ValidatorMutable( vals[i] );
+
+                if( "org.eclipse.jst.jsp.core.JSPBatchValidator".equals( validators[i].getId() ) ) //$NON-NLS-1$
+                {
+                    // check for exclude group
+                    FilterGroup excludeGroup = null;
+
+                    for( FilterGroup group : validators[i].getGroups() )
+                    {
+                        if( group.isExclude() )
+                        {
+                            excludeGroup = group;
+                            break;
+                        }
+                    }
+
+                    final String customJSPFolderPattern =
+                        customFolder.getFullPath().makeRelativeTo( customFolder.getProject().getFullPath() ).toPortableString();
+
+                    if( excludeGroup != null )
+                    {
+                        for( FilterRule rule : excludeGroup.getRules() )
+                        {
+                            if( customJSPFolderPattern.equals( rule.getPattern() ) )
+                            {
+                                hasCustomJSPFolderRule = true;
+                                break;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        catch( Exception e )
+        {
+            HookCore.logError( "Unable to check jsp syntax validation folder exclude rule.", e ); //$NON-NLS-1$
+        }
+
+        return hasCustomJSPFolderRule;
+    }
+
     public static boolean configureJSPSyntaxValidationExclude( IProject project, IFolder customFolder )
     {
         boolean retval = false;
