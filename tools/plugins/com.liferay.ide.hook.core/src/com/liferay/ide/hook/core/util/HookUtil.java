@@ -50,7 +50,8 @@ import org.w3c.dom.DocumentType;
 public class HookUtil
 {
 
-    public static boolean configureJSPSyntaxValidationExclude( IProject project, IFolder customFolder )
+    public static boolean configureJSPSyntaxValidationExclude(
+        IProject project, IFolder customFolder, boolean configureRule )
     {
         boolean retval = false;
 
@@ -87,8 +88,12 @@ public class HookUtil
 
                     if( excludeGroup == null )
                     {
-                        excludeGroup = FilterGroup.create( true, new FilterRule[] { folderRule } );
-                        validators[i].add( excludeGroup );
+                        if( configureRule )
+                        {
+                            excludeGroup = FilterGroup.create( true, new FilterRule[] { folderRule } );
+                            validators[i].add( excludeGroup );
+                            retval = true;
+                        }
                     }
                     else
                     {
@@ -98,34 +103,42 @@ public class HookUtil
                         {
                             if( customJSPFolderPattern.equals( rule.getPattern() ) )
                             {
-                                FilterGroup newExcludeGroup = FilterGroup.removeRule( excludeGroup, rule );
-                                validators[i].replaceFilterGroup(
-                                    excludeGroup, FilterGroup.addRule( newExcludeGroup, folderRule ) );
-
+                                if( configureRule )
+                                {
+                                    FilterGroup newExcludeGroup = FilterGroup.removeRule( excludeGroup, rule );
+                                    validators[i].replaceFilterGroup(
+                                        excludeGroup, FilterGroup.addRule( newExcludeGroup, folderRule ) );
+                                }
                                 hasCustomJSPFolderRule = true;
                                 break;
                             }
-
                         }
 
                         if( !hasCustomJSPFolderRule )
                         {
-                            validators[i].replaceFilterGroup(
-                                excludeGroup, FilterGroup.addRule( excludeGroup, folderRule ) );
+                            if( configureRule )
+                            {
+                                validators[i].replaceFilterGroup(
+                                    excludeGroup, FilterGroup.addRule( excludeGroup, folderRule ) );
+
+                                hasCustomJSPFolderRule = true;
+                            }
                         }
+                        retval = hasCustomJSPFolderRule;
                     }
                 }
             }
 
-            final ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration( project );
-            pc.setDoesProjectOverride( true );
+            if( configureRule )
+            {
+                final ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration( project );
+                pc.setDoesProjectOverride( true );
 
-            final ProjectPreferences pp = new ProjectPreferences( project, true, false, null );
+                final ProjectPreferences pp = new ProjectPreferences( project, true, false, null );
 
-            final ValPrefManagerProject vpm = new ValPrefManagerProject( project );
-            vpm.savePreferences( pp, validators );
-
-            retval = true;
+                final ValPrefManagerProject vpm = new ValPrefManagerProject( project );
+                vpm.savePreferences( pp, validators );
+            }
         }
         catch( Exception e )
         {
@@ -133,6 +146,7 @@ public class HookUtil
         }
 
         return retval;
+
     }
 
     public static IFolder getCustomJspFolder( Hook hook, IProject project )
@@ -174,7 +188,7 @@ public class HookUtil
 
             if( docFolder != null )
             {
-                final IPath newPath = Path.fromOSString( customJSPFolder.substring( 1 ) );
+                final IPath newPath = Path.fromOSString( customJSPFolder );
                 final IPath pathValue = docFolder.getFullPath().append( newPath );
 
                 return pathValue;
