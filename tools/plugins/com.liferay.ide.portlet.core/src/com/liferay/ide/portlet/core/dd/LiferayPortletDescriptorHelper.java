@@ -189,11 +189,21 @@ public class LiferayPortletDescriptorHelper extends LiferayDescriptorHelper
             NodeUtil.appendChildElement( newPortletElement, "control-panel-entry-category", entryCategory ); //$NON-NLS-1$
             NodeUtil.appendChildElement( newPortletElement, "control-panel-entry-weight", model.getStringProperty( ENTRY_WEIGHT ) ); //$NON-NLS-1$
 
+            String javaPackage = model.getStringProperty( JAVA_PACKAGE );
+
             if( model.getBooleanProperty( CREATE_ENTRY_CLASS ) )
             {
-                NodeUtil.appendChildElement(
-                    newPortletElement, "control-panel-entry-class", model.getStringProperty( JAVA_PACKAGE ) + "." + //$NON-NLS-1$ //$NON-NLS-2$
+                if( !javaPackage.isEmpty() )
+                {
+                    NodeUtil.appendChildElement( newPortletElement, "control-panel-entry-class", javaPackage + "." + //$NON-NLS-1$ //$NON-NLS-2$
                         model.getStringProperty( ENTRY_CLASS_NAME ) );
+                }
+                else
+                {
+                    NodeUtil.appendChildElement(
+                        newPortletElement,
+                        "control-panel-entry-class", javaPackage + model.getStringProperty( ENTRY_CLASS_NAME ) ); //$NON-NLS-1$ //$NON-NLS-2$
+                }
             }
         }
 
