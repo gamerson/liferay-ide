@@ -156,11 +156,12 @@ public class AddHookOperation extends AbstractDataModelOperation implements INew
 
         IPath originalPortalJspPath = portalDir.append( portalJsp );
 
+        IFile newJspFile = customFolder.getFile( portalJspPath );
+
+        CoreUtil.prepareFolder( (IFolder) newJspFile.getParent() );
+
         if( originalPortalJspPath.toFile().exists() )
         {
-            IFile newJspFile = customFolder.getFile( portalJspPath );
-
-            CoreUtil.prepareFolder( (IFolder) newJspFile.getParent() );
 
             FileInputStream fis = new FileInputStream( originalPortalJspPath.toFile() );
 
@@ -175,8 +176,13 @@ public class AddHookOperation extends AbstractDataModelOperation implements INew
 
             return newJspFile;
         }
+        else
+        {
+            ByteArrayInputStream fis = new ByteArrayInputStream( new byte[0] );
+            newJspFile.create( fis, true, null );
 
-        return null;
+            return newJspFile;
+        }
     }
 
     protected IStatus createCustomJSPs( IDataModel dm )
