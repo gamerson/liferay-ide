@@ -23,5 +23,6 @@ public interface LiferayXMLConstants
     String LIFERAY_LAYOUTTPL_XML_CONTENT_TYPE = "com.liferay.ide.layouttpl.core.liferaylayouttplxml";
     String LIFERAY_HOOK_XML_CONTENT_TYPE = "com.liferay.ide.hook.core.liferayhookxml";
     String SERVICE_BUILDER_CONTETN_TYPE = "com.liferay.ide.service.core.servicebuildercontent";
+    String LIFERAY_JSP_MARKER_WARNING_ID = LiferayXMLSearchUI.PLUGIN_ID + ".liferayJspMarker";
 
 }
