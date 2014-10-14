@@ -926,6 +926,38 @@ public class CoreUtil
         }
     }
 
+    public static void validateFile( IFile file, IProgressMonitor monitor )
+    {
+        try
+        {
+            Map<IProject, Set<IResource>> projects = new HashMap<IProject, Set<IResource>>();
+            final Set<IResource> resources = new HashSet<IResource>();
+
+            file.accept
+            (
+                new IResourceVisitor()
+                {
+                    public boolean visit( IResource resource ) throws CoreException
+                    {
+                        if( resource instanceof IFile )
+                        {
+                            resources.add( resource );
+                        }
+
+                        return true;
+                    }
+                }
+            );
+
+            projects.put( file.getProject(), resources );
+            ValidationRunner.validate( projects, ValType.Manual, monitor, false );
+        }
+        catch( CoreException e )
+        {
+            LiferayCore.logError( "Error while validating folder: " + file.getFullPath(), e ); //$NON-NLS-1$
+        }
+    }
+
     public static void writeStreamFromString( String contents, OutputStream outputStream ) throws IOException
     {
         if( contents == null )
