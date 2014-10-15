@@ -178,6 +178,11 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
             archetypeArtifactId = LIFERAY_ARCHETYPES_GROUP_ID + ":liferay-" + archetypeType + "-archetype:6.2.1";
         }
 
+        if( op.getPluginType().content().equals( PluginType.portlet ) )
+        {
+            archetypeArtifactId = op.getCustomizedArchetype().content();
+        }
+
         // get latest liferay archetype
         monitor.beginTask( "Determining latest Liferay maven plugin archetype version.", IProgressMonitor.UNKNOWN );
         final String archetypeVersion = AetherUtil.getLatestAvailableArtifact( archetypeArtifactId ).getVersion();
