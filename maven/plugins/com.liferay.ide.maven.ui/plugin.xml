@@ -198,11 +198,19 @@
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
+      <!--
       <page
             category="com.liferay.ide.ui.preferences.liferay"
             class="com.liferay.ide.maven.ui.pref.ProjectMavenPreferencePage"
             id="com.liferay.ide.maven.ui.projectMavenPreferencePage"
             name="Maven">
+      </page> -->
+      <page
+            category="com.liferay.ide.ui.preferences.liferay"
+            class="com.liferay.ide.maven.ui.pref.MavenSettingsPreferencePage"
+            id="com.liferay.ide.maven.ui.mavenSettingPreferencePage"
+            name="Maven">
       </page>
+      
    </extension>   
 </plugin>
