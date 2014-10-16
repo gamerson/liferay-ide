@@ -204,5 +204,12 @@
             id="com.liferay.ide.maven.ui.projectMavenPreferencePage"
             name="Maven">
       </page>
+      <page
+            category="com.liferay.ide.ui.preferences.liferay"
+            class="com.liferay.ide.maven.ui.pref.MavenArchetypeSettingsPage"
+            id="com.liferay.ide.maven.ui.mavenArchetypeSettingPage"
+            name="Maven Archetype">
+      </page>
+      
    </extension>   
 </plugin>

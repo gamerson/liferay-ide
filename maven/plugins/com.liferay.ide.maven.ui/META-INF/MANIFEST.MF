@@ -19,9 +19,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.expressions,
  org.eclipse.ui.ide,
  org.eclipse.sapphire.ui,
- org.eclipse.m2e.maven.runtime
+ org.eclipse.m2e.maven.runtime,
+ org.eclipse.ui.forms,
+ org.eclipse.jdt.ui
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: com.liferay.ide.maven.ui,
  com.liferay.ide.maven.ui.action
+Import-Package: org.eclipse.wst.sse.ui.internal.preferences.ui
