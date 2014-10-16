@@ -87,7 +87,8 @@ abstract class PropertyPreferencePage extends PropertyPage implements IWorkbench
 	protected abstract Control createCommonContents(Composite composite);
 
 	@Override
-	public final Control createContents(Composite parent) {
+    public Control createContents( Composite parent )
+    {
 		Composite composite = new Composite(parent, SWT.NULL);
 
 		GridLayout layout = new GridLayout();

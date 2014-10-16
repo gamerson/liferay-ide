@@ -19,6 +19,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.expressions,
  org.eclipse.ui.ide,
  org.eclipse.sapphire.ui,
+ org.eclipse.ui.forms,
+ org.eclipse.jdt.ui,
+ org.eclipse.swt,
+ org.eclipse.wst.sse.ui,
  org.eclipse.m2e.maven.runtime
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
