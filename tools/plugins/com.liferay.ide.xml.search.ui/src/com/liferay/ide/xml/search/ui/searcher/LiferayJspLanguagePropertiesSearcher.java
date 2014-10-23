@@ -51,42 +51,45 @@ public class LiferayJspLanguagePropertiesSearcher extends XMLSearcherForProperti
             final IProject project = file.getProject();
             final List<IFile> languageFiles = PropertiesUtil.getDefaultLanguagePropertiesFromProject( project );
 
-            for( IFile languageFile : languageFiles )
+            if( languageFiles != null )
             {
-                final Properties properties = new Properties();
-
-                InputStream contents = null;
-
-                try
+                for( IFile languageFile : languageFiles )
                 {
-                    contents = languageFile.getContents();
+                    final Properties properties = new Properties();
 
-                    properties.load( contents );
+                    InputStream contents = null;
 
-                    Object key = properties.get( mathingString );
+                    try
+                    {
+                        contents = languageFile.getContents();
 
-                    if( key != null )
-                    {
-                        sb.append( NLS.bind( HOVER, key, languageFile.getFullPath().toString() ) ).append( "<br/>" );
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                catch( Exception e )
-                {
-                }
-                finally
-                {
-                    if( contents != null )
-                    {
-                        try
+                        properties.load( contents );
+
+                        Object key = properties.get( mathingString );
+
+                        if( key != null )
                         {
-                            contents.close();
+                            sb.append( NLS.bind( HOVER, key, languageFile.getFullPath().toString() ) ).append( "<br/>" );
                         }
-                        catch( IOException e )
+                        else
                         {
+                            continue;
+                        }
+                    }
+                    catch( Exception e )
+                    {
+                    }
+                    finally
+                    {
+                        if( contents != null )
+                        {
+                            try
+                            {
+                                contents.close();
+                            }
+                            catch( IOException e )
+                            {
+                            }
                         }
                     }
                 }
@@ -97,11 +100,14 @@ public class LiferayJspLanguagePropertiesSearcher extends XMLSearcherForProperti
                 final Properties portalProperties =
                     PortalLanguagePropertiesCacheUtil.getPortalLanguageProperties( LiferayCore.create( project ) );
 
-                Object key = portalProperties.get( mathingString );
-
-                if( key != null )
+                if( portalProperties != null )
                 {
-                    sb.append( NLS.bind( HOVER, key, "Liferay Portal Language.properties" ) );
+                    Object key = portalProperties.get( mathingString );
+
+                    if( key != null )
+                    {
+                        sb.append( NLS.bind( HOVER, key, "Liferay Portal Language.properties" ) );
+                    }
                 }
             }
         }
