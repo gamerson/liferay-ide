@@ -94,14 +94,6 @@
                     querySpecificationId="liferay.portletxml.querySpecification" />
                 <toResource querySpecificationId="liferay.webresources.resourcebundle.querySpecification" />
             </reference>
-
-            <!-- no "to" element means it's only used for syntax validation -->
-            <reference validatorId="com.liferay.ide.xml.search.ui.portletDescriptorValidator">
-                <from
-                    path="/ns:portlet-app/ns:portlet/ns:display-name"
-                    targetNodes="text()"
-                    querySpecificationId="liferay.portletxml.querySpecification" />
-            </reference>
         </references>
     </extension>
 
