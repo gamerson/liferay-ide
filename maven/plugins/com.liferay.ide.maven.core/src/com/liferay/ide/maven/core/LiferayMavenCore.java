@@ -68,8 +68,10 @@ public class LiferayMavenCore extends Plugin
     // The key of disable customJspValidation checking
     public static final String PREF_DISABLE_CUSTOM_JSP_VALIDATION = "disable-custom-jsp-validation";
 
-    private static final IScopeContext[] scopes =
-                    new IScopeContext[] { InstanceScope.INSTANCE, DefaultScope.INSTANCE };
+    // set maven project context root with suffix
+    public static final String PREF_ADD_MAVEN_PLUGIN_SUFFIX = "add-maven-plugin-suffix";
+
+    private static final IScopeContext[] scopes = new IScopeContext[] { InstanceScope.INSTANCE, DefaultScope.INSTANCE };
 
     public static Status createErrorStatus( String msg )
     {
