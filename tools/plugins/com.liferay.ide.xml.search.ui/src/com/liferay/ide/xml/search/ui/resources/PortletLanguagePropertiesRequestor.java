@@ -15,6 +15,7 @@
 
 package com.liferay.ide.xml.search.ui.resources;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class PortletLanguagePropertiesRequestor extends DefaultPropertiesRequest
         final List<IFile> defaultPortletLanguagePropertiesFiles =
             PropertiesUtil.getDefaultLanguagePropertiesFromProject( project );
 
-        if( defaultPortletLanguagePropertiesFiles != null )
+        if( !CoreUtil.isNullOrEmpty( defaultPortletLanguagePropertiesFiles ) )
         {
             for( IFile defaultPortletLanguagePropertiesFile : defaultPortletLanguagePropertiesFiles )
             {

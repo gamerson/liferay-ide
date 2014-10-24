@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -356,13 +357,14 @@ public class PropertiesUtil
         return retval.toArray( new IFile[0] );
     }
 
+    @SuppressWarnings( "unchecked" )
     public static List<IFile> getDefaultLanguagePropertiesFromPortletXml( IFile portletXml )
     {
         final IProject proj = CoreUtil.getLiferayProject( portletXml );
 
         if( proj == null )
         {
-            return null;
+            return Collections.EMPTY_LIST;
         }
 
         final List<IFile> retvals = new ArrayList<IFile>();
