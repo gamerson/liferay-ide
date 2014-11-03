@@ -328,39 +328,6 @@
 
             <reference validatorId="com.liferay.ide.xml.search.ui.liferayPortletDescriptorValidator">
                 <from
-                    path="/liferay-portlet-app/portlet/header-portal-css"
-                    targetNodes="text()"
-                    querySpecificationId="liferay.liferayportletxml.querySpecification" />
-                <toResource querySpecificationId="liferay.webresources.css.querySpecification" />
-            </reference>
-
-            <reference validatorId="com.liferay.ide.xml.search.ui.liferayPortletDescriptorValidator">
-                <from
-                    path="/liferay-portlet-app/portlet/footer-portal-css"
-                    targetNodes="text()"
-                    querySpecificationId="liferay.liferayportletxml.querySpecification" />
-                <toResource querySpecificationId="liferay.webresources.css.querySpecification" />
-            </reference>
-
-            <!-- References of JS resources files -->
-            <reference validatorId="com.liferay.ide.xml.search.ui.liferayPortletDescriptorValidator">
-                <from
-                    path="/liferay-portlet-app/portlet/header-portal-javascript"
-                    targetNodes="text()"
-                    querySpecificationId="liferay.liferayportletxml.querySpecification" />
-                <toResource querySpecificationId="liferay.webresources.js.querySpecification" />
-            </reference>
-
-            <reference validatorId="com.liferay.ide.xml.search.ui.liferayPortletDescriptorValidator">
-                <from
-                    path="/liferay-portlet-app/portlet/footer-portal-javascript"
-                    targetNodes="text()"
-                    querySpecificationId="liferay.liferayportletxml.querySpecification" />
-                <toResource querySpecificationId="liferay.webresources.js.querySpecification" />
-            </reference>
-
-            <reference validatorId="com.liferay.ide.xml.search.ui.liferayPortletDescriptorValidator">
-                <from
                     path="/liferay-portlet-app/portlet/header-portlet-javascript"
                     targetNodes="text()"
                     querySpecificationId="liferay.liferayportletxml.querySpecification" />
