@@ -38,7 +38,6 @@
       <import feature="tern-jsdt-feature" version="0.7.0" match="greaterOrEqual"/>
       <import feature="tern-server-nodejs-feature" version="0.7.0" match="greaterOrEqual"/>
       <import feature="tern.eclipse.ide.server.nodejs.embed" version="0.7.0" match="greaterOrEqual"/>
-      <import feature="org.eclipse.wst.html.webresources.feature" version="0.7.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin

@@ -27,7 +27,7 @@
     <name>Liferay IDE Parent</name>
 
     <properties>
-        <tycho-packaging-format>yyyyMMddHHmm</tycho-packaging-format>
+        <tycho-packaging-format>yyyyMMddHHmm'-ga1'</tycho-packaging-format>
         <tycho-version>0.20.0</tycho-version>
         <tycho-extras-version>0.20.0</tycho-extras-version>
         <orbit-site>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</orbit-site>
@@ -38,9 +38,9 @@
         <m2e-site>http://files.liferay.org.es/staged/public-files/liferay-ide/dependencies/m2e-core-1.5.0.20140623-0838/</m2e-site>
         <m2e-wtp-site>http://download.eclipse.org/m2e-wtp/releases/luna/1.1/1.1.0.20140611-1646/</m2e-wtp-site>
         <adt-site>http://files.liferay.org.es/staged/public-files/liferay-ide/dependencies/adt-23/</adt-site>
-        <eclipse-xml-search-site>http://oss.opensagres.fr/eclipse-wtp-xml-search/1.0.0-SNAPSHOT/</eclipse-xml-search-site>
-        <tern-site>http://oss.opensagres.fr/tern.repository/0.7.0-SNAPSHOT/</tern-site>
-        <webresources-site>http://oss.opensagres.fr/eclipse-wtp-webresources/0.7.0-SNAPSHOT/</webresources-site>
+        <eclipse-xml-search-site>http://files.liferay.org.es/staged/public-files/liferay-ide/dependencies/eclipse-wtp-xml-search-1.0.0.201410271422/</eclipse-xml-search-site>
+        <tern-site>http://files.liferay.org.es/staged/public-files/liferay-ide/dependencies/tern.java-0.7.0.201410280110/</tern-site>
+        <webresources-site>http://files.liferay.org.es/staged/public-files/liferay-ide/dependencies/eclipse-wtp-webresources-0.7.0.201410070838/</webresources-site>
         <gmaven.runtime>1.8</gmaven.runtime>
     </properties>
 

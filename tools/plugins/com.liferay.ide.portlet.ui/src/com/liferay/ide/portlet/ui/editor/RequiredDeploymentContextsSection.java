@@ -70,6 +70,7 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 			return contexts.toArray();
 		}
 	}
+
 	class ContextsLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		public Image getColumnImage(Object element, int columnIndex) {
@@ -83,7 +84,6 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 
 			return StringPool.EMPTY;
 		}
-		
 	}
 	private static final int ADD_INDEX = 0;
 	private static final int DOWN_INDEX = 3;
@@ -95,9 +95,9 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 	// private Action fSortAction;
 
 	private TableViewer fViewer;
-	
+
 	private Vector<String> contexts;
-	
+
 	public RequiredDeploymentContextsSection(IDEFormPage page, Composite parent, String[] labels) {
 		super(page, parent, Section.DESCRIPTION, labels);
 		getSection().setText(Msgs.requiredDeploymentContexts);
@@ -178,8 +178,9 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 			markStale();
 			return;
 		}
-		
+
 		if (event.getChangedProperty() == IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS ||
+			event.getChangedProperty() == IPluginPackageModel.PROPERTY_DEPLOY_EXCLUDE ||
 			event.getChangedProperty() == IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_TLDS ||
 			event.getChangedProperty() == IPluginPackageModel.PROPERTY_REQUIRED_DEPLOYMENT_CONTEXTS) {
 
@@ -330,14 +331,14 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 				handleAdd();
 			}
 		};
-		
+
 		fRemoveAction = new Action(Msgs.remove) {
 			public void run() {
 				handleRemove();
 			}
 		};
 	}
-	
+
 	private void updateButtons() {
 		Table table = getTablePart().getTableViewer().getTable();
 		TableItem[] selection = table.getSelection();
@@ -405,11 +406,9 @@ public class RequiredDeploymentContextsSection extends TableSection implements I
 	 */
 	protected void doPaste(Object targetObject, Object[] sourceObjects) {
 		// Get the model
-		
 	}
 
 	protected void fillContextMenu(IMenuManager manager) {
-		
 	}
 
 	protected void handleDoubleClick(IStructuredSelection sel) {
