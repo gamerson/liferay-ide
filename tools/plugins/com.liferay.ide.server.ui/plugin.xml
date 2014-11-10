@@ -122,6 +122,13 @@
                label="%test.services.action.label">
          </action>
          <action
+               class="com.liferay.ide.server.ui.action.OpenLiferayHomeFolderServerAction"
+               enablesFor="1"
+               icon="icons/e16/server.png"
+               id="com.liferay.ide.server.ui.action.openLiferayHomeFolderServerAction"
+               label="%open.liferay.home.folder.action.label">
+         </action>
+         <action
                class="com.liferay.ide.server.ui.action.OpenJSONWSAPIAction"
                enablesFor="1"
                icon="icons/e16/test_web_services_16x16.png"
