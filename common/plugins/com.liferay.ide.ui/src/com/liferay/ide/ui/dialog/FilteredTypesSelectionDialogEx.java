@@ -66,7 +66,7 @@ public class FilteredTypesSelectionDialogEx extends FilteredTypesSelectionDialog
                     {
                         ignoreEvent = true;
 
-                        text.setText( StringPool.DOUBLE_ASTERISK );
+                        text.setText( StringPool.EMPTY );
 
                         ignoreEvent = false;
                     }
