@@ -357,7 +357,7 @@
 				declarations to decide which filters to apply to a request,
 				and in what order. To determine which filters to
 				apply it matches filter-mapping declarations on the
-				portlet-name and the lifecyle phase defined in the
+				portlet-name and the lifecycle phase defined in the
 				filter element. The order in which filters are invoked
 				is the order in which filter-mapping declarations
 				that match appear in the list of filter-mapping elements.
