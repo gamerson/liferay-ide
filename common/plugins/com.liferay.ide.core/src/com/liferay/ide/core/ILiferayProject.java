@@ -17,6 +17,7 @@ package com.liferay.ide.core;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 
 
@@ -45,5 +46,7 @@ public interface ILiferayProject
     IFolder getSourceFolder( String classification );
 
     IPath[] getUserLibs();
+
+    IProject getLiferayFacetedProject();
 
 }

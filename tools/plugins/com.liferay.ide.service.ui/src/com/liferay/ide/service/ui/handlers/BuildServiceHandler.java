@@ -1,6 +1,8 @@
 package com.liferay.ide.service.ui.handlers;
 
 import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.service.core.ServiceCore;
 import com.liferay.ide.service.core.job.BuildServiceJob;
@@ -65,13 +67,16 @@ public class BuildServiceHandler extends AbstractHandler
             }
         }
 
-        // use CoreUtil.isLiferayProject(IProject) won't work for maven project
-        // CoreUtil.getLiferayProejct(IResource) will get the nested liferay maven project
-        project =  CoreUtil.getLiferayProject( project );
+        final ILiferayProject liferayProject = LiferayCore.create( project );
 
-        if( project != null )
+        if( liferayProject != null )
         {
-            retval = executeServiceBuild( project );
+            project = liferayProject.getLiferayFacetedProject();
+
+            if( project != null )
+            {
+                retval = executeServiceBuild( project );
+            }
         }
 
         return retval;
