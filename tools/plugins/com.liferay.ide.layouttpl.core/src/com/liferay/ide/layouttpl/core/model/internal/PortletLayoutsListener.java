@@ -15,6 +15,11 @@
 
 package com.liferay.ide.layouttpl.core.model.internal;
 
+import com.liferay.ide.layouttpl.core.model.CanAddPortletLayouts;
+import com.liferay.ide.layouttpl.core.model.PortletLayoutElement;
+
+import org.eclipse.sapphire.PropertyContentEvent;
+
 
 /**
  * @author Kuo Zhang
@@ -22,5 +27,24 @@ package com.liferay.ide.layouttpl.core.model.internal;
  */
 public class PortletLayoutsListener extends PortletColumnsListener
 {
+    @Override
+    protected void handleTypedEvent( PropertyContentEvent event )
+    {
+        // add a column if a empty row is added
+        if( event.property().element() instanceof CanAddPortletLayouts )
+        {
+            CanAddPortletLayouts layoutContainer = ( CanAddPortletLayouts )event.property().element();
+
+            for( PortletLayoutElement layout : layoutContainer.getPortletLayouts() )
+            {
+                if( layout.getPortletColumns().size() == 0 )
+                {
+                    layout.getPortletColumns().insert();
+                }
+            }
+        }
+
+        super.handleTypedEvent( event );
+    }
 
 }
