@@ -329,4 +329,42 @@ public class LiferayMavenProject extends BaseLiferayProject
         return libs.toArray( new IPath[0] );
     }
 
+    public IProject getLiferayFacetedProject()
+    {
+        IProject retVal = null;
+        final IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( getProject() );
+
+        if( projectFacade != null )
+        {
+            try
+            {
+                final MavenProject mavenProject = projectFacade.getMavenProject( new NullProgressMonitor() );
+
+                final MavenProject mavenParentProject =
+                    mavenProject.getParent() == null ? mavenProject : mavenProject.getParent();
+
+                if ( mavenParentProject != null)
+                {
+                    final List<String> projectNames = mavenParentProject.getModules();
+
+                    for( final String projectName : projectNames )
+                    {
+                        final IProject project = CoreUtil.getProject( projectName );
+
+                        if( CoreUtil.isLiferayProject( project ) )
+                        {
+                            retVal = project;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch( CoreException e )
+            {
+                LiferayMavenCore.logError( "can't get maven project", e );
+            }
+        }
+        return retVal;
+    }
+
 }

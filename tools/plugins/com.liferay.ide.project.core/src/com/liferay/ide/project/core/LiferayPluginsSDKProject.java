@@ -186,4 +186,17 @@ public class LiferayPluginsSDKProject extends BaseLiferayProject
         return this.liferayRuntime.getUserLibs();
     }
 
+    @Override
+    public IProject getLiferayFacetedProject()
+    {
+        final IProject project = getProject();
+        
+        if( CoreUtil.isLiferayProject( project ) )
+        {
+            return project;
+        }
+        
+        return null;
+    }
+
 }
