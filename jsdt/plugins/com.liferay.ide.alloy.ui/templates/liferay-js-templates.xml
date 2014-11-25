@@ -1,0 +1,13 @@
+<templates>
+
+<template name="liferay-service" description="The liferay service function" id="com.liferay.ide.liferay.templates.liferay-service" context="javaScript" enabled="true" autoinsert="true">
+    Liferay.Service(
+  '${url}', {
+  ${args}
+  },
+  function(obj) {
+  ${callback}
+});
+</template>
+
+</templates>
