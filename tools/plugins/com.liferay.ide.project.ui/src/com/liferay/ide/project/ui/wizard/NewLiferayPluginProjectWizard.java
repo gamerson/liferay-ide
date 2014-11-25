@@ -14,11 +14,14 @@
  *******************************************************************************/
 package com.liferay.ide.project.ui.wizard;
 
+import java.io.File;
+
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.PluginType;
+import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.IvyUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.sdk.core.ISDKConstants;
@@ -35,8 +38,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.internal.ui.util.CoreUtility;
@@ -62,7 +67,6 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.eclipse.wst.web.internal.DelegateConfigurationElement;
-
 
 /**
  * @author Gregory Amerson
@@ -164,6 +168,39 @@ public class NewLiferayPluginProjectWizard extends SapphireWizard<NewLiferayPlug
         catch( Exception ex )
         {
             ProjectUI.logError( "Unable to add project to working set", ex );
+        }
+
+        if( ProjectUtil.isMavenProject( project ) )
+        {
+            IPath path = project.getLocation();
+            File[] files = path.toFile().listFiles();
+
+            for( File file : files )
+            {
+                if( file.isDirectory() )
+                {
+                    IPath filePath = new Path( file.getPath() );
+
+                    if( filePath != null )
+                    {
+                        final File pomFile = filePath.append( "pom.xml" ).toFile();
+
+                        if( pomFile.exists() )
+                        {
+                            IProject iProject = CoreUtil.getProject( file.getName() );
+
+                            try
+                            {
+                                addToWorkingSets( iProject );
+                            }
+                            catch( Exception ex )
+                            {
+                                ProjectUI.logError( "Unable to add project to working set", ex );
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         openLiferayPerspective( project );
