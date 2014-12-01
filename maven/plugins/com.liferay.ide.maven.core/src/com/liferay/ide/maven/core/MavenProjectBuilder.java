@@ -14,9 +14,14 @@
  *******************************************************************************/
 package com.liferay.ide.maven.core;
 
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.AbstractProjectBuilder;
 
+import java.util.List;
+
 import org.apache.maven.model.Plugin;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -25,7 +30,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.ICallable;
@@ -39,6 +46,7 @@ import org.eclipse.osgi.util.NLS;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class MavenProjectBuilder extends AbstractProjectBuilder
@@ -85,7 +93,7 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
 
     public IStatus buildSB( final IFile serviceXmlFile, final String goal, final IProgressMonitor monitor ) throws CoreException
     {
-        final IMavenProjectFacade facade = MavenUtil.getProjectFacade( getProject(), monitor );
+        final IMavenProjectFacade facade = MavenUtil.getProjectFacade( serviceXmlFile.getProject(), monitor );
 
         monitor.worked( 10 );
 
@@ -113,6 +121,49 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
         return retval;
     }
 
+    public IStatus buildService( IProgressMonitor monitor ) throws CoreException
+    {
+        IStatus retVal = Status.OK_STATUS;
+
+        final IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( getProject() );
+
+        if( projectFacade != null )
+        {
+            try
+            {
+                final MavenProject mavenProject = projectFacade.getMavenProject( new NullProgressMonitor() );
+
+                final MavenProject mavenParentProject =
+                    mavenProject.getParent() == null ? mavenProject : mavenProject.getParent();
+
+                if( mavenParentProject != null )
+                {
+                    final List<String> projectNames = mavenParentProject.getModules();
+
+                    for( final String projectName : projectNames )
+                    {
+                        final IProject project = CoreUtil.getProject( projectName );
+
+                        final IFile servicesFile =
+                            CoreUtil.getDescriptorFile( project, ILiferayConstants.LIFERAY_SERVICE_BUILDER_XML_FILE );;
+
+                        if( servicesFile != null && servicesFile.exists() )
+                        {
+                            buildService( servicesFile, monitor );
+
+                            break;
+                        }
+                    }
+                }
+            }
+            catch( CoreException e )
+            {
+                LiferayMavenCore.logError( "can't execute maven project service build command..", e );
+            }
+        }
+        return retVal;
+    }
+
     public IStatus buildService( final IFile serviceXmlFile, final IProgressMonitor monitor ) throws CoreException
     {
         final IProgressMonitor sub = new SubProgressMonitor( monitor, 100 );
@@ -120,6 +171,49 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
         sub.beginTask( Msgs.buildingServices, 100 );
 
         return buildSB( serviceXmlFile, ILiferayMavenConstants.PLUGIN_GOAL_BUILD_SERVICE, sub );
+    }
+
+    public IStatus buildWSDD( IProgressMonitor monitor ) throws CoreException
+    {
+        IStatus retVal = Status.OK_STATUS;
+
+        final IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( getProject() );
+
+        if( projectFacade != null )
+        {
+            try
+            {
+                final MavenProject mavenProject = projectFacade.getMavenProject( new NullProgressMonitor() );
+
+                final MavenProject mavenParentProject =
+                    mavenProject.getParent() == null ? mavenProject : mavenProject.getParent();
+
+                if( mavenParentProject != null )
+                {
+                    final List<String> projectNames = mavenParentProject.getModules();
+
+                    for( final String projectName : projectNames )
+                    {
+                        final IProject project = CoreUtil.getProject( projectName );
+
+                        final IFile servicesFile =
+                            CoreUtil.getDescriptorFile( project, ILiferayConstants.LIFERAY_SERVICE_BUILDER_XML_FILE );;
+
+                        if( servicesFile != null && servicesFile.exists() )
+                        {
+                            buildWSDD( servicesFile, monitor );
+
+                            break;
+                        }
+                    }
+                }
+            }
+            catch( CoreException e )
+            {
+                LiferayMavenCore.logError( "can't execute maven project service build command..", e );
+            }
+        }
+        return retVal;
     }
 
     public IStatus buildWSDD( final IFile serviceXmlFile, final IProgressMonitor monitor ) throws CoreException
@@ -184,5 +278,6 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
             initializeMessages( MavenProjectBuilder.class.getName(), Msgs.class );
         }
     }
+
 
 }
