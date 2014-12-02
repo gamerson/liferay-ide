@@ -15,11 +15,6 @@
 
 package com.liferay.ide.server.ui.action;
 
-import com.liferay.ide.server.core.ILiferayRuntime;
-import com.liferay.ide.server.ui.LiferayServerUIPlugin;
-import com.liferay.ide.server.util.ServerUtil;
-import com.liferay.ide.ui.editor.LiferayPropertiesEditor;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -27,17 +22,28 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.wst.server.core.IServer;
+
+import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.ui.LiferayServerUIPlugin;
+import com.liferay.ide.server.util.ServerUtil;
+import com.liferay.ide.ui.editor.LiferayPropertiesEditor;
+import com.liferay.ide.ui.util.UIUtil;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class CreatePortalSettingsFileAction extends AbstractServerRunningAction
 {
+
+    public static int PROP_UPDATE_VERSION = 0x404;
 
     private final static String PORTAL_EXT_PROPERTIES = "portal-ext.properties"; //$NON-NLS-1$
 
@@ -87,6 +93,22 @@ public class CreatePortalSettingsFileAction extends AbstractServerRunningAction
             {
                 if( newFile.createNewFile() )
                 {
+                    UIUtil.async( new Runnable()
+                    {
+                        public void run()
+                        {
+                            IViewPart serversView = UIUtil.showView( "org.eclipse.wst.server.ui.ServersView" );
+
+                            if ( serversView != null)
+                            {
+                                CommonViewer viewer = (CommonViewer) serversView.getAdapter( CommonViewer.class );
+                                viewer.expandAll();
+                                viewer.refresh();
+                            }
+                        }
+                    } );
+
+
                     final FileStoreEditorInput editorInput =
                         new FileStoreEditorInput( EFS.getLocalFileSystem().fromLocalFile( newFile ) );
                     final IWorkbenchPage page =
