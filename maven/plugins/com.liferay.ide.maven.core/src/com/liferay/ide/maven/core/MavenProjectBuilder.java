@@ -12,8 +12,10 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.maven.core;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.LaunchHelper;
 import com.liferay.ide.project.core.AbstractProjectBuilder;
 
@@ -44,18 +46,18 @@ import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.osgi.util.NLS;
 
-
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class MavenProjectBuilder extends AbstractProjectBuilder
 {
+
     private final String ATTR_GOALS = "M2_GOALS";
     private final String ATTR_POM_DIR = IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY;
     private final String ATTR_PROFILES = "M2_PROFILES";
     private final String ATTR_SKIP_TESTS = "M2_SKIP_TESTS";
-    private final String ATTR_UPDATE_SNAPSHOTS = "M2_UPDATE_SNAPSHOTS";
     private final String ATTR_WORKSPACE_RESOLUTION = "M2_WORKSPACE_RESOLUTION";
     private final String LAUNCH_CONFIGURATION_TYPE_ID = "org.eclipse.m2e.Maven2LaunchConfigurationType";
 
@@ -80,9 +82,11 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
 
         final ICallable<IStatus> callable = new ICallable<IStatus>()
         {
+
             public IStatus call( IMavenExecutionContext context, IProgressMonitor monitor ) throws CoreException
             {
-                return MavenUtil.executeMojoGoal( facade, context, ILiferayMavenConstants.PLUGIN_GOAL_BUILD_LANG, monitor );
+                return MavenUtil.executeMojoGoal(
+                    facade, context, ILiferayMavenConstants.PLUGIN_GOAL_BUILD_LANG, monitor );
             }
         };
 
@@ -90,7 +94,7 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
 
         sub.worked( 80 );
 
-        getProject().refreshLocal( IResource.DEPTH_INFINITE, sub  );
+        getProject().refreshLocal( IResource.DEPTH_INFINITE, sub );
 
         sub.worked( 10 );
         sub.done();
@@ -98,14 +102,18 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
         return retval;
     }
 
-    public IStatus buildSB( final IFile serviceXmlFile, final String goal, final IProgressMonitor monitor ) throws CoreException
+    public IStatus buildSB( final IFile serviceXmlFile, final String goal, final IProgressMonitor monitor )
+        throws CoreException
     {
-        final IMavenProjectFacade facade = MavenUtil.getProjectFacade( getProject(), monitor );
+        IProject serviceProject = serviceXmlFile.getProject();
+        
+        final IMavenProjectFacade facade = MavenUtil.getProjectFacade( serviceProject , monitor );
 
         monitor.worked( 10 );
 
         final ICallable<IStatus> callable = new ICallable<IStatus>()
         {
+
             public IStatus call( IMavenExecutionContext context, IProgressMonitor monitor ) throws CoreException
             {
                 return MavenUtil.executeMojoGoal( facade, context, goal, monitor );
@@ -120,7 +128,7 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
 
         monitor.worked( 10 );
 
-        getProject().refreshLocal( IResource.DEPTH_INFINITE, monitor );
+        serviceProject.refreshLocal( IResource.DEPTH_INFINITE, monitor );
 
         monitor.worked( 10 );
         monitor.done();
@@ -128,42 +136,139 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
         return retval;
     }
 
-    public IStatus buildService( final IFile serviceXmlFile, final IProgressMonitor monitor ) throws CoreException
+    public IStatus buildService( IProgressMonitor monitor ) throws CoreException
     {
+        IFile serviceFile = preBuildService( monitor );
+
         final IProgressMonitor sub = new SubProgressMonitor( monitor, 100 );
 
         sub.beginTask( Msgs.buildingServices, 100 );
 
-        return buildSB( serviceXmlFile, ILiferayMavenConstants.PLUGIN_GOAL_BUILD_SERVICE, sub );
+        return buildSB( serviceFile, ILiferayMavenConstants.PLUGIN_GOAL_BUILD_SERVICE, sub );
     }
 
-    public IStatus buildWSDD( final IFile serviceXmlFile, final IProgressMonitor monitor ) throws CoreException
+    public IStatus buildWSDD( IProgressMonitor monitor ) throws CoreException
     {
+        IFile serviceFile = preBuildService( monitor );
+
         final IProgressMonitor sub = new SubProgressMonitor( monitor, 100 );
 
-        sub.beginTask( Msgs.buildingWSDD, 100 );
+        sub.beginTask( Msgs.buildingServices, 100 );
 
-        return buildSB( serviceXmlFile, ILiferayMavenConstants.PLUGIN_GOAL_BUILD_WSDD, sub );
+        return buildSB( serviceFile, ILiferayMavenConstants.PLUGIN_GOAL_BUILD_WSDD, sub );
     }
 
-    protected IStatus executeMaven( final IMavenProjectFacade projectFacade,
-                                    final ICallable<IStatus> callable,
-                                    IProgressMonitor monitor ) throws CoreException
+    protected IStatus executeMaven(
+        final IMavenProjectFacade projectFacade, final ICallable<IStatus> callable, IProgressMonitor monitor )
+        throws CoreException
     {
-        return this.maven.execute
-        (
-            new ICallable<IStatus>()
+        return this.maven.execute( new ICallable<IStatus>()
+        {
+
+            public IStatus call( IMavenExecutionContext context, IProgressMonitor monitor ) throws CoreException
             {
-                public IStatus call( IMavenExecutionContext context, IProgressMonitor monitor ) throws CoreException
-                {
-                    return projectManager.execute( projectFacade, callable, monitor );
-                }
-            },
-            monitor
-        );
+                return projectManager.execute( projectFacade, callable, monitor );
+            }
+        }, monitor );
     }
 
-    public void refreshSiblingProject( IMavenProjectFacade projectFacade, IProgressMonitor monitor ) throws CoreException
+    private boolean execMavenLaunch(
+        final IProject project, final String goal, final IMavenProjectFacade facade, IProgressMonitor monitor )
+        throws CoreException
+    {
+        final ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        final ILaunchConfigurationType launchConfigurationType =
+            launchManager.getLaunchConfigurationType( LAUNCH_CONFIGURATION_TYPE_ID );
+        final IPath basedirLocation = project.getLocation();
+        final String newName = launchManager.generateLaunchConfigurationName( basedirLocation.lastSegment() );
+
+        final ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance( null, newName );
+        workingCopy.setAttribute( ATTR_POM_DIR, basedirLocation.toString() );
+        workingCopy.setAttribute( ATTR_GOALS, goal );
+        // workingCopy.setAttribute( ATTR_UPDATE_SNAPSHOTS, true );
+        workingCopy.setAttribute( ATTR_WORKSPACE_RESOLUTION, true );
+        workingCopy.setAttribute( ATTR_SKIP_TESTS, true );
+
+        if( facade != null )
+        {
+            final ResolverConfiguration configuration = facade.getResolverConfiguration();
+
+            final String selectedProfiles = configuration.getSelectedProfiles();
+
+            if( selectedProfiles != null && selectedProfiles.length() > 0 )
+            {
+                workingCopy.setAttribute( ATTR_PROFILES, selectedProfiles );
+            }
+
+            new LaunchHelper().launch( workingCopy, "run", monitor );
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public IProject getPortletProject( IMavenProjectFacade projectFacade, IProgressMonitor monitor )
+        throws CoreException
+    {
+        IProject retVal = null;
+        try
+        {
+            // not doing any null checks since this is in large try/catch
+            final Plugin liferayMavenPlugin = MavenUtil.getLiferayMavenPlugin( projectFacade, monitor );
+            final Xpp3Dom config = (Xpp3Dom) liferayMavenPlugin.getConfiguration();
+            final Xpp3Dom webAppDir = config.getChild( ILiferayMavenConstants.PLUGIN_CONFIG_WEBAPPBASE_DIR );
+            final Xpp3Dom pluginName = config.getChild( ILiferayMavenConstants.PLUGIN_CONFIG_PLUGIN_NAME );
+            // this should be the name path of a project that should be in user's workspace that we can refresh
+
+            if( webAppDir != null )
+            {
+                final String webAppDirValue = webAppDir.getValue();
+                String projectPath = Path.fromOSString( webAppDirValue ).lastSegment();
+                retVal = ResourcesPlugin.getWorkspace().getRoot().getProject( projectPath );
+            }
+            else if( pluginName != null )
+            {
+                final String pluginNameValue = pluginName.getValue();
+                retVal = CoreUtil.getProject( pluginNameValue );
+            }
+        }
+        catch( Exception e )
+        {
+            LiferayMavenCore.logError( "Could not refresh sibling service project.", e ); //$NON-NLS-1$
+        }
+
+        return retVal;
+    }
+
+    public IFile preBuildService( IProgressMonitor monitor ) throws CoreException
+    {
+        IProject project = getProject();
+
+        IFile retVal = getServiceFile( project );
+
+        if( retVal == null )
+        {
+            final IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( project );
+
+            if( projectFacade != null )
+            {
+                final IProject portletProject = getPortletProject( projectFacade, monitor );
+
+                if( portletProject != null )
+                {
+                    retVal = getServiceFile( portletProject );
+                }
+            }
+        }
+
+        return retVal;
+    }
+
+    public void refreshSiblingProject( IMavenProjectFacade projectFacade, IProgressMonitor monitor )
+        throws CoreException
     {
         // need to look up project configuration and refresh the *-service project associated with this project
         try
@@ -196,46 +301,9 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
         return execMavenLaunch( project, goal, facade, monitor );
     }
 
-    private boolean execMavenLaunch(
-        final IProject project, final String goal, final IMavenProjectFacade facade, IProgressMonitor monitor )
-        throws CoreException
-    {
-        final ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-        final ILaunchConfigurationType launchConfigurationType =
-            launchManager.getLaunchConfigurationType( LAUNCH_CONFIGURATION_TYPE_ID );
-        final IPath basedirLocation = project.getLocation();
-        final String newName = launchManager.generateLaunchConfigurationName( basedirLocation.lastSegment() );
-
-        final ILaunchConfigurationWorkingCopy workingCopy = launchConfigurationType.newInstance( null, newName );
-        workingCopy.setAttribute( ATTR_POM_DIR, basedirLocation.toString() );
-        workingCopy.setAttribute( ATTR_GOALS, goal );
-//        workingCopy.setAttribute( ATTR_UPDATE_SNAPSHOTS, true );
-        workingCopy.setAttribute( ATTR_WORKSPACE_RESOLUTION, true );
-        workingCopy.setAttribute( ATTR_SKIP_TESTS, true );
-
-        if( facade != null )
-        {
-            final ResolverConfiguration configuration = facade.getResolverConfiguration();
-
-            final String selectedProfiles = configuration.getSelectedProfiles();
-
-            if( selectedProfiles != null && selectedProfiles.length() > 0 )
-            {
-                workingCopy.setAttribute( ATTR_PROFILES, selectedProfiles );
-            }
-
-            new LaunchHelper().launch( workingCopy, "run", monitor );
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     protected static class Msgs extends NLS
     {
+
         public static String buildingLanguages;
         public static String buildingServices;
         public static String buildingWSDD;

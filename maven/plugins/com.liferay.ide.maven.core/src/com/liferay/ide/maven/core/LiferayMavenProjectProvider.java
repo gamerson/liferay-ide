@@ -668,7 +668,7 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
     private boolean hasMavenBundlePlugin( IProject project )
     {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     private void updateDtdVersion( IProject project, String dtdVersion, String archetypeVesion )
