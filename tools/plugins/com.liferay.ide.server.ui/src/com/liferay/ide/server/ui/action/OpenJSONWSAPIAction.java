@@ -71,7 +71,8 @@ public class OpenJSONWSAPIAction extends OpenPortalURLAction
 
                 if( runtime != null )
                 {
-                    ILiferayRuntime liferayRuntime = (ILiferayRuntime) runtime.loadAdapter( ILiferayRuntime.class, null );
+                    ILiferayRuntime liferayRuntime =
+                        (ILiferayRuntime) runtime.loadAdapter( ILiferayRuntime.class, null );
 
                     if( liferayRuntime != null )
                     {
@@ -89,6 +90,7 @@ public class OpenJSONWSAPIAction extends OpenPortalURLAction
 
     private static class Msgs extends NLS
     {
+
         public static String jsonWsApi;
 
         static

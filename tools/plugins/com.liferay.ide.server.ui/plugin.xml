@@ -161,6 +161,7 @@
                label="%test.services.action.label">
          </action>
          <action
+               definitionId="com.liferay.ide.server.ui.handlers.openjsonwsapi"
                class="com.liferay.ide.server.ui.action.OpenJSONWSAPIAction"
                enablesFor="1"
                icon="icons/e16/test_web_services_16x16.png"
@@ -168,6 +169,7 @@
                label="%test.json.services.action.label">
          </action>
          <action
+               definitionId="com.liferay.ide.server.ui.handlers.openportalhome"
                class="com.liferay.ide.server.ui.action.OpenPortalHomeAction"
                enablesFor="1"
                icon="icons/e16/open_portal_16x16.png"
@@ -237,6 +239,7 @@
                label="%redeploy.action.label">
          </action>
          <action
+               definitionId="com.liferay.ide.server.ui.handlers.opendeployedfolder"
                class="com.liferay.ide.server.ui.action.OpenDeployedFolderAction"
                enablesFor="1"
                icon="icons/e16/open_deployed_folder.gif"
@@ -367,10 +370,10 @@
             <provider
                   contentTypes="org.eclipse.jst.jsp.core.jspsource"
                   id="com.liferay.ide.server.remote.jsp.breakpoint">
-              <class class="com.liferay.ide.server.ui.RemoteJSPBreakpointProvider">
-                <parameter name="org.eclipse.jst.jsp.core.jspsource" value="org.apache.jsp*"/>
-              </class>
-          </provider>
+                <class class="com.liferay.ide.server.ui.RemoteJSPBreakpointProvider">
+                    <parameter name="org.eclipse.jst.jsp.core.jspsource" value="org.apache.jsp*"/>
+                </class>
+            </provider>
       </breakpointContribution>
    </extension>
    <extension
@@ -411,7 +414,7 @@
             id="com.liferay.ide.server.ui.ImportGlobalSettingsPopup"
             label="Import Global Settings">
       </sink>
-         point="org.eclipse.ui.decorators">
+        point="org.eclipse.ui.decorators">
       <decorator
             class="com.liferay.ide.server.ui.navigator.BundlesDecorator"
             icon="icons/e16/bundlefolder.png"
@@ -438,6 +441,24 @@
             id="com.liferay.ide.server.ui.handlers.redeploy"
             name="Redeploy">
         </command>
+        <command
+            categoryId="org.eclipse.wst.server.ui"
+            description="Run Open Deployed Folder command"
+            id="com.liferay.ide.server.ui.handlers.opendeployedfolder"
+            name="Open Deployed Folder">
+        </command>
+        <command
+            categoryId="org.eclipse.wst.server.ui"
+            description="Run Open JSON WS API command"
+            id="com.liferay.ide.server.ui.handlers.openjsonwsapi"
+            name="Open JSON WS API">
+        </command>
+        <command
+            categoryId="org.eclipse.wst.server.ui"
+            description="Run Open Portal Home command"
+            id="com.liferay.ide.server.ui.handlers.openportalhome"
+            name="Open JSON WS API">
+        </command>
    </extension>
 
    <extension
@@ -445,6 +466,18 @@
       <handler
             class="com.liferay.ide.server.ui.handlers.RedeployHandler"
             commandId="com.liferay.ide.server.ui.handlers.redeploy">
+      </handler>
+      <handler
+            class="com.liferay.ide.server.ui.handlers.OpenDeployedFolderHandler"
+            commandId="com.liferay.ide.server.ui.handlers.opendeployedfolder">
+      </handler>
+      <handler
+            class="com.liferay.ide.server.ui.handlers.OpenJSONWSAPIHandler"
+            commandId="com.liferay.ide.server.ui.handlers.openjsonwsapi">
+      </handler>
+      <handler
+            class="com.liferay.ide.server.ui.handlers.OpenPortalHomeHandler"
+            commandId="com.liferay.ide.server.ui.handlers.openportalhome">
       </handler>
    </extension>
 
@@ -454,7 +487,25 @@
             commandId="com.liferay.ide.server.ui.handlers.redeploy"
             contextId="org.eclipse.ui.serverViewScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+M2+L">
+            sequence="M1+M2+R">
+      </key>
+      <key
+            commandId="com.liferay.ide.server.ui.handlers.opendeployedfolder"
+            contextId="org.eclipse.ui.serverViewScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+D">
+      </key>
+      <key
+            commandId="com.liferay.ide.server.ui.handlers.openjsonwsapi"
+            contextId="org.eclipse.ui.serverViewScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+J">
+      </key>
+      <key
+            commandId="com.liferay.ide.server.ui.handlers.openportalhome"
+            contextId="org.eclipse.ui.serverViewScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+P">
       </key>
    </extension>
    <!--
@@ -466,5 +517,5 @@
             name="Liferay Portlet Plugin API">
       </classpathContainerPage>
    </extension>
-  -->
+   -->
 </plugin>
