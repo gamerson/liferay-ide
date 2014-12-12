@@ -125,7 +125,7 @@ public class ValidProjectChecker
                 {
                     defaultAction.run();
 
-                    this.checkValidProjectTypes();
+                  //  this.checkValidProjectTypes();
                 }
             }
         }

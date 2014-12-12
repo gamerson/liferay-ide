@@ -807,7 +807,11 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
             {
                 return true;
             }
-
+          	if(!ProjectUtil.isLiferayFacetedProject( getProject() ) )
+        	{
+          		return false;
+        	}
+          	
             return PortletSupertypesValidator.isLiferayPortletSuperclass( getDataModel(), true );
         }
         else if( CLASS_NAME.equals( propertyName ) || JAVA_PACKAGE.equals( propertyName ) ||
@@ -830,28 +834,32 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
 
     public boolean isValidPortletClass( String qualifiedClassName )
     {
-        try
-        {
-            IJavaProject javaProject = JavaCore.create( getProject() );
+    	try
+    	{
+    		if( !ProjectUtil.isLiferayFacetedProject( getProject() ) )
+    		{
+    			return false;
+    		}
 
-            if( javaProject != null )
-            {
-                final IType portletType = JavaModelUtil.findType( javaProject, "javax.portlet.Portlet" ); //$NON-NLS-1$
+    		IJavaProject javaProject = JavaCore.create( getProject() );
+    		if( javaProject != null )
+    		{
+    			final IType portletType = JavaModelUtil.findType( javaProject, "javax.portlet.Portlet" ); //$NON-NLS-1$
 
-                if( portletType != null )
-                {
-                    final IJavaSearchScope scope =
-                        BasicSearchEngine.createStrictHierarchyScope( javaProject, portletType, true, true, null );
+    			if( portletType != null )
+    			{
+    				final IJavaSearchScope scope =
+   							BasicSearchEngine.createStrictHierarchyScope( javaProject, portletType, true, true, null );
+    				
+    				final IType classType = JavaModelUtil.findType( javaProject, qualifiedClassName );
 
-                    final IType classType = JavaModelUtil.findType( javaProject, qualifiedClassName );
-
-                    if( classType != null && scope.encloses( classType ) )
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
+    				if( classType != null && scope.encloses( classType ) )
+    				{
+    					return true;
+    				}
+    			}
+    		}
+    	}
         catch( JavaModelException e )
         {
             PortletCore.logError( e );
