@@ -27,6 +27,7 @@ import com.liferay.ide.server.tomcat.core.ILiferayTomcatRuntime;
 import com.liferay.ide.server.tomcat.core.ILiferayTomcatServer;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatPlugin;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatRuntime70;
+import com.liferay.ide.server.tomcat.core.LiferayTomcatServer;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatServerBehavior;
 import com.liferay.ide.server.util.LiferayPortalValueLoader;
 import com.liferay.ide.server.util.ServerUtil;
@@ -239,6 +240,13 @@ public class LiferayTomcatUtil
 
         IPath idePropertiesPath = installPath.append( "../portal-ide.properties" ); //$NON-NLS-1$
 
+        boolean propertyFileSetting = ( (LiferayTomcatServer) portalServer ).getPropertyFileSettings();
+
+        if( !propertyFileSetting )
+        {
+            return idePropertiesPath.toFile();
+        }
+        
         String hostName = "localhost"; //$NON-NLS-1$
 
         try
