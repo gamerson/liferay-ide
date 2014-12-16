@@ -27,6 +27,7 @@ import com.liferay.ide.server.tomcat.core.ILiferayTomcatRuntime;
 import com.liferay.ide.server.tomcat.core.ILiferayTomcatServer;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatPlugin;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatRuntime70;
+import com.liferay.ide.server.tomcat.core.LiferayTomcatServer;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatServerBehavior;
 import com.liferay.ide.server.util.LiferayPortalValueLoader;
 import com.liferay.ide.server.util.ServerUtil;
@@ -229,8 +230,8 @@ public class LiferayTomcatUtil
 
     public static void displayToggleMessage( String msg, String key )
     {
-//        UIUtil.postInfoWithToggle(
-//            Msgs.liferayTomcatServer, msg, Msgs.notShowMessage, false, LiferayTomcatPlugin.getPreferenceStore(), key );
+        // UIUtil.postInfoWithToggle(
+        // Msgs.liferayTomcatServer, msg, Msgs.notShowMessage, false, LiferayTomcatPlugin.getPreferenceStore(), key );
     }
 
     private static File ensurePortalIDEPropertiesExists(
@@ -238,6 +239,13 @@ public class LiferayTomcatUtil
     {
 
         IPath idePropertiesPath = installPath.append( "../portal-ide.properties" ); //$NON-NLS-1$
+
+        boolean useIdeProperties = ( (LiferayTomcatServer) portalServer ).getUseIdeProperties();
+
+        if( !useIdeProperties )
+        {
+            return idePropertiesPath.toFile();
+        }
 
         String hostName = "localhost"; //$NON-NLS-1$
 
@@ -595,9 +603,6 @@ public class LiferayTomcatUtil
         return context;
     }
 
-
-
-
     public static IPath modifyLocationForBundle( IPath currentLocation )
     {
         IPath modifiedLocation = null;
@@ -739,6 +744,7 @@ public class LiferayTomcatUtil
 
         Thread shutdownThread = new Thread()
         {
+
             @Override
             public void run()
             {
@@ -760,6 +766,7 @@ public class LiferayTomcatUtil
 
         IServerListener shutdownListener = new IServerListener()
         {
+
             public void serverChanged( ServerEvent event )
             {
                 if( event.getState() == IServer.STATE_STOPPED )
