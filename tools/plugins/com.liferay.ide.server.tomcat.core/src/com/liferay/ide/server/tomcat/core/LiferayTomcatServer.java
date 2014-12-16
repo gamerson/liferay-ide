@@ -42,6 +42,7 @@ import org.osgi.framework.Version;
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class LiferayTomcatServer extends TomcatServer
@@ -51,16 +52,6 @@ public class LiferayTomcatServer extends TomcatServer
     public LiferayTomcatServer()
     {
         super();
-    }
-
-    public String getId()
-    {
-        return getServer().getId();
-    }
-
-    public String getHost()
-    {
-        return getServer().getHost();
     }
 
     public String getAutoDeployDirectory()
@@ -97,26 +88,38 @@ public class LiferayTomcatServer extends TomcatServer
         return defaultServerMode;
     }
 
+    public boolean getDefaultDisableCustomSetting()
+    {
+        boolean defaultUseIdeProperties = ILiferayTomcatConstants.DISABLE_CUSTOM_SETTING;
+
+        try
+        {
+            IPath location = getServer().getRuntime().getLocation();
+
+            String version = LiferayTomcatUtil.getVersion( location, LiferayTomcatUtil.getPortalDir( location ) );
+
+            Version portalVersion = Version.parseVersion( version );
+
+            if( CoreUtil.compareVersions( portalVersion, ILiferayConstants.V620 ) < 0 )
+            {
+                defaultUseIdeProperties = !ILiferayTomcatConstants.DISABLE_CUSTOM_SETTING;
+            }
+        }
+        catch( Exception e )
+        {
+        }
+
+        return defaultUseIdeProperties;
+    }
+
     public String getExternalProperties()
     {
         return getAttribute( PROPERTY_EXTERNAL_PROPERTIES, StringPool.EMPTY );
     }
 
-    public String getMemoryArgs()
+    public String getHost()
     {
-        return getAttribute( PROPERTY_MEMORY_ARGS, ILiferayTomcatConstants.DEFAULT_MEMORY_ARGS );
-    }
-
-    public URL getPluginContextURL( String context )
-    {
-        try
-        {
-            return new URL( getPortalHomeUrl(), StringPool.FORWARD_SLASH + context );
-        }
-        catch( Exception ex )
-        {
-            return null;
-        }
+        return getServer().getHost();
     }
 
     public String getHttpPort()
@@ -126,6 +129,38 @@ public class LiferayTomcatServer extends TomcatServer
             return String.valueOf( getTomcatConfiguration().getMainPort().getPort() );
         }
         catch( CoreException e )
+        {
+            return null;
+        }
+    }
+
+    public String getId()
+    {
+        return getServer().getId();
+    }
+
+    public ILiferayTomcatConfiguration getLiferayTomcatConfiguration() throws CoreException
+    {
+        return (ILiferayTomcatConfiguration) getTomcatConfiguration();
+    }
+
+    public String getMemoryArgs()
+    {
+        return getAttribute( PROPERTY_MEMORY_ARGS, ILiferayTomcatConstants.DEFAULT_MEMORY_ARGS );
+    }
+
+    public String getPassword()
+    {
+        return getAttribute( ATTR_PASSWORD, DEFAULT_PASSWORD );
+    }
+
+    public URL getPluginContextURL( String context )
+    {
+        try
+        {
+            return new URL( getPortalHomeUrl(), StringPool.FORWARD_SLASH + context );
+        }
+        catch( Exception ex )
         {
             return null;
         }
@@ -152,14 +187,9 @@ public class LiferayTomcatServer extends TomcatServer
         }
     }
 
-    public String getPassword()
+    protected IEclipsePreferences getPrefStore()
     {
-        return getAttribute( ATTR_PASSWORD, DEFAULT_PASSWORD );
-    }
-
-    public ILiferayTomcatConfiguration getLiferayTomcatConfiguration() throws CoreException
-    {
-        return (ILiferayTomcatConfiguration) getTomcatConfiguration();
+        return LiferayTomcatPlugin.getPreferenceStore();
     }
 
     public int getServerMode()
@@ -220,6 +250,11 @@ public class LiferayTomcatServer extends TomcatServer
             ( (ILiferayTomcatHandler) handler ).setCurrentServer( getServer() );
         }
         return handler;
+    }
+
+    public boolean getDisableCustomSetting()
+    {
+        return getAttribute( PROPERTY_DISABLE_CUSTOM_SETTING, getDefaultDisableCustomSetting() );
     }
 
     public String getUsername()
@@ -361,7 +396,8 @@ public class LiferayTomcatServer extends TomcatServer
 
         if( serverInfo != null && expectedServerInfo != null )
         {
-            if( serverInfo.contains( Msgs.enterpriseEdition ) && !( expectedServerInfo.contains( Msgs.enterpriseEdition ) ) )
+            if( serverInfo.contains( Msgs.enterpriseEdition ) &&
+                !( expectedServerInfo.contains( Msgs.enterpriseEdition ) ) )
             {
                 LiferayTomcatUtil.displayToggleMessage(
                     Msgs.switchRuntimeType, LiferayTomcatPlugin.PREFERENCES_EE_UPGRADE_MSG_TOGGLE_KEY );
@@ -410,6 +446,11 @@ public class LiferayTomcatServer extends TomcatServer
         setAttribute( PROPERTY_SERVER_MODE, serverMode );
     }
 
+    public void setDisableCustomSetting( boolean disableCustomSetting )
+    {
+        setAttribute( PROPERTY_DISABLE_CUSTOM_SETTING, disableCustomSetting );
+    }
+
     public void setUsername( String username )
     {
         setAttribute( ATTR_USERNAME, username );
@@ -420,13 +461,9 @@ public class LiferayTomcatServer extends TomcatServer
         setAttribute( PROPERTY_USER_TIMEZONE, userTimezone );
     }
 
-    protected IEclipsePreferences getPrefStore()
-    {
-        return LiferayTomcatPlugin.getPreferenceStore();
-    }
-
     private static class Msgs extends NLS
     {
+
         public static String enterpriseEdition;
         public static String errorConfigurationProjectClosed;
         public static String errorNoConfiguration;
