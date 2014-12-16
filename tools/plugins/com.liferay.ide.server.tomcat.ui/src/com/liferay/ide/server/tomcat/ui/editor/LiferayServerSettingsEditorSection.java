@@ -17,6 +17,7 @@ import com.liferay.ide.server.tomcat.core.ILiferayTomcatConstants;
 import com.liferay.ide.server.tomcat.core.ILiferayTomcatServer;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatServer;
 import com.liferay.ide.server.tomcat.ui.command.SetExternalPropertiesCommand;
+import com.liferay.ide.server.tomcat.ui.command.SetPortalSeverSettingsCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetMemoryArgsCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetServerModeCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetUserTimezoneCommand;
@@ -94,6 +95,7 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 //	protected Button autoDeployDirBrowse;
     protected Button standardServerMode;
     protected Button developmentServerMode;
+    protected Button userDefaultPortalServerSettings;
 	protected Button externalPropertiesBrowse;
 	protected boolean updating;
 
@@ -168,7 +170,11 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
                     developmentServerMode.setSelection( s == ILiferayTomcatConstants.DEVELOPMENT_SERVER_MODE );
                     validate();
                 }
-
+                else if (ILiferayTomcatServer.PROPERTY_PORTAL_SERVER_SETTINGS.equals(event.getPropertyName())) {
+                    boolean s = (Boolean) event.getNewValue();
+                    userDefaultPortalServerSettings.setSelection( s );
+                    validate();
+                }
 				updating = false;
 			}
 		};
@@ -185,6 +191,29 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 			}
 		};
 		server.getOriginal().addPublishListener(publishListener);
+	}
+	
+	
+	private void applyPortalServerSetting(final boolean useDefaultPortalSeverSetting)
+	{
+        if ( useDefaultPortalSeverSetting  )
+        {
+            memoryArgs.setEnabled( false );
+            userTimezone.setEnabled( false );
+            externalProperties.setEnabled( false );
+            standardServerMode.setEnabled( false );
+            developmentServerMode.setEnabled(false);
+            externalPropertiesBrowse.setEnabled( false );
+        }
+        else
+        {
+            memoryArgs.setEnabled( true );
+            userTimezone.setEnabled( true );
+            externalProperties.setEnabled( true );
+            standardServerMode.setEnabled( true );
+            developmentServerMode.setEnabled(true);
+            externalPropertiesBrowse.setEnabled( true );
+        }
 	}
 
 	/**
@@ -356,8 +385,32 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 //			}
 //		});
 //		deployDirBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		
+		
+		userDefaultPortalServerSettings = new Button( composite, SWT.CHECK );
+        userDefaultPortalServerSettings.setText( Msgs.useDefaultPortalServerSetting );
+        data = new GridData(SWT.BEGINNING, SWT.CENTER, true, false,3,1);
+        userDefaultPortalServerSettings.setLayoutData( data );
 
+        userDefaultPortalServerSettings.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected( SelectionEvent e )
+                {
+                    updating = true;
+                    execute( new SetPortalSeverSettingsCommand( tomcatServer,  userDefaultPortalServerSettings.getSelection() ) );
+                    updating = false;
+                    
+                    applyPortalServerSetting(userDefaultPortalServerSettings.getSelection());
+                    
+                    validate();
+                }
+            }
+        );
 
+		
 		Label label = createLabel(toolkit, composite, Msgs.memoryArgsLabel);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
 		label.setLayoutData(data);
@@ -630,7 +683,12 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
                     tomcatServer.getDefaultServerMode() == ILiferayTomcatConstants.STANDARD_SERVER_MODE );
                 developmentServerMode.setSelection(
                     tomcatServer.getDefaultServerMode() == ILiferayTomcatConstants.DEVELOPMENT_SERVER_MODE );
-				updating = false;
+                
+                execute( new SetPortalSeverSettingsCommand( tomcatServer, tomcatServer.getDefaultPortalServerSettings() ) );
+                userDefaultPortalServerSettings.setSelection( tomcatServer.getDefaultPortalServerSettings() );
+                applyPortalServerSetting(tomcatServer.getDefaultPortalServerSettings());
+                
+                updating = false;
 				validate();
 			}
 		});
@@ -732,6 +790,9 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
             tomcatServer.getServerMode() == ILiferayTomcatConstants.DEVELOPMENT_SERVER_MODE );
         username.setText( this.tomcatServer.getUsername() );
         password.setText( this.tomcatServer.getPassword() );
+
+        userDefaultPortalServerSettings.setSelection( tomcatServer.getPortalServerSettings());
+        applyPortalServerSetting( tomcatServer.getPortalServerSettings() );
 
 		// setDefaultDeployDir.setEnabled(allowRestrictedEditing);
 //		deployDir.setEnabled(allowRestrictedEditing);
@@ -1015,6 +1076,7 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
         public static String serverEditorServerDirInstall;
         public static String serverEditorServerDirMetadata;
 //      public static String specifyAutoDeployInterval;
+        public static String useDefaultPortalServerSetting;
         public static String username;
         public static String userTimezoneLabel;
 
