@@ -206,7 +206,7 @@ public class NewServiceBuilderDataModelProvider extends ArtifactEditOperationDat
 
             if( serviceFile == null )
             {
-                return ServiceCore.createErrorStatus( Msgs.serviceFileSpecified );
+                return null;
             }
 
             if( !( "xml".equals( serviceFile.getFileExtension() ) ) ) //$NON-NLS-1$
