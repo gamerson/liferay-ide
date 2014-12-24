@@ -17,6 +17,7 @@ import com.liferay.ide.server.tomcat.core.ILiferayTomcatConstants;
 import com.liferay.ide.server.tomcat.core.ILiferayTomcatServer;
 import com.liferay.ide.server.tomcat.core.LiferayTomcatServer;
 import com.liferay.ide.server.tomcat.ui.command.SetExternalPropertiesCommand;
+import com.liferay.ide.server.tomcat.ui.command.SetDisableCustomSettingCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetMemoryArgsCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetServerModeCommand;
 import com.liferay.ide.server.tomcat.ui.command.SetUserTimezoneCommand;
@@ -94,6 +95,7 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 //	protected Button autoDeployDirBrowse;
     protected Button standardServerMode;
     protected Button developmentServerMode;
+    protected Button disableCustomSetting;
 	protected Button externalPropertiesBrowse;
 	protected boolean updating;
 
@@ -168,7 +170,11 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
                     developmentServerMode.setSelection( s == ILiferayTomcatConstants.DEVELOPMENT_SERVER_MODE );
                     validate();
                 }
-
+                else if (ILiferayTomcatServer.PROPERTY_DISABLE_CUSTOM_SETTING.equals(event.getPropertyName())) {
+                    boolean s = (Boolean) event.getNewValue();
+                    disableCustomSetting.setSelection( s );
+                    validate();
+                }
 				updating = false;
 			}
 		};
@@ -356,8 +362,29 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 //			}
 //		});
 //		deployDirBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		
+		
+		disableCustomSetting = new Button( composite, SWT.CHECK );
+        disableCustomSetting.setText( Msgs.disableCustomSetting );
+        data = new GridData(SWT.BEGINNING, SWT.CENTER, true, false,3,1);
+        disableCustomSetting.setLayoutData( data );
 
+        disableCustomSetting.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected( SelectionEvent e )
+                {
+                    updating = true;
+                    execute( new SetDisableCustomSettingCommand( tomcatServer,  disableCustomSetting.getSelection() ) );
+                    updating = false;
+                    validate();
+                }
+            }
+        );
 
+		
 		Label label = createLabel(toolkit, composite, Msgs.memoryArgsLabel);
 		data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
 		label.setLayoutData(data);
@@ -559,6 +586,36 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
             }
         );
 
+//        label = createLabel(toolkit, composite, StringPool.EMPTY);
+//        data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+//        label.setLayoutData(data);
+//
+//        label = createLabel(toolkit, composite, StringPool.EMPTY);
+//        data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+//        label.setLayoutData(data);
+
+//        disableCustomSetting = new Button( composite, SWT.CHECK );
+//        disableCustomSetting.setText( Msgs.disableCustomSetting );
+//        data = new GridData( SWT.FILL, SWT.CENTER, false, false );
+//        disableCustomSetting.setLayoutData( data );
+//
+//        disableCustomSetting.addSelectionListener
+//        (
+//            new SelectionAdapter()
+//            {
+//                @Override
+//                public void widgetSelected( SelectionEvent e )
+//                {
+//                    updating = true;
+//                    execute( new SetIdePropertiesCommand( tomcatServer,  disableCustomSetting.getSelection() ) );
+//                    updating = false;
+//                    validate();
+//                }
+//            }
+//        );
+
+        
+        
         label = createLabel( toolkit, composite, StringPool.EMPTY );
         data = new GridData( SWT.BEGINNING, SWT.CENTER, false, false );
         label.setLayoutData( data );
@@ -630,7 +687,11 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
                     tomcatServer.getDefaultServerMode() == ILiferayTomcatConstants.STANDARD_SERVER_MODE );
                 developmentServerMode.setSelection(
                     tomcatServer.getDefaultServerMode() == ILiferayTomcatConstants.DEVELOPMENT_SERVER_MODE );
-				updating = false;
+                
+                execute( new SetDisableCustomSettingCommand( tomcatServer, tomcatServer.getDefaultDisableCustomSetting() ) );
+                disableCustomSetting.setSelection( tomcatServer.getDefaultDisableCustomSetting() );
+                
+                updating = false;
 				validate();
 			}
 		});
@@ -732,6 +793,8 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
             tomcatServer.getServerMode() == ILiferayTomcatConstants.DEVELOPMENT_SERVER_MODE );
         username.setText( this.tomcatServer.getUsername() );
         password.setText( this.tomcatServer.getPassword() );
+
+        disableCustomSetting.setSelection( tomcatServer.getDisableCustomSetting());
 
 		// setDefaultDeployDir.setEnabled(allowRestrictedEditing);
 //		deployDir.setEnabled(allowRestrictedEditing);
@@ -1015,6 +1078,7 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
         public static String serverEditorServerDirInstall;
         public static String serverEditorServerDirMetadata;
 //      public static String specifyAutoDeployInterval;
+        public static String disableCustomSetting;
         public static String username;
         public static String userTimezoneLabel;
 
