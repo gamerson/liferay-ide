@@ -66,7 +66,10 @@ public abstract class AbstractServerRunningAction implements IObjectActionDelega
         }
     }
 
-    protected abstract int getRequiredServerState();
+    protected int getRequiredServerState()
+    {
+        return IServer.STATE_STARTED | IServer.STATE_STOPPED;
+    }
 
     public void setActivePart( IAction action, IWorkbenchPart targetPart )
     {
