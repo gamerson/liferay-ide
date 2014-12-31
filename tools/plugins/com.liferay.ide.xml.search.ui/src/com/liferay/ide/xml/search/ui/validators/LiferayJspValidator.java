@@ -32,6 +32,8 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.eclipse.wst.xml.search.core.properties.IPropertiesQuerySpecification;
 import org.eclipse.wst.xml.search.core.properties.IPropertiesRequestor;
@@ -51,7 +53,9 @@ import org.w3c.dom.Node;
 public class LiferayJspValidator extends LiferayBaseValidator
 {
 
+    private final String ACTION_REQUEST_ACTION_NAME = "ActionRequest.ACTION_NAME";
     private final String AUI_PREFIX = "aui";
+    private final String JAVAX_PORTLET_ACTION = "javax.portlet.action";
     private final String JSP_TAG_START = "<%";
     private final String JSP_TAG_END = "%>";
 
@@ -161,6 +165,31 @@ public class LiferayJspValidator extends LiferayBaseValidator
         {
             ( (XMLReferencesBatchValidator) validator ).getParent().setMarkerId(
                 XMLSearchConstants.LIFERAY_JSP_MARKER_ID );
+        }
+    }
+
+    @Override
+    protected void validateReferenceToJava(
+        IXMLReferenceTo referenceTo, IDOMNode node, IFile file, IValidator validator, IReporter reporter,
+        boolean batchMode )
+    {
+        if( node instanceof AttrImpl )
+        {
+            final AttrImpl attrNode = (AttrImpl) node;
+
+            Node parentNode = attrNode.getOwnerElement();
+
+            if( parentNode.getNodeName().contains( "param" ) )
+            {
+                IDOMAttr nameAttr =DOMUtils.getAttr( (IDOMElement) parentNode, "name" );
+
+                if( ( nameAttr != null ) &&
+                    ( nameAttr.getNodeValue().contains( ACTION_REQUEST_ACTION_NAME ) ||
+                                    nameAttr.getNodeValue().contains( JAVAX_PORTLET_ACTION ) ) )
+                {
+                    super.validateReferenceToJava( referenceTo, attrNode, file, validator, reporter, batchMode );
+                }
+            }
         }
     }
 
