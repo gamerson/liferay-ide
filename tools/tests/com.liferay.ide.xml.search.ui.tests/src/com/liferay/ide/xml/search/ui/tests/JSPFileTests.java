@@ -16,9 +16,12 @@
 package com.liferay.ide.xml.search.ui.tests;
 
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.buildAndValidate;
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkMarkerByMessage;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.deleteOtherProjects;
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.findMarkerByMessage;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.setAttrValue;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.verifyQuickFix;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.util.CoreUtil;
@@ -29,9 +32,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.junit.Test;
 
-
 /**
  * @author Kuo Zhang
+ * @author Terry Jia
  */
 public class JSPFileTests extends XmlSearchTestsBase
 {
@@ -74,9 +77,94 @@ public class JSPFileTests extends XmlSearchTestsBase
         testMessageKeyQuickFix();
     }
 
-    // TODO
-    public void testMessageKeyValidation()
+    protected void testMessageKeyValidation() throws Exception
     {
+        final IFile viewJspFile = getViewJspFile();
+        assertNotNull( viewJspFile );
+
+        final String paramElementName = "param";
+        final String portletParamElementName = "portlet:param";
+        final String liferayPortletParamElementName = "liferay-portlet:param";
+        final String attrName = "name";
+        final String attrValue = "value";
+
+        final String markerType = XMLSearchConstants.LIFERAY_JSP_MARKER_ID;
+        final String exceptedMessageRegex = "Type \"sayHello\" not found.";
+
+        final String bookName = "bookName";
+        final String bookNameValue = "liferay-in-action";
+
+        //Test for <portlet:param name="<%= ActionRequest.ACTION_NAME %>" value="sayHello" />
+        setAttrValue( viewJspFile, portletParamElementName, attrName, "<%= ActionRequest.ACTION_NAME %>" );
+        setAttrValue( viewJspFile, portletParamElementName, attrValue, "sayHello" );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(true, checkMarkerByMessage( viewJspFile, markerType, exceptedMessageRegex, true ));
+
+        //Test for <portlet:param name="javax.portlet.action" value="sayHello" />
+        setAttrValue( viewJspFile, portletParamElementName, attrName, "javax.portlet.action" );
+        setAttrValue( viewJspFile, portletParamElementName, attrValue, "sayHello" );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(true, checkMarkerByMessage( viewJspFile, markerType, exceptedMessageRegex, true ));
+
+        //Test for <portlet:param name="bookName" value="liferay-in-action" />
+        setAttrValue( viewJspFile, portletParamElementName, attrName, bookName );
+        setAttrValue( viewJspFile, portletParamElementName, attrValue, bookNameValue );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(null, findMarkerByMessage( viewJspFile, markerType, "", true ));
+
+        //Test for <liferay-portlet:param name="<%= ActionRequest.ACTION_NAME %>" value="sayHello" />
+        setAttrValue( viewJspFile, liferayPortletParamElementName, attrName, "<%= ActionRequest.ACTION_NAME %>" );
+        setAttrValue( viewJspFile, liferayPortletParamElementName, attrValue, "sayHello" );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(true, checkMarkerByMessage( viewJspFile, markerType, exceptedMessageRegex, true ));
+
+        //Test for <liferay-portlet:param name="javax.portlet.action" value="sayHello" />
+        setAttrValue( viewJspFile, liferayPortletParamElementName, attrName, "javax.portlet.action" );
+        setAttrValue( viewJspFile, liferayPortletParamElementName, attrValue, "sayHello" );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(true, checkMarkerByMessage( viewJspFile, markerType, exceptedMessageRegex, true ));
+
+        //Test for <liferay-portlet:param name="bookName" value="liferay-in-action" />
+        setAttrValue( viewJspFile, liferayPortletParamElementName, attrName, bookName );
+        setAttrValue( viewJspFile, liferayPortletParamElementName, attrValue, bookNameValue );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(null, findMarkerByMessage( viewJspFile, markerType, "", true ));
+
+        //Test for <param name="<%= ActionRequest.ACTION_NAME %>" value="sayHello" />
+        setAttrValue( viewJspFile, paramElementName, attrName, "<%= ActionRequest.ACTION_NAME %>" );
+        setAttrValue( viewJspFile, paramElementName, attrValue, "sayHello" );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(null, findMarkerByMessage( viewJspFile, markerType, "", true ));
+
+        //Test for <param name="javax.portlet.action" value="sayHello" />
+        setAttrValue( viewJspFile, paramElementName, attrName, "javax.portlet.action" );
+        setAttrValue( viewJspFile, paramElementName, attrValue, "sayHello" );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(null, findMarkerByMessage( viewJspFile, markerType, "", true ));
+
+        //Test for <param name="bookName" value="liferay-in-action" />
+        setAttrValue( viewJspFile, paramElementName, attrName, bookName );
+        setAttrValue( viewJspFile, paramElementName, attrValue, bookNameValue );
+
+        buildAndValidate( viewJspFile );
+
+        assertEquals(null, findMarkerByMessage( viewJspFile, markerType, "", true ));
     }
 
     // TODO
