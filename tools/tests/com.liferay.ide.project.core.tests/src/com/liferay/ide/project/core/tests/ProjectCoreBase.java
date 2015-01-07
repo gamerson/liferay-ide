@@ -30,6 +30,7 @@ import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.server.core.tests.ServerCoreBase;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IProject;
@@ -195,7 +196,14 @@ public class ProjectCoreBase extends ServerCoreBase
 
     public IProject createProject( NewLiferayPluginProjectOp op, String projectName )
     {
-        Status status = op.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+         List<IProject> projects = op.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+
+         Status status = Status.createOkStatus();
+
+         if ( CoreUtil.isNullOrEmpty( projects ))
+         {
+             status = Status.createErrorStatus( "New project was not created due to unknown error" );
+         }
 
         assertNotNull( status );
 

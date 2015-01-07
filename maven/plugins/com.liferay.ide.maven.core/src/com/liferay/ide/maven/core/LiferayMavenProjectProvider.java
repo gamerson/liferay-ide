@@ -128,10 +128,8 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
         super( new Class<?>[] { IProject.class } );
     }
 
-    public IStatus doCreateNewProject( final NewLiferayPluginProjectOp op, IProgressMonitor monitor ) throws CoreException
+    public List<IProject> doCreateNewProject( final NewLiferayPluginProjectOp op, IProgressMonitor monitor ) throws CoreException
     {
-        IStatus retval = null;
-
         final IMavenConfiguration mavenConfiguration = MavenPlugin.getMavenConfiguration();
         final IMavenProjectRegistry mavenProjectRegistry = MavenPlugin.getMavenProjectRegistry();
         final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
@@ -141,8 +139,6 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
         final String version = op.getArtifactVersion().content();
         final String javaPackage = op.getGroupId().content();
         final String activeProfilesValue = op.getActiveProfilesValue().content();
-        final IPortletFramework portletFramework = op.getPortletFramework().content( true );
-        final String frameworkName = getFrameworkName( op );
 
         IPath location = PathBridge.create( op.getLocation().content() );
 
@@ -206,16 +202,12 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
             projectConfigurationManager.createArchetypeProjects(
                 location, archetype, groupId, artifactId, version, javaPackage, properties, configuration, monitor );
 
-        if( CoreUtil.isNullOrEmpty( newProjects ) )
-        {
-            retval = LiferayMavenCore.createErrorStatus( "New project was not created due to unknown error" );
-        }
-        else
+        if( !CoreUtil.isNullOrEmpty( newProjects ) )
         {
             final IProject firstProject = newProjects.get( 0 );
 
             // add new profiles if it was specified to add to project or parent poms
-            if( ! CoreUtil.isNullOrEmpty( activeProfilesValue ) )
+            if( !CoreUtil.isNullOrEmpty( activeProfilesValue ) )
             {
                 final String[] activeProfiles = activeProfilesValue.split( "," );
 
@@ -259,7 +251,7 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
                         Transformer transformer = transformerFactory.newTransformer();
                         DOMSource source = new DOMSource( pomDocument );
                         StreamResult result = new StreamResult( settingsXmlFile );
-                        transformer.transform(source, result);
+                        transformer.transform( source, result );
                     }
                     catch( Exception e )
                     {
@@ -306,8 +298,8 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
                 {
                     try
                     {
-                        projectConfigurationManager.updateProjectConfiguration(
-                            new MavenUpdateRequest( project, mavenConfiguration.isOffline(), true ), monitor );
+                        projectConfigurationManager.updateProjectConfiguration( new MavenUpdateRequest(
+                            project, mavenConfiguration.isOffline(), true ), monitor );
                     }
                     catch( Exception e )
                     {
@@ -321,20 +313,9 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
                 final String archVersion = MavenUtil.getMajorMinorVersionOnly( archetypeVersion );
                 updateDtdVersion( firstProject, pluginVersion, archVersion );
             }
-
-            if( op.getPluginType().content().equals( PluginType.portlet ) )
-            {
-                final String portletName = op.getPortletName().content( false );
-                retval = portletFramework.postProjectCreated( firstProject, frameworkName, portletName, monitor );
-            }
         }
 
-        if( retval == null )
-        {
-            retval = Status.OK_STATUS;
-        }
-
-        return retval;
+        return newProjects;
     }
 
     private File getBackupFile( final File file )

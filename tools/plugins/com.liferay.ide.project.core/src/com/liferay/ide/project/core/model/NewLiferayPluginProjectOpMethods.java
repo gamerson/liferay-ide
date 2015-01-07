@@ -26,6 +26,7 @@ import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKManager;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,13 +44,10 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
-import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
-import org.eclipse.sapphire.platform.StatusBridge;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.osgi.framework.Version;
-
 
 /**
  * @author Gregory Amerson
@@ -92,13 +90,13 @@ public class NewLiferayPluginProjectOpMethods
         return retval;
     }
 
-    public static final Status execute( final NewLiferayPluginProjectOp op, final ProgressMonitor pm )
+    public static final List<IProject> execute( final NewLiferayPluginProjectOp op, final ProgressMonitor pm )
     {
         final IProgressMonitor monitor = ProgressMonitorBridge.create( pm );
 
         monitor.beginTask( "Creating Liferay plugin project (this process may take several minutes)", 100 ); //$NON-NLS-1$
 
-        Status retval = null;
+        List<IProject> projects = new ArrayList<IProject>();
 
         try
         {
@@ -107,26 +105,23 @@ public class NewLiferayPluginProjectOpMethods
             //IDE-1306  If the user types too quickly all the model changes may not have propagated
             LocationListener.updateLocation( op );
 
-            final IStatus status = projectProvider.createNewProject( op, monitor );
+            projects = projectProvider.createNewProject( op, monitor );
 
-            if ( status.isOK() )
+            if ( !projects.isEmpty() )
             {
                 updateProjectPrefs( op );
 
                 removeSampleCodeAndFiles( op );
             }
 
-            retval = StatusBridge.create( status );
         }
         catch( Exception e )
         {
             final String msg = "Error creating Liferay plugin project."; //$NON-NLS-1$
             ProjectCore.logError( msg, e );
-
-            return Status.createErrorStatus( msg + " Please see Eclipse error log for more details.", e );
         }
 
-        return retval;
+        return projects;
     }
 
     public static String getMavenParentPomGroupId( NewLiferayPluginProjectOp op, String projectName, IPath path )
