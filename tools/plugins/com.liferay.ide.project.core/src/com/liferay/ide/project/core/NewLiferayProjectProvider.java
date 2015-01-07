@@ -17,11 +17,13 @@ package com.liferay.ide.project.core;
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 
+import java.util.List;
+
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-
 
 /**
  * @author Gregory Amerson
@@ -34,7 +36,7 @@ public abstract class NewLiferayProjectProvider extends AbstractLiferayProjectPr
         super( types );
     }
 
-    public IStatus createNewProject( Object operation, IProgressMonitor monitor ) throws CoreException
+    public List<IProject> createNewProject( Object operation, IProgressMonitor monitor ) throws CoreException
     {
         if( ! (operation instanceof NewLiferayPluginProjectOp ) )
         {
@@ -46,7 +48,7 @@ public abstract class NewLiferayProjectProvider extends AbstractLiferayProjectPr
         return doCreateNewProject( op, monitor );
     }
 
-    public abstract IStatus doCreateNewProject( final NewLiferayPluginProjectOp op, IProgressMonitor monitor )
+    public abstract List<IProject> doCreateNewProject( final NewLiferayPluginProjectOp op, IProgressMonitor monitor )
         throws CoreException;
 
     public abstract IStatus validateProjectLocation( String projectName, IPath path );
