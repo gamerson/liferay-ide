@@ -19,6 +19,7 @@ import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.PluginType;
+import com.liferay.ide.project.core.model.ProjectName;
 import com.liferay.ide.project.ui.IvyUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.sdk.core.ISDKConstants;
@@ -45,6 +46,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
 import org.eclipse.sapphire.ui.forms.FormComponentPart;
 import org.eclipse.sapphire.ui.forms.swt.SapphireWizard;
@@ -155,66 +157,73 @@ public class NewLiferayPluginProjectWizard extends SapphireWizard<NewLiferayPlug
         super.performPostFinish();
 
         final NewLiferayPluginProjectOp op = element().nearest( NewLiferayPluginProjectOp.class );
-        final IProject project = CoreUtil.getProject( op.getFinalProjectName().content() );
 
-        try
+        ElementList<ProjectName> projectNames = op.getProjectNames();
+
+        for( ProjectName projectName : projectNames )
         {
-            addToWorkingSets( project );
-        }
-        catch( Exception ex )
-        {
-            ProjectUI.logError( "Unable to add project to working set", ex );
-        }
+            final IProject project = CoreUtil.getProject( projectName.getName().content() );
 
-        openLiferayPerspective( project );
-
-        showInAntView( project );
-
-        if( project != null && project.getFile( ISDKConstants.IVY_XML_FILE ).exists() )
-        {
-            new WorkspaceJob( "Configuring project with Ivy dependencies" ) //$NON-NLS-1$
+            try
             {
-                public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
+                addToWorkingSets( project );
+            }
+            catch( Exception ex )
+            {
+                ProjectUI.logError( "Unable to add project to working set", ex );
+            }
+
+            openLiferayPerspective( project );
+
+            showInAntView( project );
+
+            if( project != null && project.getFile( ISDKConstants.IVY_XML_FILE ).exists() )
+            {
+                new WorkspaceJob( "Configuring project with Ivy dependencies" ) //$NON-NLS-1$
                 {
-                    try
-                    {
-                        IvyUtil.configureIvyProject( project, monitor );
-                    }
-                    catch( CoreException e )
-                    {
-                        return ProjectCore.createErrorStatus(
-                            ProjectCore.PLUGIN_ID, "Failed to configured ivy project.", e ); //$NON-NLS-1$
-                    }
 
-                    return Status.OK_STATUS;
+                    public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
+                    {
+                        try
+                        {
+                            IvyUtil.configureIvyProject( project, monitor );
+                        }
+                        catch( CoreException e )
+                        {
+                            return ProjectCore.createErrorStatus(
+                                ProjectCore.PLUGIN_ID, "Failed to configured ivy project.", e ); //$NON-NLS-1$
+                        }
+
+                        return Status.OK_STATUS;
+                    }
+                }.schedule();
+            }
+
+            // check if a new portlet wizard is needed, available for portlet projects.
+            final boolean createNewPortlet = op.getCreateNewPortlet().content();
+
+            if( createNewPortlet && PluginType.portlet.equals( op.getPluginType().content() ) )
+            {
+                final IPortletFramework portletFramework = op.getPortletFramework().content();
+                String wizardId = null;
+
+                if( ( "mvc" ).equals( portletFramework.getShortName() ) )
+                {
+                    wizardId = "com.liferay.ide.portlet.ui.newPortletWizard";
                 }
-            }.schedule();
-        }
+                else if( ( "jsf-2.x" ).equals( portletFramework.getShortName() ) )
+                {
+                    wizardId = "com.liferay.ide.portlet.ui.newJSFPortletWizard";
+                }
+                else if( ( "vaadin" ).equals( portletFramework.getShortName() ) )
+                {
+                    wizardId = "com.liferay.ide.portlet.vaadin.ui.newVaadinPortletWizard";
+                }
 
-        // check if a new portlet wizard is needed, available for portlet projects.
-        final boolean createNewPortlet = op.getCreateNewPortlet().content();
-
-        if( createNewPortlet && PluginType.portlet.equals( op.getPluginType().content() ) )
-        {
-            final IPortletFramework portletFramework = op.getPortletFramework().content();
-            String wizardId = null;
-
-            if( ("mvc").equals( portletFramework.getShortName() ) )
-            {
-                wizardId = "com.liferay.ide.portlet.ui.newPortletWizard";
-            }
-            else if( ("jsf-2.x").equals( portletFramework.getShortName() ) )
-            {
-                wizardId = "com.liferay.ide.portlet.ui.newJSFPortletWizard";
-            }
-            else if( ("vaadin").equals( portletFramework.getShortName() ) )
-            {
-                wizardId = "com.liferay.ide.portlet.vaadin.ui.newVaadinPortletWizard";
-            }
-
-            if( wizardId != null )
-            {
-                openNewPortletWizard( wizardId, project );
+                if( wizardId != null )
+                {
+                    openNewPortletWizard( wizardId, project );
+                }
             }
         }
     }
