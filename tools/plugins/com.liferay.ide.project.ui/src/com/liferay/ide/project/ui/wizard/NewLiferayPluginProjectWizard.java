@@ -19,11 +19,16 @@ import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.PluginType;
+import com.liferay.ide.project.core.model.ProjectName;
+import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.IvyUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.sdk.core.ISDKConstants;
 import com.liferay.ide.ui.LiferayPerspectiveFactory;
 import com.liferay.ide.ui.util.UIUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.ant.internal.ui.model.AntProjectNode;
 import org.eclipse.ant.internal.ui.model.AntProjectNodeProxy;
@@ -45,6 +50,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
 import org.eclipse.sapphire.ui.forms.FormComponentPart;
 import org.eclipse.sapphire.ui.forms.swt.SapphireWizard;
@@ -68,6 +74,7 @@ import org.eclipse.wst.web.internal.DelegateConfigurationElement;
  * @author Gregory Amerson
  * @author Kuo Zhang
  * @author Simon Jiang
+ * @author Eric Min
  */
 @SuppressWarnings( "restriction" )
 public class NewLiferayPluginProjectWizard extends SapphireWizard<NewLiferayPluginProjectOp>
@@ -154,16 +161,41 @@ public class NewLiferayPluginProjectWizard extends SapphireWizard<NewLiferayPlug
     {
         super.performPostFinish();
 
+        List<IProject> finalProjects = new ArrayList<IProject>();
+
         final NewLiferayPluginProjectOp op = element().nearest( NewLiferayPluginProjectOp.class );
+
         final IProject project = CoreUtil.getProject( op.getFinalProjectName().content() );
 
-        try
+        ElementList<ProjectName> projectNames = op.getProjectNames();
+
+        if( projectNames.size() > 1 )
         {
-            addToWorkingSets( project );
+            for( ProjectName projectName : projectNames )
+            {
+                final IProject newProject = CoreUtil.getProject( projectName.getName().content() );
+
+                if( newProject != null )
+                {
+                    finalProjects.add( newProject );
+                }
+            }
         }
-        catch( Exception ex )
+        else
         {
-            ProjectUI.logError( "Unable to add project to working set", ex );
+            finalProjects.add( project );
+        }
+
+        for( final IProject finalProject : finalProjects )
+        {
+            try
+            {
+                addToWorkingSets( finalProject );
+            }
+            catch( Exception ex )
+            {
+                ProjectUI.logError( "Unable to add project to working set", ex );
+            }
         }
 
         openLiferayPerspective( project );
@@ -174,6 +206,7 @@ public class NewLiferayPluginProjectWizard extends SapphireWizard<NewLiferayPlug
         {
             new WorkspaceJob( "Configuring project with Ivy dependencies" ) //$NON-NLS-1$
             {
+
                 public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
                 {
                     try
@@ -199,15 +232,15 @@ public class NewLiferayPluginProjectWizard extends SapphireWizard<NewLiferayPlug
             final IPortletFramework portletFramework = op.getPortletFramework().content();
             String wizardId = null;
 
-            if( ("mvc").equals( portletFramework.getShortName() ) )
+            if( ( "mvc" ).equals( portletFramework.getShortName() ) )
             {
                 wizardId = "com.liferay.ide.portlet.ui.newPortletWizard";
             }
-            else if( ("jsf-2.x").equals( portletFramework.getShortName() ) )
+            else if( ( "jsf-2.x" ).equals( portletFramework.getShortName() ) )
             {
                 wizardId = "com.liferay.ide.portlet.ui.newJSFPortletWizard";
             }
-            else if( ("vaadin").equals( portletFramework.getShortName() ) )
+            else if( ( "vaadin" ).equals( portletFramework.getShortName() ) )
             {
                 wizardId = "com.liferay.ide.portlet.vaadin.ui.newVaadinPortletWizard";
             }
