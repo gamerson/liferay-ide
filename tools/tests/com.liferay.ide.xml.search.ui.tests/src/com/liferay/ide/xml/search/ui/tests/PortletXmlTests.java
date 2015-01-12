@@ -29,14 +29,18 @@ import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.ReflectionUtil;
+import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
 import com.liferay.ide.xml.search.ui.validators.PortletDescriptorValidator;
 
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.wst.sse.ui.StructuredTextEditor;
 import org.junit.Test;
 
 /**
@@ -413,5 +417,25 @@ public class PortletXmlTests extends XmlSearchTestsBase
         elementContent = "content.Language";
         setElementContent( descriptorFile, elementName, elementContent );
         buildAndValidate( descriptorFile );
+    }
+
+    @Test
+    public void testSourceViewerConfiguration() throws Exception
+    {
+        if( shouldSkipBundleTests() ) { return; }
+
+        final IFile descriptorFile = getDescriptorFile();
+
+        StructuredTextEditor editor = XmlSearchTestsUtils.getEditor( descriptorFile );
+
+        Method getConfMethod = ReflectionUtil.getDeclaredMethod( editor.getClass(), "getSourceViewerConfiguration", true );
+
+        assertNotNull( getConfMethod );
+
+        getConfMethod.setAccessible( true );
+
+        Object sourceViewerConfiguration = getConfMethod.invoke( editor );
+
+        assertEquals( true, sourceViewerConfiguration instanceof LiferayCustomXmlViewerConfiguration );
     }
 }

@@ -25,13 +25,18 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.ReflectionUtil;
 import com.liferay.ide.xml.search.ui.AddResourceKeyMarkerResolution;
 import com.liferay.ide.xml.search.ui.XMLSearchConstants;
+import com.liferay.ide.xml.search.ui.editor.PortletJSPSourceViewerConfiguration;
+
+import java.lang.reflect.Method;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.wst.sse.ui.StructuredTextEditor;
 import org.junit.Test;
 
 /**
@@ -105,6 +110,26 @@ public class JSPFileTests extends XmlSearchTestsBase
         final String exceptedMessageRegex = "Property.*not found in.*";
 
         verifyQuickFix( viewJspFile, markerType, exceptedMessageRegex, AddResourceKeyMarkerResolution.class );
+    }
+
+    @Test
+    public void testSourceViewerConfiguration() throws Exception
+    {
+        if( shouldSkipBundleTests() ) { return; }
+
+        final IFile viewJspFile = getJspFile( "view.jsp" );
+
+        StructuredTextEditor editor = XmlSearchTestsUtils.getEditor( viewJspFile );
+
+        Method getConfMethod = ReflectionUtil.getDeclaredMethod( editor.getClass(), "getSourceViewerConfiguration", true );
+
+        assertNotNull( getConfMethod );
+
+        getConfMethod.setAccessible( true );
+
+        Object sourceViewerConfiguration = getConfMethod.invoke( editor );
+
+        assertEquals( true, sourceViewerConfiguration instanceof PortletJSPSourceViewerConfiguration );
     }
 
     @Test

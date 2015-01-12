@@ -15,12 +15,67 @@
 
 package com.liferay.ide.xml.search.ui.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.ReflectionUtil;
+import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
+
+import java.lang.reflect.Method;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.wst.sse.ui.StructuredTextEditor;
+import org.junit.Test;
+
 
 /**
  * @author Kuo Zhang
  */
 public class LiferayLayoutTplXmlTests extends XmlSearchTestsBase
 {
+
+    private IFile descriptor;
+    private IProject project;
+
+    private IFile getDescriptorFile() throws Exception
+    {
+        return descriptor != null ? descriptor : LiferayCore.create( getProject() ).getDescriptorFile(
+            ILiferayConstants.LIFERAY_LAYOUTTPL_XML_FILE);
+    }
+
+    private IProject getProject() throws Exception
+    {
+        if( project == null )
+        {
+            project = super.getProject( "layouttpl", "Liferay-Layout-Templates-Xml-Test-layouttpl" );
+            XmlSearchTestsUtils.deleteOtherProjects( project );
+        }
+
+        return project;
+    }
+
+    @Test
+    public void testSourceViewerConfiguration() throws Exception
+    {
+        if( shouldSkipBundleTests() ) { return; }
+
+        final IFile descriptorFile = getDescriptorFile();
+
+        StructuredTextEditor editor = XmlSearchTestsUtils.getEditor( descriptorFile );
+
+        Method getConfMethod = ReflectionUtil.getDeclaredMethod( editor.getClass(), "getSourceViewerConfiguration", true );
+
+        assertNotNull( getConfMethod );
+
+        getConfMethod.setAccessible( true );
+
+        Object sourceViewerConfiguration = getConfMethod.invoke( editor );
+
+        assertEquals( true, sourceViewerConfiguration instanceof LiferayCustomXmlViewerConfiguration );
+    }
 
     // TODO
     public void testTemplatePath()
