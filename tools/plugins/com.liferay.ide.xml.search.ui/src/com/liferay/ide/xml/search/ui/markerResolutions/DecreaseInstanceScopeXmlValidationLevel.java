@@ -39,6 +39,10 @@ public class DecreaseInstanceScopeXmlValidationLevel implements IMarkerResolutio
 
     private final static String MESSAGE = "Decrease validation level of this marker for all projects to Ignore";
 
+    public DecreaseInstanceScopeXmlValidationLevel()
+    {
+    }
+
     @Override
     public String getDescription()
     {

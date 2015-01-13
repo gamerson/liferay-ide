@@ -20,15 +20,20 @@ import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkNoMar
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.setElementContent;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.ReflectionUtil;
+import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
 import com.liferay.ide.xml.search.ui.validators.LiferayHookDescriptorValidator;
 
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.wst.sse.ui.StructuredTextEditor;
 import org.junit.Test;
 
 /**
@@ -340,6 +345,38 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         buildAndValidate( descriptorFile );
     }
 
+    // TODO
+    public void testServiceTypeAndServiceImpl() throws Exception
+    {
+        // test service-type and service-impl together, because validation of service-impl relies on service-type
+
+        // Service type
+        // Foo "Type not found"
+        // com.liferay.ide.tests.OrphanClass "Not a interface"
+        // com.liferay.ide.tests.OrphanInterface "Should match *Service"
+        // com.liferay.ide.tests.FooService, correct
+
+        // Service Imple
+        // Foo "Type not found"
+        // OrphanClass "Type Hierarchy incorrect"
+        // FooServiceWrapperImpl correct
+    }
+
+    // TODO
+    protected void testServiceTypeAndServiceImplContentAssist()
+    {
+    }
+
+    // TODO
+    protected void testServiceTypeAndServiceImplHyperlink()
+    {
+    }
+
+    // TODO
+    protected void testServiceTypeAndServiceImplValidation()
+    {
+    }
+
     @Test
     public void testServletFilterImpl() throws Exception
     {
@@ -389,36 +426,24 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         assertEquals( true, checkNoMarker( descriptorFile, MARKER_TYPE ) );
     }
 
-    // TODO
-    public void testServiceTypeAndServiceImpl() throws Exception
+    @Test
+    public void testSourceViewerConfiguration() throws Exception
     {
-        // test service-type and service-impl together, because validation of service-impl relies on service-type
+        if( shouldSkipBundleTests() ) { return; }
 
-        // Service type
-        // Foo "Type not found"
-        // com.liferay.ide.tests.OrphanClass "Not a interface"
-        // com.liferay.ide.tests.OrphanInterface "Should match *Service"
-        // com.liferay.ide.tests.FooService, correct
+        final IFile descriptorFile = getDescriptorFile();
 
-        // Service Imple
-        // Foo "Type not found"
-        // OrphanClass "Type Hierarchy incorrect"
-        // FooServiceWrapperImpl correct
-    }
+        StructuredTextEditor editor = XmlSearchTestsUtils.getEditor( descriptorFile );
 
-    // TODO
-    protected void testServiceTypeAndServiceImplContentAssist()
-    {
-    }
+        Method getConfMethod = ReflectionUtil.getDeclaredMethod( editor.getClass(), "getSourceViewerConfiguration", true );
 
-    // TODO
-    protected void testServiceTypeAndServiceImplHyperlink()
-    {
-    }
+        assertNotNull( getConfMethod );
 
-    // TODO
-    protected void testServiceTypeAndServiceImplValidation()
-    {
+        getConfMethod.setAccessible( true );
+
+        Object sourceViewerConfiguration = getConfMethod.invoke( editor );
+
+        assertEquals( true, sourceViewerConfiguration instanceof LiferayCustomXmlViewerConfiguration );
     }
 
     @Test

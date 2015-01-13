@@ -36,6 +36,10 @@ public class DecreaseProjectScopeXmlValidationLevel implements IMarkerResolution
 
     private final static String MESSAGE = "Decrease validation level of this marker for this project to Ignore";
 
+    public DecreaseProjectScopeXmlValidationLevel()
+    {
+    }
+
     @Override
     public String getDescription()
     {
@@ -59,7 +63,7 @@ public class DecreaseProjectScopeXmlValidationLevel implements IMarkerResolution
     public void run( IMarker marker )
     {
         ValidationPreferences.setProjectScopeValLevel( marker.getResource().getProject(), -1 );
-        ComponentUtil.validateFile( (IFile)marker.getResource(), new NullProgressMonitor() );
+        ComponentUtil.validateFile( (IFile) marker.getResource(), new NullProgressMonitor() );
     }
 
 }
