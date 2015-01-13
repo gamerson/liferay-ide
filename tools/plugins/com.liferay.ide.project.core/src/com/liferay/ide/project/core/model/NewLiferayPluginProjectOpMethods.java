@@ -172,6 +172,33 @@ public class NewLiferayPluginProjectOpMethods
         return retval;
     }
 
+    public static String getProjectDirName( final NewLiferayPluginProjectOp op, final Path baseLocation )
+    {
+        final String projectName = op.getProjectName().content();
+
+        String suffix = null;
+
+        if( projectName != null )
+        {
+            if( "ant".equals( op.getProjectProvider().content( true ).getShortName() ) ) //$NON-NLS-1$
+            {
+                suffix = getPluginTypeSuffix( op.getPluginType().content( true ) );
+
+                if( suffix != null )
+                {
+                    // check if project name already contains suffix
+                    if( projectName.endsWith( suffix ) )
+                    {
+                        suffix = null;
+                    }
+                }
+            }
+        }
+
+        return ( projectName == null ? StringPool.EMPTY : projectName ) +
+                        ( suffix == null ? StringPool.EMPTY : suffix );
+    }
+
     public static String getPluginTypeSuffix( final PluginType pluginType )
     {
         String suffix = null;
@@ -401,29 +428,7 @@ public class NewLiferayPluginProjectOpMethods
 
     public static void updateLocation( final NewLiferayPluginProjectOp op, final Path baseLocation )
     {
-        final String projectName = op.getProjectName().content();
-
-        String suffix = null;
-
-        if( projectName != null )
-        {
-            if( "ant".equals( op.getProjectProvider().content( true ).getShortName() ) ) //$NON-NLS-1$
-            {
-                suffix = getPluginTypeSuffix( op.getPluginType().content( true ) );
-
-                if( suffix != null )
-                {
-                    // check if project name already contains suffix
-                    if( projectName.endsWith( suffix ) )
-                    {
-                        suffix = null;
-                    }
-                }
-            }
-        }
-
-        final String dirName = ( projectName == null ? StringPool.EMPTY : projectName ) +
-                               ( suffix == null ? StringPool.EMPTY : suffix );
+        final String dirName = getProjectDirName( op,baseLocation );
 
         final Path newLocation = baseLocation.append( dirName );
 
