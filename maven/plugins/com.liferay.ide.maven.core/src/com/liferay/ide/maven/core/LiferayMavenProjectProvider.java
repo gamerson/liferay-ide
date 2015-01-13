@@ -25,6 +25,7 @@ import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.NewLiferayProfile;
 import com.liferay.ide.project.core.model.PluginType;
 import com.liferay.ide.project.core.model.ProfileLocation;
+import com.liferay.ide.project.core.model.ProjectName;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 import com.liferay.ide.server.util.ComponentUtil;
 
@@ -84,6 +85,7 @@ import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.m2e.core.project.MavenUpdateRequest;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
@@ -203,6 +205,16 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
         final List<IProject> newProjects =
             projectConfigurationManager.createArchetypeProjects(
                 location, archetype, groupId, artifactId, version, javaPackage, properties, configuration, monitor );
+
+        final ElementList<ProjectName> projectNames = op.getProjectNames();
+
+        if( !CoreUtil.isNullOrEmpty( newProjects ) )
+        {
+            for( IProject project : newProjects )
+            {
+                projectNames.insert().setName( project.getName() );
+            }
+        }
 
         if( CoreUtil.isNullOrEmpty( newProjects ) )
         {
