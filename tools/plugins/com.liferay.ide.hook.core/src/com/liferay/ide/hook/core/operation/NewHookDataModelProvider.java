@@ -96,7 +96,7 @@ public class NewHookDataModelProvider extends ArtifactEditOperationDataModelProv
 
                         if( defaultDocroot != null )
                         {
-                            String containerFullPath = defaultDocroot.getFullPath().toPortableString();
+                            String containerFullPath = defaultDocroot.getFullPath().toPortableString() + customJspFolder;
 
                             int index = containerFullPath.indexOf( defaultWebappRootPath );
 
