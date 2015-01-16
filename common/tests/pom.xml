@@ -35,6 +35,7 @@
 
 	<modules>
         <module>com.liferay.ide.core.tests</module>
+		<module>com.liferay.ide.ui.tests</module>
 	</modules>
 </project>
 	
