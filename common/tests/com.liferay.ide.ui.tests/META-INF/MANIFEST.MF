@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
-Bundle-Vendor: %providerName
-Bundle-SymbolicName: com.liferay.ide.xml.search.ui.tests
+Bundle-Name: Liferay Core Tests
+Bundle-SymbolicName: com.liferay.ide.ui.tests
 Bundle-Version: 3.0.0.qualifier
+Bundle-Vendor: Liferay, Inc.
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  com.liferay.ide.core.tests;bundle-version="2.0.0",
@@ -20,10 +20,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.sapphire.ui.swt.xml.editor,
  org.eclipse.wst.xml.ui,
  org.eclipse.ui.workbench,
- org.eclipse.ui.ide,
- com.liferay.ide.ui.tests,
- com.liferay.ide.xml.search.ui
+ org.eclipse.ui.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: com.liferay.ide.xml.search.ui.tests
-
+Export-Package: com.liferay.ide.ui.tests
