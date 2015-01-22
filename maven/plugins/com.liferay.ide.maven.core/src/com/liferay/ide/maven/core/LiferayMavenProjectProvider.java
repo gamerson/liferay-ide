@@ -747,6 +747,8 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
                     }
 
                     editModel.save();
+                    
+                    editModel.releaseFromEdit();
                 }
             }
 
@@ -758,13 +760,6 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
                 ProjectCore.createErrorStatus(
                     "Unable to upgrade deployment meta file for " + project.getName(), e );
             ProjectCore.logError( error );
-        }
-        finally
-        {
-            if( editModel != null )
-            {
-                editModel.releaseFromEdit();
-            }
         }
     }
 
