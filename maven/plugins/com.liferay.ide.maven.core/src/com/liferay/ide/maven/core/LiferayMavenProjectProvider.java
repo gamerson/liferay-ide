@@ -723,7 +723,7 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
 
             for( IFile file : metaFiles )
             {
-                editModel = StructuredModelManager.getModelManager().getModelForEdit( file );
+                editModel = StructuredModelManager.getModelManager().getModelForEdit( file ).reinit();
 
                 if( editModel != null && editModel instanceof IDOMModel )
                 {
