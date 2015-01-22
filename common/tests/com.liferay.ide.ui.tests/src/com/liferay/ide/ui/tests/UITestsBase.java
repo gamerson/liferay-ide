@@ -13,20 +13,16 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.xml.search.ui.tests;
+package com.liferay.ide.ui.tests;
 
-import com.liferay.ide.ui.tests.UITestsBase;
+import com.liferay.ide.project.core.tests.ProjectCoreBase;
 
 /**
- * @author Kuo Zhang
  * @author Terry Jia
  */
-public class XmlSearchTestsBase extends UITestsBase
+public class UITestsBase extends ProjectCoreBase
 {
-
-    private static final String bundleId = "com.liferay.ide.xml.search.ui.tests";
-
-    public static String MESSAGE_TYPE_HIERARCHY_INCORRECT = "Type hierarchy of type \"{0}\" incorrect";
+    private static final String bundleId = "com.liferay.ide.ui.tests";
 
     protected String getBundleId()
     {
