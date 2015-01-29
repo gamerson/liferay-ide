@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
 /*******************************************************************************
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -14,28 +12,22 @@
  * details.
  *
  *******************************************************************************/
- -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
+package com.liferay.ide.alloy.ui.tests;
 
-    <parent>
-        <groupId>com.liferay.ide.common</groupId>
-        <artifactId>common</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-    </parent>
+import com.liferay.ide.project.core.tests.ProjectCoreBase;
 
-    <groupId>com.liferay.ide.common.tests</groupId>
-    <artifactId>common-tests</artifactId>
+/**
+ * @author Terry Jia
+ */
+public class AlloyTestsBase extends ProjectCoreBase
+{
 
-    <name>Liferay IDE Common Tests</name>
+    private static final String bundleId = "com.liferay.ide.alloy.ui.tests";
 
-    <packaging>pom</packaging>
+    protected String getBundleId()
+    {
+        return bundleId;
+    }
 
-	<modules>
-        <module>com.liferay.ide.core.tests</module>
-		<module>com.liferay.ide.ui.tests</module>
-	</modules>
-</project>
-	
+}
