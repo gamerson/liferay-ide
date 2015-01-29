@@ -186,7 +186,16 @@ public class RemoteConnection implements IRemoteConnection
             HttpEntity entity = response.getEntity();
 
             String body = CoreUtil.readStreamToString( entity.getContent(), false );
-
+            
+            if( body.contains("Register Your Server or Application") )
+            {
+            	return "This server is not registered.";
+            }
+            else if( body.contains("Your license key has expired") )
+            {
+            	return "Your license key has expired.";
+            }
+            
             EntityUtils.consume( entity );
 
             return body;
