@@ -241,12 +241,18 @@ public class SDKProjectsImportDataModelProvider extends FacetProjectCreationData
                         if( project instanceof BinaryProjectRecord )
                         {
                             BinaryProjectRecord binaryProject = (BinaryProjectRecord) project;
-                            Version sdkVersion = new Version( getStringProperty( SDK_VERSION ) );
-
-                            if( binaryProject.isWeb() &&
-                                CoreUtil.compareVersions( sdkVersion, ILiferayConstants.V700 ) < 0 )
+                            try
                             {
-                                return ProjectCore.createErrorStatus( Msgs.unableSupportWebPluginType );
+                            	Version sdkVersion = new Version( getStringProperty( SDK_VERSION ) );
+
+                            	if( binaryProject.isWeb() &&
+                            		CoreUtil.compareVersions( sdkVersion, ILiferayConstants.V700 ) < 0 )
+                            	{
+                            		return ProjectCore.createErrorStatus( Msgs.unableSupportWebPluginType );
+                            	}
+                            }
+                            catch( Exception e )
+                            {
                             }
                         }
                     }
