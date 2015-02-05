@@ -57,6 +57,9 @@
       <include
             file="templates/aui-jsp-templates.xml">
       </include>
+      <include
+            file="templates/jsonws-js-templates.xml">
+      </include>
    </extension>
 
     <extension point="org.eclipse.ui.editors">
@@ -72,6 +75,12 @@
             contentTypeId="com.liferay.ide.alloy.core.alloyjspsource">
         </contentTypeBinding>
         </editor>
+    </extension>
+    <extension
+          point="org.eclipse.wst.sse.ui.editorConfiguration">
+          <sourceViewerConfiguration
+            class="com.liferay.ide.alloy.ui.editor.PortletJSPSourceViewerConfiguration"
+            target="com.liferay.ide.alloy.ui.portletjspeditor" />
     </extension>
 
 </plugin>
