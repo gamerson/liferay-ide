@@ -15,12 +15,12 @@
 
 package com.liferay.ide.xml.search.ui.tests;
 
+import static com.liferay.ide.ui.tests.UITestsUtils.containsProposal;
+import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.buildAndValidate;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkMarkerByMessage;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkNoMarker;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.containHyperlink;
-import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.containProposal;
-import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.getHyperLinksForElement;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.getProposalsForElement;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.setElementContent;
@@ -94,7 +94,7 @@ public class PortletXmlTests extends XmlSearchTestsBase
         assertEquals( true, proposals.length > 0 );
 
         final String exceptedProposalString = "ResourceFilterImpl - com.liferay.ide.tests";
-        assertEquals( true, containProposal( proposals, exceptedProposalString, true ) );
+        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
 
         elementContent = "com.liferay.ide.tests.ResourceFilterImpl";
         setElementContent( descriptorFile, elementName, elementContent );
@@ -170,7 +170,7 @@ public class PortletXmlTests extends XmlSearchTestsBase
         assertEquals( true, proposals.length > 0 );
 
         final String exceptedProposalString = "PortletURLGenerationListenerImpl - com.liferay.ide.tests";
-        assertEquals( true, containProposal( proposals, exceptedProposalString, true ) );
+        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
 
         elementContent = "com.liferay.ide.tests.PortletURLGenerationListenerImpl";
         setElementContent( descriptorFile, elementName, elementContent );
@@ -245,7 +245,7 @@ public class PortletXmlTests extends XmlSearchTestsBase
         assertEquals( true, proposals.length > 0 );
 
         final String exceptedProposalString = "GenericPortletImpl - com.liferay.ide.tests";
-        assertEquals( true, containProposal( proposals, exceptedProposalString, true ) );
+        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
 
         elementContent = "com.liferay.ide.tests.GenericPortletImpl";
         setElementContent( descriptorFile, elementName, elementContent );
@@ -322,7 +322,7 @@ public class PortletXmlTests extends XmlSearchTestsBase
         assertEquals( true, proposals.length > 0 );
 
         final String exceptedProposalString = "content.Language";
-        assertEquals( true, containProposal( proposals, exceptedProposalString, true ) );
+        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
 
         elementContent = "content.Language";
         setElementContent( descriptorFile, elementName, elementContent );
