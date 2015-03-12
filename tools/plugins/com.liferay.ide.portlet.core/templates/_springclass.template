@@ -1,0 +1,9 @@
+@Controller
+@RequestMapping("VIEW")
+<%
+	if (model.isPublic()) { 
+%>
+public class <%= model.getClassName() %> {
+<%
+	}
+%>
