@@ -97,6 +97,28 @@ public class NodeUtil
         return retval;
     }
 
+    public static boolean checkNodeListChildElementContent( NodeList nodeList, String elementName, String content )
+    {
+        for( int i = 0; i < nodeList.getLength(); i++ )
+        {
+            Element node = (Element) nodeList.item( i );
+
+            Element childElement = findChildElement( node, elementName );
+
+            if( childElement != null )
+            {
+                String nodeValue = getTextContent( childElement );
+
+                if( nodeValue != null && nodeValue.equals( content ) )
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static Node findFirstChild( Element element, String elementName )
     {
         if( element != null && !( CoreUtil.isNullOrEmpty( elementName ) ) )
