@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.portlet.vaadin.core.dd;
+package com.liferay.ide.portlet.core.spring.dd;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
@@ -35,33 +35,38 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 /**
- * @author Kuo Zhang
+ * @author Terry Jia
  */
-public class VaadinPluginPackageDescriptorHelper extends PluginPackagesDescriptorHelper
+public class SpringPluginPackageDescriptorHelper extends PluginPackagesDescriptorHelper
 {
 
-    public VaadinPluginPackageDescriptorHelper()
+    public SpringPluginPackageDescriptorHelper()
     {
         super();
     }
 
-    public VaadinPluginPackageDescriptorHelper( IProject project )
+    public SpringPluginPackageDescriptorHelper( IProject project )
     {
         super( project );
     }
 
-    // When a vaadin portlet is added, the liferay-plugin-package.properties won't add an element called "portlet",
-    // it needs add a line "portal-dependency-jars=vaadin.jar"
     @Override
     public IStatus doAddNewPortlet( IDataModel dataModel )
     {
         if( canAddNewPortlet( dataModel ) )
         {
-            return addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "vaadin.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "aopalliance.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-aop.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-beans.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-context.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-core.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-expression.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-web.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-webmvc.jar" );
+            addPortalDependency( IPluginPackageModel.PROPERTY_PORTAL_DEPENDENCY_JARS, "spring-webmvc-portlet.jar" );
         }
 
         return Status.OK_STATUS;
-
     }
 
     public IStatus addPortalDependency( String propertyName, String value )
@@ -133,6 +138,7 @@ public class VaadinPluginPackageDescriptorHelper extends PluginPackagesDescripto
         catch( Exception e )
         {
             PortletCore.logError( e );
+
             return PortletCore.createErrorStatus( "Could not add dependency in " +
                 ILiferayConstants.LIFERAY_PLUGIN_PACKAGE_PROPERTIES_FILE );
         }
@@ -142,6 +148,6 @@ public class VaadinPluginPackageDescriptorHelper extends PluginPackagesDescripto
 
     private boolean canAddNewPortlet( IDataModel dataModel )
     {
-        return dataModel.getID().contains( "NewVaadinPortlet" );
+        return dataModel.getID().contains( "NewSpringPortlet" );
     }
 }

@@ -16,6 +16,7 @@
 package com.liferay.ide.portlet.core.dd;
 
 import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.project.core.descriptor.AddNewPortletOperation;
 import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
 
 import org.eclipse.core.resources.IFile;
@@ -29,6 +30,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
  * @author Cindy Li
  * @author Simon Jiang
  * @author Kuo Zhang
+ * @author Terry Jia
  */
 public class PluginPackagesDescriptorHelper extends LiferayDescriptorHelper
 {
@@ -47,10 +49,20 @@ public class PluginPackagesDescriptorHelper extends LiferayDescriptorHelper
     @Override
     protected void addDescriptorOperations()
     {
-        // currently, no descriptor operations for this descriptor
+        addDescriptorOperation
+        (
+            new AddNewPortletOperation()
+            {
+                @Override
+                public IStatus addNewPortlet( final IDataModel model )
+                {
+                    return doAddNewPortlet( model );
+                }
+            }
+        );
     }
 
-    public IStatus addNewPortlet( IDataModel dataModel )
+    public IStatus doAddNewPortlet( IDataModel dataModel )
     {
         return Status.OK_STATUS;
     }
