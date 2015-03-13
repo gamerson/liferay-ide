@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+<template name="%Templates.portlet.spring.viewjsp.name" description="%Templates.portlet.spring.viewjsp.desc"
+            id="com.liferay.ide.templates.portlet.spring.view" context="spring_portlet_new"
+            enabled="true">%Templates.portlet.spring.viewjsp.content</template>
+
+</templates>

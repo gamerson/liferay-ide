@@ -1,0 +1,17 @@
+<%@ jet package="com.liferay.ide.portlet.core.spring.operation" 
+	imports="java.util.* com.liferay.ide.portlet.core.spring.* com.liferay.ide.portlet.core.spring.operation.* com.liferay.ide.portlet.core.operation.* org.eclipse.jst.j2ee.internal.common.operations.*" 
+	class="SpringPortletTemplate" 
+	skeleton="springportlet.generator.skeleton"
+%>
+<% CreateSpringPortletTemplateModel model = (CreateSpringPortletTemplateModel) argument; %>
+<%@ include file="_flags.template" %>
+<%@ include file="_package.template" %>
+<%@ include file="_imports.template" %>
+<%@ include file="_springclass.template" %>
+
+	@RenderMapping
+	public String question(Model model) {
+		return "<%= model.getPortletName() %>/view";
+	}
+
+}

@@ -345,6 +345,30 @@
    </extension>
 
    <extension
+         id="com.liferay.ide.portlet.ui.newSpringMVCPortletWizard"
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.liferay.ide.newWizards"
+            name="%category.name">
+      </category>
+      <wizard
+            category="com.liferay.ide.newWizards"
+            class="com.liferay.ide.portlet.ui.spring.NewSpringPortletWizard"
+            icon="icons/n16/spring_mvc.png"
+            id="com.liferay.ide.eclipse.portlet.springmvc.ui.wizard.portlet"
+            name="Liferay Spring MVC Portlet">
+         <class class="com.liferay.ide.portlet.ui.spring.NewSpringPortletWizard">
+            <parameter name="liferay_extra_artifact" value="true"/>
+            <parameter name="menuIndex" value="10" />
+            <parameter name="validProjectTypes" value="portlet" />
+         </class>
+         <description>
+            Create a new Liferay Spring MVC Portlet
+         </description>
+      </wizard>
+   </extension>
+
+   <extension
          point="org.eclipse.ui.editors.templates">
       <contextType
             class="com.liferay.ide.portlet.ui.jsf.JSFPortletXHTMLTemplateContextType"
@@ -380,5 +404,17 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M3+N">
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            class="com.liferay.ide.portlet.ui.spring.SpringPortletJSPTemplateContextType"
+            id="spring_portlet_new"
+            name="New Spring Portlet JSP">
+      </contextType>
+      <include
+            file="templates/portlet-spring-templates.xml"
+            translations="templates/portlet-spring-templates.properties">
+      </include>
    </extension>
 </plugin>
