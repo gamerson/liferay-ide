@@ -15,24 +15,37 @@
 
 package com.liferay.ide.xml.search.ui.tests;
 
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.buildAndValidate;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.getTextHoverForElement;
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.setElementContent;
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkMarkerByMessage;
+
+import java.text.MessageFormat;
+
+import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
+import com.liferay.ide.xml.search.ui.validators.LiferayBaseValidator;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import static org.junit.Assert.assertFalse;
+
+import org.junit.Test;
+
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.junit.Test;
 
 /**
  * @author Kuo Zhang
+ * @author Li Lu
  */
 public class LiferayPortletXmlTests extends XmlSearchTestsBase
-{
+{	
+	private final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptorFile;
     private IProject project;
 
@@ -96,12 +109,40 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
     public void testFooterPortletCss()
     {
     }
+    
+    public void testFooterPortalCss() throws Exception
+    {
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "footer-portal-css";
+        final String elementValue = "footer-portal-css";
+  
+        setElementContent(descriptorFile, elementName, elementValue);
+        buildAndValidate( descriptorFile );
+        
+        String markerMessage=MessageFormat.format(LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue });
+        assertFalse(checkMarkerByMessage(descriptorFile, MARKER_TYPE, markerMessage, true));
+    	
+    }
 
     // TODO
     public void testFooterPortletJavaScript()
     {
     }
 
+    public void testFooterPortalJavaScript() throws Exception
+    {
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "footer-portal-javascript";
+        final String elementValue = "footer-portal-javascript";
+  
+        setElementContent(descriptorFile, elementName, elementValue);
+        buildAndValidate( descriptorFile );
+        
+        String markerMessage=MessageFormat.format(LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue });
+        assertFalse(checkMarkerByMessage(descriptorFile, MARKER_TYPE, markerMessage, true));
+    }
+    
     // TODO
     public void testFriendlyURLMapperClass()
     {
@@ -111,10 +152,37 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
     public void testHeaderPortletCss()
     {
     }
-
+    
+    public void testHeaderPortalCss() throws Exception
+    {	
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "header-portal-css";
+        final String elementValue = "header-portal-css";
+  
+        setElementContent(descriptorFile, elementName, elementValue);
+        buildAndValidate( descriptorFile );
+        
+        String markerMessage=MessageFormat.format(LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue });
+        assertFalse(checkMarkerByMessage(descriptorFile, MARKER_TYPE, markerMessage, true));
+    	
+    }
+    
     // TODO
     public void testHeaderPortletJavascript()
     {
+    }
+    
+    public void testHeaderPortalJavascript() throws Exception
+    {
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "header-portal-javascript";
+        final String elementValue = "header-portal-javascript";
+  
+        setElementContent(descriptorFile, elementName, elementValue);
+        buildAndValidate( descriptorFile );
+        
+        String markerMessage=MessageFormat.format(LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue });
+        assertFalse(checkMarkerByMessage(descriptorFile, MARKER_TYPE, markerMessage, true));
     }
 
     // TODO
@@ -262,5 +330,19 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
             XmlSearchTestsUtils.getSourceViewerConfiguraionFromOpenedEditor( descriptorFile );
 
         assertEquals( true, sourceViewerConfiguration instanceof LiferayCustomXmlViewerConfiguration );
+    }
+    
+    @Test
+    public void testRemovedValidation() throws Exception
+    {
+    	//IDE-1802
+        if( shouldSkipBundleTests() )
+        {
+            return;
+        }
+        testFooterPortalCss();
+        testFooterPortalJavaScript();
+        testHeaderPortalCss();
+        testHeaderPortalJavascript();
     }
 }
