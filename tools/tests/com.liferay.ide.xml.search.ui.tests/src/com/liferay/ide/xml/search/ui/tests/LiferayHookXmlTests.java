@@ -19,7 +19,10 @@ import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkMarke
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkNoMarker;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.setElementContent;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.LiferayCore;
@@ -30,10 +33,10 @@ import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.junit.Test;
 
 /**
  * @author Kuo Zhang
+ * @author Li Lu
  */
 public class LiferayHookXmlTests extends XmlSearchTestsBase
 {
@@ -341,21 +344,10 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         buildAndValidate( descriptorFile );
     }
 
-    // TODO
+    @Test
     public void testServiceTypeAndServiceImpl() throws Exception
     {
-        // test service-type and service-impl together, because validation of service-impl relies on service-type
-
-        // Service type
-        // Foo "Type not found"
-        // com.liferay.ide.tests.OrphanClass "Not a interface"
-        // com.liferay.ide.tests.OrphanInterface "Should match *Service"
-        // com.liferay.ide.tests.FooService, correct
-
-        // Service Imple
-        // Foo "Type not found"
-        // OrphanClass "Type Hierarchy incorrect"
-        // FooServiceWrapperImpl correct
+    	testServiceTypeAndServiceImplValidation();
     }
 
     // TODO
@@ -368,9 +360,31 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
     {
     }
 
-    // TODO
-    protected void testServiceTypeAndServiceImplValidation()
-    {
+    protected void testServiceTypeAndServiceImplValidation() throws Exception
+    {	
+    	//IDE-1810
+    	final IFile descriptorFile = getDescriptorFile();
+    	final String elementName1 = "service-type";
+        final String elementName2 = "service-impl";
+        
+        String elementValue1 = "com.liferay.portal.service.AccountLocalService";
+        String elementValue2 = "ExtAccountLocalServiceWrong";
+        
+        setElementContent( descriptorFile, elementName1, elementValue1 );
+        setElementContent( descriptorFile, elementName2, elementValue2);
+        
+        String markerMessage =
+                MessageFormat.format(
+                		LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue2 } );
+        
+        buildAndValidate( descriptorFile );
+        assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
+        
+        elementValue2="com.liferay.ide.tests.ExtAccountLocalService";
+        setElementContent( descriptorFile, elementName2, elementValue2);
+        
+        buildAndValidate( descriptorFile );
+        assertTrue( checkNoMarker(descriptorFile, MARKER_TYPE) ); 	
     }
 
     @Test
