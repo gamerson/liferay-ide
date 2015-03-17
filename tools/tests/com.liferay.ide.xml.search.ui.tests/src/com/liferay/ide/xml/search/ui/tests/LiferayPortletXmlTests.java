@@ -15,14 +15,22 @@
 
 package com.liferay.ide.xml.search.ui.tests;
 
-import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.deleteOtherProjects;
+import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.buildAndValidate;
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkMarkerByMessage;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.getTextHoverForElement;
+import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.setElementContent;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
+import com.liferay.ide.xml.search.ui.validators.LiferayBaseValidator;
+
+import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -30,16 +38,19 @@ import org.junit.Test;
 
 /**
  * @author Kuo Zhang
+ * @author Li Lu
  */
 public class LiferayPortletXmlTests extends XmlSearchTestsBase
 {
+
+    private final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptorFile;
     private IProject project;
 
     private IFile getDescriptorFile() throws Exception
     {
-        return descriptorFile != null ? descriptorFile :
-            LiferayCore.create( getProject() ).getDescriptorFile( ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
+        return descriptorFile != null ? descriptorFile : LiferayCore.create( getProject() ).getDescriptorFile(
+            ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
     }
 
     private IProject getProject() throws Exception
@@ -92,14 +103,79 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
     {
     }
 
-    // TODO
-    public void testFooterPortletCss()
+    @Test
+    public void testFooterPortletCss() throws Exception
     {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "footer-portlet-css";
+        final String elementValue = "footer-portlet-css";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertTrue( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
+
     }
 
-    // TODO
-    public void testFooterPortletJavaScript()
+    @Test
+    public void testFooterPortalCss() throws Exception
     {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "footer-portal-css";
+        final String elementValue = "footer-portal-css";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertFalse( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
+
+    }
+
+    @Test
+    public void testFooterPortletJavaScript() throws Exception
+    {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "footer-portlet-javascript";
+        final String elementValue = "footer-portlet-javascript";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertTrue( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
+
+    }
+
+    @Test
+    public void testFooterPortalJavaScript() throws Exception
+    {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "footer-portal-javascript";
+        final String elementValue = "footer-portal-javascript";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertFalse( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
     }
 
     // TODO
@@ -107,14 +183,77 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
     {
     }
 
-    // TODO
-    public void testHeaderPortletCss()
+    @Test
+    public void testHeaderPortletCss() throws Exception
     {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "header-portlet-css";
+        final String elementValue = "header-portlet-css";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertFalse( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
     }
 
-    // TODO
-    public void testHeaderPortletJavascript()
+    @Test
+    public void testHeaderPortalCss() throws Exception
     {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "header-portal-css";
+        final String elementValue = "header-portal-css";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertFalse( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
+
+    }
+
+    @Test
+    public void testHeaderPortletJavascript() throws Exception
+    {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "header-portlet-javascript";
+        final String elementValue = "header-portlet-javascript";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertTrue( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
+    }
+
+    @Test
+    public void testHeaderPortalJavascript() throws Exception
+    {
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName = "header-portal-javascript";
+        final String elementValue = "header-portal-javascript";
+
+        setElementContent( descriptorFile, elementName, elementValue );
+        buildAndValidate( descriptorFile );
+
+        String markerMessage =
+            MessageFormat.format( LiferayBaseValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        assertFalse( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
     }
 
     // TODO
@@ -189,10 +328,8 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
 
         for( String text : displayTexts )
         {
-            if( text.contains( "Portlet name" ) &&
-                text.contains( "Display name" ) &&
-                text.contains( "Portlet class" ) &&
-                text.contains( "File" ) )
+            if( text.contains( "Portlet name" ) && text.contains( "Display name" ) &&
+                text.contains( "Portlet class" ) && text.contains( "File" ) )
             {
                 flag = true;
                 break;
@@ -255,7 +392,10 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
     @Test
     public void testSourceViewerConfiguration() throws Exception
     {
-        if( shouldSkipBundleTests() ) { return; }
+        if( shouldSkipBundleTests() )
+        {
+            return;
+        }
 
         final IFile descriptorFile = getDescriptorFile();
         Object sourceViewerConfiguration =
@@ -263,4 +403,5 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
 
         assertEquals( true, sourceViewerConfiguration instanceof LiferayCustomXmlViewerConfiguration );
     }
+
 }
