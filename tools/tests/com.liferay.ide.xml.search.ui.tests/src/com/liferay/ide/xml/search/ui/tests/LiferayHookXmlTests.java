@@ -12,14 +12,16 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.xml.search.ui.tests;
 
+import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.buildAndValidate;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkMarkerByMessage;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkNoMarker;
-import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.setElementContent;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.LiferayCore;
@@ -34,9 +36,11 @@ import org.junit.Test;
 
 /**
  * @author Kuo Zhang
+ * @author Li Lu
  */
 public class LiferayHookXmlTests extends XmlSearchTestsBase
 {
+
     private final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptor;
     private IProject project;
@@ -76,7 +80,6 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
     {
     }
 
-
     // TODO
     protected void testIndexerClassNameHyperlink()
     {
@@ -91,8 +94,7 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         setElementContent( descriptorFile, elementName, elementValue );
 
         String markerMessage =
-            MessageFormat.format(
-                LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
+            MessageFormat.format( LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
 
@@ -100,7 +102,6 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         setElementContent( descriptorFile, elementName, elementValue );
         markerMessage = MessageFormat.format( MESSAGE_TYPE_HIERARCHY_INCORRECT, new Object[] { elementValue } ) + ".*";
         buildAndValidate( descriptorFile );
-
 
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, false ) );
 
@@ -141,15 +142,13 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         String elementValue = "Foo";
         setElementContent( descriptorFile, elementName, elementValue );
         String markerMessage =
-            MessageFormat.format(
-                LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
+            MessageFormat.format( LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
 
         elementValue = "com.liferay.ide.tests.Orphan";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage =
-            MessageFormat.format( MESSAGE_TYPE_HIERARCHY_INCORRECT, new Object[] { elementValue } ) + ".*";
+        markerMessage = MessageFormat.format( MESSAGE_TYPE_HIERARCHY_INCORRECT, new Object[] { elementValue } ) + ".*";
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, false ) );
 
@@ -210,8 +209,9 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         // language properties file doesn't exist
         elementValue = "LanguagePropertiesNotExist.properties";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage = MessageFormat.format(
-            LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        markerMessage =
+            MessageFormat.format(
+                LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
 
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
@@ -226,11 +226,12 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         // language properties file doesn't exist
         elementValue = "content/LanguagePropertiesNotExist.properties";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage = MessageFormat.format(
-            LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        markerMessage =
+            MessageFormat.format(
+                LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
 
         buildAndValidate( descriptorFile );
-        assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage,true ) );
+        assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
 
         // language properties file exists
         elementValue = "content/LanguagePropertiesExist.properties";
@@ -242,8 +243,9 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         // language properties file with "*" doesn't exist
         elementValue = "LanguagePropertiesNotExist*.properties";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage = MessageFormat.format(
-            LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        markerMessage =
+            MessageFormat.format(
+                LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
 
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
@@ -310,8 +312,9 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         // portal properties file doesn't exist
         elementValue = "PortalPropertiesNotExist.properties";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage = MessageFormat.format(
-            LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        markerMessage =
+            MessageFormat.format(
+                LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
 
@@ -324,10 +327,11 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         // portal properties file doesn't exist
         elementValue = "content/PortalPropertiesNotExist.properties";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage = MessageFormat.format(
-            LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
+        markerMessage =
+            MessageFormat.format(
+                LiferayHookDescriptorValidator.MESSAGE_RESOURCE_NOT_FOUND, new Object[] { elementValue } );
         buildAndValidate( descriptorFile );
-        assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage , true ) );
+        assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
 
         // portal properties file exists
         elementValue = "content/PortalPropertiesExist.properties";
@@ -368,9 +372,34 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
     {
     }
 
-    // TODO
-    protected void testServiceTypeAndServiceImplValidation()
+    @Test
+    public void testServiceTypeAndServiceImplValidation() throws Exception
     {
+        // IDE-1810
+        if( shouldSkipBundleTests() )
+            return;
+
+        final IFile descriptorFile = getDescriptorFile();
+        final String elementName1 = "service-type";
+        final String elementName2 = "service-impl";
+
+        String elementValue1 = "com.liferay.portal.service.AccountLocalService";
+        String elementValue2 = "ExtAccountLocalServiceWrong";
+
+        setElementContent( descriptorFile, elementName1, elementValue1 );
+        setElementContent( descriptorFile, elementName2, elementValue2 );
+
+        String markerMessage =
+            MessageFormat.format( LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue2 } );
+
+        buildAndValidate( descriptorFile );
+        assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
+
+        elementValue2 = "com.liferay.ide.tests.ExtAccountLocalService";
+        setElementContent( descriptorFile, elementName2, elementValue2 );
+
+        buildAndValidate( descriptorFile );
+        assertTrue( checkNoMarker( descriptorFile, MARKER_TYPE ) );
     }
 
     @Test
@@ -404,15 +433,13 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         String elementValue = "Foo";
         setElementContent( descriptorFile, elementName, elementValue );
         String markerMessage =
-            MessageFormat.format(
-                LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
+            MessageFormat.format( LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
 
         elementValue = "com.liferay.ide.tests.Orphan";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage =
-            MessageFormat.format( MESSAGE_TYPE_HIERARCHY_INCORRECT, new Object[] { elementValue } ) + ".*";
+        markerMessage = MessageFormat.format( MESSAGE_TYPE_HIERARCHY_INCORRECT, new Object[] { elementValue } ) + ".*";
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, false ) );
 
@@ -425,7 +452,10 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
     @Test
     public void testSourceViewerConfiguration() throws Exception
     {
-        if( shouldSkipBundleTests() ) { return; }
+        if( shouldSkipBundleTests() )
+        {
+            return;
+        }
 
         final IFile descriptorFile = getDescriptorFile();
         Object sourceViewerConfiguration =
@@ -465,15 +495,13 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         String elementValue = "Foo";
         setElementContent( descriptorFile, elementName, elementValue );
         String markerMessage =
-            MessageFormat.format(
-                LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
+            MessageFormat.format( LiferayHookDescriptorValidator.MESSAGE_TYPE_NOT_FOUND, new Object[] { elementValue } );
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
 
         elementValue = "com.liferay.ide.tests.Orphan";
         setElementContent( descriptorFile, elementName, elementValue );
-        markerMessage =
-            MessageFormat.format( MESSAGE_TYPE_HIERARCHY_INCORRECT, new Object[] { elementValue } ) + ".*";
+        markerMessage = MessageFormat.format( MESSAGE_TYPE_HIERARCHY_INCORRECT, new Object[] { elementValue } ) + ".*";
         buildAndValidate( descriptorFile );
         assertEquals( true, checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, false ) );
 
