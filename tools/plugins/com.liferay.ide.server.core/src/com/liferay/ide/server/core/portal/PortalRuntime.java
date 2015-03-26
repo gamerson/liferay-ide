@@ -14,29 +14,46 @@
  *******************************************************************************/
 package com.liferay.ide.server.core.portal;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.core.LiferayServerCore;
+import com.liferay.ide.server.util.JavaUtil;
+import com.liferay.ide.server.util.ServerUtil;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.internal.launching.StandardVMType;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.VMStandin;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
+@SuppressWarnings( "restriction" )
 public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, PropertyChangeListener
 {
+    protected static final String PROP_VM_INSTALL_TYPE_ID = "vm-install-type-id";
+    protected static final String PROP_VM_INSTALL_ID = "vm-install-id";
+
     private PortalBundle portalBundle;
 
     @Override
@@ -48,6 +65,85 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
         {
             this.getRuntimeWorkingCopy().removePropertyChangeListener( this );
         }
+    }
+
+    private IPath findBundledJREPath( IPath location )
+    {
+        if( Platform.getOS().equals( Platform.OS_WIN32 ) && location != null && location.toFile().exists() )
+        {
+            // look for jre dir
+            File tomcat = location.toFile();
+            String[] jre = tomcat.list( new FilenameFilter()
+            {
+                public boolean accept( File dir, String name )
+                {
+                    return name.startsWith( "jre" ); //$NON-NLS-1$
+                }
+            } );
+
+            for( String dir : jre )
+            {
+                File javaw = new File( location.toFile(), dir + "/win/bin/javaw.exe" ); //$NON-NLS-1$
+
+                if( javaw.exists() )
+                {
+                    return new Path( javaw.getPath() ).removeLastSegments( 2 );
+                }
+            }
+        }
+        return null;
+    }
+
+    public IVMInstall findPortalBundledJRE( boolean addVM )
+    {
+        IPath jrePath = findBundledJREPath( getRuntime().getLocation() );
+
+        if( jrePath == null )
+        {
+            return null;
+        }
+
+        // make sure we don't have an existing JRE that has the same path
+        for( IVMInstallType vmInstallType : JavaRuntime.getVMInstallTypes() )
+        {
+            for( IVMInstall vmInstall : vmInstallType.getVMInstalls() )
+            {
+                if( vmInstall.getInstallLocation().equals( jrePath.toFile() ) )
+                {
+                    return vmInstall;
+                }
+            }
+        }
+
+        if( addVM )
+        {
+            IVMInstallType installType = JavaRuntime.getVMInstallType( StandardVMType.ID_STANDARD_VM_TYPE );
+            VMStandin newVM = new VMStandin( installType, JavaUtil.createUniqueId( installType ) );
+            newVM.setInstallLocation( jrePath.toFile() );
+
+            if( !CoreUtil.isNullOrEmpty( getRuntime().getName() ) )
+            {
+                newVM.setName( getRuntime().getName() + " JRE" ); //$NON-NLS-1$
+            }
+            else
+            {
+                newVM.setName( "Liferay JRE" ); //$NON-NLS-1$
+            }
+
+            // make sure the new VM name isn't the same as existing name
+            boolean existingVMWithSameName = ServerUtil.isExistingVMName( newVM.getName() );
+
+            int num = 1;
+            while( existingVMWithSameName )
+            {
+                newVM.setName( getRuntime().getName() + " JRE (" + ( num++ ) + ")" ); //$NON-NLS-1$ //$NON-NLS-2$
+                existingVMWithSameName = ServerUtil.isExistingVMName( newVM.getName() );
+            }
+
+            return newVM.convertToRealVM();
+        }
+
+        return null;
     }
 
     public IPath getAppServerDeployDir()
@@ -161,8 +257,91 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
 
     public IVMInstall getVMInstall()
     {
-        // TODO Auto-generated method stub
+        if( getVMInstallTypeId() == null )
+        {
+            IVMInstall vmInstall = findPortalBundledJRE( false );
+            
+            if( vmInstall != null )
+            {
+                setVMInstall( vmInstall );
+                return vmInstall;
+            }
+            else
+            {
+                return JavaRuntime.getDefaultVMInstall();
+            }
+        }
+
+        try
+        {
+            IVMInstallType vmInstallType = JavaRuntime.getVMInstallType( getVMInstallTypeId() );
+            IVMInstall[] vmInstalls = vmInstallType.getVMInstalls();
+            int size = vmInstalls.length;
+            String id = getVMInstallId();
+
+            for( int i = 0; i < size; i++ )
+            {
+                if( id.equals( vmInstalls[i].getId() ) )
+                {
+                    return vmInstalls[i];
+                }
+            }
+        }
+        catch( Exception e )
+        {
+            // ignore
+        }
         return null;
+    }
+
+    protected String getVMInstallId() 
+    {
+        return getAttribute(PROP_VM_INSTALL_ID, (String)null);
+    }
+
+    protected String getVMInstallTypeId() 
+    {
+        return getAttribute(PROP_VM_INSTALL_TYPE_ID, (String)null);
+    }
+
+    @Override
+    public void setDefaults( IProgressMonitor monitor )
+    {
+        IRuntimeType type = getRuntimeWorkingCopy().getRuntimeType();
+        getRuntimeWorkingCopy().setLocation( new Path( LiferayServerCore.getPreference( "location" + type.getId() ) ) );
+    }
+
+    public void setVMInstall( IVMInstall vmInstall )
+    {
+        if( vmInstall == null )
+        {
+            setVMInstall( null, null );
+        }
+        else
+        {
+            setVMInstall( vmInstall.getVMInstallType().getId(), vmInstall.getId() );
+        }
+    }
+
+    protected void setVMInstall( String typeId, String id )
+    {
+        if( typeId == null )
+        {
+            setAttribute( PROP_VM_INSTALL_TYPE_ID, (String) null );
+        }
+        else
+        {
+            setAttribute( PROP_VM_INSTALL_TYPE_ID, typeId );
+        }
+
+        if( id == null )
+        {
+            setAttribute( PROP_VM_INSTALL_ID, (String) null );
+        }
+        else
+        {
+            setAttribute( PROP_VM_INSTALL_ID, id );
+        }
     }
 
     @Override

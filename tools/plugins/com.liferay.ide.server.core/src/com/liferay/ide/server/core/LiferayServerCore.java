@@ -68,7 +68,7 @@ import org.osgi.framework.BundleContext;
  * @author Greg Amerson
  * @author Simon Jiang
  */
-@SuppressWarnings( "restriction" )
+@SuppressWarnings( {"restriction","deprecation"} )
 public class LiferayServerCore extends Plugin
 {
 
@@ -199,6 +199,10 @@ public class LiferayServerCore extends Plugin
         return plugin;
     }
 
+    public static LiferayServerCore getInstance() {
+        return plugin;
+    }
+
     public static URL getPluginEntry( String path )
     {
         return getDefault().getBundle().getEntry( path );
@@ -263,6 +267,17 @@ public class LiferayServerCore extends Plugin
         }
 
         return pluginPublishers;
+    }
+
+    /**
+     * Return the install location preference.
+     * 
+     * @param id a runtime type id
+     * @return the install location
+     */
+    
+    public static String getPreference(String id) {
+        return getInstance().getPluginPreferences().getString(id);
     }
 
     public static PortalLaunchParticipant[] getPortalLaunchParticipants()
@@ -798,6 +813,16 @@ public class LiferayServerCore extends Plugin
         }
     }
 
+    /**
+     * Set the install location preference.
+     * 
+     * @param id the runtimt type id
+     * @param value the location
+     */
+    public static void setPreference(String id, String value) {
+        getInstance().getPluginPreferences().setValue(id, value);
+        getInstance().savePluginPreferences();
+    }
 
     /*
      * (non-Javadoc)
