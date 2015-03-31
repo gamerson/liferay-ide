@@ -35,7 +35,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -176,18 +178,34 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
             final List<?> archProps =
                 archetypeManager.getRequiredProperties( archetype, remoteArchetypeRepository, monitor );
 
-           if( ! CoreUtil.isNullOrEmpty( archProps ) )
-           {
-               for( Object prop : archProps )
-               {
-                   if( prop instanceof RequiredProperty )
-                   {
-                       final RequiredProperty rProp = (RequiredProperty) prop;
+            if( !CoreUtil.isNullOrEmpty( archProps ) )
+            {
+                for( Object prop : archProps )
+                {
+                    if( prop instanceof RequiredProperty )
+                    {
+                        final RequiredProperty rProp = (RequiredProperty) prop;
 
-                       properties.put( rProp.getKey(), rProp.getDefaultValue() );
-                   }
-               }
-           }
+                        final String key = rProp.getKey();
+
+                        final String themeParent = op.getThemeParent().content( true );
+                        final String themeFramework = op.getThemeFramework().content( true );
+
+                        if( key.equals( "themeParent" ) && !CoreUtil.isNullOrEmpty( themeParent ) )
+                        {
+                            properties.put( rProp.getKey(), themeParent );
+                        }
+                        else if( key.equals( "themeType" ) && !CoreUtil.isNullOrEmpty( themeFramework ) )
+                        {
+                            properties.put( rProp.getKey(), getTemplateExtension( themeFramework ) );
+                        }
+                        else
+                        {
+                            properties.put( rProp.getKey(), rProp.getDefaultValue() );
+                        }
+                    }
+                }
+            }
         }
         catch( UnknownArchetype e1 )
         {
@@ -648,6 +666,17 @@ public class LiferayMavenProjectProvider extends NewLiferayProjectProvider
         }
 
         return profilesToSave;
+    }
+
+    private String getTemplateExtension( String tplFramework )
+    {
+        Map<String, String> tplMap = new HashMap<String, String>();
+
+        tplMap.put( "Velocity", "vm" );
+        tplMap.put( "Freemarker", "ftl" );
+        tplMap.put( "JSP", "jsp" );
+
+        return tplMap.get( tplFramework );
     }
 
     public ILiferayProject provide( Object adaptable )
