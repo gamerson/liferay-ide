@@ -21,22 +21,28 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, PropertyChangeListener
 {
+    private static Map<String, Integer> javaVersionMap = new ConcurrentHashMap<String, Integer>();
     private PortalBundle portalBundle;
 
     @Override
@@ -206,6 +212,42 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
         return false;
     }
 
+    private boolean isVMMinimumVersion( String javaVersion, int minimumVersion )
+    {
+        Integer version = javaVersionMap.get( javaVersion );
+
+        if( version == null )
+        {
+            int index = javaVersion.indexOf( '.' );
+            if( index > 0 )
+            {
+                try
+                {
+                    int major = Integer.parseInt( javaVersion.substring( 0, index ) ) * 100;
+                    index++;
+                    int index2 = javaVersion.indexOf( '.', index );
+
+                    if( index2 > 0 )
+                    {
+                        int minor = Integer.parseInt( javaVersion.substring( index, index2 ) );
+                        version = new Integer( major + minor );
+                        javaVersionMap.put( javaVersion, version );
+                    }
+                }
+                catch( NumberFormatException e )
+                {
+                    // Ignore
+                }
+            }
+        }
+        // If we have a version, and it's less than the minimum, fail the check
+        if( version != null && version.intValue() < minimumVersion )
+        {
+            return false;
+        }
+        return true;
+    }
+    
     @Override
     public void propertyChange( PropertyChangeEvent evt )
     {
@@ -223,7 +265,56 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
     @Override
     public IStatus validate()
     {
+        IStatus status = super.validate();
+
+        if( !status.isOK() )
+        {
+            return status;
+        }
+
+        if ( portalBundle == null)
+        {
+            return new Status( IStatus.ERROR, LiferayServerCore.PLUGIN_ID, 0, Msgs.errorPortalNotExisted, null );
+        }
+
+        if( !portalBundle.getVersion().startsWith( "7" ) )
+        {
+            return new Status( IStatus.ERROR, LiferayServerCore.PLUGIN_ID, 0, Msgs.errorPortalVersion70, null );
+        }
+
+        if( getVMInstall() == null )
+        {
+            return new Status( IStatus.ERROR, LiferayServerCore.PLUGIN_ID, 0, Msgs.errorJRE, null );
+        }
+
+        if( portalBundle.getVersion().startsWith( "7" ) )
+        {
+            IVMInstall vmInstall = getVMInstall();
+            
+            if( vmInstall instanceof IVMInstall2 )
+            {
+                String javaVersion = ( (IVMInstall2) vmInstall ).getJavaVersion();
+                
+                if( javaVersion != null && !isVMMinimumVersion( javaVersion, 106 ) )
+                {
+                    return new Status( IStatus.ERROR, LiferayServerCore.PLUGIN_ID, 0, Msgs.errorJRE70, null );
+                }
+            }
+        }
         return Status.OK_STATUS;
     }
 
+    private static class Msgs extends NLS
+    {
+        public static String errorJRE;
+        public static String errorJRE70;
+        public static String errorPortalVersion70;
+        public static String errorPortalNotExisted;
+
+        static
+        {
+            initializeMessages( PortalRuntime.class.getName(), Msgs.class );
+        }
+    }
+    
 }
