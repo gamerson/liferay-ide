@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.server.core.LiferayServerCore;
@@ -19,13 +20,20 @@ import com.liferay.ide.server.core.LiferayServerCore;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
-
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 public interface PortalServerConstants
 {
     IEclipsePreferences _defaultPrefs = DefaultScope.INSTANCE.getNode( LiferayServerCore.PLUGIN_ID );
 
-    String DEFAULT_MEMORY_ARGS = _defaultPrefs.get( "default.memory.args", "-Xmx1024m\n-XX:MaxPermSize=256m" );
+    String DEFAULT_MEMORY_ARGS = _defaultPrefs.get( "default.memory.args", "-Xmx1024m -XX:MaxPermSize=256m" );
+
+    boolean DEFAULT_USE_DEFAULT_PORTAL_SERVER_SETTING = false;
+
+    String DEFAULT_USERNAME = "test@liferay.com";
+
+    boolean DEFAULT_USE_DEVELOPMENT_SERVER_MODE = false;
+
 }
