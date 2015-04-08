@@ -15,35 +15,19 @@
 
 package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.server.core.ILiferayServer;
+import com.liferay.ide.server.core.ILiferayServerWorkingCopy;
 
 /**
- * @author Gregory Amerson
  * @author Terry Jia
  */
-public interface PortalServer extends ILiferayServer
+public interface PortalServerWorkingCopy extends PortalServer, ILiferayServerWorkingCopy
 {
 
-    String START = "start";
-    String STOP = "stop";
+    public void setExternalProperties( String externalProperties );
 
-    String PROPERTY_EXTERNAL_PROPERTIES = "externalProperties";
+    public void setMemoryArgs( String memoryArgs );
 
-    String PROPERTY_MEMORY_ARGS = "memoryArgs";
+    public void setUseDevelopmentServerMode( boolean useDevelopmentServerMode );
 
-    String PROPERTY_SERVER_MODE = "serverMode";
-
-    String PROPERTY_USE_DEFAULT_PORTAL_SERVER_SETTINGS = "useDefaultPortalServerSettings";
-
-    String PROPERTY_USE_DEVELOPMENT_SERVER_MODE = "oldUseDevelopmentServerMode";
-
-    int getAutoPublishTime();
-
-    String getExternalProperties();
-
-    String[] getMemoryArgs();
-
-    boolean getUseDefaultPortalServerSettings();
-
-    boolean getUseDevelopmentServerMode();
+    public void setUseDefaultPortalServerSettings( boolean useDefaultPortalServerSettings );
 }
