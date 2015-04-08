@@ -331,5 +331,9 @@
             class="com.liferay.ide.server.tomcat.core.PortalTomcatBundleFactory"
             type="tomcat">
       </portalBundle>
+      <portalBundle
+            class="com.liferay.ide.server.core.portal.PortalJBossBundleFactory"
+            type="jboss">
+      </portalBundle>      
    </extension>
 </plugin>
