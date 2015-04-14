@@ -15,14 +15,6 @@
 
 package com.liferay.ide.project.ui.wizard;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.project.core.BinaryProjectRecord;
-import com.liferay.ide.project.core.ISDKProjectsImportDataModelProperties;
-import com.liferay.ide.project.core.util.ProjectImportUtil;
-import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.ui.util.SWTUtil;
-
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -42,6 +34,8 @@ import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -53,6 +47,14 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.project.core.BinaryProjectRecord;
+import com.liferay.ide.project.core.ISDKProjectsImportDataModelProperties;
+import com.liferay.ide.project.core.util.ProjectImportUtil;
+import com.liferay.ide.project.ui.ProjectUI;
+import com.liferay.ide.ui.util.SWTUtil;
 
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
@@ -137,7 +139,16 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
         label.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_BEGINNING ) );
 
         binariesLocation = SWTUtil.createSingleText( parent, 1 );
-
+        binariesLocation.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(binariesLocation.isFocusControl() && "" == binariesLocation.getText()){
+					setMessage(null);
+				}
+			}
+		});
+        
         Button browse = SWTUtil.createButton( parent, Msgs.browse );
         browse.addSelectionListener
         ( 
@@ -443,6 +454,7 @@ public class BinaryProjectsImportWizardPage extends SDKProjectsImportWizardPage
             getDataModel().setProperty( SELECTED_PROJECTS, selectedProjects );
         }
     }
+    
 
     private static class Msgs extends NLS
     {
