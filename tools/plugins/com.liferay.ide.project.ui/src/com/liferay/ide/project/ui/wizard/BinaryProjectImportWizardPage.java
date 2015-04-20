@@ -76,6 +76,7 @@ public class BinaryProjectImportWizardPage extends DataModelFacetCreationWizardP
         Label label = new Label( parent, SWT.NONE );
         label.setText( Msgs.binaryPluginFile );
         label.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_BEGINNING ) );
+
         binariesLocation = SWTUtil.createSingleText( parent, 1 );
         binariesLocation.addModifyListener( new ModifyListener()
         {
@@ -88,7 +89,7 @@ public class BinaryProjectImportWizardPage extends DataModelFacetCreationWizardP
                 }
             }
         } );
-        
+
         Button browse = SWTUtil.createButton( parent, Msgs.browse );
         browse.addSelectionListener
         ( 
