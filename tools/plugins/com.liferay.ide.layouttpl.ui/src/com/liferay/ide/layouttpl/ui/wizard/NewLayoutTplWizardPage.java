@@ -25,6 +25,8 @@ import com.liferay.ide.ui.util.SWTUtil;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -110,6 +112,19 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
         this.synchHelper.synchText( templateFile, LAYOUT_TEMPLATE_FILE, null );
 
         Button templateFileBrowse = SWTUtil.createPushButton( parent, Msgs.browse, null );
+
+        id.addModifyListener( new ModifyListener()
+        {
+            @Override
+            public void modifyText( ModifyEvent e )
+            {
+                if( "" == id.getText() )
+                {
+                    setErrorMessage( "Id can't be empty" );
+                    setPageComplete( false );
+                }
+            }
+        } );
 
         templateFileBrowse.addSelectionListener( new SelectionAdapter()
         {
