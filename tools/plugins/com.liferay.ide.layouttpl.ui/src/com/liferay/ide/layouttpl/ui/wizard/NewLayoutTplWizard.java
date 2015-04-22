@@ -168,6 +168,15 @@ public class NewLayoutTplWizard extends DataModelWizard implements INewWizard, I
         return false;
     }
 
+    @Override
+    public boolean canFinish()
+    {
+        if(layoutTplPage.isPageComplete()){
+            return true;
+        }
+        return false;
+    }
+
     private static class Msgs extends NLS
     {
         public static String newLayoutTemplate;
