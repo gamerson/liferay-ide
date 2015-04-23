@@ -192,6 +192,13 @@ public class NewLayoutTplDataModelProvider extends ArtifactEditOperationDataMode
             {
                 return LayoutTplCore.createErrorStatus( Msgs.templateIdInvalid );
             }
+
+            String idText = getStringProperty( propertyName );
+
+            if( "" == idText )
+            {
+                return LayoutTplCore.createErrorStatus( Msgs.templateIdEmpty );
+            }
         }
         else if( LAYOUT_TEMPLATE_FILE.equals( propertyName ) )
         {
@@ -229,6 +236,7 @@ public class NewLayoutTplDataModelProvider extends ArtifactEditOperationDataMode
         public static String templateFileExists;
         public static String templateIdExists;
         public static String templateIdInvalid;
+        public static String templateIdEmpty;
         public static String thumbnailFileExists;
         public static String wapTemplateFileExists;
 
