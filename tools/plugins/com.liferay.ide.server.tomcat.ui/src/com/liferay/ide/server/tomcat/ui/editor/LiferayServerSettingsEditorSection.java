@@ -962,6 +962,19 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 
 			}
 			*/
+            String memoryValue = memoryArgs.getText();
+            String[] memory = memoryValue.split( " " ); //$NON-NLS-1$
+            if( memory.length < 2 )
+            {
+                return new IStatus[] {
+                    new Status( IStatus.ERROR, LiferayServerUI.PLUGIN_ID, "error memeory format" ) }; //$NON-NLS-1$
+            }
+            if( !( ( memory[0].startsWith( "-Xmx" ) || memory[0].startsWith( "-XX:MaxPermSize" ) ) && //$NON-NLS-1$ //$NON-NLS-2$
+            ( memory[1].startsWith( "-Xmx" ) || memory[1].startsWith( "-XX:MaxPermSize" ) ) ) ) //$NON-NLS-1$ //$NON-NLS-2$
+            {
+                return new IStatus[] {
+                    new Status( IStatus.ERROR, LiferayServerUI.PLUGIN_ID, "error memeory format" ) }; //$NON-NLS-1$
+            }
 		}
 		// use default implementation to return success
 		return super.getSaveStatus();
