@@ -175,6 +175,11 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
         final File newSDKProjectDir = newSDKProjectPath.toFile();
 
+        if( !newSDKProjectDir.exists() )
+        {
+            newSDKProjectDir.mkdirs();
+        }
+
         try
         {
             FileUtils.copyDirectory( newSDKProjectDir, projectParent );
