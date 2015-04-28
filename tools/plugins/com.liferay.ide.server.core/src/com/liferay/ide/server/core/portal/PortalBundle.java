@@ -23,16 +23,24 @@ import org.eclipse.core.runtime.IPath;
  */
 public interface PortalBundle
 {
-
+    
     IPath getAutoDeployPath();
 
+    IPath getAppServerDeployDir();
+    
+    IPath getAppServerLibGlobalDir();
+    
     int getJmxRemotePort();
 
     IPath getLiferayHome();
+    
+    IPath getAppServerDir();
 
     String getMainClass();
 
     IPath getModulesPath();
+    
+    IPath getPortalDir();
 
     IPath[] getRuntimeClasspath();
 
