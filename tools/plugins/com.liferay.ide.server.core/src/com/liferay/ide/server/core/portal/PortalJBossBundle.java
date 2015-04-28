@@ -33,6 +33,18 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
        super(path);
     }
 
+    @Override
+    public IPath getAppServerDeployDir()
+    {
+        return this.bundlePath.append( "/standalone/deployments/" );
+    }
+    
+    @Override
+    public IPath getAppServerLibGlobalDir()
+    {
+        return getAppServerDir().append( "/modules/com/liferay/portal/main" );
+    }
+    
     protected int getDefaultJMXRemotePort()
     {
         return DEFAULT_JMX_PORT;
@@ -43,13 +55,14 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
         return "org.jboss.modules.Main";
     }
 
-    protected IPath getPortalDir( IPath appServerDir )
+    @Override
+    public IPath getPortalDir()
     {
         IPath retval = null;
 
-        if( appServerDir != null )
+        if( this.bundlePath != null )
         {
-            retval = appServerDir.append( "/standalone/deployments/ROOT.war" );
+            retval = this.bundlePath.append( "/standalone/deployments/ROOT.war" );
         }
 
         return retval;

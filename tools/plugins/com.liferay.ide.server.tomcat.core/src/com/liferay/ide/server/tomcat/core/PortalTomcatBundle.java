@@ -38,6 +38,18 @@ public class PortalTomcatBundle extends AbstractPortalBundle implements PortalBu
        super(path);
     }
 
+    @Override
+    public IPath getAppServerDeployDir()
+    {
+        return getAppServerDir().append( "webapps" ); //$NON-NLS-1$
+    }
+
+    @Override
+    public IPath getAppServerLibGlobalDir()
+    {
+        return getAppServerDir().append( "/lib/ext" );
+    }
+    
     protected int getDefaultJMXRemotePort()
     {
         int retval = 8099;
@@ -74,13 +86,13 @@ public class PortalTomcatBundle extends AbstractPortalBundle implements PortalBu
 
 
     @Override
-    protected IPath getPortalDir( IPath appServerDir )
+    public IPath getPortalDir()
     {
         IPath retval = null;
 
-        if( appServerDir != null )
+        if( this.bundlePath != null )
         {
-            retval = appServerDir.append( "webapps/ROOT" );
+            retval = this.bundlePath.append( "webapps/ROOT" );
         }
 
         return retval;

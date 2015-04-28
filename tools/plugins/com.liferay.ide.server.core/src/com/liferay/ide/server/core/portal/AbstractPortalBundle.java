@@ -59,19 +59,24 @@ public abstract class AbstractPortalBundle implements PortalBundle
         this.bundlePath = path;
 
         this.liferayHome = bundlePath.append( ".." );
+        
         this.jmxRemotePort = getDefaultJMXRemotePort();
 
         this.autoDeployPath = this.liferayHome.append( "deploy" );
 
-        this.version = getPortalVersion( this.bundlePath, getPortalDir( bundlePath ) );
+        this.version = getPortalVersion( this.bundlePath, getPortalDir() );
 
         this.modulesPath = this.liferayHome.append( "osgi" );
     }
 
+    @Override
+    public IPath getAppServerDir()
+    {
+        return this.bundlePath;
+    }
+
     protected abstract int getDefaultJMXRemotePort();
-
-    protected abstract IPath getPortalDir( IPath portalDir );
-
+    
     @Override
     public int getJmxRemotePort()
     {
