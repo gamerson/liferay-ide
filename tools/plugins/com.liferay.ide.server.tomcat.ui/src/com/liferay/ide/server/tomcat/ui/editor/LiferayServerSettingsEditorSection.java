@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.jst.server.tomcat.core.internal.ITomcatServer;
 import org.eclipse.jst.server.tomcat.ui.internal.ContextIds;
 import org.eclipse.osgi.util.NLS;
@@ -962,6 +963,20 @@ public class LiferayServerSettingsEditorSection extends ServerEditorSection {
 
 			}
 			*/
+            String memoryValue = memoryArgs.getText();
+            String[] memory = DebugPlugin.parseArguments( memoryValue );
+            if( !CoreUtil.isNullOrEmpty( memoryValue ) )
+            {
+                for( String str : memory )
+                {
+                    if( !( str.startsWith( "-Xms" ) || str.startsWith( "-Xmx" ) || //$NON-NLS-1$ //$NON-NLS-2$
+                        str.startsWith( "-XX:PermSize" ) || str.startsWith( "-XX:MaxPermSize" ) ) )//$NON-NLS-1$ //$NON-NLS-2$
+                    {
+                        return new IStatus[] { new Status(
+                            IStatus.ERROR, LiferayServerUI.PLUGIN_ID, "error memeory format" ) }; //$NON-NLS-1$
+                    }
+                }
+            }
 		}
 		// use default implementation to return success
 		return super.getSaveStatus();
