@@ -175,15 +175,18 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
         final File newSDKProjectDir = newSDKProjectPath.toFile();
 
-        try
+        if( newSDKProjectDir.exists() )
         {
-            FileUtils.copyDirectory( newSDKProjectDir, projectParent );
+            try
+            {
+                FileUtils.copyDirectory( newSDKProjectDir, projectParent );
 
-            FileUtils.deleteDirectory( newSDKProjectDir );
-        }
-        catch( IOException e )
-        {
-            throw new CoreException( ProjectCore.createErrorStatus( e ) );
+                FileUtils.deleteDirectory( newSDKProjectDir );
+            }
+            catch( IOException e )
+            {
+                throw new CoreException( ProjectCore.createErrorStatus( e ) );
+            }
         }
 
         final ProjectRecord projectRecord = ProjectUtil.getProjectRecordForDir( projectLocation.toOSString() );

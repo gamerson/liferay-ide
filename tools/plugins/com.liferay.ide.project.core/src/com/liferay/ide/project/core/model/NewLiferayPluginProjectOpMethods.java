@@ -22,9 +22,9 @@ import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.descriptor.RemoveSampleElementsOperation;
-import com.liferay.ide.project.core.model.internal.ProjectNameListener;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKManager;
+import com.liferay.ide.sdk.core.SDKUtil;
 
 import java.io.File;
 import java.util.HashSet;
@@ -83,7 +83,11 @@ public class NewLiferayPluginProjectOpMethods
                 final boolean greaterThanEqualTo6130 =
                     CoreUtil.compareVersions( version, ILiferayConstants.V6130 ) >= 0;
 
-                if( ( greaterThan611 && lessThan6110 ) || greaterThanEqualTo6130 )
+                if( SDKUtil.hasSDKGradleScript( sdk.getLocation().toOSString() ) )
+                {
+                    retval = false;
+                }
+                else if( ( greaterThan611 && lessThan6110 ) || greaterThanEqualTo6130 )
                 {
                     retval = true;
                 }
