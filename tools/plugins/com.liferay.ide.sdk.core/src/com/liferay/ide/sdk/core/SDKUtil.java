@@ -129,6 +129,11 @@ public class SDKUtil
         return null;
     }
 
+    public static boolean hasSDKGradleScript( String path )
+    {
+        return new Path( path ).append( "sdk.gradle" ).toFile().exists();
+    }
+
     public static boolean isIvyProject( IProject project )
     {
         try
@@ -236,4 +241,5 @@ public class SDKUtil
             SDKCorePlugin.logError( "Unable to persist sdk name to project " + project, e );  //$NON-NLS-1$
         }
     }
+
 }
