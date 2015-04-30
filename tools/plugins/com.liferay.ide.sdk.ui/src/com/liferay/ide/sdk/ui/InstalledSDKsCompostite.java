@@ -31,9 +31,12 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -147,6 +150,7 @@ public class InstalledSDKsCompostite extends Composite
     protected List<SDK> sdks = null;
     protected Table table;
     protected CheckboxTableViewer tableViewer;
+    protected String oldSDKName;
 
     public InstalledSDKsCompostite( Composite parent, int style )
     {
@@ -325,6 +329,7 @@ public class InstalledSDKsCompostite extends Composite
     {
         AddSDKDialog dialog = new AddSDKDialog( this.getShell(), getSDKs(), sdk );
 
+        oldSDKName = sdk.getName();
         int retval = dialog.open();
 
         if( retval == AddSDKDialog.OK )
@@ -468,6 +473,21 @@ public class InstalledSDKsCompostite extends Composite
         {
             final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
+            IStatus status = workspace.validateProjectLocation( sdkProject, sdk.getLocation() );
+
+            if( !status.isOK() )
+            {
+                IProject oldsdkProject = CoreUtil.getProject( oldSDKName );
+                IProgressMonitor monitor = new NullProgressMonitor();
+                try
+                {
+                    oldsdkProject.delete( IResource.NEVER_DELETE_PROJECT_CONTENT, monitor );
+                }
+                catch( CoreException e )
+                {
+                    e.printStackTrace();
+                }
+            }
             IProjectDescription description = workspace.newProjectDescription( sdk.getName() );
             description.setLocationURI( sdk.getLocation().toFile().toURI() );
 
