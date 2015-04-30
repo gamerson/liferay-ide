@@ -138,7 +138,7 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
     {
         final List<IRuntimeClasspathEntry> entries = new ArrayList<IRuntimeClasspathEntry>();
 
-        final IPath[] paths = getPortalBundle().getRuntimeClasspath();
+        final IPath[] paths = getPortalBundle().getRuntimeClasspath(getVMInstall());
 
         for( IPath path : paths )
         {

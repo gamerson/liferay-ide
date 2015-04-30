@@ -15,6 +15,7 @@
 
 package com.liferay.ide.server.core.portal;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +26,12 @@ import org.eclipse.jdt.launching.IVMInstall;
 /**
  * @author Simon Jiang
  */
-public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBundle
+public class PortalJettyBundle extends AbstractPortalBundle  implements PortalBundle
 {
 
     public static final int DEFAULT_JMX_PORT = 2099;
 
-    public PortalJBossBundle( IPath path )
+    public PortalJettyBundle( IPath path )
     {
        super(path);
     }
@@ -42,21 +43,22 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
 
     public String getStartMainClass()
     {
-        return "org.jboss.modules.Main";
+        return "org.eclipse.jetty.start.Main";
     }
 
     public String getStopMainClass()
     {
-        return "org.jboss.modules.Main";
+        return "org.eclipse.jetty.start.Main";
     }
 
+    
     protected IPath getPortalDir( IPath appServerDir )
     {
         IPath retval = null;
 
         if( appServerDir != null )
         {
-            retval = appServerDir.append( "/standalone/deployments/ROOT.war" );
+            retval = appServerDir.append( "/webapps/root" );
         }
 
         return retval;
@@ -64,16 +66,28 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
 
     protected IPath getPortaGlobalLib()
     {
-        return new Path(this.bundlePath + "/modules/com/liferay/portal/main" );
+        return new Path(this.bundlePath + "/lib/ext/liferay" );
     }
     
     public IPath[] getRuntimeClasspath(IVMInstall vmInstall)
     {
+        IPath vmInstallPath = new Path(vmInstall.getInstallLocation().getAbsolutePath());
         final List<IPath> paths = new ArrayList<IPath>();
 
         if( this.bundlePath.toFile().exists() )
         {
-            paths.add( bundlePath.append( "jboss-modules.jar" ) );
+            try
+            {
+                paths.add( this.bundlePath.append( "start.jar" ) );
+                paths.add( vmInstallPath.append( "/jre/lib/rt.jar" ) );
+                paths.add( vmInstallPath.append( "/lib/tools.jar" ) );                
+                addLibs(this.bundlePath.append( "lib" ),paths);
+                addLibs(this.bundlePath.append( "lib/jsp" ),paths);
+                addLibs(this.bundlePath.append( "lib/annotations" ),paths);
+            }
+            catch( MalformedURLException e )
+            {
+            }
         }
 
         return paths.toArray( new IPath[0] );
@@ -83,64 +97,36 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
     public String[] getRuntimeStartProgArgs()
     {
         final List<String> args = new ArrayList<String>();
-
-        args.add( "-mp");
-        args.add( "\"" + this.bundlePath.toPortableString() +  "/modules" + "\"" );
-        args.add( "-jaxpmodule");
-        args.add( "javax.xml.jaxp-provider" );
-        args.add( "org.jboss.as.standalone" );
-        args.add( "-b");
-        args.add( "localhost" );
-        args.add( "--server-config=standalone.xml" );
-        args.add( "-Djboss.server.base.dir=" + "\"" + this.bundlePath.toPortableString() + "/standalone/"+ "\"");
-
         return args.toArray( new String[0] );
-
     }
 
     @Override
     public String[] getRuntimeStopProgArgs()
     {
         final List<String> args = new ArrayList<String>();
-
-        args.add( "-mp" );
-        args.add( "\"" + this.bundlePath.toPortableString() +  "/modules" + "\"" );
-        args.add( "org.jboss.as.cli" );
-        args.add( "--controller=localhost:" + 9999 );
-        args.add( "--connect" );
-        args.add( "--command=:shutdown" );
-
+        args.add( "--stop" );
         return args.toArray( new String[0] );
     }
 
     @Override
     public String[] getRuntimeStartVMArgs(IVMInstall vmInstall)
     {
+        IPath vmInstallPath = new Path(vmInstall.getInstallLocation().getAbsolutePath());
+        
         final List<String> args = new ArrayList<String>();
 
         args.add( "-Dcom.sun.management.jmxremote" );
         args.add( "-Dcom.sun.management.jmxremote.authenticate=false" );
         args.add( "-Dcom.sun.management.jmxremote.port=" + jmxRemotePort );
         args.add( "-Dcom.sun.management.jmxremote.ssl=false" );
-        args.add( "-Dorg.jboss.resolver.warning=true" );
-        args.add( "-Djava.net.preferIPv4Stack=true" );
-        args.add( "-Dsun.rmi.dgc.client.gcInterval=3600000" );
-        args.add( "-Dsun.rmi.dgc.server.gcInterval=3600000" );
-        args.add( "-Djboss.modules.system.pkgs=org.jboss.byteman" );
-        args.add( "-Djava.awt.headless=true" );
-        args.add( "-Dfile.encoding=UTF8" );
-        args.add( "-server" );
-        args.add( "-Djava.util.logging.manager=org.jboss.logmanager.LogManager" );
-        args.add( "-Xbootclasspath/p:" +  "\""  +  this.bundlePath +  "/modules/org/jboss/logmanager/main/jboss-logmanager-1.2.2.GA.jar"  +  "\"" );
-        args.add( "-Xbootclasspath/p:" +  "\""  +  this.bundlePath +  "/modules/org/jboss/logmanager/log4j/main/jboss-logmanager-log4j-1.0.0.GA.jar"  +  "\"" );
-        args.add( "-Xbootclasspath/p:" +  "\""  +  this.bundlePath +  "/modules/org/apache/log4j/main/log4j-1.2.16.jar"  +  "\"" );
-        args.add( "-Djboss.modules.system.pkgs=org.jboss.logmanager");
-        args.add( "-Dorg.jboss.boot.log.file=" +  "\""  + this.bundlePath.append("/standalone/log/boot.log") + "\"" );
-        args.add( "-Dlogging.configuration=file:" + "\"" + this.bundlePath + "/standalone/configuration/logging.properties" + "\"" );
-        args.add( "-Djboss.home.dir=" + "\"" + this.bundlePath + "\"" );
-        args.add( "-Djboss.bind.address.management=localhost" );
-        args.add( "-Duser.timezone=GMT" );
-     
+        args.add( "-Djetty.home=" +  this.bundlePath );
+        args.add( "-Dinstall.jetty.home=" +  this.bundlePath );
+        args.add( "-Djava.library.path=" + vmInstallPath);
+        args.add( "-DVERBOSE" );
+        args.add( "-Djetty.port=8080" ); 
+        args.add( "-DSTOP.PORT=8082" );
+        args.add( "-DSTOP.KEY=secret" );
+
         return args.toArray( new String[0] );
     }
 
@@ -148,13 +134,11 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
     public String[] getRuntimeStopVMArgs(IVMInstall vmInstall)
     {
         final List<String> args = new ArrayList<String>();
-        args.add( "-Djboss.home.dir=" + "\"" + this.bundlePath + "\"");
-
         return args.toArray( new String[0] );
     }
 
     public String getType()
     {
-        return "jboss";
+        return "jetty";
     }
 }

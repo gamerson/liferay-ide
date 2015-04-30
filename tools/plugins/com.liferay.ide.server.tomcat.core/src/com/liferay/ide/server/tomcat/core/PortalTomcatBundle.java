@@ -25,7 +25,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.launching.IVMInstall;
 
 /**
  * @author Gregory Amerson
@@ -67,11 +69,16 @@ public class PortalTomcatBundle extends AbstractPortalBundle implements PortalBu
     }
 
     @Override
-    public String getMainClass()
+    public String getStartMainClass()
     {
         return "org.apache.catalina.startup.Bootstrap";
     }
 
+    @Override
+    public String getStopMainClass()
+    {
+        return "org.apache.catalina.startup.Bootstrap";
+    }
 
     @Override
     protected IPath getPortalDir( IPath appServerDir )
@@ -86,7 +93,12 @@ public class PortalTomcatBundle extends AbstractPortalBundle implements PortalBu
         return retval;
     }
 
-    public IPath[] getRuntimeClasspath()
+    protected IPath getPortaGlobalLib()
+    {
+        return new Path(this.bundlePath + "/lib/ext" );
+    }
+    
+    public IPath[] getRuntimeClasspath(IVMInstall vmInstall)
     {
         final List<IPath> paths = new ArrayList<IPath>();
 
@@ -124,13 +136,13 @@ public class PortalTomcatBundle extends AbstractPortalBundle implements PortalBu
     }
 
     @Override
-    public String[] getRuntimeStartVMArgs()
+    public String[] getRuntimeStartVMArgs(IVMInstall vmInstall)
     {
         return getRuntimeVMArgs();
     }
 
     @Override
-    public String[] getRuntimeStopVMArgs()
+    public String[] getRuntimeStopVMArgs(IVMInstall vmInstall)
     {
         return getRuntimeVMArgs();
     }

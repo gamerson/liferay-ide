@@ -122,7 +122,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
     public String getClassToLaunch()
     {
-        return getPortalRuntime().getPortalBundle().getMainClass();
+        if ( ( (Server) getServer()).getServerState() == IServer.STATE_STOPPING )
+        {
+            return getPortalRuntime().getPortalBundle().getStopMainClass();    
+        }
+        return getPortalRuntime().getPortalBundle().getStartMainClass();
     }
 
     @Override
@@ -198,7 +202,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         Collections.addAll( retval, getPortalServer().getMemoryArgs() );
 
-        Collections.addAll( retval, getPortalRuntime().getPortalBundle().getRuntimeStartVMArgs() );
+        Collections.addAll( retval, getPortalRuntime().getPortalBundle().getRuntimeStartVMArgs(getPortalRuntime().getVMInstall()) );
 
         return retval.toArray( new String[0] );
     }
@@ -214,7 +218,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         Collections.addAll( retval, getPortalServer().getMemoryArgs() );
 
-        Collections.addAll( retval, getPortalRuntime().getPortalBundle().getRuntimeStopVMArgs() );
+        Collections.addAll( retval, getPortalRuntime().getPortalBundle().getRuntimeStopVMArgs(getPortalRuntime().getVMInstall()) );
 
         return retval.toArray( new String[0] );
     }
@@ -556,6 +560,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         throws CoreException
     {
         final String existingProgArgs = launch.getAttribute( ATTR_PROGRAM_ARGUMENTS, (String) null );
+        
+        launch.setAttribute( "SERVER_TYPE_ID", getServer().getId() );
+        
         launch.setAttribute( ATTR_PROGRAM_ARGUMENTS, mergeArguments( existingProgArgs, getRuntimeStartProgArgs(), null, true ) );
 
         final String existingVMArgs = launch.getAttribute( ATTR_VM_ARGUMENTS, (String) null );
@@ -708,7 +715,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             {
                 wc.setAttribute(
                     IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-                    mergeArguments( existingVMArgs, getRuntimeStopVMArguments(), null, true ) );
+                    mergeArguments( null, getRuntimeStopVMArguments(), null, true ) );
             }
 
             wc.setAttribute( IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args );

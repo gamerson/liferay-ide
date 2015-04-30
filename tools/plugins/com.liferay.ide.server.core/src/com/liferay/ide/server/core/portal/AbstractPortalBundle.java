@@ -18,12 +18,15 @@ import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.util.LiferayPortalValueLoader;
+import com.liferay.ide.server.util.LiferayPortalVersionLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -63,12 +66,39 @@ public abstract class AbstractPortalBundle implements PortalBundle
 
         this.autoDeployPath = this.liferayHome.append( "deploy" );
 
-        this.version = getPortalVersion( this.bundlePath, getPortalDir( bundlePath ) );
+        this.version = getPortalVersion( getPortalDir( bundlePath ) );
 
         this.modulesPath = this.liferayHome.append( "osgi" );
     }
 
+    public void addLibs( IPath libDir, List<IPath> libPathList ) throws MalformedURLException
+    {
+        if( libDir.toFile().exists() )
+        {
+            final File[] libs = libDir.toFile().listFiles
+            (
+                new FilenameFilter()
+                {
+                    public boolean accept( File dir, String fileName )
+                    {
+                        return fileName.toLowerCase().endsWith( ".jar" );
+                    }
+                }
+            );
+
+            if( ! CoreUtil.isNullOrEmpty( libs ) )
+            {
+                for( File portaLib : libs )
+                {
+                    libPathList.add( libDir.append( portaLib.getName() ) );
+                }
+            }
+        }
+    }    
+
     protected abstract int getDefaultJMXRemotePort();
+
+    protected abstract IPath getPortaGlobalLib();
 
     protected abstract IPath getPortalDir( IPath portalDir );
 
@@ -145,17 +175,17 @@ public abstract class AbstractPortalBundle implements PortalBundle
         return null;
     }
 
-    private String getPortalVersion( IPath location, IPath portalDir )
+    private String getPortalVersion( IPath portalDir )
     {
         String version = getConfigInfoFromCache( CONFIG_TYPE_VERSION, portalDir );
 
         if( version == null )
         {
-            version = getConfigInfoFromManifest( CONFIG_TYPE_VERSION, portalDir );
+            version = getConfigInfoFromManifest( CONFIG_TYPE_VERSION );
 
             if( version == null )
             {
-                final LiferayPortalValueLoader loader = new LiferayPortalValueLoader( location, portalDir );
+                final LiferayPortalVersionLoader loader = new LiferayPortalVersionLoader( getPortaGlobalLib() );
 
                 final Version loadedVersion = loader.loadVersionFromClass();
 
@@ -174,9 +204,9 @@ public abstract class AbstractPortalBundle implements PortalBundle
         return version;
     }
 
-    private String getConfigInfoFromManifest( String configType, IPath portalDir )
+    private String getConfigInfoFromManifest( String configType )
     {
-        File implJar = portalDir.append( "/WEB-INF/lib/portal-impl.jar").toFile();
+        File implJar = getPortaGlobalLib().append( "portal-service.jar" ).toFile();
 
         String version = null;
         String serverInfo = null;

@@ -16,6 +16,7 @@
 package com.liferay.ide.server.core.portal;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.launching.IVMInstall;
 
 /**
  * @author Gregory Amerson
@@ -30,15 +31,17 @@ public interface PortalBundle
 
     IPath getLiferayHome();
 
-    String getMainClass();
+    String getStartMainClass();
+    
+    String getStopMainClass();
 
     IPath getModulesPath();
 
-    IPath[] getRuntimeClasspath();
+    IPath[] getRuntimeClasspath(IVMInstall vmInstall);
 
-    String[] getRuntimeStartVMArgs();
+    String[] getRuntimeStartVMArgs(IVMInstall vmInstall);
 
-    String[] getRuntimeStopVMArgs();
+    String[] getRuntimeStopVMArgs(IVMInstall vmInstall);
 
     String[] getRuntimeStartProgArgs();
 
