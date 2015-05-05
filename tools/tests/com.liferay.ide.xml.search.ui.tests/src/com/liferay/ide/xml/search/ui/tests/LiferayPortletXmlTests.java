@@ -24,7 +24,7 @@ import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 /**
@@ -35,7 +35,7 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
 
     protected final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptorFile;
-    private IProject project;
+    private static IProject project;
 
     protected IFile getDescriptorFile() throws Exception
     {
@@ -54,6 +54,19 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
         return project;
     }
 
+    @AfterClass
+    public static void deleteProject() throws Exception
+    {
+        try
+        {
+            project.close( null );
+            project.delete( true, null );
+        }
+        catch( Exception e )
+        {
+        }
+    }
+
     @Test
     public void testSourceViewerConfiguration() throws Exception
     {
@@ -69,9 +82,7 @@ public class LiferayPortletXmlTests extends XmlSearchTestsBase
         assertEquals( true, sourceViewerConfiguration instanceof LiferayCustomXmlViewerConfiguration );
     }
 
-    //TODO test all content assists
-    @Test
-    @Ignore
+    // TODO test all content assists
     public void testContentAssists() throws Exception
     {
     }

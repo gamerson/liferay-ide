@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.xml.search.ui.tests;
 
 import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
@@ -34,6 +35,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +44,7 @@ public class PortletXmlValidationTests extends XmlSearchTestsBase
 
     protected final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptorFile;
-    private IProject project;
+    private static IProject project;
 
     protected IFile getDescriptorFile() throws Exception
     {
@@ -72,7 +74,20 @@ public class PortletXmlValidationTests extends XmlSearchTestsBase
         projectFile.close();
     }
 
-    public void validateElementTypeNotFound( String elementName ,String elementValue) throws Exception
+    @AfterClass
+    public static void deleteProject() throws Exception
+    {
+        try
+        {
+            project.close( null );
+            project.delete( true, null );
+        }
+        catch( Exception e )
+        {
+        }
+    }
+
+    public void validateElementTypeNotFound( String elementName, String elementValue ) throws Exception
     {
         final IFile descriptorFile = getDescriptorFile();
 
@@ -98,7 +113,7 @@ public class PortletXmlValidationTests extends XmlSearchTestsBase
         assertTrue( checkMarkerByMessage( descriptorFile, MARKER_TYPE, markerMessage, true ) );
     }
 
-    public void validateElementResourceNotFound( String elementName ,String elementValue) throws Exception
+    public void validateElementResourceNotFound( String elementName, String elementValue ) throws Exception
     {
         final IFile descriptorFile = getDescriptorFile();
 
@@ -122,11 +137,12 @@ public class PortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testPortletClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "portlet-class";
-        validateElementTypeNotFound( elementName ,"foo");
-        validateElementTypeNotFound( elementName ,"");
+        validateElementTypeNotFound( elementName, "foo" );
+        validateElementTypeNotFound( elementName, "" );
         validateElementTypeHierarchyInocorrect( elementName, "javax.portlet.GenericPortlet" );
         validateElementcorrectValue( elementName, "com.liferay.util.bridges.mvc.MVCPortlet" );
     }
@@ -134,10 +150,11 @@ public class PortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testListenerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "listener-class";
-        validateElementTypeNotFound( elementName ,"foo");
+        validateElementTypeNotFound( elementName, "foo" );
         validateElementTypeNotFound( elementName, "" );
         validateElementTypeHierarchyInocorrect( elementName, "javax.portlet.PortletURLGenerationListener" );
         validateElementcorrectValue( elementName, "com.liferay.ide.tests.PortletURLGenerationListenerImpl" );
@@ -148,9 +165,11 @@ public class PortletXmlValidationTests extends XmlSearchTestsBase
     {
         final String elementName = "filter-class";
 
-        validateElementTypeNotFound( elementName ,"foo");
+        validateElementTypeNotFound( elementName, "foo" );
         validateElementTypeNotFound( elementName, "" );
-        validateElementTypeHierarchyInocorrect( elementName, "javax.portlet.filter.ResourceFilter, javax.portlet.filter.RenderFilter, javax.portlet.filter.ActionFilter, javax.portlet.filter.EventFilter" );
+        validateElementTypeHierarchyInocorrect(
+            elementName,
+            "javax.portlet.filter.ResourceFilter, javax.portlet.filter.RenderFilter, javax.portlet.filter.ActionFilter, javax.portlet.filter.EventFilter" );
         validateElementcorrectValue( elementName, "com.liferay.ide.tests.ResourceFilterImpl" );
     }
 

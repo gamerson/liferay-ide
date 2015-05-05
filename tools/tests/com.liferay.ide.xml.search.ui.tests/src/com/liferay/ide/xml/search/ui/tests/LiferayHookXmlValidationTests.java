@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.xml.search.ui.tests;
 
 import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
@@ -34,6 +35,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +47,7 @@ public class LiferayHookXmlValidationTests extends XmlSearchTestsBase
 
     protected final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptorFile;
-    private IProject project;
+    private static IProject project;
 
     protected IFile getDescriptorFile() throws Exception
     {
@@ -73,6 +75,19 @@ public class LiferayHookXmlValidationTests extends XmlSearchTestsBase
 
         descriptorFile.setContents( projectFile.getInputStream( entry ), IResource.FORCE, new NullProgressMonitor() );
         projectFile.close();
+    }
+
+    @AfterClass
+    public static void deleteProject() throws Exception
+    {
+        try
+        {
+            project.close( null );
+            project.delete( true, null );
+        }
+        catch( Exception e )
+        {
+        }
     }
 
     public void validateElementsIncorrectValue( String elementName, String elementValue, String markerMessage )

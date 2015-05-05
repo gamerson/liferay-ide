@@ -24,6 +24,7 @@ import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 /**
@@ -34,7 +35,7 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
 
     protected final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptor;
-    private IProject project;
+    private static IProject project;
 
     protected IFile getDescriptorFile() throws Exception
     {
@@ -51,6 +52,19 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
         }
 
         return project;
+    }
+
+    @AfterClass
+    public static void deleteProject() throws Exception
+    {
+        try
+        {
+            project.close( null );
+            project.delete( true, null );
+        }
+        catch( Exception e )
+        {
+        }
     }
 
     // TODO
