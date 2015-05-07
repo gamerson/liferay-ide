@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.xml.search.ui.tests;
 
 import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
@@ -34,6 +35,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +47,7 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
 
     protected final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptorFile;
-    private IProject project;
+    private static IProject project;
 
     protected IFile getDescriptorFile() throws Exception
     {
@@ -124,7 +126,10 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
         setElementContent( descriptorFile, elementName, correctValue );
 
         buildAndValidate( descriptorFile );
-
+        if( !checkNoMarker( descriptorFile, MARKER_TYPE ) )
+        {
+            buildAndValidate( descriptorFile );
+        }
         assertTrue( checkNoMarker( descriptorFile, MARKER_TYPE ) );
     }
 
@@ -139,10 +144,24 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
         projectFile.close();
     }
 
+    @AfterClass
+    public static void deleteProject() throws Exception
+    {
+        try
+        {
+            project.close( null );
+            project.delete( true, null );
+        }
+        catch( Exception e )
+        {
+        }
+    }
+
     @Test
     public void testAssetRenderFactory() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "asset-renderer-factory";
 
@@ -152,9 +171,11 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
         validateElementCorrectValue( elementName, "com.liferay.ide.tests.AssetRendererFactoryImp" );
     }
 
+    @Test
     public void testAtomCollectionAdapter() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "atom-collection-adapter";
 
@@ -167,7 +188,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testConfigurationActionClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "configuration-action-class";
 
@@ -180,7 +202,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testControlPanelEntryClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "control-panel-entry-class";
 
@@ -193,7 +216,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testControlPanelEntryWeight() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final IFile descriptorFile = getDescriptorFile();
         final String elementName = "control-panel-entry-weight";
@@ -218,7 +242,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testCustomAttributesDisplay() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "custom-attributes-display";
 
@@ -232,7 +257,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testDDMDisplay() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "ddm-display";
 
@@ -245,7 +271,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testfooterPortletCss() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "footer-portlet-css";
 
@@ -257,7 +284,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testFooterPortletJavaScript() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "footer-portlet-javascript";
 
@@ -269,7 +297,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testFriendlyURLMapperClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "friendly-url-mapper-class";
 
@@ -282,7 +311,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testHeaderPortletCss() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "header-portlet-css";
 
@@ -294,7 +324,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testHeaderPortletJavascript() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "header-portlet-javascript";
 
@@ -306,7 +337,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testIcon() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "icon";
 
@@ -318,7 +350,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testIndexerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "indexer-class";
 
@@ -331,7 +364,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testPermissionPropagator() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "permission-propagator";
 
@@ -345,7 +379,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testPollerProcessorClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "poller-processor-class";
 
@@ -358,7 +393,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testPopMessageListenerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "pop-message-listener-class";
 
@@ -371,7 +407,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testPortletDataHandlerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "portlet-data-handler-class";
 
@@ -384,7 +421,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testPortletLayoutListenerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "portlet-layout-listener-class";
 
@@ -397,7 +435,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testPortletName() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "portlet-name";
 
@@ -409,7 +448,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testSchedulerEventListenerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "scheduler-event-listener-class";
 
@@ -422,7 +462,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testSocialActivityInterpreterClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "social-activity-interpreter-class";
 
@@ -436,7 +477,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testSocialRequestInterpreterClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "social-request-interpreter-class";
 
@@ -450,7 +492,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testStagedModelDataHandlerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "staged-model-data-handler-class";
 
@@ -463,7 +506,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testTemplateHandler() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "template-handler";
 
@@ -476,7 +520,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testURLEncoderClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "url-encoder-class";
 
@@ -489,7 +534,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testUserNotificationHandlerClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "user-notification-handler-class";
 
@@ -503,7 +549,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testWebdavStorageClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "webdav-storage-class";
 
@@ -516,7 +563,8 @@ public class LiferayPortletXmlValidationTests extends XmlSearchTestsBase
     @Test
     public void testXmlRpcMethodClass() throws Exception
     {
-        if( shouldSkipBundleTests() ) return;
+        if( shouldSkipBundleTests() )
+            return;
 
         final String elementName = "xml-rpc-method-class";
 

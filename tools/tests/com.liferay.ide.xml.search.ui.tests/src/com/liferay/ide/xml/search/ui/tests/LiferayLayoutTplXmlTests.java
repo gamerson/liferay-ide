@@ -23,6 +23,7 @@ import com.liferay.ide.xml.search.ui.editor.LiferayCustomXmlViewerConfiguration;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 
@@ -33,7 +34,7 @@ public class LiferayLayoutTplXmlTests extends XmlSearchTestsBase
 {
 
     private IFile descriptor;
-    private IProject project;
+    private static IProject project;
 
     private IFile getDescriptorFile() throws Exception
     {
@@ -50,6 +51,12 @@ public class LiferayLayoutTplXmlTests extends XmlSearchTestsBase
         }
 
         return project;
+    }
+    
+    @AfterClass
+    public static void deleteProject() throws Exception
+    {
+        project.delete( true, null );
     }
 
     @Test

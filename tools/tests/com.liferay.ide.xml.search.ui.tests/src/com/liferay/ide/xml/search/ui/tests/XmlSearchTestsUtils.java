@@ -24,6 +24,8 @@ import com.liferay.ide.ui.tests.UITestsUtils;
 import com.liferay.ide.xml.search.ui.AddResourceKeyMarkerResolution;
 import com.liferay.ide.xml.search.ui.editor.CompoundRegion;
 import com.liferay.ide.xml.search.ui.editor.InfoRegion;
+import com.liferay.ide.xml.search.ui.editor.MarkerRegion;
+import com.liferay.ide.xml.search.ui.editor.TemporaryRegion;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.wst.sse.ui.StructuredTextEditor;
+import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.wst.sse.ui.internal.ExtendedConfigurationBuilder;
 import org.eclipse.wst.sse.ui.internal.StructuredTextViewer;
 import org.eclipse.wst.validation.internal.ValManager;
@@ -173,6 +175,9 @@ public class XmlSearchTestsUtils extends UITestsUtils
         IDOMModel domModel = null;
         Node targetNode = null;
 
+        final StructuredTextViewer viewer = getEditor( file ).getTextViewer();
+        final SourceViewerConfiguration conf = getSourceViewerConfiguraionFromExtensionPoint( file );
+
         if( nodeType == Node.ELEMENT_NODE )
         {
             String elementName = nodeNames[0];
@@ -187,8 +192,8 @@ public class XmlSearchTestsUtils extends UITestsUtils
             String attrName = nodeNames[1];
 
             domModel = getDOMModel( file, false );
-            targetNode = domModel.getDocument().getElementsByTagName( elementName ). item( 0 ).
-                         getAttributes().getNamedItem( attrName );
+            NodeList elements = domModel.getDocument().getElementsByTagName( elementName );
+            targetNode = getElementByAttr( elements, attrName ).getAttributes().getNamedItem( attrName );
         }
         else
         {
@@ -197,10 +202,8 @@ public class XmlSearchTestsUtils extends UITestsUtils
 
         assertNotNull( targetNode );
 
-        final StructuredTextViewer viewer = getEditor( file ).getTextViewer();
-        final SourceViewerConfiguration conf = getSourceViewerConfiguraionFromExtensionPoint( file );
-
         final IHyperlinkDetector[] hyperlinkDetectors = conf.getHyperlinkDetectors( viewer );
+        viewer.refresh();
         final IRegion region = getRegion( targetNode );
 
         for( IHyperlinkDetector detector : hyperlinkDetectors )
@@ -233,6 +236,9 @@ public class XmlSearchTestsUtils extends UITestsUtils
         Node targetNode = null;
         IDOMModel domModel = null;
 
+        final StructuredTextViewer viewer = getEditor( file ).getTextViewer();
+        final SourceViewerConfiguration srcViewConf = getSourceViewerConfiguraionFromExtensionPoint( file );
+
         if( nodeType == Node.ELEMENT_NODE )
         {
             String elementName = nodeNames[0];
@@ -246,14 +252,12 @@ public class XmlSearchTestsUtils extends UITestsUtils
             String attrName = nodeNames[1];
 
             domModel = getDOMModel( file, false );
-            targetNode = domModel.getDocument().getElementsByTagName( elementName ).item( 0 ).
-                         getAttributes().getNamedItem( attrName );
+            NodeList elements = domModel.getDocument().getElementsByTagName( elementName );
+            Element element = getElementByAttr( elements, attrName );
+            targetNode = element.getAttributes().getNamedItem( attrName );
         }
 
-        int offset = getRegion( targetNode ).getOffset();
-
-        final StructuredTextViewer viewer = getEditor( file ).getTextViewer();
-        final SourceViewerConfiguration srcViewConf = getSourceViewerConfiguraionFromExtensionPoint( file );
+        int offset = getRegion( targetNode ).getOffset() + getRegion( targetNode ).getLength();
 
         final ContentAssistant contentAssistant = (ContentAssistant) srcViewConf.getContentAssistant( viewer );
         // viewer.configure( srcViewConf );
@@ -317,6 +321,7 @@ public class XmlSearchTestsUtils extends UITestsUtils
 
         Node targetNode = null;
 
+        final StructuredTextViewer viewer = getEditor( file ).getTextViewer();
         if( nodeType == Node.ELEMENT_NODE )
         {
             String elementName = nodeNames[0];
@@ -331,16 +336,14 @@ public class XmlSearchTestsUtils extends UITestsUtils
             String attrName = nodeNames[1];
 
             domModel = getDOMModel( file, false );
-            targetNode = domModel.getDocument().getElementsByTagName( elementName ). item( 0 ).
-                         getAttributes().getNamedItem( attrName );
+            NodeList elements = domModel.getDocument().getElementsByTagName( elementName );
+            Element element = getElementByAttr( elements, attrName );
+            targetNode = element.getAttributes().getNamedItem( attrName );
         }
         else
         {
             return null;
         }
-
-        final StructuredTextEditor editor = getEditor( file );
-        final StructuredTextViewer viewer = editor.getTextViewer();
 
         int offset = getRegion( targetNode ).getOffset();
 
@@ -357,6 +360,19 @@ public class XmlSearchTestsUtils extends UITestsUtils
 
             for( IRegion reg : regions )
             {
+                if( reg instanceof TemporaryRegion )
+                {
+                    String info = ( (TemporaryRegion) reg ).getAnnotation().getText();
+                    retval.add( info );
+                }
+                if( reg instanceof MarkerRegion )
+                {
+
+                    MarkerAnnotation annotation = ( (MarkerRegion) reg ).getAnnotation();
+                    String info = ( annotation.getMarker().getAttribute( IMarker.MESSAGE ) ).toString();
+                    retval.add( info );
+                }
+
                 if( reg instanceof InfoRegion )
                 {
                     retval.add( ( (InfoRegion) reg ).getInfo() );
@@ -395,10 +411,8 @@ public class XmlSearchTestsUtils extends UITestsUtils
         final IDOMDocument document = domModel.getDocument();
         final NodeList elements = document.getElementsByTagName( elementName );
 
-        assertEquals( true, elements.getLength() > 0 );
-
-        final Element element = (Element) elements.item( 0 );
-
+        Element element = getElementByAttr( elements, attrName );
+        assertNotNull( element );
         Attr attrNode = element.getAttributeNode( attrName );
 
         attrNode.setValue( attrValue );
@@ -408,6 +422,21 @@ public class XmlSearchTestsUtils extends UITestsUtils
         domModel.releaseFromEdit();
 
         file.refreshLocal( IResource.DEPTH_ZERO, new NullProgressMonitor() );
+    }
+
+    public static Element getElementByAttr( NodeList elements, String attrName ) throws Exception
+    {
+        Element element = null;
+
+        for( int i = 0; i < elements.getLength(); i++ )
+        {
+            element = (Element) elements.item( i );
+            if( element.hasAttribute( attrName ) )
+                break;
+        }
+
+        return element;
+
     }
 
     // set the content for the 1st element with name of "elementName"
@@ -445,6 +474,15 @@ public class XmlSearchTestsUtils extends UITestsUtils
                                        Class<? extends IMarkerResolution> resolutionClazz ) throws Exception
     {
         IMarker exceptedMarker = findMarkerByMessage( file, markerType, markerMessageRegex, false );
+
+        for( int i = 0; i < 3; i++ )
+        {
+            if( exceptedMarker == null )
+            {
+                buildAndValidate( file );
+                exceptedMarker = findMarkerByMessage( file, markerType, markerMessageRegex, false );
+            }
+        }
         assertNotNull( exceptedMarker );
 
         IMarkerResolution exceptedMarkerResolution =
@@ -455,6 +493,15 @@ public class XmlSearchTestsUtils extends UITestsUtils
         buildAndValidate( file );
 
         exceptedMarker = findMarkerByMessage( file, markerType, markerMessageRegex, false );
+        for( int i = 0; i < 3; i++ )
+        {
+            if( exceptedMarker != null )
+            {
+                buildAndValidate( file );
+                exceptedMarker = findMarkerByMessage( file, markerType, markerMessageRegex, false );
+            }
+        }
+
         assertNull( exceptedMarker );
     }
 

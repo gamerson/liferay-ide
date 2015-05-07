@@ -33,6 +33,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 /**
@@ -46,7 +47,7 @@ public class PortletXmlTests extends XmlSearchTestsBase
 
     protected final static String MARKER_TYPE = XML_REFERENCES_MARKER_TYPE;
     private IFile descriptorFile;
-    private IProject project;
+    private static IProject project;
 
     protected IFile getDescriptorFile() throws Exception
     {
@@ -65,21 +66,43 @@ public class PortletXmlTests extends XmlSearchTestsBase
         return project;
     }
 
+    @AfterClass
+    public static void deleteProject() throws Exception
+    {
+        try
+        {
+            project.close( null );
+            project.delete( true, null );
+        }
+        catch( Exception e )
+        {
+        }
+    }
+
+    public void validateContentAssistForElement(
+        String elementName, String elementContent, String exceptedProposalString ) throws Exception
+    {
+        descriptorFile = getDescriptorFile();
+        setElementContent( descriptorFile, elementName, elementContent );
+        buildAndValidate( descriptorFile );
+        final ICompletionProposal[] proposals = getProposalsForElement( descriptorFile, elementName );
+
+        assertNotNull( proposals );
+        assertEquals( true, proposals.length > 0 );
+
+        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
+
+    }
+
     @Test
     public void testFilterClassContentAssist() throws Exception
     {
         final IFile descriptorFile = getDescriptorFile();
         final String elementName = "filter-class";
         String elementContent = "";
-        setElementContent( descriptorFile, elementName, elementContent );
-
-        final ICompletionProposal[] proposals = getProposalsForElement( descriptorFile, elementName );
-
-        assertNotNull( proposals );
-        assertEquals( true, proposals.length > 0 );
 
         final String exceptedProposalString = "ResourceFilterImpl - com.liferay.ide.tests";
-        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
+        validateContentAssistForElement( elementName, elementContent, exceptedProposalString );
 
         elementContent = "com.liferay.ide.tests.ResourceFilterImpl";
         setElementContent( descriptorFile, elementName, elementContent );
@@ -110,15 +133,8 @@ public class PortletXmlTests extends XmlSearchTestsBase
         final String elementName = "listener-class";
         String elementContent = "";
 
-        setElementContent( descriptorFile, elementName, elementContent );
-
-        final ICompletionProposal[] proposals = getProposalsForElement( descriptorFile, elementName );
-
-        assertNotNull( proposals );
-        assertEquals( true, proposals.length > 0 );
-
         final String exceptedProposalString = "PortletURLGenerationListenerImpl - com.liferay.ide.tests";
-        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
+        validateContentAssistForElement( elementName, elementContent, exceptedProposalString );
 
         elementContent = "com.liferay.ide.tests.PortletURLGenerationListenerImpl";
         setElementContent( descriptorFile, elementName, elementContent );
@@ -148,15 +164,11 @@ public class PortletXmlTests extends XmlSearchTestsBase
         final IFile descriptorFile = getDescriptorFile();
         final String elementName = "portlet-class";
         String elementContent = "";
-        setElementContent( descriptorFile, elementName, elementContent );
-
-        final ICompletionProposal[] proposals = getProposalsForElement( descriptorFile, elementName );
-
-        assertNotNull( proposals );
-        assertEquals( true, proposals.length > 0 );
 
         final String exceptedProposalString = "GenericPortletImpl - com.liferay.ide.tests";
-        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
+
+        Thread.sleep( 5000 );
+        validateContentAssistForElement( elementName, elementContent, exceptedProposalString );
 
         elementContent = "com.liferay.ide.tests.GenericPortletImpl";
         setElementContent( descriptorFile, elementName, elementContent );
@@ -186,15 +198,9 @@ public class PortletXmlTests extends XmlSearchTestsBase
         final IFile descriptorFile = getDescriptorFile();
         final String elementName = "resource-bundle";
         String elementContent = "";
-        setElementContent( descriptorFile, elementName, "" );
-
-        final ICompletionProposal[] proposals = getProposalsForElement( descriptorFile, elementName );
-
-        assertNotNull( proposals );
-        assertEquals( true, proposals.length > 0 );
 
         final String exceptedProposalString = "content.Language";
-        assertEquals( true, containsProposal( proposals, exceptedProposalString, true ) );
+        validateContentAssistForElement( elementName, elementContent, exceptedProposalString );
 
         elementContent = "content.Language";
         setElementContent( descriptorFile, elementName, elementContent );
