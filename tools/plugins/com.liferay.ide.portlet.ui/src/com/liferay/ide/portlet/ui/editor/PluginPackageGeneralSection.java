@@ -28,6 +28,7 @@ import com.liferay.ide.ui.form.IDEFormPage;
 import com.liferay.ide.ui.form.IDESection;
 import com.liferay.ide.ui.util.SWTUtil;
 
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -100,6 +101,17 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
     public boolean isEditable()
     {
         return true;
+    }
+
+    @Override
+    public void commit( boolean onSave )
+    {
+        if( validation() )
+        {
+            page.form.setMessage( "", IMessageProvider.NONE );
+            refresh();
+            super.commit( onSave );
+        }
     }
 
     public void modelChanged( IModelChangedEvent event )
@@ -482,6 +494,21 @@ public class PluginPackageGeneralSection extends IDESection implements IContextP
     protected PluginPackageModel getModel()
     {
         return (PluginPackageModel) getPage().getLiferayFormEditor().getModel();
+    }
+
+    protected boolean validation()
+    {
+        if( "" == getModel().getModuleGroupId() )
+        {
+            page.form.setMessage( "Module Group Id can't be empty", IMessageProvider.ERROR );
+            return false;
+        }
+        if( getModel().getModuleGroupId().startsWith( "/" ) )
+        {
+            page.form.setMessage( "Module Group Id can't start with '/'", IMessageProvider.ERROR );
+            return false;
+        }
+        return true;
     }
 
     private static class Msgs extends NLS
