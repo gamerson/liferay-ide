@@ -423,8 +423,8 @@ public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
         {
             op.setProjectProvider( "ant" );
 
-            assertEquals( true, op.getUseDefaultLocation().service( EnablementService.class ).enablement() );
-            assertEquals( true, op.getUseDefaultLocation().enabled() );
+            assertEquals( false, op.getUseDefaultLocation().service( EnablementService.class ).enablement() );
+            assertEquals( false, op.getUseDefaultLocation().enabled() );
         }
     }
 
