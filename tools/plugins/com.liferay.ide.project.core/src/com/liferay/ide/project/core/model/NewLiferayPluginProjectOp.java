@@ -48,6 +48,7 @@ import com.liferay.ide.project.core.model.internal.RuntimeNameValidationService;
 import com.liferay.ide.project.core.model.internal.ThemeFrameworkValidationService;
 import com.liferay.ide.project.core.model.internal.UseDefaultLocationListener;
 import com.liferay.ide.project.core.model.internal.UseDefaultLocationValidationService;
+import com.liferay.ide.project.core.model.internal.UseDefaultLocationEnablementService;
 import com.liferay.ide.project.core.model.internal.UseSdkLocationListener;
 
 import org.eclipse.sapphire.ElementList;
@@ -121,7 +122,14 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement, HasLiferay
     @DefaultValue( text = "true" )
     @Label( standard = "use default location" )
     @Listeners( UseDefaultLocationListener.class )
-    @Service( impl = UseDefaultLocationValidationService.class )
+    @Services
+    (
+        value=
+        {
+			@Service( impl = UseDefaultLocationValidationService.class ),
+            @Service( impl = UseDefaultLocationEnablementService.class )
+        }
+    )
     ValueProperty PROP_USE_DEFAULT_LOCATION = new ValueProperty( TYPE, "UseDefaultLocation" ); //$NON-NLS-1$
 
     Value<Boolean> getUseDefaultLocation();

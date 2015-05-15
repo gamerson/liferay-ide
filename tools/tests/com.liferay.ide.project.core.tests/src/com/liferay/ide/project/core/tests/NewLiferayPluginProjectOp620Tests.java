@@ -18,6 +18,7 @@ package com.liferay.ide.project.core.tests;
 import com.liferay.ide.project.core.ProjectCore;
 
 import org.eclipse.core.runtime.IPath;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -100,6 +101,7 @@ public class NewLiferayPluginProjectOp620Tests extends NewLiferayPluginProjectOp
     }
 
     @Test
+    @Ignore
     public void testNewProjectCustomLocationPortlet() throws Exception
     {
         if( shouldSkipBundleTests() ) return;
@@ -108,6 +110,7 @@ public class NewLiferayPluginProjectOp620Tests extends NewLiferayPluginProjectOp
     }
 
     @Test
+    @Ignore
     public void testNewProjectCustomLocationWrongSuffix() throws Exception
     {
         if( shouldSkipBundleTests() ) return;
@@ -116,6 +119,7 @@ public class NewLiferayPluginProjectOp620Tests extends NewLiferayPluginProjectOp
     }
 
     @Test
+    @Ignore
     public void testNewSDKProjectCustomLocation() throws Exception
     {
         if( shouldSkipBundleTests() ) return;
@@ -124,6 +128,7 @@ public class NewLiferayPluginProjectOp620Tests extends NewLiferayPluginProjectOp
     }
 
     @Test
+    @Ignore
     public void testNewSDKProjectEclipseWorkspace() throws Exception
     {
         if( shouldSkipBundleTests() ) return;

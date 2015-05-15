@@ -16,6 +16,7 @@
 package com.liferay.ide.sdk.core;
 
 import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 
 import java.io.ByteArrayInputStream;
@@ -303,243 +304,32 @@ public class SDK
         return copy;
     }
 
-    public IPath createNewExtProject( String extName, String extDisplayName, Map<String, String> appServerProperties,
-        boolean separateJRE, String workingDir, String baseDir, IProgressMonitor monitor )
-    {
-        try
-        {
-            SDKHelper antHelper = new SDKHelper( this, monitor );
-
-            persistAppServerProperties( appServerProperties );
-
-            Map<String, String> properties = new HashMap<String, String>();
-
-            properties.putAll( appServerProperties );
-
-            properties.put( ISDKConstants.PROPERTY_EXT_NAME, extName );
-            properties.put( ISDKConstants.PROPERTY_EXT_DISPLAY_NAME, extDisplayName );
-
-            // create a space for new portlet template to get built
-            IPath tempPath =
-                SDKCorePlugin.getDefault().getStateLocation().append( ISDKConstants.TARGET_CREATE ).append(
-                    String.valueOf( System.currentTimeMillis() ) );
-            // if (!newPortletPath.toFile().mkdirs()) {
-            // throw new
-            // CoreException(SDKPlugin.createErrorStatus("Unable to create directory in state location"));
-            // }
-
-            properties.put( ISDKConstants.PROPERTY_EXT_PARENT_DIR, tempPath.toOSString() );
-
-            if( baseDir != null )
-            {
-                properties.put( "plugin.type.dir", baseDir ); //$NON-NLS-1$
-            }
-
-            antHelper.runTarget( getLocation().append( ISDKConstants.EXT_PLUGIN_ANT_BUILD ),
-                ISDKConstants.TARGET_CREATE, properties, separateJRE, workingDir );
-
-            return tempPath;
-        }
-        catch( Exception e )
-        {
-            SDKCorePlugin.logError( e );
-        }
-
-        return null;
-    }
-
-    public IPath createNewHookProject(
-        String hookName, String hookDisplayName, Map<String, String> appServerProperties, boolean separateJRE,
-        String workingDir, String baseDir, IProgressMonitor monitor )
-    {
-        SDKHelper antHelper = new SDKHelper( this, monitor );
-
-        try
-        {
-            persistAppServerProperties( appServerProperties );
-
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put( ISDKConstants.PROPERTY_HOOK_NAME, hookName );
-            properties.put( ISDKConstants.PROPERTY_HOOK_DISPLAY_NAME, hookDisplayName );
-
-            // create a space for new portlet template to get built
-            IPath newHookPath =
-                SDKCorePlugin.getDefault().getStateLocation().append( ISDKConstants.TARGET_CREATE ).append(
-                    String.valueOf( System.currentTimeMillis() ) );
-
-            properties.put( ISDKConstants.PROPERTY_HOOK_PARENT_DIR, newHookPath.toOSString() );
-
-            final IPath buildLocation = getLocation().append( ISDKConstants.HOOK_PLUGIN_ANT_BUILD );
-
-            if( baseDir != null )
-            {
-                properties.put( "plugin.type.dir", baseDir ); //$NON-NLS-1$
-            }
-
-            antHelper.runTarget( buildLocation, ISDKConstants.TARGET_CREATE, properties, separateJRE, workingDir );
-
-            return newHookPath;
-        }
-        catch( Exception e )
-        {
-            SDKCorePlugin.logError( e );
-        }
-
-        return null;
-    }
-
-    public IPath createNewLayoutTplProject( String layoutTplName, String layoutTplDisplayName,
-        Map<String, String> appServerProperties, boolean separateJRE, String workingDir, String baseDir, IProgressMonitor monitor )
-    {
-        SDKHelper antHelper = new SDKHelper( this, monitor );
-
-        try
-        {
-            persistAppServerProperties( appServerProperties );
-
-            Map<String, String> properties = new HashMap<String, String>();
-
-            properties.putAll( appServerProperties );
-
-            properties.put( ISDKConstants.PROPERTY_LAYOUTTPL_NAME, layoutTplName );
-            properties.put( ISDKConstants.PROPERTY_LAYOUTTPL_DISPLAY_NAME, layoutTplDisplayName );
-
-            // create a space for new layouttpm template to get built
-            IPath newLayoutTplPath =
-                SDKCorePlugin.getDefault().getStateLocation().append( ISDKConstants.TARGET_CREATE ).append(
-                    String.valueOf( System.currentTimeMillis() ) );
-
-            properties.put( ISDKConstants.PROPERTY_LAYOUTTPL_PARENT_DIR, newLayoutTplPath.toOSString() );
-
-            if( baseDir != null )
-            {
-                properties.put( "plugin.type.dir", baseDir ); //$NON-NLS-1$
-            }
-
-            antHelper.runTarget(
-                getLocation().append( ISDKConstants.LAYOUTTPL_PLUGIN_ANT_BUILD ), ISDKConstants.TARGET_CREATE,
-                properties, separateJRE, workingDir );
-
-            return newLayoutTplPath;
-        }
-        catch( Exception e )
-        {
-            SDKCorePlugin.logError( e );
-        }
-
-        return null;
-    }
-
-    public IPath createNewPortletProject( String portletName, String portletDisplayName, String portletFramework,
-        Map<String, String> appServerProperties,  boolean separateJRE, String workingDir, String baseDir, IProgressMonitor monitor )
-    {
-        SDKHelper antHelper = new SDKHelper( this, monitor );
-
-        try
-        {
-            persistAppServerProperties( appServerProperties );
-
-            Map<String, String> properties = new HashMap<String, String>();
-
-            properties.put( ISDKConstants.PROPERTY_PORTLET_NAME, portletName );
-            properties.put( ISDKConstants.PROPERTY_PORTLET_DISPLAY_NAME, portletDisplayName );
-            properties.put( ISDKConstants.PROPERTY_PORTLET_FRAMEWORK, portletFramework );
-
-            // create a space for new portlet template to get built
-            IPath newPortletPath =
-                SDKCorePlugin.getDefault().getStateLocation().append( ISDKConstants.TARGET_CREATE ).append(
-                    String.valueOf( System.currentTimeMillis() ) );
-
-            properties.put( ISDKConstants.PROPERTY_PORTLET_PARENT_DIR, newPortletPath.toOSString() );
-
-            if( baseDir != null )
-            {
-                properties.put( "plugin.type.dir", baseDir ); //$NON-NLS-1$
-            }
-
-            antHelper.runTarget( getLocation().append( ISDKConstants.PORTLET_PLUGIN_ANT_BUILD ),
-                ISDKConstants.TARGET_CREATE, properties, separateJRE, workingDir );
-
-            return newPortletPath;
-        }
-        catch( Exception e )
-        {
-            SDKCorePlugin.logError( e );
-        }
-
-        return null;
-    }
-
-    public IPath createNewThemeProject(
-        String themeName, String themeDisplayName, boolean separateJRE, String workingDir, String baseDir,
+    public IPath createNewProject(
+        String projectName, String arguments, String type, boolean separateJRE, String workingDir,
         IProgressMonitor monitor )
     {
-        SDKHelper antHelper = new SDKHelper( this, monitor );
+        CreateHelper createHelper = new CreateHelper( this, monitor );
 
         try
         {
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put( ISDKConstants.PROPERTY_THEME_NAME, themeName );
-            properties.put( ISDKConstants.PROPERTY_THEME_DISPLAY_NAME, themeDisplayName );
+            final IPath pluginFolder = getLocation().append( getPluginFolder( type ) );
 
-            // create a space for new portlet template to get built
-            IPath tempPath =
-                SDKCorePlugin.getDefault().getStateLocation().append( ISDKConstants.TARGET_CREATE ).append(
-                    String.valueOf( System.currentTimeMillis() ) );
+            final IPath newPath = pluginFolder.append( projectName + getPluginSuffix( type ) );
 
-            properties.put( ISDKConstants.PROPERTY_THEME_PARENT_DIR, tempPath.toOSString() );
+            String createScript = ISDKConstants.CREATE_BAT;
 
-            if( baseDir != null )
+            if( CoreUtil.isLinux() || CoreUtil.isMac() )
             {
-                properties.put( "plugin.type.dir", baseDir ); //$NON-NLS-1$
+                createScript = ISDKConstants.CREATE_SH;
             }
 
-            antHelper.runTarget( getLocation().append( ISDKConstants.THEME_PLUGIN_ANT_BUILD ),
-                ISDKConstants.TARGET_CREATE, properties, separateJRE, workingDir );
+            final IPath createFile = pluginFolder.append( createScript );
 
-            return tempPath;
+            createHelper.runTarget( createFile, arguments, separateJRE, workingDir );
+
+            return newPath;
         }
         catch( CoreException e )
-        {
-            SDKCorePlugin.logError( e );
-        }
-
-        return null;
-    }
-
-    public IPath createNewWebProject(
-        String webName, String webDisplayName, Map<String, String> appServerProperties, boolean separateJRE,
-        String workingDir, String baseDir, IProgressMonitor monitor )
-    {
-        SDKHelper antHelper = new SDKHelper( this, monitor );
-
-        try
-        {
-            persistAppServerProperties( appServerProperties );
-
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put( ISDKConstants.PROPERTY_WEB_NAME, webName );
-            properties.put( ISDKConstants.PROPERTY_WEB_DISPLAY_NAME, webDisplayName );
-
-            // create a space for new web template to get built
-            IPath newWebPath =
-                SDKCorePlugin.getDefault().getStateLocation().append( ISDKConstants.TARGET_CREATE ).append(
-                    String.valueOf( System.currentTimeMillis() ) );
-
-            properties.put( ISDKConstants.PROPERTY_WEB_PARENT_DIR, newWebPath.toOSString() );
-
-            final IPath buildLocation = getLocation().append( ISDKConstants.WEB_PLUGIN_ANT_BUILD );
-
-            if( baseDir != null )
-            {
-                properties.put( "plugin.type.dir", baseDir ); //$NON-NLS-1$
-            }
-
-            antHelper.runTarget( buildLocation, ISDKConstants.TARGET_CREATE, properties, separateJRE, workingDir );
-
-            return newWebPath;
-        }
-        catch( Exception e )
         {
             SDKCorePlugin.logError( e );
         }
@@ -659,6 +449,48 @@ public class SDK
         }
 
         return version;
+    }
+
+    private String getPluginFolder( String type )
+    {
+        switch( type )
+        {
+        case "ext":
+            return ISDKConstants.EXT_PLUGIN_PROJECT_FOLDER;
+        case "portlet":
+            return ISDKConstants.PORTLET_PLUGIN_PROJECT_FOLDER;
+        case "hook":
+            return ISDKConstants.HOOK_PLUGIN_PROJECT_FOLDER;
+        case "layouttpl":
+            return ISDKConstants.LAYOUTTPL_PLUGIN_PROJECT_FOLDER;
+        case "theme":
+            return ISDKConstants.THEME_PLUGIN_PROJECT_FOLDER;
+        case "web":
+            return ISDKConstants.WEB_PLUGIN_PROJECT_FOLDER;
+        default:
+            return "";
+        }
+    }
+
+    private String getPluginSuffix( String type )
+    {
+        switch( type )
+        {
+        case "ext":
+            return ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX;
+        case "portlet":
+            return ISDKConstants.PORTLET_PLUGIN_PROJECT_SUFFIX;
+        case "hook":
+            return ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX;
+        case "layouttpl":
+            return ISDKConstants.LAYOUTTPL_PLUGIN_PROJECT_SUFFIX;
+        case "theme":
+            return ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX;
+        case "web":
+            return ISDKConstants.WEB_PLUGIN_PROJECT_SUFFIX;
+        default:
+            return "";
+        }
     }
 
     private boolean hasAppServerSpecificProps( Properties props )
