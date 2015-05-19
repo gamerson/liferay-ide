@@ -122,7 +122,7 @@ public class ProjectImportUtil
             // IDE-110 IDE-648
             String webappRootFolder = null;
             IProgressMonitor npm = new NullProgressMonitor();
-            String arguments = displayName + " " + displayName;
+            String arguments = "\"" + displayName + "\"" + " " + "\"" + displayName + "\"";
 
             // Create Project
             if( pluginBinaryRecord.isHook() )
