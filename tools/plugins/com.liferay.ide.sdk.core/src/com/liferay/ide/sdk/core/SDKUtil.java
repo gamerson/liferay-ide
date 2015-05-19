@@ -129,6 +129,11 @@ public class SDKUtil
         return null;
     }
 
+    public static boolean hasGradleTools( IPath path )
+    {
+        return path.append( "tools" ).append( "gradle" ).toFile().exists();
+    }
+
     public static boolean isIvyProject( IProject project )
     {
         try
