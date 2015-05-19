@@ -17,25 +17,18 @@ package com.liferay.ide.sdk.core;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.LaunchHelper;
-import com.liferay.ide.core.util.RuntimeClasspathModel;
 import com.liferay.ide.core.util.StringPool;
-
-import java.io.File;
 
 import org.eclipse.ant.launching.IAntLaunchConstants;
 import org.eclipse.core.externaltools.internal.IExternalToolConstants;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jdt.launching.JavaRuntime;
 
 /**
  * @author Terry Jia
@@ -131,36 +124,6 @@ public class CreateHelper extends LaunchHelper
         launch( launchConfig, ILaunchManager.RUN_MODE, monitor );
 
         this.currentCreateFile = null;
-    }
-
-    protected void addUserEntries( RuntimeClasspathModel model ) throws CoreException
-    {
-        IPath[] antLibs = sdk.getAntLibraries();
-
-        for( IPath antLib : antLibs )
-        {
-            if( antLib.toFile().exists() )
-            {
-                model.addEntry(
-                    RuntimeClasspathModel.USER,
-                    JavaRuntime.newArchiveRuntimeClasspathEntry( antLib.makeAbsolute() ) );
-            }
-        }
-
-        try
-        {
-            File bundleFile = FileLocator.getBundleFile( JavaCore.getPlugin().getBundle() );
-
-            if( bundleFile.exists() )
-            {
-                model.addEntry(
-                    RuntimeClasspathModel.USER,
-                    JavaRuntime.newArchiveRuntimeClasspathEntry( new Path( bundleFile.getAbsolutePath() ) ) );
-            }
-        }
-        catch( Exception e )
-        {
-        }
     }
 
     public void setVMArgs( String[] vmargs )
