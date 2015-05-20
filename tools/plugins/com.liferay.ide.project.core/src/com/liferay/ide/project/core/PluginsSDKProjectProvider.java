@@ -31,6 +31,7 @@ import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,7 +106,9 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
         final boolean hasGradleTools = SDKUtil.hasGradleTools( sdk.getLocation() );
 
-        String arguments = "\"" + projectName + "\"" + " " + "\"" + displayName + "\"";
+        ArrayList<String> arguments = new ArrayList<String>();
+        arguments.add( projectName );
+        arguments.add( displayName );
 
         IPath newSDKProjectPath = null;
 
@@ -120,9 +123,10 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
                 if( hasGradleTools )
                 {
-                    arguments = arguments + " " + frameworkName;
+                    arguments.add( frameworkName );
     
-                    sdk.createNewProject( projectName, arguments, "portlet", separateJRE, workingDir, monitor );
+                    sdk.createNewProject(
+                        projectName, arguments.toArray( new String[] {} ), "portlet", workingDir, monitor );
                 }
                 else
                 {
@@ -141,7 +145,8 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
                 if( hasGradleTools )
                 {
-                    sdk.createNewProject( projectName, arguments, "hook", separateJRE, workingDir, monitor );
+                    sdk.createNewProject(
+                        projectName, arguments.toArray( new String[] {} ), "hook", workingDir, monitor );
                 }
                 else
                 {
@@ -159,7 +164,8 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
                 if( hasGradleTools )
                 {
-                    sdk.createNewProject( projectName, arguments, "ext", separateJRE, workingDir, monitor );
+                    sdk.createNewProject(
+                        projectName, arguments.toArray( new String[] {} ), "ext", workingDir, monitor );
                 }
                 else
                 {
@@ -177,7 +183,8 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
                 if( hasGradleTools )
                 {
-                    sdk.createNewProject( projectName, arguments, "layouttpl", separateJRE, workingDir, monitor );
+                    sdk.createNewProject(
+                        projectName, arguments.toArray( new String[] {} ), "layouttpl", workingDir, monitor );
                 }
                 else
                 {
@@ -195,7 +202,8 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
                 if( hasGradleTools )
                 {
-                    sdk.createNewProject( projectName, arguments, "theme", separateJRE, workingDir, monitor );
+                    sdk.createNewProject(
+                        projectName, arguments.toArray( new String[] {} ), "theme", workingDir, monitor );
                 }
                 else
                 {
@@ -212,7 +220,8 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
                 if( hasGradleTools )
                 {
-                    sdk.createNewProject( projectName, arguments, "web", separateJRE, workingDir, monitor );
+                    sdk.createNewProject(
+                        projectName, arguments.toArray( new String[] {} ), "web", workingDir, monitor );
                 }
                 else
                 {
