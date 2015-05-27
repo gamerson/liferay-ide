@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Liferay Portlet Wizard Tests
+Bundle-SymbolicName: com.liferay.ide.portlet.wizard.tests
+Bundle-Version: 3.0.0.qualifier
+Bundle-Vendor: Liferay, Inc.
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jem.util,
+ com.liferay.ide.server.core.tests;bundle-version="2.1.1",
+ com.liferay.ide.project.core.tests;bundle-version="2.0.0",
+ com.liferay.ide.core.tests;bundle-version="2.0.0",
+ com.liferay.ide.portlet.core,
+ com.liferay.ide.portlet.ui,
+ org.eclipse.ui.workbench,
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: com.liferay.ide.portlet.wizard.tests
