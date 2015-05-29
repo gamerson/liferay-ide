@@ -27,6 +27,8 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.wst.sse.ui,
  org.eclipse.wst.validation,
  org.eclipse.wst.xml.search.editor,
+ com.liferay.ide.alloy.core,
+ com.liferay.ide.alloy.ui,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
