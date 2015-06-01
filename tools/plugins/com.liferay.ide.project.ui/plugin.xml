@@ -1150,4 +1150,10 @@
       </category>
    </extension>
    -->
+   <extension point="org.eclipse.ui.ide.projectNatureImages">
+  	  <image id="com.liferay.ide.code.nature.img"
+     		 natureId="com.liferay.ide.core.liferayNature"
+    	  	 icon="icons/ovr/liferay_ovr.png">
+  	  </image>
+   </extension>   
 </plugin>

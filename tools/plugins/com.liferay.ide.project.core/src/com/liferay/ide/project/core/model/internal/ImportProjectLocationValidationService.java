@@ -35,7 +35,6 @@ import org.eclipse.sapphire.services.ValidationService;
  */
 public class ImportProjectLocationValidationService extends ValidationService
 {
-
     @Override
     protected Status compute()
     {
@@ -43,7 +42,7 @@ public class ImportProjectLocationValidationService extends ValidationService
 
         final Path currentProjectLocation = op().getLocation().content( true );
 
-        if( currentProjectLocation != null )
+        if( currentProjectLocation != null && !currentProjectLocation.isEmpty())
         {
             final String currentPath = currentProjectLocation.toOSString();
 
@@ -92,13 +91,22 @@ public class ImportProjectLocationValidationService extends ValidationService
                             {
                                 retval = Status.createErrorStatus( "Project is not located inside Liferay Plugins SDK" );
                             }
+
+                            final SDK workspaceSdk = getSdkInWorkspace();
+
+                            if( workspaceSdk != null )
+                            {
+                                if ( !workspaceSdk.getLocation().equals( sdk.getLocation() ) )
+                                {
+                                    retval = Status.createErrorStatus("The import project has different sdk with current workspace");
+                                }
+                            }
                         }
                         else
                         {
                             retval = Status.createErrorStatus( "Invalid project location" );
                         }
                     }
-
                 }
             }
         }
@@ -108,6 +116,23 @@ public class ImportProjectLocationValidationService extends ValidationService
         }
 
         return retval;
+    }
+
+    private SDK getSdkInWorkspace()
+    {
+        SDK retVal = null;
+        IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        for( IProject project : projects )
+        {
+            IPath projectLocation = project.getLocation();
+
+            if ( SDKUtil.isValidSDKLocation( projectLocation.toPortableString() ) )
+            {
+                retVal = SDKUtil.createSDKFromLocation( projectLocation );
+                break;
+            }
+        }
+        return retVal; 
     }
 
     private SDKProjectsImportOp30 op()

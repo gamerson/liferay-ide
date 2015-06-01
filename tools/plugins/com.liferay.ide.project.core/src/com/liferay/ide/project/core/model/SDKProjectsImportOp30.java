@@ -17,8 +17,8 @@ package com.liferay.ide.project.core.model;
 import com.liferay.ide.project.core.model.internal.ImportProjectLocationValidationService;
 import com.liferay.ide.project.core.model.internal.ImportProjectsLocationListener;
 
-import org.eclipse.sapphire.Element;
 import org.eclipse.sapphire.ElementType;
+import org.eclipse.sapphire.ExecutableElement;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.Path;
@@ -30,7 +30,6 @@ import org.eclipse.sapphire.modeling.annotations.Enablement;
 import org.eclipse.sapphire.modeling.annotations.FileSystemResourceType;
 import org.eclipse.sapphire.modeling.annotations.Label;
 import org.eclipse.sapphire.modeling.annotations.Listeners;
-import org.eclipse.sapphire.modeling.annotations.ReadOnly;
 import org.eclipse.sapphire.modeling.annotations.Service;
 import org.eclipse.sapphire.modeling.annotations.Type;
 import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
@@ -38,7 +37,7 @@ import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
 /**
  * @author Simon Jiang
  */
-public interface SDKProjectsImportOp30 extends Element
+public interface SDKProjectsImportOp30 extends ExecutableElement
 {
     ElementType TYPE = new ElementType( SDKProjectsImportOp30.class );
 

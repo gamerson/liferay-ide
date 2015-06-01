@@ -15,16 +15,27 @@
 
 package com.liferay.ide.server.core.portal;
 
+import com.liferay.ide.core.util.FileListing;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 /**
  * @author Simon Jiang
  */
 public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBundle
 {
+    private static final Collection<String> portalDependencyJars = Arrays.asList
+    (
+    );
 
     public static final int DEFAULT_JMX_PORT = 2099;
 
@@ -33,18 +44,54 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
        super(path);
     }
 
+    public PortalJBossBundle( Map<String, String> appServerProperties )
+    {
+       super(appServerProperties);
+    }
+
     @Override
     public IPath getAppServerDeployDir()
     {
         return this.bundlePath.append( "/standalone/deployments/" );
     }
-    
+
     @Override
     public IPath getAppServerLibGlobalDir()
     {
         return getAppServerDir().append( "/modules/com/liferay/portal/main" );
     }
-    
+
+    @Override
+    protected IPath getAppServerLibDir()
+    {
+        return getAppServerDir().append( "modules" ); //$NON-NLS-1$
+    }
+
+    @Override
+    public IPath[] getBundleDependencyJars()
+    {
+        List<IPath> libs = new ArrayList<IPath>();
+        IPath bundleLibPath =  getAppServerLibDir();
+        List<File> libFiles = new ArrayList<File>();
+        try
+        {
+            libFiles = FileListing.getFileListing( new File( bundleLibPath.toOSString() ) );
+            for( File lib : libFiles )
+            {
+                if( lib.exists() && lib.getName().endsWith( ".jar" ) && 
+                                (portalDependencyJars.size()>0?portalDependencyJars.contains( lib.getName() ):true) ) //$NON-NLS-1$
+                {
+                    libs.add( new Path( lib.getPath() ) );
+                }
+            }
+        }
+        catch( FileNotFoundException e )
+        {
+        }
+
+        return libs.toArray( new IPath[libs.size()] );
+    }
+
     protected int getDefaultJMXRemotePort()
     {
         return DEFAULT_JMX_PORT;
@@ -53,6 +100,12 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
     public String getMainClass()
     {
         return "org.jboss.modules.Main";
+    }
+
+    @Override
+    protected Collection<String> getPortalDependencyJars()
+    {
+        return portalDependencyJars;
     }
 
     @Override
@@ -157,5 +210,35 @@ public class PortalJBossBundle extends AbstractPortalBundle  implements PortalBu
     public String getType()
     {
         return "jboss";
+    }
+
+    @Override
+    public IPath[] getUserLibs()
+    {
+        List<IPath> libs = new ArrayList<IPath>();
+        try
+        {
+            List<File>  portallibFiles = FileListing.getFileListing( new File( getPortalDir().append( "WEB-INF/lib" ).toPortableString() ) );
+            for( File lib : portallibFiles )
+            {
+                if( lib.exists() && lib.getName().endsWith( ".jar" ) ) //$NON-NLS-1$
+                {
+                    libs.add( new Path( lib.getPath() ) );
+                }
+            }
+
+            List<File>  libFiles = FileListing.getFileListing( new File( getAppServerLibDir().toPortableString() ) );
+            for( File lib : libFiles )
+            {
+                if( lib.exists() && lib.getName().endsWith( ".jar" ) )
+                {
+                    libs.add( new Path( lib.getPath() ) );
+                }
+            }
+        }
+        catch( FileNotFoundException e )
+        {
+        }
+        return libs.toArray( new IPath[libs.size()] );
     }
 }

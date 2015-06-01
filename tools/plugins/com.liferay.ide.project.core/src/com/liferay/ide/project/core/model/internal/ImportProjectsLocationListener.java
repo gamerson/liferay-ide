@@ -44,34 +44,37 @@ public class ImportProjectsLocationListener extends FilteredListener<ValueProper
     {
         SDKProjectsImportOp30 op = op(event);
 
-        ProjectRecord record = ProjectUtil.getProjectRecordForDir( op.getLocation().content().toPortableString() );
-
-        if( record != null )
+        if ( ( op.getLocation().content()!= null ) && !op.getLocation().content().isEmpty() )
         {
-            String projectName = record.getProjectName();
-            IProject existingProject = ResourcesPlugin.getWorkspace().getRoot().getProject( projectName );
+            ProjectRecord record = ProjectUtil.getProjectRecordForDir( op.getLocation().content().toPortableString() );
 
-            if( existingProject != null )
+            if( record != null )
             {
-                final String pluginType = ProjectUtil.getLiferayPluginType( op.getLocation().content().toPortableString() );
+                String projectName = record.getProjectName();
+                IProject existingProject = ResourcesPlugin.getWorkspace().getRoot().getProject( projectName );
 
-                op.setPluginType( pluginType );
+                if( existingProject != null )
+                {
+                    final String pluginType = ProjectUtil.getLiferayPluginType( op.getLocation().content().toPortableString() );
 
-                File projectDir = record.getProjectLocation().toFile();
+                    op.setPluginType( pluginType );
 
-                SDK sdk = SDKUtil.getSDKFromProjectDir( projectDir );
+                    File projectDir = record.getProjectLocation().toFile();
 
-                final String sdkVersion = sdk.getVersion();         
+                    SDK sdk = SDKUtil.getSDKFromProjectDir( projectDir );
 
-                op.setPluginType( pluginType );
+                    final String sdkVersion = sdk.getVersion();         
 
-                op.setSdkVersion( sdkVersion );
+                    op.setPluginType( pluginType );
+
+                    op.setSdkVersion( sdkVersion );
+                }
             }
-        }
-        else
-        {
-            op.setPluginType( null );
-            op.setSdkVersion( null );            
+            else
+            {
+                op.setPluginType( null );
+                op.setSdkVersion( null );            
+            }            
         }
     }
 }
