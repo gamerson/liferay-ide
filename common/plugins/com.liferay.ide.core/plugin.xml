@@ -65,4 +65,11 @@
             shortName="noop">
       </liferayProjectProvider>
    </extension>
+   <extension point="org.eclipse.core.resources.natures"
+		id="com.liferay.ide.core.liferayNature" name="%liferay.nature.name">
+		<runtime>
+			<run class="com.liferay.ide.core.project.LiferayNature" />
+		</runtime>
+		<requires-nature id="org.eclipse.jdt.core.javanature" />
+	</extension>     
 </plugin>

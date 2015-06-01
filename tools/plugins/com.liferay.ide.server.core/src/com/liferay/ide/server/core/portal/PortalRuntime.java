@@ -159,8 +159,7 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
 
     public IPath[] getUserLibs()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return this.portalBundle.getUserLibs();
     }
 
     public IVMInstall getVMInstall()

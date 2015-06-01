@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.IPath;
  */
 public interface PortalBundle
 {
-    
+
     IPath getAutoDeployPath();
 
     IPath getAppServerDeployDir();
@@ -55,4 +55,8 @@ public interface PortalBundle
     String getType();
 
     String getVersion();
+
+    IPath[] getBundleDependencyJars();
+
+    IPath[] getUserLibs();
 }

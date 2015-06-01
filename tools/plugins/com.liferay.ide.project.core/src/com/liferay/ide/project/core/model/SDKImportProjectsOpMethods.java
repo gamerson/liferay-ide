@@ -14,25 +14,25 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.ProjectRecord;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKManager;
 import com.liferay.ide.sdk.core.SDKUtil;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
 import org.eclipse.sapphire.platform.StatusBridge;
-import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
-import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 
 /**
@@ -40,54 +40,54 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
  */
 public class SDKImportProjectsOpMethods
 {
-
     public static final Status execute( final SDKProjectsImportOp30 op, final ProgressMonitor pm )
     {
         final IProgressMonitor monitor = ProgressMonitorBridge.create( pm );
 
         monitor.beginTask( "Creating Liferay plugin project (this process may take several minutes)", 100 ); //$NON-NLS-1$
 
-        Status retval = null;
+        Status retval = Status.createOkStatus();
 
         final Path projectLocation = op.getLocation().content();
-        
+
         ProjectRecord projectRecord = ProjectUtil.getProjectRecordForDir( projectLocation.toPortableString() );
 
         if( projectRecord == null )
         {
-            final IStatus status = ProjectCore.createErrorStatus( "Project record to import is null." ); //$NON-NLS-1$
-            
-            retval = StatusBridge.create( status );
-            
-            return retval;
+            return error("ProjectRecord is null");
+        }
+
+        final IProject newProject = CoreUtil.getProject( projectRecord.getProjectName() );
+
+        if (newProject.exists())
+        {
+            return error("Project already exists.");
         }
 
         File projectDir = projectRecord.getProjectLocation().toFile();
-
         SDK sdk = SDKUtil.getSDKFromProjectDir( projectDir );
 
-        if( sdk != null )
+        if( sdk == null )
         {
-            if( !( SDKManager.getInstance().containsSDK( sdk ) ) )
-            {
-                SDKManager.getInstance().addSDK( sdk );
-            }
+             return error("Could not get SDK");
         }
-
-        IRuntime runtime = (IRuntime) model.getProperty( IFacetProjectCreationDataModelProperties.FACET_RUNTIME );
 
         try
         {
-            ProjectUtil.importProject( projectRecord, runtime, sdk.getLocation().toOSString(), monitor );
+            ProjectUtil.importProject( projectRecord,sdk.getLocation(),new NullProgressMonitor());
         }
         catch( CoreException e )
         {
-            return ProjectCore.createErrorStatus( e );
+            return error(e.getMessage());
         }
 
-        return Status.OK_STATUS;
-        
         return retval;
     }
 
-}
+    private static Status error(final String errMessage)
+    {
+        final IStatus status = ProjectCore.createErrorStatus( errMessage );
+
+        return StatusBridge.create( status );
+    }
+ }
