@@ -24,9 +24,14 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -243,4 +248,53 @@ public class SDKUtil
             SDKCorePlugin.logError( "Unable to persist sdk name to project " + project, e );  //$NON-NLS-1$
         }
     }
+
+    public static IProject getWorkspaceSDKProject()
+    {
+        IProject retval = null;
+        IProject[] projects = CoreUtil.getAllProjects();
+        int mark = 0;
+
+        for( IProject project : projects )
+        {
+            if( isValidSDKLocation( project.getLocation().toOSString() ) )
+            {
+                if( mark == 1 )
+                {
+                    SDKCorePlugin.createErrorStatus( new IllegalStateException(
+                        "Workspace can't have more than one SDK project" ) );
+                }
+                mark++;
+                retval = project;
+            }
+        }
+
+        return retval;
+    }
+
+    public static void openAsProject( SDK sdk )
+    {
+        IProject sdkProject = CoreUtil.getProject( sdk.getName() );
+
+        if( sdkProject == null || ( !sdkProject.exists() ) )
+        {
+            final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+            IProjectDescription description = workspace.newProjectDescription( sdk.getLocation().lastSegment() );
+            description.setLocationURI( sdk.getLocation().toFile().toURI() );
+
+            IProgressMonitor npm = new NullProgressMonitor();
+
+            try
+            {
+                sdkProject.create( description, npm );
+                sdkProject.open( npm );
+            }
+            catch( Exception e )
+            {
+                SDKCorePlugin.logError( e );
+            }
+        }
+    }
+
 }
