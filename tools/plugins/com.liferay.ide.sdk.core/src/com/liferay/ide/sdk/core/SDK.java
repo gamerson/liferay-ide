@@ -30,18 +30,25 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Property;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -52,6 +59,7 @@ import org.eclipse.osgi.util.NLS;
 /**
  * @author Greg Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class SDK
@@ -133,7 +141,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -171,7 +179,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -206,7 +214,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -239,7 +247,7 @@ public class SDK
     {
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -270,7 +278,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -376,7 +384,7 @@ public class SDK
         {
             SDKHelper antHelper = new SDKHelper( this, monitor );
 
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -422,7 +430,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
             properties.put( ISDKConstants.PROPERTY_HOOK_NAME, hookName );
@@ -461,7 +469,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -503,7 +511,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -581,7 +589,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
             properties.put( ISDKConstants.PROPERTY_WEB_NAME, webName );
@@ -630,7 +638,7 @@ public class SDK
         {
             SDKHelper antHelper = new SDKHelper( this, monitor );
 
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -826,6 +834,73 @@ public class SDK
         return properties;
     }
 
+    public Map<String, String> getSDKProperties(IPath projectLocation)
+    {
+        Map<String, String> appServerProperties = null;
+        try
+        {
+            Project project = new Project();
+
+            project.setBaseDir( new File(projectLocation.toPortableString()) );
+
+            Property envTask = new Property();
+            envTask.setProject( project );
+            envTask.setEnvironment( "env" );
+
+            envTask.execute();
+
+            final String userName = project.getProperty( "env.USERNAME" ).toString();
+            final String cpName = project.getProperty( "env.USERNAME" ).toString();
+            File userBuildProperties = new File(getLocation().append( "build." + userName +".properties" ).toPortableString());
+            File cpBuildProperties = new File(getLocation().append( "build." + cpName +".properties" ).toPortableString());
+
+            if ( userBuildProperties.exists() || cpBuildProperties.exists())
+            {
+                loadProperties(project, project.getProperty( "env.USERNAME" ).toString());
+                loadProperties(project, project.getProperty( "env.COMPUTERNAME" ).toString());
+            }
+            else
+            {
+                Property propertyTask = new Property();
+                propertyTask.setProject( project );
+                propertyTask.setFile( new File(getLocation().append( "build.properties" ).toPortableString()) );
+                propertyTask.execute();
+            }
+
+            final Map<String,String> propertyCopyList = new HashMap<String,String>();
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".dir",  "app.server.dir"  );
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".deploy.dir",  "app.server.deploy.dir"  );
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".lib.global.dir",  "app.server.lib.global.dir"  );
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".portal.dir",  "app.server.portal.dir"  );
+
+            for( Iterator<String> iterator = propertyCopyList.keySet().iterator(); iterator.hasNext(); )
+            {
+                AntPropertyCopy propertyCopyTask = new AntPropertyCopy();
+                propertyCopyTask.setProject( project );
+                String from = (String)iterator.next();
+                String to = propertyCopyList.get( from );
+                propertyCopyTask.setFrom( from );
+                propertyCopyTask.setName( to );
+                propertyCopyTask.execute();
+            }
+
+            appServerProperties = new HashMap<String,String>();
+
+            appServerProperties.put( "app.server.type", project.getProperty("app.server.type")  );
+            appServerProperties.put( "app.server.dir", project.getProperty("app.server.dir") );
+            appServerProperties.put( "app.server.deploy.dir", project.getProperty("app.server.deploy.dir") );
+            appServerProperties.put( "app.server.lib.global.dir",project.getProperty("app.server.lib.global.dir") );
+            appServerProperties.put( "app.server.parent.dir", project.getProperty("app.server.parent.dir") );
+            appServerProperties.put( "app.server.portal.dir", project.getProperty("app.server.portal.dir") );
+
+        }
+        catch( Exception e)
+        {
+            SDKCorePlugin.logError( "Can't find effective properties", e );
+        }
+        return appServerProperties;
+    }
+
     public boolean hasProjectFile()
     {
         return this.location != null && this.location.append( ".project" ).toFile().exists(); //$NON-NLS-1$
@@ -869,6 +944,45 @@ public class SDK
         setLocation( Path.fromPortableString( sdkElement.getString( "location" ) ) ); //$NON-NLS-1$
         // setRuntime(sdkElement.getString("runtime"));
     }
+
+
+    private void loadProperties(Project project, final String keyName)
+    {
+        Property loadPropetiesTask = new Property();
+        loadPropetiesTask.setProject( project );
+        loadPropetiesTask.setFile( new File(getLocation().append( "build." + keyName +".properties" ).toPortableString()) );
+        loadPropetiesTask.execute();
+    }
+
+    public void openSDKInEclipse()
+    {
+        if( !hasProjectFile() )
+        {
+            addProjectFile();
+        }
+
+        IProject sdkProject = CoreUtil.getProject( getName() );
+
+        if( sdkProject == null || ( !sdkProject.exists() ) )
+        {
+            final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+            IProjectDescription description = workspace.newProjectDescription( getName() );
+            description.setLocationURI( getLocation().toFile().toURI() );
+
+            IProgressMonitor npm = new NullProgressMonitor();
+
+            try
+            {
+                sdkProject.create( description, npm );
+                sdkProject.open( npm );
+            }
+            catch( Exception e )
+            {
+                SDKCorePlugin.logError( e );
+            }
+        }
+    } 
 
     protected void persistAppServerProperties( Map<String, String> properties ) throws FileNotFoundException,
         IOException, ConfigurationException
@@ -934,7 +1048,6 @@ public class SDK
 
             props.store( new FileOutputStream( userBuildFile ), MSG_MANAGED_BY_LIFERAY_IDE );
         }
-
     }
 
     public IStatus runCommand(  IProject project,
@@ -948,7 +1061,7 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -1063,6 +1176,25 @@ public class SDK
         return Status.OK_STATUS;
     }
 
+    public void verfiySDKProperties(IPath projectLocation) throws CoreException
+    {
+        Map<String,String> sdkProperties = getSDKProperties( projectLocation );
+
+        if ( sdkProperties == null)
+        {
+            throw new CoreException( SDKCorePlugin.createErrorStatus( "Invalid sdk properties setting" ) );
+        }
+        else
+        {
+            String dir = sdkProperties.get( "app.server.parent.dir" );
+            File appServerDir = new File(dir );
+            if ( !appServerDir.exists())
+            {
+                throw new CoreException( SDKCorePlugin.createErrorStatus( "appServer is not exsited" ) );
+            }
+        }
+    }
+
     public IStatus war(
         IProject project, Map<String, String> overrideProperties, boolean separateJRE,
         Map<String, String> appServerProperties, IProgressMonitor monitor )
@@ -1079,7 +1211,7 @@ public class SDK
             SDKHelper antHelper = new SDKHelper( this, monitor );
             antHelper.setVMArgs( vmargs );
 
-            persistAppServerProperties( appServerProperties );
+            //persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
