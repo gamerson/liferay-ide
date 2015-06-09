@@ -15,7 +15,7 @@
 package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.model.SDKProjectsImportOp30;
+import com.liferay.ide.project.core.model.SDKProjectImportOp;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -32,14 +32,14 @@ import org.eclipse.ui.IWorkbenchWizard;
  * @author Simon Jiang
  */
 
-public class SDKProjectsImportWizard30 extends SapphireWizard<SDKProjectsImportOp30>
+public class SDKProjectImportWizard extends SapphireWizard<SDKProjectImportOp>
     implements IWorkbenchWizard, INewWizard
 {
     private boolean firstErrorMessageRemoved = false;
 
-    public SDKProjectsImportWizard30()
+    public SDKProjectImportWizard()
     {
-        super( createDefaultOp(), DefinitionLoader.sdef( SDKProjectsImportWizard30.class ).wizard() );
+        super( createDefaultOp(), DefinitionLoader.sdef( SDKProjectImportWizard.class ).wizard() );
     }
 
     @Override
@@ -75,9 +75,9 @@ public class SDKProjectsImportWizard30 extends SapphireWizard<SDKProjectsImportO
     }
 
 
-    private static SDKProjectsImportOp30 createDefaultOp()
+    private static SDKProjectImportOp createDefaultOp()
     {
-        return SDKProjectsImportOp30.TYPE.instantiate();
+        return SDKProjectImportOp.TYPE.instantiate();
     }
 
 }

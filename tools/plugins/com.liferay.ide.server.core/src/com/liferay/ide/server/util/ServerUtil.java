@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -52,7 +53,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -485,14 +485,14 @@ public class ServerUtil
     {
         SDK sdk = SDKUtil.getSDKFromProjectDir( project.getLocation().toFile() );
 
-        MultiStatus status = sdk.validate();
+        IStatus status = sdk.validate();
 
-        if ( !status.getChildren()[0].isOK())
+        if ( !status.isOK())
         {
             return null;
         }
 
-        Map<String, String> appServerProperties = sdk.getProperties();
+        Hashtable<String, Object> appServerProperties = sdk.getBuildProperties();
 
         final PortalBundleFactory[] factories = LiferayServerCore.getPortalBundleFactories();
         for( PortalBundleFactory factory : factories )
@@ -586,7 +586,7 @@ public class ServerUtil
                         runtimeWC = (IRuntimeWorkingCopy) runtime;
                     }
 
-                    return (ILiferayRuntime) runtimeWC.loadAdapter( adapterClass, null );
+                    return runtimeWC.loadAdapter( adapterClass, null );
                 }
             }
         }

@@ -17,6 +17,7 @@ package com.liferay.ide.server.core.portal;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
@@ -35,7 +36,7 @@ public class PortalJBossBundleFactory implements PortalBundleFactory
     }
 
     @Override
-    public IPath canCreateFromPath( Map<String, String> appServerProperties )
+    public IPath canCreateFromPath( Hashtable<String, Object> appServerProperties )
     {
         IPath retval = null;
 
