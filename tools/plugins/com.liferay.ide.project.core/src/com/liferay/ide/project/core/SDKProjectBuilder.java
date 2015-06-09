@@ -18,7 +18,9 @@ package com.liferay.ide.project.core;
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.sdk.core.ISDKConstants;
 import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.server.util.ServerUtil;
+import com.liferay.ide.sdk.core.SDKCorePlugin;
+
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -28,6 +30,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.ClasspathContainerInitializer;
@@ -57,8 +60,17 @@ public class SDKProjectBuilder extends AbstractProjectBuilder
 
     public IStatus buildLang( IFile langFile, IProgressMonitor monitor ) throws CoreException
     {
+        MultiStatus status = sdk.validate();
+
+        if ( !status.getChildren()[0].isOK())
+        {
+            return SDKCorePlugin.createErrorStatus( "Can't get correct sdk properties" );
+        }
+
+        Map<String, String> appServerProperties = sdk.getProperties();
+
         return sdk.buildLanguage(
-            getProject(), langFile, null, ServerUtil.configureAppServerProperties( getProject() ), monitor );
+            getProject(), langFile, null, appServerProperties, monitor );
     }
 
     @Override
@@ -80,9 +92,18 @@ public class SDKProjectBuilder extends AbstractProjectBuilder
 
     private IStatus buildService( IFile serviceXmlFile, IProgressMonitor monitor ) throws CoreException
     {
+        MultiStatus status = sdk.validate();
+
+        if ( !status.getChildren()[0].isOK())
+        {
+            return SDKCorePlugin.createErrorStatus( "Can't get correct sdk properties" );
+        }
+
+        Map<String, String> appServerProperties = sdk.getProperties();
+
         IStatus retval =
             sdk.buildService(
-                getProject(), serviceXmlFile, null, ServerUtil.configureAppServerProperties( getProject() ) );
+                getProject(), serviceXmlFile, null, appServerProperties );
 
         try
         {
@@ -121,8 +142,17 @@ public class SDKProjectBuilder extends AbstractProjectBuilder
 
     private IStatus buildWSDD( IFile serviceXmlFile, IProgressMonitor monitor ) throws CoreException
     {
+        MultiStatus status = sdk.validate();
+
+        if ( !status.getChildren()[0].isOK())
+        {
+            return SDKCorePlugin.createErrorStatus( "Can't get correct sdk properties" );
+        }
+
+        Map<String, String> appServerProperties = sdk.getProperties();
+
         IStatus retval =
-            sdk.buildWSDD( getProject(), serviceXmlFile, null, ServerUtil.configureAppServerProperties( getProject() ) );
+            sdk.buildWSDD( getProject(), serviceXmlFile, null, appServerProperties );
 
         try
         {
