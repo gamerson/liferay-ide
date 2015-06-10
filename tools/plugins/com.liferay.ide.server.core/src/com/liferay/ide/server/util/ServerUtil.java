@@ -21,9 +21,13 @@ import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.sdk.core.ISDKConstants;
+import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.LiferayServerCore;
+import com.liferay.ide.server.core.portal.PortalBundle;
+import com.liferay.ide.server.core.portal.PortalBundleFactory;
 import com.liferay.ide.server.remote.IRemoteServer;
 import com.liferay.ide.server.remote.IServerManagerConnection;
 
@@ -34,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -476,6 +481,32 @@ public class ServerUtil
         return (IRuntime) getRuntimeAdapter( ProjectFacetsManager.create( project ).getPrimaryRuntime(), IRuntime.class );
     }
 
+    public static PortalBundle getPortalBundle(IProject project)  throws CoreException
+    {
+        SDK sdk = SDKUtil.getSDKFromProjectDir( project.getLocation().toFile() );
+
+        IStatus status = sdk.validate();
+
+        if ( !status.isOK())
+        {
+            return null;
+        }
+
+        Hashtable<String, Object> appServerProperties = sdk.getBuildProperties();
+
+        final PortalBundleFactory[] factories = LiferayServerCore.getPortalBundleFactories();
+        for( PortalBundleFactory factory : factories )
+        {
+            final IPath path = factory.canCreateFromPath( appServerProperties );
+
+            if( path != null )
+            {
+                return factory.create( path );
+            }
+        }
+        return null;
+    }
+
     public static IRuntime getRuntime( org.eclipse.wst.common.project.facet.core.runtime.IRuntime runtime )
     {
         return ServerCore.findRuntime( runtime.getProperty( "id" ) ); //$NON-NLS-1$
@@ -555,7 +586,7 @@ public class ServerUtil
                         runtimeWC = (IRuntimeWorkingCopy) runtime;
                     }
 
-                    return (ILiferayRuntime) runtimeWC.loadAdapter( adapterClass, null );
+                    return runtimeWC.loadAdapter( adapterClass, null );
                 }
             }
         }

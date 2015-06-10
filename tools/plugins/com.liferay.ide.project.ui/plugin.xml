@@ -148,6 +148,7 @@
             id="com.liferay.ide.projects.import"
             name="%category.name">
       </category>
+      <!--
       <wizard
             category="com.liferay.ide.projects.import"
             class="com.liferay.ide.project.ui.wizard.LiferayProjectImportWizard"
@@ -158,6 +159,7 @@
             %import.existing.project.wizard.description
          </description>
       </wizard>
+      -->
       <wizard
             category="com.liferay.ide.projects.import"
             class="com.liferay.ide.project.ui.wizard.SDKProjectsImportWizard"
@@ -168,6 +170,16 @@
             %import.projects.sdk.wizard.description
          </description>
       </wizard>
+      <wizard
+            category="com.liferay.ide.projects.import"
+            class="com.liferay.ide.project.ui.wizard.SDKProjectImportWizard"
+            icon="icons/e16/import.png"
+            id="com.liferay.ide.project.ui.importSDKProjectWizard.30"
+            name="Import Liferay PluginsSDK Project">
+         <description>
+            %import.projects.sdk.wizard.description
+         </description>
+      </wizard>      
       <wizard
             category="com.liferay.ide.projects.import"
             class="com.liferay.ide.project.ui.wizard.BinaryProjectImportWizard"
@@ -1139,5 +1151,5 @@
             name="Liferay IDE Projects">
       </category>
    </extension>
-   -->
+   --> 
 </plugin>

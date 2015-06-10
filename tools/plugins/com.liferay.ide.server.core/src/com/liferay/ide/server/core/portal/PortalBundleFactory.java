@@ -14,6 +14,9 @@
  *******************************************************************************/
 package com.liferay.ide.server.core.portal;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IPath;
 
 
@@ -26,5 +29,9 @@ public interface PortalBundleFactory
 
     IPath canCreateFromPath( IPath location );
 
+    IPath canCreateFromPath( Hashtable<String, Object> appServerProperties );
+
     PortalBundle create( IPath location );
+
+    PortalBundle create( Map<String, String> appServerProperties );
 }

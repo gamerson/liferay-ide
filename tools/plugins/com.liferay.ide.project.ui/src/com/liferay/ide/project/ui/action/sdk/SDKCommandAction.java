@@ -15,13 +15,12 @@
 
 package com.liferay.ide.project.ui.action.sdk;
 
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.server.util.ServerUtil;
 import com.liferay.ide.ui.action.AbstractObjectAction;
-
-import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -38,7 +37,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
  */
 public abstract class SDKCommandAction extends AbstractObjectAction
 {
-
     public SDKCommandAction()
     {
         super();
@@ -46,6 +44,7 @@ public abstract class SDKCommandAction extends AbstractObjectAction
 
     protected abstract String getSDKCommand();
 
+    @Override
     public void run( IAction action )
     {
         if( fSelection instanceof IStructuredSelection )
@@ -81,12 +80,13 @@ public abstract class SDKCommandAction extends AbstractObjectAction
                         try
                         {
                             SDK sdk = SDKUtil.getSDK( p );
+                            ILiferayProject liferayProject = LiferayCore.create( p );
 
-                            Map<String, String> appServerProperties = ServerUtil.configureAppServerProperties( p );
-
-                            sdk.runCommand( p, buildFile, getSDKCommand(), null, appServerProperties, monitor );
-
-                            p.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+                            if ( liferayProject != null)
+                            {
+                                sdk.runCommand( p, buildFile, getSDKCommand(), null,monitor );
+                                p.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+                            }
                         }
                         catch( Exception e )
                         {
@@ -96,10 +96,7 @@ public abstract class SDKCommandAction extends AbstractObjectAction
                         return Status.OK_STATUS;
                     }
                 }.schedule();
-
             }
         }
-
     }
-
 }

@@ -19,11 +19,7 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.ProjectRecord;
 import com.liferay.ide.project.core.facet.IPluginFacetConstants;
-import com.liferay.ide.project.core.facet.IPluginProjectDataModelProperties;
 import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKManager;
-import com.liferay.ide.sdk.core.SDKUtil;
 
 import java.io.File;
 import java.util.Collections;
@@ -55,6 +51,7 @@ import org.osgi.framework.Version;
 /**
  * @author Greg Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class SDKPluginFacetUtil
 {
@@ -201,23 +198,84 @@ public class SDKPluginFacetUtil
         }
     }
 
-    public static void configureLiferayFacet(
-        IFacetedProjectWorkingCopy fpjwc, IProjectFacet requiredFacet, String sdkLocation )
+    public static void configureProjectAsPlugin(
+        final IFacetedProjectWorkingCopy fpjwc, final String pluginType,
+        final String sdkLocation, final ProjectRecord projectRecord ) throws CoreException
     {
-        Action action = fpjwc.getProjectFacetAction( requiredFacet );
+        IFacetedProjectTemplate template = getLiferayTemplateForProject( pluginType );
+        IPreset preset = getLiferayPresetForProject( pluginType );
 
-        if( action != null )
+        if( preset == null )
         {
-            Object config = action.getConfig();
-            IDataModel dm = (IDataModel) config;
-            dm.setProperty( IPluginProjectDataModelProperties.LIFERAY_SDK_NAME, getSDKName( sdkLocation ) );
+            throw new CoreException( ProjectCore.createErrorStatus( NLS.bind(
+                Msgs.noFacetPreset, fpjwc.getProjectName() ) ) );
         }
-    }
 
-    public static void configureLiferayFacet(
-        IFacetedProjectWorkingCopy fpjwc, IProjectFacetVersion requiredFacetVersion, String sdkLocation )
-    {
-        configureLiferayFacet( fpjwc, requiredFacetVersion.getProjectFacet(), sdkLocation );
+        IRuntime primaryRuntime = fpjwc.getPrimaryRuntime();
+
+        if (primaryRuntime!=null)
+        {
+            fpjwc.removeTargetedRuntime( primaryRuntime );
+        }
+
+        Set<IProjectFacetVersion> currentProjectFacetVersions = fpjwc.getProjectFacets();
+
+        Set<IProjectFacet> requiredFacets = template.getFixedProjectFacets();
+
+        for( IProjectFacet requiredFacet : requiredFacets )
+        {
+            boolean hasRequiredFacet = false;
+
+            for( IProjectFacetVersion currentFacetVersion : currentProjectFacetVersions )
+            {
+                if( currentFacetVersion.getProjectFacet().equals( requiredFacet ) )
+                {
+                    // TODO how to check the bundle support status?
+                    boolean requiredVersion = isRequiredVersion( currentFacetVersion );
+
+                    if( requiredVersion )
+                    {
+                        hasRequiredFacet = true;
+                    }
+                    else
+                    {
+                        fpjwc.removeProjectFacet( currentFacetVersion );
+                    }
+
+                    break;
+                }
+            }
+
+            if( !hasRequiredFacet )
+            {
+                IProjectFacetVersion requiredFacetVersion = getRequiredFacetVersionFromPreset( requiredFacet, preset );
+
+                if( requiredFacetVersion != null )
+                {
+                    fpjwc.addProjectFacet( requiredFacetVersion );
+
+                    if( ProjectUtil.isJavaFacet( requiredFacetVersion ) )
+                    {
+                        configureJavaFacet( fpjwc, requiredFacetVersion.getProjectFacet(), preset, projectRecord );
+                    }
+                    else if( ProjectUtil.isDynamicWebFacet( requiredFacetVersion ) )
+                    {
+                        configureWebFacet( fpjwc, requiredFacetVersion.getProjectFacet(), preset );
+                    }
+                }
+            }
+            else
+            {
+                if( ProjectUtil.isJavaFacet( requiredFacet ) )
+                {
+                    configureJavaFacet( fpjwc, requiredFacet, preset, projectRecord );
+                }
+                else if( ProjectUtil.isDynamicWebFacet( requiredFacet ) )
+                {
+                    configureWebFacet( fpjwc, requiredFacet, preset );
+                }
+            }
+        }
     }
 
     public static void configureProjectAsPlugin( final IFacetedProjectWorkingCopy fpjwc,
@@ -286,10 +344,6 @@ public class SDKPluginFacetUtil
                     {
                         configureJavaFacet( fpjwc, requiredFacetVersion.getProjectFacet(), preset, projectRecord );
                     }
-                    else if( ProjectUtil.isLiferayFacet( requiredFacetVersion ) )
-                    {
-                        configureLiferayFacet( fpjwc, requiredFacetVersion, sdkLocation );
-                    }
                     else if( ProjectUtil.isDynamicWebFacet( requiredFacetVersion ) )
                     {
                         configureWebFacet( fpjwc, requiredFacetVersion.getProjectFacet(), preset );
@@ -301,10 +355,6 @@ public class SDKPluginFacetUtil
                 if( ProjectUtil.isJavaFacet( requiredFacet ) )
                 {
                     configureJavaFacet( fpjwc, requiredFacet, preset, projectRecord );
-                }
-                else if( ProjectUtil.isLiferayFacet( requiredFacet ) )
-                {
-                    configureLiferayFacet( fpjwc, requiredFacet, sdkLocation );
                 }
                 else if( ProjectUtil.isDynamicWebFacet( requiredFacet ) )
                 {
@@ -465,28 +515,6 @@ public class SDKPluginFacetUtil
         }
 
         return null;
-    }
-
-    public static String getSDKName( String sdkLocation )
-    {
-        IPath sdkLocationPath = new Path( sdkLocation );
-
-        SDK sdk = SDKManager.getInstance().getSDK( sdkLocationPath );
-
-        String sdkName = null;
-
-        if( sdk != null )
-        {
-            sdkName = sdk.getName();
-        }
-        else
-        {
-            sdk = SDKUtil.createSDKFromLocation( sdkLocationPath );
-            SDKManager.getInstance().addSDK( sdk );
-            sdkName = sdk.getName();
-        }
-
-        return sdkName;
     }
 
     private static boolean isRequiredVersion( IProjectFacetVersion facetVersion )

@@ -22,6 +22,8 @@ import com.liferay.ide.server.core.portal.PortalBundleFactory;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -29,10 +31,10 @@ import org.eclipse.core.runtime.Path;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class PortalTomcatBundleFactory implements PortalBundleFactory
 {
-
     @Override
     public IPath canCreateFromPath( IPath location )
     {
@@ -41,6 +43,48 @@ public class PortalTomcatBundleFactory implements PortalBundleFactory
         // detect tomcat installtion
 
         if( detectCatalinaDir( location ) && detectLiferayHome( location.append( ".." ) ) )
+        {
+            retval = location;
+        }
+        else if( detectLiferayHome( location ) )
+        {
+            final File[] directories = location.toFile().listFiles
+            (
+                new FileFilter()
+                {
+                    @Override
+                    public boolean accept( File file )
+                    {
+                        return file.isDirectory();
+                }
+                }
+            );
+
+            for( File directory : directories )
+            {
+                final Path dirPath = new Path( directory.getAbsolutePath() );
+
+                if( detectCatalinaDir( dirPath ) )
+                {
+                    retval = dirPath;
+                    break;
+                }
+            }
+        }
+
+        return retval;
+    }
+
+    @Override
+    public IPath canCreateFromPath( Hashtable<String, Object> appServerProperties )
+    {
+        IPath retval = null;
+
+        final String appServerPath = (String) (appServerProperties.get( "app.server.dir"));
+
+        final IPath location = new Path(appServerPath);
+
+        if( detectCatalinaDir( location )  )
         {
             retval = location;
         }
@@ -77,6 +121,12 @@ public class PortalTomcatBundleFactory implements PortalBundleFactory
     public PortalBundle create( IPath location )
     {
         return new PortalTomcatBundle( location );
+    }
+
+    @Override
+    public PortalBundle create( Map<String, String> appServerProperties )
+    {
+        return new PortalTomcatBundle( appServerProperties );
     }
 
 }

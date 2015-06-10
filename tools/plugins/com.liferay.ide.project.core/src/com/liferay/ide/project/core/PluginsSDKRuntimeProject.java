@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
@@ -46,12 +46,12 @@ import org.w3c.dom.NodeList;
  * @author Gregory Amerson
  * @author Simon Jiang
  */
-public class PluginsSDKProject extends FlexibleProject implements IWebProject
+public class PluginsSDKRuntimeProject extends FlexibleProject implements IWebProject
 {
 
     private ILiferayRuntime liferayRuntime;
 
-    public PluginsSDKProject( IProject project, ILiferayRuntime liferayRuntime )
+    public PluginsSDKRuntimeProject( IProject project, ILiferayRuntime liferayRuntime )
     {
         super( project );
 
@@ -185,9 +185,7 @@ public class PluginsSDKProject extends FlexibleProject implements IWebProject
 
             final SDK sdk = SDKUtil.getSDK( this.getProject() );
 
-            final Map<String, String> appServerProperties = ServerUtil.configureAppServerProperties( getProject() );
-
-            final IStatus warStatus = sdk.war( this.getProject(), null, true, appServerProperties, monitor );
+            final IStatus warStatus = sdk.war( this.getProject(), null, true, monitor );
 
             if( warStatus.isOK() )
             {

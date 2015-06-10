@@ -22,25 +22,26 @@ import com.liferay.ide.core.util.FileUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Property;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -51,6 +52,7 @@ import org.eclipse.osgi.util.NLS;
 /**
  * @author Greg Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class SDK
@@ -60,21 +62,18 @@ public class SDK
     private static final String MSG_MANAGED_BY_LIFERAY_IDE =
         "Managed by Liferay IDE (remove this comment to prevent future updates)"; //$NON-NLS-1$
 
-    private static final String PROJECT_FILE_PATTERN =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<projectDescription>\n\t<name>{0}</name>\n\t<comment></comment>\n\t<projects></projects>\n\t<buildSpec></buildSpec>\n\t<natures></natures>\n</projectDescription>\n"; //$NON-NLS-1$
-
     public static String createXMLNameValuePair( String name, String value )
     {
         return name + "=\"" + value + "\" "; //$NON-NLS-1$ //$NON-NLS-2$
     }
+
+    public static List<String> SUPPORT_SERVER_TYPE = Arrays.asList( new String[]{ "tomcat", "jboss", "glassfish", "jetty"} );
 
     @SuppressWarnings( "deprecation" )
     protected static IEclipsePreferences getPrefStore()
     {
         return new InstanceScope().getNode( SDKCorePlugin.PREFERENCE_ID );
     }
-
-    // private String runtime;
 
     protected boolean contributed;
 
@@ -97,15 +96,13 @@ public class SDK
 
     public IStatus buildLanguage(
         IProject project, IFile langFile, Map<String, String> overrideProperties,
-        Map<String, String> appServerProperties, IProgressMonitor monitor )
+        IProgressMonitor monitor )
     {
         SDKHelper antHelper = new SDKHelper( this, monitor );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
-            Map<String, String> properties = new HashMap<String, String>();
+           Map<String, String> properties = new HashMap<String, String>();
 
             if( overrideProperties != null )
             {
@@ -134,15 +131,12 @@ public class SDK
     }
 
     public IStatus buildService(
-        IProject project, IFile serviceXmlFile, Map<String, String> overrideProperties,
-        Map<String, String> appServerProperties )
+        IProject project, IFile serviceXmlFile, Map<String, String> overrideProperties )
     {
         SDKHelper antHelper = new SDKHelper( this );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
 
             if( overrideProperties != null )
@@ -169,15 +163,12 @@ public class SDK
     }
 
     public IStatus buildWSDD(
-        IProject project, IFile serviceXmlFile, Map<String, String> overrideProperties,
-        Map<String, String> appServerProperties )
+        IProject project, IFile serviceXmlFile, Map<String, String> overrideProperties )
     {
         SDKHelper antHelper = new SDKHelper( this );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
 
             if( overrideProperties != null )
@@ -204,13 +195,11 @@ public class SDK
     }
 
     public IStatus cleanAppServer(
-        IProject project, IPath bundleZipLocation, String appServerDir, Map<String, String> appServerProperties,
+        IProject project, IPath bundleZipLocation, String appServerDir,
         IProgressMonitor monitor )
     {
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
 
             IPath workPath = new Path( appServerDir ).removeLastSegments( 2 );
@@ -234,14 +223,12 @@ public class SDK
     }
 
     public IStatus compileThemePlugin(
-        IProject project, Map<String, String> overrideProperties, Map<String, String> appServerProperties )
+        IProject project, Map<String, String> overrideProperties )
     {
         SDKHelper antHelper = new SDKHelper( this );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
 
             if( overrideProperties != null )
@@ -346,8 +333,6 @@ public class SDK
         {
             SDKHelper antHelper = new SDKHelper( this, monitor );
 
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
 
             properties.putAll( appServerProperties );
@@ -385,15 +370,13 @@ public class SDK
     }
 
     public IPath createNewHookProject(
-        String hookName, String hookDisplayName, Map<String, String> appServerProperties, boolean separateJRE,
+        String hookName, String hookDisplayName, boolean separateJRE,
         String workingDir, String baseDir, IProgressMonitor monitor )
     {
         SDKHelper antHelper = new SDKHelper( this, monitor );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
             properties.put( ISDKConstants.PROPERTY_HOOK_NAME, hookName );
             properties.put( ISDKConstants.PROPERTY_HOOK_DISPLAY_NAME, hookDisplayName );
@@ -431,8 +414,6 @@ public class SDK
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
 
             properties.putAll( appServerProperties );
@@ -467,15 +448,13 @@ public class SDK
     }
 
     public IPath createNewPortletProject( String portletName, String portletDisplayName, String portletFramework,
-        Map<String, String> appServerProperties,  boolean separateJRE, String workingDir, String baseDir, IProgressMonitor monitor )
+        boolean separateJRE, String workingDir, String baseDir, IProgressMonitor monitor )
     {
         SDKHelper antHelper = new SDKHelper( this, monitor );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
-            Map<String, String> properties = new HashMap<String, String>();
+             Map<String, String> properties = new HashMap<String, String>();
 
             properties.put( ISDKConstants.PROPERTY_PORTLET_NAME, portletName );
             properties.put( ISDKConstants.PROPERTY_PORTLET_DISPLAY_NAME, portletDisplayName );
@@ -544,15 +523,13 @@ public class SDK
     }
 
     public IPath createNewWebProject(
-        String webName, String webDisplayName, Map<String, String> appServerProperties, boolean separateJRE,
+        String webName, String webDisplayName, boolean separateJRE,
         String workingDir, String baseDir, IProgressMonitor monitor )
     {
         SDKHelper antHelper = new SDKHelper( this, monitor );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
             properties.put( ISDKConstants.PROPERTY_WEB_NAME, webName );
             properties.put( ISDKConstants.PROPERTY_WEB_DISPLAY_NAME, webDisplayName );
@@ -593,14 +570,11 @@ public class SDK
 
     public IStatus directDeploy(
         IProject project, Map<String, String> overrideProperties, boolean separateJRE,
-        Map<String, String> appServerProperties, IProgressMonitor monitor )
+        IProgressMonitor monitor )
     {
-
         try
         {
             SDKHelper antHelper = new SDKHelper( this, monitor );
-
-            persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
@@ -796,6 +770,55 @@ public class SDK
         return properties;
     }
 
+    public Hashtable<String,Object> getBuildProperties()
+    {
+        Project project = new Project();
+        try
+        {
+
+            project.setBaseDir( new File(getLocation().toPortableString()) );
+            project.setSystemProperties();
+
+            Property envTask = new Property();
+            envTask.setProject( project );
+            envTask.setEnvironment( "env" );
+            envTask.execute();
+
+            loadProperties(project, project.getProperty( "user.name" ));
+            loadProperties(project, project.getProperty( "env.COMPUTERNAME" ));
+            loadProperties(project, project.getProperty( "env.HOST" ));
+            loadProperties(project, project.getProperty( "env.HOSTNAME" ));
+
+            Property propertyTask = new Property();
+            propertyTask.setProject( project );
+            propertyTask.setFile( new File(getLocation().append( "build.properties" ).toPortableString()) );
+            propertyTask.execute();
+
+            final Map<String,String> propertyCopyList = new HashMap<String,String>();
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".dir",  "app.server.dir"  );
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".deploy.dir",  "app.server.deploy.dir"  );
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".lib.global.dir",  "app.server.lib.global.dir"  );
+            propertyCopyList.put( "app.server." + project.getProperty( "app.server.type") + ".portal.dir",  "app.server.portal.dir"  );
+
+            for( Iterator<String> iterator = propertyCopyList.keySet().iterator(); iterator.hasNext(); )
+            {
+                AntPropertyCopy propertyCopyTask = new AntPropertyCopy();
+                propertyCopyTask.setOverride( true );
+                propertyCopyTask.setProject( project );
+                String from = iterator.next();
+                String to = propertyCopyList.get( from );
+                propertyCopyTask.setFrom( from );
+                propertyCopyTask.setName( to );
+                propertyCopyTask.execute();
+            }
+        }
+        catch( Exception e )
+        {
+            SDKCorePlugin.logError( e );
+        }
+        return project.getProperties();
+    }
+
     public boolean hasProjectFile()
     {
         return this.location != null && this.location.append( ".project" ).toFile().exists(); //$NON-NLS-1$
@@ -840,86 +863,33 @@ public class SDK
         // setRuntime(sdkElement.getString("runtime"));
     }
 
-    protected void persistAppServerProperties( Map<String, String> properties ) throws FileNotFoundException,
-        IOException, ConfigurationException
+
+    private void loadProperties(Project project, final String keyName)
     {
-        IPath loc = getLocation();
-
-        // check for build.<username>.properties
-
-        String userName = System.getProperty( "user.name" ); //$NON-NLS-1$
-
-        File userBuildFile = loc.append( "build." + userName + ".properties" ).toFile(); //$NON-NLS-1$ //$NON-NLS-2$
-
-        if( userBuildFile.exists() )
+        if ( keyName != null )
         {
-            /*
-             * the build file exists so we need to check the following conditions 1. if the header in the comment
-             * contains the text written by a previous SDK operation then we can write it again 2. if the file was not
-             * previously written by us we will need to prompt the user with permission yes/no to update the
-             * build.<username>.properties file
-             */
+            File customerProperties = new File(getLocation().append( "build." + keyName +".properties" ).toPortableString());
 
-            PropertiesConfiguration propsConfig = new PropertiesConfiguration( userBuildFile );
-
-            String header = propsConfig.getHeader();
-
-            boolean shouldUpdateBuildFile = false;
-
-            if( header != null && header.contains( MSG_MANAGED_BY_LIFERAY_IDE ) )
+            if ( customerProperties.exists() )
             {
-                shouldUpdateBuildFile = true;
+                Property loadPropetiesTask = new Property();
+                loadPropetiesTask.setProject( project );
+                loadPropetiesTask.setFile( customerProperties );
+                loadPropetiesTask.execute();
             }
-            else
-            {
-                String overwrite = getPrefStore().get( SDKCorePlugin.PREF_KEY_OVERWRITE_USER_BUILD_FILE, ALWAYS );
-
-                if( ALWAYS.equals( overwrite ) )
-                {
-                    shouldUpdateBuildFile = true;
-                }
-                else
-                {
-                    shouldUpdateBuildFile = false;
-                }
-            }
-
-            if( shouldUpdateBuildFile )
-            {
-                for( String key : properties.keySet() )
-                {
-                    propsConfig.setProperty( key, properties.get( key ) );
-                }
-
-                propsConfig.setHeader( MSG_MANAGED_BY_LIFERAY_IDE );
-                propsConfig.save( userBuildFile );
-            }
-
         }
-        else
-        {
-            Properties props = new Properties();
-
-            props.putAll( properties );
-
-            props.store( new FileOutputStream( userBuildFile ), MSG_MANAGED_BY_LIFERAY_IDE );
-        }
-
     }
 
     public IStatus runCommand(  IProject project,
                                 IFile buildXmlFile,
                                 String command,
                                 Map<String, String> overrideProperties,
-                                Map<String, String> appServerProperties,
                                 IProgressMonitor monitor )
     {
         final SDKHelper antHelper = new SDKHelper( this, monitor );
 
         try
         {
-            persistAppServerProperties( appServerProperties );
-
             Map<String, String> properties = new HashMap<String, String>();
 
             if( overrideProperties != null )
@@ -1016,40 +986,102 @@ public class SDK
 
     public IStatus validate()
     {
+        MultiStatus status = new MultiStatus( SDKCorePlugin.PLUGIN_ID, 0, "sdk is invalid", null );
+
         boolean validLocation = SDKUtil.isValidSDKLocation( getLocation().toOSString() );
 
         boolean buildXmlExists = getLocation().append( "build.xml" ).toFile().exists(); //$NON-NLS-1$
 
         if( !validLocation )
         {
-            return SDKCorePlugin.createErrorStatus( Msgs.SDKLocationInvalid );
+            status.add( SDKCorePlugin.createErrorStatus( Msgs.SDKLocationInvalid ) );
+            return status;
         }
 
         if( !buildXmlExists )
         {
-            return SDKCorePlugin.createErrorStatus( Msgs.buildXmlFileNotExist );
+            status.add( SDKCorePlugin.createErrorStatus( Msgs.buildXmlFileNotExist ) );
+            return status;
         }
 
-        return Status.OK_STATUS;
+        Hashtable<String,Object> sdkProperties = getBuildProperties();
+
+        if ( sdkProperties == null )
+        {
+            status.add( SDKCorePlugin.createErrorStatus( "Could not find any sdk settting." ) );
+            return status;
+        }
+
+        for( String properyKey : sdkProperties.keySet() )
+        {
+            final String propertyValue = (String)sdkProperties.get( properyKey );
+
+            if ( propertyValue == null )
+            {
+                status.add( SDKCorePlugin.createErrorStatus( properyKey + " is null." ) );
+                return status;
+            }
+            else
+            {
+                switch (properyKey)
+                {
+                    case "app.server.type":
+                    {
+                        if ( !SUPPORT_SERVER_TYPE.contains( propertyValue ) )
+                        {
+                            status.add( SDKCorePlugin.createErrorStatus( "The " + properyKey + "(" + propertyValue + ") server is not supported by Liferay." ) );
+                            return status;
+                        }
+                        break;
+                    }
+                    case "app.server.dir":
+                    case "app.server.deploy.dir":
+                    case "app.server.lib.global.dir":
+                    case "app.server.parent.dir":
+                    case "app.server.portal.dir":
+                    {
+                        IPath propertyPath = new Path(propertyValue);
+
+                        if ( !propertyPath.isAbsolute() )
+                        {
+                            status.add( SDKCorePlugin.createErrorStatus( "The " + properyKey + "(" + propertyValue + ") is not absolute path." ) );
+                            return status;
+                        }
+
+                        if ( !propertyPath.toFile().exists() )
+                        {
+                            status.add( SDKCorePlugin.createErrorStatus( "The " + properyKey + "(" + propertyValue + ") is not exsit." ) );
+                            return status;
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        status.add( Status.OK_STATUS );
+                        return status;
+                    }
+                }
+            }
+        }
+        status.add( Status.OK_STATUS );
+        return status;
     }
 
     public IStatus war(
         IProject project, Map<String, String> overrideProperties, boolean separateJRE,
-        Map<String, String> appServerProperties, IProgressMonitor monitor )
+        IProgressMonitor monitor )
     {
-        return war( project, overrideProperties, separateJRE, appServerProperties, null, monitor );
+        return war( project, overrideProperties, separateJRE, null, monitor );
     }
 
     public IStatus war(
         IProject project, Map<String, String> overrideProperties, boolean separateJRE,
-        Map<String, String> appServerProperties, String[] vmargs, IProgressMonitor monitor )
+        String[] vmargs, IProgressMonitor monitor )
     {
         try
         {
             SDKHelper antHelper = new SDKHelper( this, monitor );
             antHelper.setVMArgs( vmargs );
-
-            persistAppServerProperties( appServerProperties );
 
             Map<String, String> properties = new HashMap<String, String>();
 
