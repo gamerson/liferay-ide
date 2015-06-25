@@ -38,6 +38,8 @@ import com.liferay.ide.project.core.model.internal.ProjectNameValidationService;
 import com.liferay.ide.project.core.model.internal.ProjectProviderDefaultValueService;
 import com.liferay.ide.project.core.model.internal.ProjectProviderListener;
 import com.liferay.ide.project.core.model.internal.ProjectProviderPossibleValuesService;
+import com.liferay.ide.project.core.model.internal.SDKLocationListener;
+import com.liferay.ide.project.core.model.internal.SDKLocationValidationService;
 import com.liferay.ide.project.core.model.internal.ThemeFrameworkValidationService;
 import com.liferay.ide.project.core.model.internal.UseDefaultLocationListener;
 import com.liferay.ide.project.core.model.internal.UseDefaultLocationValidationService;
@@ -107,6 +109,11 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
     void setDisplayName( String value );
 
 
+    @Type( base = Boolean.class )
+    @DefaultValue( text = "false" )
+    ValueProperty PROP_HAS_WORKSPACE_SDK = new ValueProperty( TYPE, "HasWorkspaceSDK" ); //$NON-NLS-1$
+
+
     // *** UseDefaultLocation ***
 
     @Type( base = Boolean.class )
@@ -156,6 +163,19 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
     Value<NewLiferayProjectProvider> getProjectProvider();
     void setProjectProvider( String value );
     void setProjectProvider( NewLiferayProjectProvider value );
+
+    // *** SDK Location ***
+    @Type( base = Path.class )
+    @AbsolutePath
+    @ValidFileSystemResourceType( FileSystemResourceType.FOLDER )
+    @Label( standard = "SDK Location" )
+    @Listeners( SDKLocationListener.class )
+    @Service( impl = SDKLocationValidationService.class )
+    ValueProperty PROP_SDK_LOCATION = new ValueProperty( TYPE, "SdkLocation" ); //$NON-NLS-1$
+
+    Value<Path> getSdkLocation();
+    void setSdkLocation( String value );
+    void setSdkLocation( Path value );
 
     // *** PluginType ***
 
