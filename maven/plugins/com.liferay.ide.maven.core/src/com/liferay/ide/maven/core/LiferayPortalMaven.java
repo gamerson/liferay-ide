@@ -92,6 +92,12 @@ public class LiferayPortalMaven implements ILiferayPortal
             retval = ServerUtil.getPortletCategories( appServerPortalDir );
         }
 
+        if (retval == null) {
+            retval = new Properties();
+
+            retval.put( "category.sample", "Sample" );
+        }
+
         return retval;
     }
 
