@@ -35,6 +35,9 @@ import org.eclipse.core.runtime.Path;
  */
 public class PortalTomcatBundleFactory implements PortalBundleFactory
 {
+
+    private String bundleFactoryType;
+
     @Override
     public IPath canCreateFromPath( IPath location )
     {
@@ -142,5 +145,18 @@ public class PortalTomcatBundleFactory implements PortalBundleFactory
     {
         return new PortalTomcatBundle( appServerProperties );
     }
+
+    @Override
+    public void setBundleFactoryType( String type )
+    {
+        this.bundleFactoryType = type;
+    }
+
+    @Override
+    public String getBundleFactoryType( )
+    {
+        return this.bundleFactoryType;
+    }
+
 
 }

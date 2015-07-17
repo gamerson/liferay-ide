@@ -33,4 +33,9 @@ public interface PortalBundleFactory
     PortalBundle create( IPath location );
 
     PortalBundle create( Map<String, String> appServerProperties );
+
+    void setBundleFactoryType( String type);
+
+    String getBundleFactoryType();
+
 }
