@@ -16,12 +16,15 @@
 package com.liferay.ide.sdk.ui;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKManager;
 import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.ui.util.SWTUtil;
 
+import java.io.File;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +36,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -476,6 +481,22 @@ public class InstalledSDKsCompostite extends Composite
             try
             {
                 sdkProject.create( description, npm );
+
+                IPath settingFolderPath = sdkProject.getLocation().append( ".settings" ); //$NON-NLS-1$
+                File settingFolder = settingFolderPath.toFile();
+
+                if (!settingFolder.exists()) {
+                    settingFolder.mkdir();
+                }
+
+                URL url =
+                    FileLocator.toFileURL( SDKUIPlugin.getDefault().getBundle().getEntry(
+                        "files/org.eclipse.wst.validation.prefs" ) ); //$NON-NLS-1$
+
+                File file = new File( url.getFile() );
+
+                FileUtil.copyFileToDir( file, settingFolder );
+
                 sdkProject.open( npm );
             }
             catch( Exception e )
