@@ -93,6 +93,8 @@
                         <antcall target="linux" />
                         <antcall target="linux64" />
                         <antcall target="macosx64" />
+                            <!-- param name="eclipse.dir" value="${work.dir}" />
+                        </antcall-->
                     </then>
                 </if>
             </then>
@@ -233,6 +235,7 @@
             <param name="output.tar.name" value="${output.macosx64.tar.name}" />
             <param name="output.gz.name" value="${output.macosx64.gz.name}" />
             <param name="upload.output.file" value="${output.macosx64.gz.name}" />
+            <param name="eclipse.dir" value="${work.dir}" />
         </antcall>
     </target>
 
@@ -283,13 +286,15 @@
                     <isset property="isUnix" />
                     <then>
                         <gunzip src="${downloads.dir}/${eclipse.zip.name}" dest="${downloads.dir}" />
-                        <untar src="${downloads.dir}/${eclipse.tar.name}" dest="${eclipse.dir}/../" />
+                        <!--untar src="${downloads.dir}/${eclipse.tar.name}" dest="${eclipse.dir}/../" /-->
                         <if>
                             <isset property="isMac" />
                             <then>
+                                <untar src="${downloads.dir}/${eclipse.tar.name}" dest="${eclipse.dir}/" />
                                 <chmod file="${eclipse.dir}/Eclipse.app/Contents/MacOS/eclipse" perm="ugo+rx" />
                             </then>
                             <else>
+                                <untar src="${downloads.dir}/${eclipse.tar.name}" dest="${eclipse.dir}/../" />
                                 <chmod file="${eclipse.dir}/eclipse" perm="ugo+rx" />
                             </else>
                         </if>
@@ -318,6 +323,7 @@
     </target>
 
     <target name="install-feature">
+        <echo>${eclipse.dir}</echo>
         <exec executable="${builder.exe}" outputproperty="output" failonerror="true" dir="${target.dir}">
             <arg value="-nosplash" />
             <arg value="-application" />
@@ -371,7 +377,7 @@
                 <chmod file="${builder.dir}/eclipse" perm="+x" />
             </then>
         </if>
-
+		<echo message="builder eclipse chmod..."/>
         <if>
             <available file="${updatesite}" />
             <then>
@@ -383,10 +389,21 @@
         </if>
 
         <echo>${repositoryURL}</echo>
-        <antcallback target="install-feature" return="output">
-            <param name="featureId" value="${tools.features}" />
-        </antcallback>
-
+        <if>
+			<isset property="isMac" />
+			<then>
+				<antcallback target="install-feature" return="output">
+            		<param name="featureId" value="${tools.features}" />
+					<param name="eclipse.dir" value="which directory should I use here?I found it's not right to using the path to Eclipse.app or to Eclipse.app/Contents/Eclipse ?" />            
+        		</antcallback>
+			</then>
+			<else>
+			    <antcallback target="install-feature" return="output">
+            		<param name="featureId" value="${tools.features}" />
+        		</antcallback>
+			</else>
+		</if>
+        
         <echo>${output}</echo>
         <propertyregex property="temp" input="${output}" regexp=".*feature.group (.*)\..*" replace="\1" />
 
@@ -493,7 +510,7 @@
         <if>
             <isset property="isMac" />
             <then>
-                <property name="eclipse.ini.dir" value="${work.dir}/eclipse/Eclipse.app/Contents/MacOS/eclipse.ini" />
+                <property name="eclipse.ini.dir" value="${work.dir}/Eclipse.app/Contents/Eclipse/eclipse.ini" />
             </then>
             <else>
                 <property name="eclipse.ini.dir" value="${eclipse.dir}/eclipse.ini"/>
