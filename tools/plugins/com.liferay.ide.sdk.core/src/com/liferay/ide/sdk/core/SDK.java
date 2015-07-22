@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -805,15 +804,17 @@ public class SDK
 
     public Map<String,Object> getBuildProperties() throws CoreException
     {
+        return getBuildProperties(false);
+    }
+
+    public Map<String,Object> getBuildProperties(final boolean reload) throws CoreException
+    {
         final Project project = new Project();
 
         try
         {
-            long currentTime = Calendar.getInstance().getTimeInMillis();
-
-            if ( BUILD_PROPERTIES == null  || ( BUILD_PROPERTIES != null  && ( ( currentTime- BUILD_PROPERTIES_LAST_CHANGE ) / 60000*2 ) > 2 ) )
+            if ( BUILD_PROPERTIES == null  || ( BUILD_PROPERTIES != null  && reload == true ) )
             {
-                boolean propertyChanged = false;
                 project.setBaseDir( new File( getLocation().toPortableString() ) );
                 project.setSystemProperties();
 
@@ -822,67 +823,56 @@ public class SDK
                 envTask.setEnvironment( "env" );
                 envTask.execute();
 
-                propertyChanged = propertyChanged == false? propertyChanged || updatePropertiesOptTime( "build." + project.getProperty( "user.name" ) +".properties" ):true;
-                propertyChanged = propertyChanged == false? propertyChanged || updatePropertiesOptTime( "build." + project.getProperty( "env.COMPUTERNAME" ) +".properties" ):true;
-                propertyChanged = propertyChanged == false? propertyChanged || updatePropertiesOptTime( "build." + project.getProperty( "env.HOST" ) +".properties" ):true;
-                propertyChanged = propertyChanged == false? propertyChanged || updatePropertiesOptTime( "build." + project.getProperty( "env.HOSTNAME" ) +".properties" ):true;
-                propertyChanged = propertyChanged == false? propertyChanged || updatePropertiesOptTime( "build.properties" ):true;
+                loadProperties( project, project.getProperty( "user.name" ) );
+                loadProperties( project, project.getProperty( "env.COMPUTERNAME" ) );
+                loadProperties( project, project.getProperty( "env.HOST" ) );
+                loadProperties( project, project.getProperty( "env.HOSTNAME" ) );
 
-                if ( propertyChanged )
+                Property propertyTask = new Property();
+                propertyTask.setProject( project );
+                File buildPropertyFile = new File( getLocation().append( "build.properties" ).toPortableString() );
+                propertyTask.setFile( buildPropertyFile );
+                propertyTask.execute();
+
+                if ( project.getProperty( "app.server.type" ) == null )
                 {
-                    loadProperties( project, project.getProperty( "user.name" ) );
-                    loadProperties( project, project.getProperty( "env.COMPUTERNAME" ) );
-                    loadProperties( project, project.getProperty( "env.HOST" ) );
-                    loadProperties( project, project.getProperty( "env.HOSTNAME" ) );
-
-                    Property propertyTask = new Property();
-                    propertyTask.setProject( project );
-                    File buildPropertyFile = new File( getLocation().append( "build.properties" ).toPortableString() );
-                    propertyTask.setFile( buildPropertyFile );
-                    propertyTask.execute();
-
-                    if ( project.getProperty( "app.server.type" ) == null )
-                    {
-                        throw new CoreException( SDKCorePlugin.createErrorStatus( "Missing ${app.server.type} setting in build.properties file." ) );
-                    }
-
-                    final Map<String, String> propertyCopyList = new HashMap<String, String>();
-                    propertyCopyList.put(
-                        "app.server." + project.getProperty( "app.server.type" ) + ".dir", "app.server.dir" );
-                    propertyCopyList.put(
-                        "app.server." + project.getProperty( "app.server.type" ) + ".deploy.dir",
-                        "app.server.deploy.dir" );
-                    propertyCopyList.put(
-                        "app.server." + project.getProperty( "app.server.type" ) + ".lib.global.dir",
-                        "app.server.lib.global.dir" );
-                    propertyCopyList.put(
-                        "app.server." + project.getProperty( "app.server.type" ) + ".portal.dir",
-                        "app.server.portal.dir" );
-
-                    for( Iterator<String> iterator = propertyCopyList.keySet().iterator(); iterator.hasNext(); )
-                    {
-                        AntPropertyCopy propertyCopyTask = new AntPropertyCopy();
-                        propertyCopyTask.setOverride( true );
-                        propertyCopyTask.setProject( project );
-                        String from = iterator.next();
-                        String to = propertyCopyList.get( from );
-                        propertyCopyTask.setFrom( from );
-                        propertyCopyTask.setName( to );
-                        propertyCopyTask.execute();
-                    }
-
-                    for( String propertyKey : KEY_BUILD_PROPERTIES )
-                    {
-                        if ( !project.getProperties().keySet().contains( propertyKey ) )
-                        {
-                            throw new CoreException( SDKCorePlugin.createErrorStatus( "Missing ${" + propertyKey + "} setting in build.properties file." ) );
-                        }
-                    }
-
-                    BUILD_PROPERTIES = new HashMap<String, Object>();
-                    BUILD_PROPERTIES = project.getProperties();
-                    BUILD_PROPERTIES_LAST_CHANGE = Calendar.getInstance().getTimeInMillis();
+                    throw new CoreException( SDKCorePlugin.createErrorStatus( "Missing ${app.server.type} setting in build.properties file." ) );
                 }
+
+                final Map<String, String> propertyCopyList = new HashMap<String, String>();
+                propertyCopyList.put(
+                    "app.server." + project.getProperty( "app.server.type" ) + ".dir", "app.server.dir" );
+                propertyCopyList.put(
+                    "app.server." + project.getProperty( "app.server.type" ) + ".deploy.dir",
+                    "app.server.deploy.dir" );
+                propertyCopyList.put(
+                    "app.server." + project.getProperty( "app.server.type" ) + ".lib.global.dir",
+                    "app.server.lib.global.dir" );
+                propertyCopyList.put(
+                    "app.server." + project.getProperty( "app.server.type" ) + ".portal.dir",
+                    "app.server.portal.dir" );
+
+                for( Iterator<String> iterator = propertyCopyList.keySet().iterator(); iterator.hasNext(); )
+                {
+                    AntPropertyCopy propertyCopyTask = new AntPropertyCopy();
+                    propertyCopyTask.setOverride( true );
+                    propertyCopyTask.setProject( project );
+                    String from = iterator.next();
+                    String to = propertyCopyList.get( from );
+                    propertyCopyTask.setFrom( from );
+                    propertyCopyTask.setName( to );
+                    propertyCopyTask.execute();
+                }
+
+                for( String propertyKey : KEY_BUILD_PROPERTIES )
+                {
+                    if ( !project.getProperties().keySet().contains( propertyKey ) )
+                    {
+                        throw new CoreException( SDKCorePlugin.createErrorStatus( "Missing ${" + propertyKey + "} setting in build.properties file." ) );
+                    }
+                }
+
+                BUILD_PROPERTIES = project.getProperties();
             }
         }
         catch( Exception e )
