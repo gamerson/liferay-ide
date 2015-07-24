@@ -774,40 +774,12 @@ public class SDK
         return properties;
     }
 
-    private boolean updatePropertiesOptTime( String propertyFile )
-    {
-        boolean propertyFileChanged = false;
-
-        if ( BUILD_PROPERTIES_MODIFY == null )
-        {
-            BUILD_PROPERTIES_MODIFY = new HashMap<String, Long>();
-        }
-
-        if ( propertyFile != null)
-        {
-            File pFile = new File( getLocation().append( propertyFile ).toPortableString() );
-
-            if ( pFile != null && pFile.exists() )
-            {
-                Long lastModifyTime = BUILD_PROPERTIES_MODIFY.get( pFile.getName() );
-
-                if ( lastModifyTime == null || lastModifyTime < pFile.lastModified())
-                {
-                    propertyFileChanged = true;
-                    BUILD_PROPERTIES_MODIFY.put( pFile.getName(), new Long(pFile.lastModified()) );
-                }
-            }
-        }
-
-        return propertyFileChanged;
-    }
-
     public Map<String,Object> getBuildProperties() throws CoreException
     {
-        return getBuildProperties(false);
+        return getBuildProperties(false,true);
     }
 
-    public Map<String,Object> getBuildProperties(final boolean reload) throws CoreException
+    public Map<String,Object> getBuildProperties(final boolean reload, final boolean verified) throws CoreException
     {
         final Project project = new Project();
 
@@ -870,6 +842,11 @@ public class SDK
                     {
                         throw new CoreException( SDKCorePlugin.createErrorStatus( "Missing ${" + propertyKey + "} setting in build.properties file." ) );
                     }
+                }
+
+                if ( verified == false )
+                {
+                    return project.getProperties();
                 }
 
                 BUILD_PROPERTIES = project.getProperties();
@@ -1050,6 +1027,11 @@ public class SDK
 
     public IStatus validate()
     {
+        return validate(false, true);
+    }
+
+    public IStatus validate(final boolean reload, final boolean verfied)
+    {
         MultiStatus status = new MultiStatus( SDKCorePlugin.PLUGIN_ID, IStatus.OK, "", null );
 
         boolean validLocation = SDKUtil.isValidSDKLocation( getLocation().toOSString() );
@@ -1070,7 +1052,7 @@ public class SDK
 
         try
         {
-            Map<String, Object> sdkProperties = getBuildProperties();
+            Map<String, Object> sdkProperties = getBuildProperties(reload,verfied);
             if ( sdkProperties == null )
             {
                 status.add( SDKCorePlugin.createErrorStatus( "Could not find any sdk settting." ) );
@@ -1134,6 +1116,7 @@ public class SDK
         {
             status.add(SDKCorePlugin.createErrorStatus( e.getMessage() ) );
         }
+
 
         return status;
     }

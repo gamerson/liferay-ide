@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -51,6 +52,10 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
  */
 public class SDKBuildPropertiesResourceListener implements IResourceChangeListener, IResourceDeltaVisitor
 {
+
+    private static final String ID_SDK_PROPERTIES_INVALID = "sdk-properties-invalid";
+
+
     private final static Pattern buildPropertiesPattern = Pattern.compile("build.[\\w|\\W.]*properties");
 
     public static boolean isLiferayProject( IProject project )
@@ -83,56 +88,27 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
         return retval;
     }
 
-    @Override
-    public void resourceChanged( IResourceChangeEvent event )
+    private void clearMarkers( IProject proj )
     {
-        if( event == null )
-        {
-            return;
-        }
-
         try
         {
-            event.getDelta().accept( this );
-        }
-        catch( Throwable e )
-        {
-           ProjectCore.logError( e );
-        }
-    }
-
-    protected boolean shouldProcessResourceDelta( IResourceDelta delta )
-    {
-        final IPath fullPath = delta.getResource().getRawLocation();
-        try
-        {
-            SDK sdk = SDKUtil.getWorkspaceSDK();
-
-            if ( sdk != null && sdk.getLocation().isPrefixOf( fullPath ))
+            if( proj.isOpen() )
             {
-                if( fullPath.lastSegment() != null &&  buildPropertiesPattern.matcher( fullPath.lastSegment() ).matches() )
-                {
-                    final File propertiesFile = fullPath.toFile();
+                IMarker[] markers = proj.findMarkers( IMarker.PROBLEM, true, IResource.DEPTH_INFINITE );
 
-                    if( propertiesFile != null && propertiesFile.exists() )
+                for( IMarker marker : markers )
+                {
+                    if( marker.getAttribute( IMarker.SOURCE_ID ).equals( ID_SDK_PROPERTIES_INVALID ) )
                     {
-                        return true;
+                        marker.delete();
                     }
                 }
             }
-            else
-            {
-                return false;
-            }
-
         }
         catch( CoreException e )
         {
-            return false;
+            ProjectCore.logError( e );
         }
-
-
-        return false;
     }
 
     protected void processPropertiesFile( IFile buildPropertiesFile ) throws CoreException
@@ -141,14 +117,25 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 
         if ( sdk != null)
         {
-            sdk.getBuildProperties( true );
-            IStatus status = sdk.validate();
+            IProject sdkProject = SDKUtil.getWorkspaceSDKProject();
+
+            clearMarkers(sdkProject);
+
+            IStatus status = sdk.validate(true, false);
 
             if ( !status.isOK() )
             {
+                IStatus[] statuses = status.getChildren();
+
+                for( IStatus iStatus : statuses )
+                {
+                    setMarker(sdkProject, IMarker.PROBLEM, IMarker.SEVERITY_ERROR,
+                        iStatus.getMessage(), sdkProject.getFullPath().toPortableString(),ID_SDK_PROPERTIES_INVALID);
+                }
+
                 return;
             }
-
+            sdk.getBuildProperties( true, true );
         }
 
         for( final IProject project : CoreUtil.getAllProjects() )
@@ -204,6 +191,71 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
     }
 
     @Override
+    public void resourceChanged( IResourceChangeEvent event )
+    {
+        if( event == null )
+        {
+            return;
+        }
+
+        try
+        {
+            event.getDelta().accept( this );
+        }
+        catch( Throwable e )
+        {
+           ProjectCore.logError( e );
+        }
+    }
+
+    private void setMarker( IProject proj, String markerType, int markerSeverity, String markerMsg, String markerLocation,
+        String markerSourceId ) throws CoreException
+    {
+        IMarker marker = proj.createMarker( markerType );
+        marker.setAttribute( IMarker.SEVERITY, markerSeverity );
+        marker.setAttribute( IMarker.MESSAGE, markerMsg );
+        marker.setAttribute( IMarker.LOCATION, markerLocation );
+        marker.setAttribute( IMarker.SOURCE_ID, markerSourceId );
+    }
+
+    protected boolean shouldProcessResourceDelta( IResourceDelta delta )
+    {
+        final IPath fullPath = delta.getResource().getRawLocation();
+        try
+        {
+            SDK sdk = SDKUtil.getWorkspaceSDK();
+
+            if ( sdk != null && sdk.getLocation().isPrefixOf( fullPath ))
+            {
+                if( fullPath.lastSegment() != null &&  buildPropertiesPattern.matcher( fullPath.lastSegment() ).matches() )
+                {
+                    final File propertiesFile = fullPath.toFile();
+
+                    if( propertiesFile != null && propertiesFile.exists() )
+                    {
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        catch( CoreException e )
+        {
+            return false;
+        }
+
+
+        return false;
+    }
+
+
+
+
+    @Override
     public boolean visit( final IResourceDelta delta ) throws CoreException
     {
         switch( delta.getResource().getType() )
@@ -223,8 +275,14 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
                         public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
                         {
                             final IResource resource = delta.getResource();
-
-                            processPropertiesFile( (IFile) resource );
+                            try
+                            {
+                                processPropertiesFile( (IFile) resource );
+                            }
+                            catch(CoreException e)
+                            {
+                                ProjectCore.logError( e );
+                            }
 
                             return Status.OK_STATUS;
                         }
@@ -240,4 +298,7 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 
         return false;
     }
+
+
+
 }
