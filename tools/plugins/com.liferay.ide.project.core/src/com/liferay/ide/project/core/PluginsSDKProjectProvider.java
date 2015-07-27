@@ -48,6 +48,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.platform.PathBridge;
@@ -339,7 +341,12 @@ public class PluginsSDKProjectProvider extends NewLiferayProjectProvider
 
             try
             {
-                if ( SDKUtil.isSDKProject( project ) )
+                IJavaProject javaProject = JavaCore.create( project );
+
+                final boolean hasNewSdk =
+                    SDKClasspathContainer.hasNewLiferaySDKContainer( javaProject.getRawClasspath() );
+
+                if ( SDKUtil.isSDKProject( project ) && hasNewSdk == true )
                 {
                     PortalBundle portalBundle = ServerUtil.getPortalBundle( project );
 

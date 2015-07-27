@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Path;
  */
 public class PortalJBossBundleFactory implements PortalBundleFactory
 {
+    private String bundleFactoryType;
 
     @Override
     public PortalBundle create( Map<String, String> appServerProperties )
@@ -171,6 +172,17 @@ public class PortalJBossBundleFactory implements PortalBundleFactory
         return false;
     }
 
+    @Override
+    public void setBundleFactoryType( String type )
+    {
+        this.bundleFactoryType = type;
+    }
+
+    @Override
+    public String getBundleFactoryType( )
+    {
+        return this.bundleFactoryType;
+    }
 
 
 }
