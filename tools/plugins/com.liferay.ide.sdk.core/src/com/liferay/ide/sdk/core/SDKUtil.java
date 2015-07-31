@@ -49,6 +49,22 @@ import org.osgi.service.prefs.BackingStoreException;
 public class SDKUtil
 {
 
+    public static int countPossibleWorkspaceSDKProjects()
+    {
+        int sdkCount = 0;
+        final IProject[] projects = CoreUtil.getAllProjects();
+
+        for( IProject project : projects )
+        {
+            if( isValidSDKLocation( project.getLocation().toOSString() ) )
+            {
+                sdkCount++;
+            }
+        }
+
+        return sdkCount;
+    }
+
     public static SDK createSDKFromLocation( IPath path )
     {
         try

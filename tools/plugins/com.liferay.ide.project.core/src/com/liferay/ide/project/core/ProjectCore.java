@@ -59,6 +59,8 @@ public class ProjectCore extends Plugin
 
     private static SDKBuildPropertiesResourceListener sdkBuildPropertiesResourceListener;
 
+    private static LiferayWorkspaceSDKListener liferayWorkspaceSDKListener;
+
     private static IPortletFramework[] portletFrameworks;
 
     public static final String PREF_CREATE_NEW_PORLET = "create-new-portlet";
@@ -308,6 +310,7 @@ public class ProjectCore extends Plugin
     {
         pluginPackageResourceListener = new PluginPackageResourceListener();
         sdkBuildPropertiesResourceListener = new SDKBuildPropertiesResourceListener();
+        liferayWorkspaceSDKListener = new LiferayWorkspaceSDKListener();
     }
 
     /*
@@ -326,6 +329,9 @@ public class ProjectCore extends Plugin
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(
             sdkBuildPropertiesResourceListener, IResourceChangeEvent.POST_CHANGE );
+
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(
+            liferayWorkspaceSDKListener, IResourceChangeEvent.POST_CHANGE );
     }
 
     /*
