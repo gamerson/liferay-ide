@@ -124,4 +124,21 @@ public class SDKClasspathContainer extends PluginClasspathContainer implements I
         return e != null && e.getEntryKind() == IClasspathEntry.CPE_CONTAINER &&
             e.getPath().segment( 0 ).equals( ID );
     }
+
+
+    public static boolean hasNewLiferaySDKContainer( IClasspathEntry[] entries )
+    {
+        boolean retVal = false;
+        for( IClasspathEntry entry : entries )
+        {
+            if( entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER &&
+                entry.getPath().segment( 0 ).equals( ID ) )
+            {
+                retVal = true;
+                break;
+            }
+        }
+
+        return retVal;
+    }
 }

@@ -92,6 +92,7 @@ import org.w3c.dom.NodeList;
 public class ServerUtil
 {
 
+    private final static Map<String,Object> sdkBundle = new HashMap<String,Object>();
     public static boolean bsnExists( String bsn, BundleDTO[] bundles )
     {
         for( BundleDTO bundle : bundles )
@@ -487,23 +488,58 @@ public class ServerUtil
 
         IStatus status = sdk.validate();
 
-        if ( !status.isOK())
+        if ( !status.isOK() )
         {
             return null;
         }
 
+        final String cachedAppServerPath = LiferayServerCore.getPreference(sdk.getName() + ".server.path");
+
+        final String cachedAppServerType = LiferayServerCore.getPreference(sdk.getName() + ".server.type");
+
         Map<String, Object> appServerProperties = sdk.getBuildProperties();
 
-        final PortalBundleFactory[] factories = LiferayServerCore.getPortalBundleFactories();
-        for( PortalBundleFactory factory : factories )
+        final String appServerPathString = (String) ( appServerProperties.get( "app.server.dir" ) );
+
+        final String appServerType = (String) ( appServerProperties.get( "app.server.type" ) );
+
+        final IPath appServerPath = new Path(appServerPathString);
+
+        if ( ( cachedAppServerPath == null || cachedAppServerType == null || cachedAppServerPath.isEmpty() || cachedAppServerType.isEmpty() )
+            || ( ( ( cachedAppServerPath != null && !cachedAppServerPath.isEmpty() ) && ( !cachedAppServerPath.equals( appServerPath.toPortableString() ) ) )
+            || ( ( cachedAppServerType != null && !cachedAppServerType.isEmpty() ) && ( !cachedAppServerType.equals( appServerType ) ) ) ) )
+
+        {
+            sdkBundle.clear();
+        }
+
+        PortalBundle portalBundle = (PortalBundle)sdkBundle.get( appServerPath.toPortableString() );
+
+        if (portalBundle != null)
+        {
+            return portalBundle;
+        }
+
+        PortalBundleFactory factory = LiferayServerCore.getPortalBundleFactories( appServerType );
+
+        if ( factory != null )
         {
             final IPath path = factory.canCreateFromPath( appServerProperties );
 
             if( path != null )
             {
-                return factory.create( path );
+                portalBundle = factory.create( path );
+
+                if ( portalBundle != null)
+                {
+                    LiferayServerCore.setPreference( sdk.getName() + ".server.path", path.toPortableString() );
+                    LiferayServerCore.setPreference( sdk.getName() + ".server.type", factory.getBundleFactoryType() );
+                    sdkBundle.put( path.toPortableString(), portalBundle );
+                    return portalBundle;
+                }
             }
         }
+
         return null;
     }
 
