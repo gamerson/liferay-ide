@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -478,7 +479,27 @@ public class ServerUtil
 
     public static IRuntime getRuntime( IProject project ) throws CoreException
     {
-        return (IRuntime) getRuntimeAdapter( ProjectFacetsManager.create( project ).getPrimaryRuntime(), IRuntime.class );
+        IFacetedProject facetedProject = ProjectFacetsManager.create( project );
+
+        if( facetedProject.getPrimaryRuntime() == null )
+        {
+            Iterator<IRuntime> it = ServerUtil.getAvailableLiferayRuntimes().iterator();
+
+            while( it.hasNext() )
+            {
+                IRuntime runtime = (IRuntime) it.next();
+
+                String appServerDir = getPortalBundle( project ).getAppServerDir().toString();
+
+                if( runtime.getLocation().toString().equals( appServerDir ) )
+                {
+                    return runtime;
+                }
+            }
+            return null;
+        }
+        else
+            return (IRuntime) getRuntimeAdapter( facetedProject.getPrimaryRuntime(), IRuntime.class );
     }
 
     public static PortalBundle getPortalBundle(IProject project)  throws CoreException

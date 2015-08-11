@@ -40,6 +40,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
+import org.eclipse.wst.server.ui.ServerUIUtil;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
@@ -75,8 +76,19 @@ public class CleanAppServerAction extends AbstractObjectAction
 
             IProject project = (IProject) elem;
 
-            IRuntime runtime = ServerUtil.getRuntime( project );
+            while( ServerUtil.getRuntime( project ) == null )
+            {
+                boolean openNewRuntimeWizard = MessageDialog.openQuestion( null, null, Msgs.noLiferayRuntimeAvailable );
 
+                if( openNewRuntimeWizard )
+                {
+                    ServerUIUtil.showNewRuntimeWizard( null, null, null, "com.liferay." ); //$NON-NLS-1$
+                }
+                else
+                    return;
+            }
+            
+            IRuntime runtime = ServerUtil.getRuntime( project );
             ILiferayTomcatRuntime portalTomcatRuntime = LiferayTomcatUtil.getLiferayTomcatRuntime( runtime );
 
             if( portalTomcatRuntime == null )
@@ -201,6 +213,7 @@ public class CleanAppServerAction extends AbstractObjectAction
 
     private static class Msgs extends NLS
     {
+        public static String noLiferayRuntimeAvailable;
         public static String cleanAppServer;
         public static String deleteEntireTomcatDirectory;
         public static String validBundleZipLocationRequired;
