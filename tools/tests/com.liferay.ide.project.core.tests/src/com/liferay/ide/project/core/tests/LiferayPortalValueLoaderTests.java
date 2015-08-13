@@ -83,7 +83,7 @@ public class LiferayPortalValueLoaderTests extends ProjectCoreBase
 
         assertNotNull( info );
 
-        assertEquals( "Liferay Portal Community Edition / 6.2.0", info );
+        assertEquals( "Liferay Portal Community Edition / 6.2.3", info );
     }
 
     @Test
@@ -99,7 +99,7 @@ public class LiferayPortalValueLoaderTests extends ProjectCoreBase
 
         assertNotNull( version );
 
-        assertEquals( ILiferayConstants.V620, version );
+        assertEquals( "6.2.3", version.toString() );
     }
 
 }
