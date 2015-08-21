@@ -150,14 +150,14 @@
       </category>
       <wizard
             category="com.liferay.ide.projects.import"
-            class="com.liferay.ide.project.ui.wizard.SDKProjectsImportWizard"
+            class="com.liferay.ide.project.ui.wizard.ImportSDKProjectsWizard"
             icon="icons/e16/import.png"
-            id="com.liferay.ide.project.ui.importSDKProjectWizard"
-            name="%import.projects.sdk.wizard.name">
+            id="com.liferay.ide.project.ui.importSDKProjectsWizard"
+            name="Import Liferay Plugins SDK Projects">
          <description>
             %import.projects.sdk.wizard.description
          </description>
-      </wizard>
+      </wizard>      
       <wizard
             category="com.liferay.ide.projects.import"
             class="com.liferay.ide.project.ui.wizard.SDKProjectImportWizard"
