@@ -12,31 +12,39 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.upgrade;
+package com.liferay.ide.project.core.model.internal;
 
-import org.eclipse.sapphire.Element;
-import org.eclipse.sapphire.ElementType;
-import org.eclipse.sapphire.Value;
-import org.eclipse.sapphire.ValueProperty;
+import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKUtil;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.sapphire.InitialValueService;
 
 
 /**
  * @author Simon Jiang
  */
-public interface NamedItem extends Element
+public class SDKProjectsImportLocationInitialValueService extends InitialValueService
 {
-    ElementType TYPE = new ElementType( NamedItem.class );
 
-    // *** Name ***
+    @Override
+    protected String compute()
+    {
+        String value = "";
 
-    ValueProperty PROP_NAME = new ValueProperty( TYPE, "Name" );
+        try
+        {
+            final SDK sdk = SDKUtil.getWorkspaceSDK();
 
-    Value<String> getName();
-    void setName( String value );
+            if ( sdk != null && sdk.validate().isOK() )
+            {
+                return sdk.getLocation().toOSString();
+            }
+        }
+        catch( CoreException e )
+        {
+        }
 
-
-    ValueProperty PROP_LOCATION = new ValueProperty( TYPE, "Location" );
-
-    Value<String> getLocation();
-    void setLocation( String value );
+        return value;
+    }
 }
