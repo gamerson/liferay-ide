@@ -648,9 +648,11 @@ public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
         // sdk has no build.USERNAME.properties file
         sdkLocation.append( "build." + System.getenv().get( "USERNAME" ) + ".properties" ).toFile().delete();
         op.setSdkLocation( sdkLocation.toOSString() );
-        assertEquals(
-            "The app.server.deploy.dir(${sdk.dir}/../bundles/tomcat-7.0.42/webapps) is not absolute path.",
-            op.validation().message() );
+        
+        String expectedMessageRegx = ".*app.server.*";
+        assertTrue( op.validation().message().matches( expectedMessageRegx ) );
+        
+        assertEquals( false, op.validation().ok() );
     }
 
     protected void testProjectNameValidation( final String initialProjectName ) throws Exception
