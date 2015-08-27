@@ -124,6 +124,8 @@ public interface ISDKConstants
 
     public static final String PROPERTY_AUTO_DEPLOY_UNPACK_WAR = "auto.deploy.unpack.war"; //$NON-NLS-1$
 
+    public static final String PROPERTY_DIST_PATH = __defaultPrefs.get( "dist.path", null ); //$NON-NLS-1$
+
     public static final String PROPERTY_EXT_DISPLAY_NAME = "ext.display.name"; //$NON-NLS-1$
 
     public static final String PROPERTY_EXT_NAME = "ext.name"; //$NON-NLS-1$

@@ -612,6 +612,11 @@ public class SDK
         return buildFile.removeLastSegments( 1 ).toOSString();
     }
 
+    public IPath getDistPath()
+    {
+        return getLocation().append( ISDKConstants.PROPERTY_DIST_PATH );
+    }
+
     public IPath getLocation()
     {
         return location;

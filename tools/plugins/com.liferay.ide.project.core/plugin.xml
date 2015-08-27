@@ -504,6 +504,13 @@
             properties="isBundleProject"
             type="java.lang.Object" >
       </propertyTester>
+      <propertyTester
+            class="com.liferay.ide.project.core.PluginProjectPropertyTester"
+            id="com.liferay.ide.project.core.isPluginProject"
+            namespace="com.liferay.ide.project.core"
+            properties="isPluginProject"
+            type="java.lang.Object" >
+      </propertyTester>
    </extension>
 
    <extension
@@ -597,5 +604,22 @@
       <persistent
             value="true">
       </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleFactories">
+      <moduleFactory
+            class="com.liferay.ide.project.core.PluginFactoryDelegate"
+            id="com.liferay.ide.project.core.pluginFactory"
+            projects="true">
+         <moduleType
+           types="liferay.plugin"
+           versions="1.0">
+         </moduleType>
+         <enablement>
+            <or>
+                <test property="com.liferay.ide.project.core.isPluginProject" value="true"/>
+            </or>
+         </enablement>
+      </moduleFactory>
    </extension>
 </plugin>

@@ -113,7 +113,14 @@ public class PortalPublishTask extends PublishTaskDelegate
                         {
                             case ServerBehaviourDelegate.ADDED:
                             case ServerBehaviourDelegate.CHANGED:
-                                addOperation( BundlePublishFullAdd.class, tasks, server, module );
+                                if( project instanceof IBundleProject )
+                                {
+                                    addOperation( BundlePublishFullAdd.class, tasks, server, module );
+                                }
+                                else
+                                {
+                                    addOperation( PluginPublishFullAdd.class, tasks, server, module );
+                                }
                                 break;
 
                             case ServerBehaviourDelegate.REMOVED:
@@ -131,7 +138,14 @@ public class PortalPublishTask extends PublishTaskDelegate
                                         if( isUserRedeploy( serverBehavior, module[0] ) ||
                                             !ServerUtil.bsnExists( bundleProject.getSymbolicName(), existingBundles ) )
                                         {
-                                            addOperation( BundlePublishFullAdd.class, tasks, server, module );
+                                            if( project instanceof IBundleProject )
+                                            {
+                                                addOperation( BundlePublishFullAdd.class, tasks, server, module );
+                                            }
+                                            else
+                                            {
+                                                addOperation( PluginPublishFullAdd.class, tasks, server, module );
+                                            }
                                         }
                                     }
                                     catch( CoreException e )
