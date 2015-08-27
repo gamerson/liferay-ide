@@ -162,6 +162,24 @@ public class SDKUtil
         return retval;
     }
 
+    public static int getWorkspaceSDKs()
+    {
+        int sdkCount = 0;
+        final IProject[] projects = CoreUtil.getAllProjects();
+
+        for( IProject project : projects )
+        {
+            if( isValidSDKLocation( project.getLocation().toOSString() ) )
+            {
+                sdkCount++;
+            }
+        }
+
+        return sdkCount;
+    }
+
+
+
     public static boolean hasGradleTools( IPath path )
     {
         return path.append( "tools" ).append( "gradle" ).toFile().exists();
