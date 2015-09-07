@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core;
 
 import com.liferay.ide.core.ILiferayPortal;
@@ -25,8 +26,11 @@ import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.remote.IRemoteServerPublisher;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -38,7 +42,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 
 /**
  * @author Gregory Amerson
@@ -179,13 +182,52 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IWebProj
         {
             this.getProject().build( IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor );
 
-            final SDK sdk = SDKUtil.getSDK( this.getProject() );
+            IProject project = this.getProject();
 
-            final IStatus warStatus = sdk.war( this.getProject(), null, true, monitor );
+            final SDK sdk = SDKUtil.getSDK( project );
+
+            final IStatus warStatus = sdk.war( project, null, true, monitor );
 
             if( warStatus.isOK() )
             {
+                final String sdkVersion = sdk.getVersion();
 
+                final IPath distPath = sdk.getDistPath();
+
+                IFile liferayPluginPackageFile = project.getFile( "docroot/WEB-INF/liferay-plugin-package.properties" );
+
+                Properties propertes = new Properties();
+
+                if( liferayPluginPackageFile.exists() )
+                {
+                    try
+                    {
+                        InputStream propertiesInput =
+                            new FileInputStream( liferayPluginPackageFile.getLocation().toFile() );
+                        propertes.load( propertiesInput );
+                        propertiesInput.close();
+                    }
+                    catch( Exception e )
+                    {
+                        e.printStackTrace();
+                    }
+
+                    String moduleIncrementalVersion = propertes.getProperty( "module-incremental-version" );
+
+                    String warName =
+                        this.getProject().getName() + "-" + sdkVersion + "." + moduleIncrementalVersion + ".war";
+                    IPath warPath = distPath.append( warName );
+
+                    if( warPath.toFile().exists() )
+                    {
+                        IFile[] files = project.getWorkspace().getRoot().findFilesForLocation( warPath );
+
+                        if( files != null && files.length > 0 )
+                        {
+                            outputs.add( files[0] );
+                        }
+                    }
+                }
             }
         }
 

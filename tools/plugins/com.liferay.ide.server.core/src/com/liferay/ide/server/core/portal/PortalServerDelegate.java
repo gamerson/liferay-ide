@@ -53,7 +53,8 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         {
             for( IModule module : add )
             {
-                if( !"liferay.bundle".equals( module.getModuleType().getId() ) )
+                if( !"liferay.bundle".equals( module.getModuleType().getId() ) &&
+                    !"liferay.plugin".equals( module.getModuleType().getId() ) )
                 {
                     retval =
                         LiferayServerCore.error( "Unable to add module with type " + module.getModuleType().getName() );

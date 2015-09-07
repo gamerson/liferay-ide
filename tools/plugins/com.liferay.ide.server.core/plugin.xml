@@ -1093,6 +1093,10 @@
                types="liferay.bundle"
                versions="*">
          </moduleType>
+         <moduleType
+               types="liferay.plugin"
+               versions="*">
+         </moduleType>
       </runtimeType>
    </extension>
    <extension
@@ -1232,6 +1236,10 @@
       <moduleType
             id="liferay.bundle"
             name="Liferay OSGi Bundle">
+      </moduleType>
+      <moduleType
+            id="liferay.plugin"
+            name="Liferay Plugin SDK Project">
       </moduleType>
    </extension>
    <extension
