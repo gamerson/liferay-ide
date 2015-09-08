@@ -33,4 +33,10 @@ public interface NamedItem extends Element
 
     Value<String> getName();
     void setName( String value );
+
+
+    ValueProperty PROP_LOCATION = new ValueProperty( TYPE, "Location" );
+
+    Value<String> getLocation();
+    void setLocation( String value );
 }
