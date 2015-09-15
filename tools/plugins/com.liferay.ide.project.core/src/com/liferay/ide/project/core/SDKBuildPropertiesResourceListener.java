@@ -21,8 +21,10 @@ import com.liferay.ide.project.core.util.ClasspathUtil;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -44,40 +46,41 @@ import org.eclipse.core.runtime.jobs.Job;
 public class SDKBuildPropertiesResourceListener implements IResourceChangeListener, IResourceDeltaVisitor
 {
 
-    private final static String MARKER_ID_SDK_PROPERTIES_INVALID = "sdk-properties-invalid";
+    private static final String ID_SDK_PROPERTIES_INVALID = "sdk-properties-invalid";
+
 
     private final static Pattern PATTERN_BUILD_PROPERTIES  = Pattern.compile("build.[\\w|\\W.]*properties");
 
-    protected void processPropertiesFileChanged() throws CoreException
+    protected void processPropertiesFileChanged( final IFile deltaFile ) throws CoreException
     {
-        final SDK sdk = SDKUtil.getWorkspaceSDK();
 
-        if( sdk != null )
+        IProject deltaProject = deltaFile.getProject();
+
+        final SDK sdk = SDKUtil.createSDKFromLocation( deltaProject.getLocation() );
+
+        if ( sdk != null )
         {
-            final IProject workspaceSDKProject = SDKUtil.getWorkspaceSDKProject();
+            final IProject sdkProject = SDKUtil.getWorkspaceSDKProject();
 
-            MarkerUtil.clearMarkers( workspaceSDKProject, IMarker.PROBLEM, MARKER_ID_SDK_PROPERTIES_INVALID );
+            MarkerUtil.clearMarkers(sdkProject, IMarker.PROBLEM, ID_SDK_PROPERTIES_INVALID);
 
-            final IStatus sdkStatus = sdk.validate( true );
+            final IStatus sdkValid = sdk.validate( true );
 
-            if( sdkStatus.isOK() )
+            if ( sdkValid.isOK() )
             {
                 for( final IProject project : CoreUtil.getAllProjects() )
                 {
-                    if( SDKUtil.isSDKProject( project ) && sdk.getLocation().isPrefixOf( project.getLocation() ) )
+                    if ( SDKUtil.isSDKProject( project ) && sdk.getLocation().isPrefixOf( project.getLocation() ))
                     {
-                        Job job = new WorkspaceJob( "Updating dependencies " + project.getName() )
+                        Job job = new WorkspaceJob( "Updating project setting base on new sdk properties for " + project.getName() )
                         {
                             @Override
-                            public IStatus runInWorkspace( final IProgressMonitor monitor )
-                                throws CoreException
+                            public IStatus runInWorkspace( final IProgressMonitor monitor ) throws CoreException
                             {
-                                ClasspathUtil.updateRequestContainer( project );
-
+                                ClasspathUtil.updateRequestContainer(project);
                                 return Status.OK_STATUS;
                             }
                         };
-
                         job.setRule( project );
                         job.schedule();
                     }
@@ -85,14 +88,19 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
             }
             else
             {
-                final IStatus[] sdkMultiStatus = sdkStatus.getChildren();
+                final IStatus[] sdkValids = sdkValid.getChildren();
 
-                for( final IStatus status : sdkMultiStatus )
+                for( final IStatus iStatus : sdkValids )
                 {
-                    MarkerUtil.setMarker(
-                        workspaceSDKProject, IMarker.PROBLEM, IMarker.SEVERITY_ERROR, status.getMessage(),
-                        workspaceSDKProject.getFullPath().toPortableString(), MARKER_ID_SDK_PROPERTIES_INVALID );
+                    MarkerUtil.setMarker(deltaProject, IMarker.PROBLEM, IMarker.SEVERITY_ERROR,
+                        iStatus.getMessage(), sdkProject.getFullPath().toPortableString(),ID_SDK_PROPERTIES_INVALID);
+
+                    MarkerUtil.setMarker(deltaProject, IMarker.PROBLEM, IMarker.SEVERITY_ERROR,
+                        iStatus.getMessage(), deltaFile.getFullPath().toPortableString(),ID_SDK_PROPERTIES_INVALID);
+
                 }
+
+                return;
             }
         }
     }
@@ -101,8 +109,7 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 
     @Override
     public void resourceChanged( final IResourceChangeEvent event )
-    {
-        if( event == null )
+    {        if( event == null )
         {
             return;
         }
@@ -113,26 +120,28 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 
             if( delta != null )
             {
-                final SDK workspaceSDK = SDKUtil.getWorkspaceSDK();
-                final IPath sdkLocation = workspaceSDK.getLocation();
+                final SDK sdk = SDKUtil.getWorkspaceSDK();
 
                 for( IResourceDelta child : delta.getAffectedChildren() )
                 {
                     IPath deltaLocation = child.getResource().getLocation();
 
-                    if( deltaLocation != null && sdkLocation.isPrefixOf( deltaLocation ) )
+                    if( deltaLocation != null )
                     {
-                        final IResourceDelta[] sdkChangedFiles =
-                            child.getAffectedChildren( IResourceDelta.CHANGED | IResourceDelta.ADDED |
-                                IResourceDelta.REMOVED );
-
-                        for( IResourceDelta sdkChangedFile : sdkChangedFiles )
+                        if( sdk.getLocation().isPrefixOf( deltaLocation ) )
                         {
-                            final String deltaLastSegment = sdkChangedFile.getResource().getLocation().lastSegment();
+                            IResourceDelta[] sdkChangedFiles = child.getAffectedChildren( IResourceDelta.CHANGED | IResourceDelta.ADDED | IResourceDelta.REMOVED );
 
-                            if( PATTERN_BUILD_PROPERTIES.matcher( deltaLastSegment ).matches() )
+                            for( IResourceDelta sdkDelta : sdkChangedFiles )
                             {
-                                sdkChangedFile.accept( this );
+                                final String deltaLastSegment = sdkDelta.getResource().getLocation().lastSegment();
+
+                                final Matcher propertiesMatcher = PATTERN_BUILD_PROPERTIES.matcher( deltaLastSegment );
+
+                                if( propertiesMatcher.matches() )
+                                {
+                                    sdkDelta.accept( this );
+                                }
                             }
                         }
                     }
@@ -157,6 +166,7 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 
             case IResource.FILE:
             {
+                final IFile deltaFile = (IFile)delta.getResource();
                 Job job = new WorkspaceJob( "Processing SDK build properties file" )
                 {
                     @Override
@@ -164,7 +174,7 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
                     {
                         try
                         {
-                            processPropertiesFileChanged();
+                            processPropertiesFileChanged( deltaFile );
                         }
                         catch(CoreException e)
                         {
