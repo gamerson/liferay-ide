@@ -70,6 +70,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
 
     }
 
+
     protected Status retval = Status.createOkStatus();
     protected CheckboxTableViewer checkBoxViewer;
     protected CheckboxElement[] checkboxElements;
@@ -106,6 +107,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                 (
                     new ICheckStateListener()
                     {
+                        @Override
                         public void checkStateChanged( CheckStateChangedEvent event )
                         {
                             handleCheckStateChangedEvent( event );
@@ -132,6 +134,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                     SWT.Selection,
                     new Listener()
                     {
+                        @Override
                         public void handleEvent( Event event )
                         {
                             for( CheckboxElement checkboxElement : checkboxElements )
@@ -142,6 +145,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                                 {
                                     NamedItem projectItem = projectItems.insert();
                                     projectItem.setName( checkboxElement.name  );
+                                    projectItem.setLocation( checkboxElement.context );
                                 }
                             }
                             updateValidation();
@@ -157,6 +161,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                     SWT.Selection,
                     new Listener()
                     {
+                        @Override
                         public void handleEvent( Event event )
                         {
                             for( CheckboxElement checkboxElement : checkboxElements )
@@ -166,7 +171,22 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                             getCheckboxList().clear();
                             updateValidation();
                         }
+                    }
+                );
 
+                final Button refreshButton = new Button( parent, SWT.NONE );
+                refreshButton.setText( "Refresh" );
+                refreshButton.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false ) );
+                refreshButton.addListener
+                (
+                    SWT.Selection,
+                    new Listener()
+                    {
+                        @Override
+                        public void handleEvent( Event event )
+                        {
+                            checkAndUpdateCheckboxElement();
+                        }
                     }
                 );
 
@@ -177,6 +197,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
             {
                 final Thread t = new Thread()
                 {
+                    @Override
                     public void run()
                     {
                         checkAndUpdateCheckboxElement();
