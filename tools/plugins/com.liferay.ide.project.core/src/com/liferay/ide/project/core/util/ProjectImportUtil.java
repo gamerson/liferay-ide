@@ -58,6 +58,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime
 /**
  * @author <a href="mailto:kamesh.sampath@hotmail.com">Kamesh Sampath</a>
  * @author Terry Jia
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class ProjectImportUtil
@@ -500,6 +501,62 @@ public class ProjectImportUtil
         return isValid;
     }
 
+    public static IStatus validateSDKPath(final String currentPath)
+    {
+        IStatus retVal = Status.OK_STATUS;
+
+        if( !org.eclipse.core.runtime.Path.EMPTY.isValidPath( currentPath ) )
+        {
+            retVal = ProjectCore.createErrorStatus( "\"" + currentPath + "\" is not a valid path." );
+        }
+        else
+        {
+            IPath osPath = org.eclipse.core.runtime.Path.fromOSString( currentPath );
+
+            if( !osPath.toFile().isAbsolute() )
+            {
+                retVal = ProjectCore.createErrorStatus( "\"" + currentPath + "\" is not an absolute path." );
+            }
+            else
+            {
+                if( !osPath.toFile().exists() )
+                {
+                    retVal = ProjectCore.createErrorStatus( "SDK isn't exist at \"" + currentPath + "\"" );
+                }
+                else
+                {
+                    SDK sdk = SDKUtil.createSDKFromLocation( osPath );
+
+                    if( sdk != null )
+                    {
+                        try
+                        {
+                            IProject workspaceSdkProject = SDKUtil.getWorkspaceSDKProject();
+
+                            if( workspaceSdkProject != null )
+                            {
+                                if( !workspaceSdkProject.getLocation().equals( sdk.getLocation() ) )
+                                {
+                                    return ProjectCore.createErrorStatus( "This project has different sdk than current workspace sdk" );
+                                }
+                            }
+                        }
+                        catch( CoreException e )
+                        {
+                            return ProjectCore.createErrorStatus("Can't find sdk in workspace");
+                        }
+                        retVal = sdk.validate();
+                    }
+                    else
+                    {
+                        retVal = ProjectCore.createErrorStatus( "SDK is not exist" );
+                    }
+                }
+            }
+        }
+
+        return retVal;
+    }
 
     public static IStatus validateSDKProjectPath(final String currentPath)
     {
@@ -591,5 +648,4 @@ public class ProjectImportUtil
             initializeMessages( ProjectImportUtil.class.getName(), Msgs.class );
         }
     }
-
 }

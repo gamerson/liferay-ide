@@ -18,23 +18,19 @@ import com.liferay.ide.project.core.AbstractUpgradeProjectHandler;
 import com.liferay.ide.project.core.UpgradeProjectHandlerReader;
 import com.liferay.ide.project.core.upgrade.NamedItem;
 import com.liferay.ide.project.core.upgrade.UpgradeLiferayProjectsOp;
-import com.liferay.ide.ui.navigator.AbstractLabelProvider;
-import com.liferay.ide.ui.util.UIUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * @author Simon Jiang
@@ -49,19 +45,10 @@ public class ProjectUpgradeActionCheckboxCustomPart extends AbstractCheckboxCust
         handlerMaps = getUpgradeHandlers( upgradeLiferayProjectActionReader.getUpgradeActions() );
     }
 
-    class ProjectActionUpgradeLabelProvider extends AbstractLabelProvider implements IColorProvider, IStyledLabelProvider
+    class ProjectActionUpgradeLabelProvider extends ElementLabelProvider implements IColorProvider, IStyledLabelProvider
     {
-        public Color getBackground( Object element )
-        {
-            return null;
-        }
 
-
-        public Color getForeground( Object element )
-        {
-            return null;
-        }
-
+        @Override
         public StyledString getStyledText( Object element )
         {
             if( element instanceof CheckboxElement )
@@ -73,20 +60,14 @@ public class ProjectUpgradeActionCheckboxCustomPart extends AbstractCheckboxCust
         }
 
         @Override
-        public String getText( Object element )
-        {
-            if( element instanceof CheckboxElement )
-            {
-                return ( (CheckboxElement) element ).context;
-            }
-
-            return super.getText( element );
-        }
-
-
-        @Override
         protected void initalizeImageRegistry( ImageRegistry registry )
         {
+        }
+
+        @Override
+        public Image getImage( Object element )
+        {
+            return null;
         }
 
     }
@@ -104,51 +85,6 @@ public class ProjectUpgradeActionCheckboxCustomPart extends AbstractCheckboxCust
     }
 
     @Override
-    protected void checkAndUpdateCheckboxElement()
-    {
-        final List<CheckboxElement> checkboxElementList = new ArrayList<CheckboxElement>();
-        handlerMaps.keySet().iterator();
-        String  context = null;
-
-        for (String handlerName : handlerMaps.keySet())
-        {
-            context = handlerMaps.get( handlerName );
-            CheckboxElement checkboxElement = new CheckboxElement( handlerName, context );
-            checkboxElementList.add( checkboxElement );
-        }
-
-        checkboxElements = checkboxElementList.toArray( new CheckboxElement[checkboxElementList.size()]);
-
-        UIUtil.async
-        (
-            new Runnable()
-            {
-                public void run()
-                {
-                    checkBoxViewer.setInput( checkboxElements );
-                    Iterator<NamedItem> iterator = op().getSelectedActions().iterator();
-
-                    while( iterator.hasNext() )
-                    {
-                        final NamedItem upgradeAction = iterator.next();
-
-                        for( CheckboxElement checkboxElement : checkboxElements )
-                        {
-                            if ( checkboxElement.name.equals( upgradeAction.getName().content() ))
-                            {
-                                checkBoxViewer.setChecked( checkboxElement, true );
-                                break;
-                            }
-                        }
-                    }
-
-                    updateValidation();
-                }
-            }
-        );
-    }
-
-    @Override
     protected ElementList<NamedItem> getCheckboxList()
     {
         return op().getSelectedActions();
@@ -161,31 +97,26 @@ public class ProjectUpgradeActionCheckboxCustomPart extends AbstractCheckboxCust
     }
 
     @Override
-    protected void handleCheckStateChangedEvent( CheckStateChangedEvent event )
+    protected ElementList<NamedItem> getSelectedElements()
     {
-        if( event.getSource().equals( checkBoxViewer ) )
+        return op().getSelectedActions();
+    }
+
+    @Override
+    protected List<CheckboxElement> getInitItemsList()
+    {
+        final List<CheckboxElement> checkboxElementList = new ArrayList<CheckboxElement>();
+        handlerMaps.keySet().iterator();
+        String  context = null;
+
+        for (String handlerName : handlerMaps.keySet())
         {
-            final Object element = event.getElement();
-
-            if( element instanceof CheckboxElement )
-            {
-                checkBoxViewer.setGrayed( element, false );
-            }
-
-            op().getSelectedActions().clear();
-
-            for( CheckboxElement checkboxElement : checkboxElements )
-            {
-                if( checkBoxViewer.getChecked( checkboxElement ) )
-                {
-                    final NamedItem newUpgradeAction = op().getSelectedActions().insert();
-                    newUpgradeAction.setName( checkboxElement.name );
-                }
-
-            }
-
-            updateValidation();
+            context = handlerMaps.get( handlerName );
+            CheckboxElement checkboxElement = new CheckboxElement( handlerName, context );
+            checkboxElementList.add( checkboxElement );
         }
+
+        return checkboxElementList;
     }
 
     private UpgradeLiferayProjectsOp op()
