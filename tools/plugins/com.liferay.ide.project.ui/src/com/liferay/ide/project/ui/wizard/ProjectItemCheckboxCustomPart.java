@@ -26,18 +26,14 @@ import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.ServerUtil;
-import com.liferay.ide.ui.navigator.AbstractLabelProvider;
-import com.liferay.ide.ui.util.UIUtil;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
@@ -45,7 +41,6 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -60,7 +55,7 @@ import org.osgi.framework.Version;
 public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
 {
 
-    class ProjectItemUpgradeLabelProvider extends AbstractLabelProvider implements IColorProvider, IStyledLabelProvider
+    class ProjectItemUpgradeLabelProvider extends ElementLabelProvider implements IColorProvider, IStyledLabelProvider
     {
         private static final String GREY_COLOR = "actual portal version"; //$NON-NLS-1$
         private final ColorRegistry COLOR_REGISTRY = JFaceResources.getColorRegistry();
@@ -70,16 +65,6 @@ public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
         {
             COLOR_REGISTRY.put( GREY_COLOR, new RGB( 128, 128, 128 ) );
             GREYED_STYLER = StyledString.createColorRegistryStyler( GREY_COLOR, null );
-        }
-
-        public Color getBackground( Object element )
-        {
-            return null;
-        }
-
-        public Color getForeground( Object element )
-        {
-            return null;
         }
 
         @Override
@@ -100,6 +85,7 @@ public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
             return null;
         }
 
+        @Override
         public StyledString getStyledText( Object element )
         {
             if( element instanceof CheckboxElement )
@@ -111,17 +97,6 @@ public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
             }
 
             return new StyledString( ( ( CheckboxElement ) element ).context );
-        }
-
-        @Override
-        public String getText( Object element )
-        {
-            if( element instanceof CheckboxElement )
-            {
-                return ( (CheckboxElement) element ).context;
-            }
-
-            return super.getText( element );
         }
 
         @Override
@@ -142,10 +117,18 @@ public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
             imageRegistry.put( PluginType.web.name(),
                 ProjectUI.imageDescriptorFromPlugin( ProjectUI.PLUGIN_ID, "/icons/e16/web.png" ) );
         }
+
+    }
+
+
+    @Override
+    protected ElementList<NamedItem> getSelectedElements()
+    {
+        return op().getSelectedProjects();
     }
 
     @Override
-    protected void checkAndUpdateCheckboxElement()
+    protected List<CheckboxElement> getInitItemsList()
     {
         List<CheckboxElement> checkboxElementList = new ArrayList<CheckboxElement>();
         IProject[] projects = ProjectUtil.getAllPluginsSDKProjects();
@@ -167,34 +150,7 @@ public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
             checkboxElementList.add( checkboxElement );
         }
 
-        checkboxElements = checkboxElementList.toArray( new CheckboxElement[checkboxElementList.size()]);
-
-        UIUtil.async
-        (
-            new Runnable()
-            {
-                public void run()
-                {
-                    checkBoxViewer.setInput( checkboxElements );
-                    Iterator<NamedItem> iterator = op().getSelectedProjects().iterator();
-
-                    while( iterator.hasNext() )
-                    {
-                        NamedItem projectItem = iterator.next();
-                        for( CheckboxElement checkboxElement : checkboxElements )
-                        {
-                            if ( checkboxElement.name.equals( projectItem.getName().content() ))
-                            {
-                                checkBoxViewer.setChecked( checkboxElement, true );
-                                break;
-                            }
-                        }
-                    }
-
-                    updateValidation();
-                }
-            }
-        );
+        return checkboxElementList;
     }
 
     @Override
@@ -246,34 +202,6 @@ public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
     }
 
     @Override
-    protected void handleCheckStateChangedEvent( CheckStateChangedEvent event )
-    {
-        if( event.getSource().equals( checkBoxViewer ) )
-        {
-            final Object element = event.getElement();
-
-            if( element instanceof CheckboxElement )
-            {
-                checkBoxViewer.setGrayed( element, false );
-            }
-
-            op().getSelectedProjects().clear();
-
-            for( CheckboxElement checkboxElement : checkboxElements )
-            {
-                if( checkBoxViewer.getChecked( checkboxElement ) )
-                {
-                    final NamedItem newProjectItem = op().getSelectedProjects().insert();
-                    newProjectItem.setName( checkboxElement.name );
-                }
-
-            }
-
-            updateValidation();
-        }
-    }
-
-    @Override
     protected ElementList<NamedItem> getCheckboxList()
     {
         return op().getSelectedProjects();
@@ -289,5 +217,4 @@ public class ProjectItemCheckboxCustomPart extends AbstractCheckboxCustomPart
     {
         return getLocalModelElement().nearest( UpgradeLiferayProjectsOp.class );
     }
-
 }

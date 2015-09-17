@@ -12,31 +12,40 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.upgrade;
 
-import org.eclipse.sapphire.Element;
-import org.eclipse.sapphire.ElementType;
-import org.eclipse.sapphire.Value;
-import org.eclipse.sapphire.ValueProperty;
+package com.liferay.ide.project.ui;
 
+import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKUtil;
+
+import org.eclipse.core.expressions.PropertyTester;
 
 /**
  * @author Simon Jiang
  */
-public interface NamedItem extends Element
+
+public class HasOneWorkspaceSDKTester extends PropertyTester
 {
-    ElementType TYPE = new ElementType( NamedItem.class );
 
-    // *** Name ***
+    @Override
+    public boolean test( Object receiver, String property, Object[] args, Object expectedValue )
+    {
+        boolean retVal = false;
+        try
+        {
+            SDK workspaceSDK = SDKUtil.getWorkspaceSDK();
 
-    ValueProperty PROP_NAME = new ValueProperty( TYPE, "Name" );
+            if ( workspaceSDK != null )
+            {
+                retVal = true;
+            }
 
-    Value<String> getName();
-    void setName( String value );
+        }
+        catch(Exception e)
+        {
+            ProjectUI.logError( e );
+        }
 
-
-    ValueProperty PROP_LOCATION = new ValueProperty( TYPE, "Location" );
-
-    Value<String> getLocation();
-    void setLocation( String value );
+        return retVal;
+    }
 }

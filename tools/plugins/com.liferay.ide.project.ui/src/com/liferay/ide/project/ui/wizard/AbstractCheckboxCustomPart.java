@@ -16,6 +16,10 @@ package com.liferay.ide.project.ui.wizard;
 
 import com.liferay.ide.project.core.upgrade.NamedItem;
 import com.liferay.ide.ui.util.SWTUtil;
+import com.liferay.ide.ui.util.UIUtil;
+
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -80,9 +84,49 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
         return retval;
     }
 
-    protected abstract void checkAndUpdateCheckboxElement();
+    protected void checkAndUpdateCheckboxElement()
+    {
+        List<CheckboxElement> checkboxElementList = getInitItemsList();
 
-    protected abstract void handleCheckStateChangedEvent( CheckStateChangedEvent event );
+        checkboxElements = checkboxElementList.toArray( new CheckboxElement[checkboxElementList.size()]);
+
+        UIUtil.async
+        (
+            new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    checkBoxViewer.setInput( checkboxElements );
+
+                    ElementList<NamedItem> selectedElements = getSelectedElements();
+
+                    Iterator<NamedItem> iterator = selectedElements.iterator();
+
+                    while( iterator.hasNext() )
+                    {
+                        NamedItem projectItem = iterator.next();
+
+                        for( CheckboxElement checkboxElement : checkboxElements )
+                        {
+                            if ( checkboxElement.name.equals( projectItem.getName().content() ))
+                            {
+                                checkBoxViewer.setChecked( checkboxElement, true );
+                                break;
+                            }
+                        }
+                    }
+
+                    updateValidation();
+
+                }
+            }
+        );
+    }
+
+    protected abstract  ElementList<NamedItem> getSelectedElements();
+
+    protected abstract List<CheckboxElement> getInitItemsList();
 
     protected abstract ElementList<NamedItem> getCheckboxList();
 
@@ -106,6 +150,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                 (
                     new ICheckStateListener()
                     {
+                        @Override
                         public void checkStateChanged( CheckStateChangedEvent event )
                         {
                             handleCheckStateChangedEvent( event );
@@ -132,6 +177,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                     SWT.Selection,
                     new Listener()
                     {
+                        @Override
                         public void handleEvent( Event event )
                         {
                             for( CheckboxElement checkboxElement : checkboxElements )
@@ -142,6 +188,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                                 {
                                     NamedItem projectItem = projectItems.insert();
                                     projectItem.setName( checkboxElement.name  );
+                                    projectItem.setLocation( checkboxElement.context );
                                 }
                             }
                             updateValidation();
@@ -157,6 +204,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                     SWT.Selection,
                     new Listener()
                     {
+                        @Override
                         public void handleEvent( Event event )
                         {
                             for( CheckboxElement checkboxElement : checkboxElements )
@@ -166,7 +214,22 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                             getCheckboxList().clear();
                             updateValidation();
                         }
+                    }
+                );
 
+                final Button refreshButton = new Button( parent, SWT.NONE );
+                refreshButton.setText( "Refresh" );
+                refreshButton.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false ) );
+                refreshButton.addListener
+                (
+                    SWT.Selection,
+                    new Listener()
+                    {
+                        @Override
+                        public void handleEvent( Event event )
+                        {
+                            checkAndUpdateCheckboxElement();
+                        }
                     }
                 );
 
@@ -177,6 +240,7 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
             {
                 final Thread t = new Thread()
                 {
+                    @Override
                     public void run()
                     {
                         checkAndUpdateCheckboxElement();
@@ -186,6 +250,38 @@ public abstract class AbstractCheckboxCustomPart extends FormComponentPart
                 t.start();
             }
         };
+    }
+
+    private void handleCheckStateChangedEvent( CheckStateChangedEvent event )
+    {
+        if( event.getSource().equals( checkBoxViewer ) )
+        {
+            final Object element = event.getElement();
+
+            if( element instanceof CheckboxElement )
+            {
+                checkBoxViewer.setGrayed( element, false );
+            }
+
+            ElementList<NamedItem> selectedElements = getSelectedElements();
+
+            if ( selectedElements != null )
+            {
+                selectedElements.clear();
+
+                for( CheckboxElement checkboxElement : checkboxElements )
+                {
+                    if( checkBoxViewer.getChecked( checkboxElement ) )
+                    {
+                        final NamedItem newProjectItem = selectedElements.insert();
+                        newProjectItem.setName( checkboxElement.name );
+                        newProjectItem.setLocation( checkboxElement.context );
+                    }
+                }
+            }
+
+            updateValidation();
+        }
     }
 
     protected class CheckboxElement
