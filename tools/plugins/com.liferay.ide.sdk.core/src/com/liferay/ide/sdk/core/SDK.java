@@ -17,11 +17,13 @@ package com.liferay.ide.sdk.core;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileListing;
 import com.liferay.ide.core.util.FileUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -701,6 +703,34 @@ public class SDK
     private String getDefaultWorkingDir( final IPath buildFile )
     {
         return buildFile.removeLastSegments( 1 ).toOSString();
+    }
+
+    public IPath[] getSDKDependencyJars()
+    {
+        List<IPath> libs = new ArrayList<IPath>();
+
+        List<File> libFiles;
+        try
+        {
+            IPath sdkLibPath =  getLocation().append( "dependencies" );
+
+            if ( sdkLibPath.toFile().exists() && ILiferayConstants.V700.toString().equals( getVersion() ) )
+            {
+                libFiles = FileListing.getFileListing( new File( sdkLibPath.toOSString() ) );
+                for( File lib : libFiles )
+                {
+                    if( lib.exists() && lib.getName().endsWith( ".jar" ) ) //$NON-NLS-1$
+                    {
+                        libs.add( new Path( lib.getPath() ) );
+                    }
+                }
+            }
+        }
+        catch( FileNotFoundException e )
+        {
+        }
+
+        return libs.toArray( new IPath[libs.size()] );
     }
 
     public IPath getLocation()
