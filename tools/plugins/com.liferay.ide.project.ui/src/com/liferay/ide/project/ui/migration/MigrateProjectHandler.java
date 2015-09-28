@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ISelection;
@@ -142,6 +143,19 @@ public class MigrateProjectHandler extends AbstractHandler
 
                         return retval;
                     }
+
+					@Override
+					protected void canceling() {
+						try {
+							this.cancel();
+							if(this.getState() == Job.RUNNING){
+								throw new OperationCanceledException();
+							}
+						} catch (Exception e) {
+							this.done(ProjectUI.createErrorStatus( "migrate command is canceled", e ));
+						}
+					}
+
                 };
 
                 try
