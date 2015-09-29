@@ -487,11 +487,13 @@ public class ProjectCoreBase extends ServerCoreBase
             assertEquals( "Unable to delete pre-existing customBaseDir", false, customBaseDir.exists() );
         }
 
-        persistAppServerProperties();
-
         SDK workspaceSdk = SDKUtil.getWorkspaceSDK();
         if ( workspaceSdk == null)
         {
+            persistAppServerProperties();
+
+            assertEquals( true, sdk.validate( true ).isOK() );
+
             SDKUtil.openAsProject( sdk );
         }
 
