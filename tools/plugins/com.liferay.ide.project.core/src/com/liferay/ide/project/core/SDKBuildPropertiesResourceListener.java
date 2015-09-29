@@ -47,13 +47,51 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 {
 
     private final static String MARKER_ID_SDK_PROPERTIES_INVALID = "sdk-properties-invalid";
+    private final static String ID_WORKSPACE_SDK_INVALID = "workspace-sdk-invalid";
 
     private final static Pattern PATTERN_BUILD_PROPERTIES  = Pattern.compile("build.[\\w|\\W.]*properties");
+
+    private boolean checkMultipleSDK( final IProgressMonitor monitor ) throws CoreException
+    {
+        boolean hasMultipleSDK = false;
+        boolean findSDK = false;
+        final IProject[] projects = CoreUtil.getAllProjects();
+
+        for( final IProject existProject : projects )
+        {
+            if ( SDKUtil.isValidSDKLocation( existProject.getLocation().toPortableString() ) )
+            {
+                final IMarker[] problemMarkers =
+                                MarkerUtil.findMarkers( existProject, IMarker.PROBLEM, ID_WORKSPACE_SDK_INVALID );
+
+                if ( findSDK == false )
+                {
+                    if ( problemMarkers != null && problemMarkers.length > 0)
+                    {
+                        MarkerUtil.clearMarkers( existProject, IMarker.PROBLEM, ID_WORKSPACE_SDK_INVALID );
+                    }
+
+                    findSDK = true;
+                }
+                else
+                {
+                    if ( problemMarkers == null || problemMarkers.length < 1 )
+                    {
+                        MarkerUtil.setMarker(existProject, IMarker.PROBLEM, IMarker.SEVERITY_ERROR,
+                            "Workspace has more than one SDK", existProject.getFullPath().toPortableString(),ID_WORKSPACE_SDK_INVALID);
+                    }
+                    hasMultipleSDK = true;
+                }
+                existProject.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+            }
+        }
+        return hasMultipleSDK;
+    }
 
     protected void processPropertiesFileChanged( final IFile deltaFile ) throws CoreException
     {
 
-        IProject deltaProject = deltaFile.getProject();
+        final IProject deltaProject = deltaFile.getProject();
 
         final SDK sdk = SDKUtil.createSDKFromLocation( deltaProject.getLocation() );
 
@@ -86,7 +124,6 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
                             }
                         };
 
-                        job.setRule( project );
                         job.schedule();
                     }
                 }
@@ -119,34 +156,25 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
         try
         {
             final IResourceDelta delta = event.getDelta();
-            final SDK sdk = SDKUtil.getWorkspaceSDK();
 
-            if( delta != null && sdk != null )
+            if( delta != null )
             {
                 for( IResourceDelta child : delta.getAffectedChildren() )
                 {
-                    final IPath deltaLocation = child.getResource().getLocation();
+                    final IResourceDelta[] sdkChangedFiles =
+                        child.getAffectedChildren( IResourceDelta.CHANGED | IResourceDelta.ADDED |
+                            IResourceDelta.REMOVED );
 
-                    if( deltaLocation != null )
+                    for( IResourceDelta sdkDelta : sdkChangedFiles )
                     {
-                        if( sdk.getLocation().isPrefixOf( deltaLocation ) )
+                        final String deltaLastSegment = sdkDelta.getFullPath().lastSegment();
+
+                        final Matcher propertiesMatcher =
+                            PATTERN_BUILD_PROPERTIES.matcher( deltaLastSegment );
+
+                        if( propertiesMatcher.matches() )
                         {
-                            final IResourceDelta[] sdkChangedFiles =
-                                child.getAffectedChildren( IResourceDelta.CHANGED | IResourceDelta.ADDED |
-                                    IResourceDelta.REMOVED );
-
-                            for( IResourceDelta sdkDelta : sdkChangedFiles )
-                            {
-                                final String deltaLastSegment = sdkDelta.getResource().getLocation().lastSegment();
-
-                                final Matcher propertiesMatcher =
-                                    PATTERN_BUILD_PROPERTIES.matcher( deltaLastSegment );
-
-                                if( propertiesMatcher.matches() )
-                                {
-                                    sdkDelta.accept( this );
-                                }
-                            }
+                            sdkDelta.accept( this );
                         }
                     }
                 }
@@ -178,7 +206,21 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
                     {
                         try
                         {
-                            processPropertiesFileChanged( deltaFile );
+                            final boolean hasMultipleSDK = checkMultipleSDK( monitor );
+
+                            if ( !hasMultipleSDK )
+                            {
+                                final IPath deltaLocation = deltaFile.getLocation();
+
+                                if( deltaLocation != null )
+                                {
+                                    final SDK sdk = SDKUtil.getWorkspaceSDK();
+                                    if( sdk.getLocation().isPrefixOf( deltaLocation ) )
+                                    {
+                                        processPropertiesFileChanged( deltaFile );
+                                    }
+                                }
+                            }
                         }
                         catch(CoreException e)
                         {
@@ -188,7 +230,6 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
                         return Status.OK_STATUS;
                     }
                 };
-                job.setRule( deltaFile );
                 job.schedule();
             }
 
