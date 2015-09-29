@@ -119,15 +119,31 @@ public class WorkspaceMigrationImpl implements MigrationListener
                 try
                 {
                     final TaskProblem taskProblem = new TaskProblem( problem, false );
-                    final IMarker marker =
-                        workspaceResource.createMarker( MigrationConstants.MIGRATION_MARKER_TYPE );
+                    //remove problems in WEB-INF/classes folder
+                    if( shouldAddMarker(workspaceResource) )
+                    {
+                        final IMarker marker =
+                            workspaceResource.createMarker( MigrationConstants.MIGRATION_MARKER_TYPE );
 
-                    MigrationUtil.taskProblemToMarker( taskProblem, marker );
+                        MigrationUtil.taskProblemToMarker( taskProblem, marker );
+                    }
                 }
                 catch( CoreException e )
                 {
                 }
             }
+        }
+    }
+
+    private boolean shouldAddMarker( IResource resource )
+    {
+        if( resource.getFullPath().toString().contains( "WEB-INF/classes" ) )
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
