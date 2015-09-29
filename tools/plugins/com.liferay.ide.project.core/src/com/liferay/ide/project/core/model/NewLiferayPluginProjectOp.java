@@ -24,6 +24,7 @@ import com.liferay.ide.project.core.model.internal.CreateNewPortletDefaultValueS
 import com.liferay.ide.project.core.model.internal.DisplayNameDefaultValueService;
 import com.liferay.ide.project.core.model.internal.GroupIdDefaultValueService;
 import com.liferay.ide.project.core.model.internal.GroupIdValidationService;
+import com.liferay.ide.project.core.model.internal.HasWorkspaceSDKValidationService;
 import com.liferay.ide.project.core.model.internal.HasWorkspaceSdkDefaultValueService;
 import com.liferay.ide.project.core.model.internal.IncludeSampleCodeDefaultValueService;
 import com.liferay.ide.project.core.model.internal.LocationValidationService;
@@ -155,7 +156,8 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
         value=
         {
             @Service( impl = ProjectProviderPossibleValuesService.class ),
-            @Service( impl = ProjectProviderDefaultValueService.class )
+            @Service( impl = ProjectProviderDefaultValueService.class ),
+            @Service( impl = HasWorkspaceSDKValidationService.class )
         }
     )
     ValueProperty PROP_PROJECT_PROVIDER = new ValueProperty( TYPE, "ProjectProvider" ); //$NON-NLS-1$
