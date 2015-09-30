@@ -39,6 +39,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -63,6 +65,7 @@ import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Lovett li
  */
 @SuppressWarnings( "restriction" )
 public class MigrationView extends CommonNavigator implements IDoubleClickListener
@@ -74,6 +77,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
     private FormText _form;
     private TableViewer _problemsViewer;
+    private MigratorComparator comparator;
 
     private void createColumns( TableViewer _problemsViewer )
     {
@@ -156,6 +160,9 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         table.setHeaderVisible( true );
 
         _problemsViewer.setContentProvider( ArrayContentProvider.getInstance() );
+        _problemsViewer.setComparer(null);
+         comparator = new MigratorComparator();
+        _problemsViewer.setComparator(comparator);
 
         MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown( true );
@@ -256,8 +263,24 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         column.setWidth( bound );
         column.setResizable( true );
         column.setMoveable( true );
+        column.addSelectionListener(getSelectionAdapter(column, colNumber));
 
         return viewerColumn;
+    }
+
+    private SelectionAdapter getSelectionAdapter(final TableColumn column,final int index)
+    {
+      SelectionAdapter selectionAdapter = new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+           comparator.setColumn(index);
+           int dir = comparator.getDirection();
+          _problemsViewer.getTable().setSortDirection(dir);
+          _problemsViewer.getTable().setSortColumn(column);
+          _problemsViewer.refresh();
+               }
+             };
+         return selectionAdapter;
     }
 
     @Override
