@@ -24,22 +24,15 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.StandardJavaElementContentProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 
-import com.liferay.ide.project.core.util.ProjectUtil;
-
 /**
- * A dialog for selecting a project to configure project specific settings for
- *
- * @since 1.0.0
- *
  * @author Andy Wu
  */
-public class LiferayProjectSelectionDialog extends ProjectSelectionDialog
+public class JavaProjectSelectionDialog extends ProjectSelectionDialog
 {
 
-    class LiferayJavaElementContentProvider extends StandardJavaElementContentProvider
+    class JavaElementContentProvider extends StandardJavaElementContentProvider
     {
         public Object[] getChildren( Object element )
         {
@@ -52,20 +45,15 @@ public class LiferayProjectSelectionDialog extends ProjectSelectionDialog
                     IJavaProject[] projects = model.getJavaProjects();
                     for( int i = 0; i < projects.length; i++ )
                     {
-                        if( ProjectUtil.isLiferayFacetedProject( projects[i].getProject() ) )
-                        {
-                            set.add( projects[i] );
-                        }
+                        set.add( projects[i] );
                     }
                 }
                 catch( JavaModelException jme )
                 {
                     // ignore
                 }
-
                 return set.toArray();
             }
-
             return super.getChildren( element );
         }
     }
@@ -76,28 +64,17 @@ public class LiferayProjectSelectionDialog extends ProjectSelectionDialog
      * @param parentShell
      * @param projectsWithSpecifics
      */
-    public LiferayProjectSelectionDialog( Shell parentShell, ViewerFilter filter )
+    public JavaProjectSelectionDialog( Shell parentShell, ViewerFilter filter )
     {
         super( parentShell , filter );
-        setTitle( Msgs.projectSelection );
-        setMessage( Msgs.selectProject );
-    }
-
-    private static class Msgs extends NLS
-    {
-        public static String projectSelection;
-        public static String selectProject;
-
-        static
-        {
-            initializeMessages( LiferayProjectSelectionDialog.class.getName(), Msgs.class );
-        }
+        setTitle( "Project Selection" );
+        setMessage( "Select project" );
     }
 
     @Override
     protected IContentProvider getContentProvider()
     {
-        return new LiferayJavaElementContentProvider();
+        return new JavaElementContentProvider();
     }
 
 }
