@@ -23,8 +23,10 @@ import java.net.URL;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -59,6 +61,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
@@ -308,6 +311,31 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         });
 
         getCommonViewer().addDoubleClickListener( this );
+        addExpandAllButton( getViewSite().getActionBars() );
+    }
+
+    private void addExpandAllButton( IActionBars actionBars )
+    {
+        IToolBarManager menu = actionBars.getToolBarManager();
+
+        menu.add( new ExpandAllAction() );
+
+    }
+
+    private class ExpandAllAction extends Action
+    {
+
+        public ExpandAllAction()
+        {
+            setImageDescriptor( ProjectUI.getDefault().getImageRegistry().getDescriptor( ProjectUI.EXPANDALL_IMAGE_ID ) );
+        }
+
+        @Override
+        public void run()
+        {
+            getCommonViewer().expandAll();
+        }
+
     }
 
     private void displayPopupHtml( final String title, final String html )
