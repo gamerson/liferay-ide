@@ -22,9 +22,13 @@ import com.liferay.ide.ui.util.UIUtil;
 import java.net.URL;
 import java.util.List;
 
+import org.eclipse.core.internal.resources.File;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -36,6 +40,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -59,7 +64,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
+import org.eclipse.ui.actions.SelectionProviderAction;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
@@ -90,8 +99,11 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
     private Browser _browser;
     private FormText _form;
+    private NextAction _nextAction;
+    private PreviousAction _previousAction;
     private TableViewer _problemsViewer;
     private MigratorComparator _comparator;
+    private MigrationViewTreeUtil _treeUtil;
 
     private void createColumns( final TableViewer _problemsViewer )
     {
@@ -185,6 +197,10 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         SashForm viewParent = new SashForm( parent, SWT.HORIZONTAL );
 
         super.createPartControl( viewParent );
+
+        ISelectionProvider sp = this.getViewSite().getSelectionProvider();
+
+        createActions( sp );
 
         SashForm detailParent = new SashForm( viewParent, SWT.VERTICAL );
 
@@ -308,6 +324,10 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         });
 
         getCommonViewer().addDoubleClickListener( this );
+
+        fillActionBars( getViewSite().getActionBars() );
+
+        _treeUtil = new MigrationViewTreeUtil( getCommonViewer() );
     }
 
     private void displayPopupHtml( final String title, final String html )
@@ -373,6 +393,12 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         shell.open();
     }
 
+    private void createActions( ISelectionProvider sp )
+    {
+        _nextAction = new NextAction( sp );
+        _previousAction = new PreviousAction( sp );
+    }
+
     private TableViewerColumn createTableViewerColumn(
         String title, int bound, TableViewer viewer )
     {
@@ -396,6 +422,14 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         {
             MigrationUtil.openEditor( taskProblem );
         }
+    }
+
+    private void fillActionBars( IActionBars actionBars )
+    {
+        IToolBarManager menu = actionBars.getToolBarManager();
+
+        menu.add( _previousAction );
+        menu.add( _nextAction );
     }
 
     private void fillContextMenu( IMenuManager manager, ISelectionProvider provider )
@@ -561,5 +595,148 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
             }
         }
     };
+
+    private final class NextAction extends SelectionProviderAction implements IAction
+    {
+
+        private IStructuredSelection _selection;
+
+        public NextAction( ISelectionProvider provider )
+        {
+            super( provider, "Next" );
+
+            ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
+            setImageDescriptor( images.getImageDescriptor( ISharedImages.IMG_TOOL_FORWARD ) );
+            setDisabledImageDescriptor( images.getImageDescriptor( ISharedImages.IMG_TOOL_FORWARD_DISABLED ) );
+            setToolTipText( "Next" );
+            setEnabled( true );
+        }
+
+        public void selectionChanged( IStructuredSelection selection )
+        {
+            final Object element = selection.getFirstElement();
+
+            if( ( ( element instanceof File ) && !_treeUtil.isLastElement( (File) element ) || element instanceof MPTree ) )
+            {
+                setEnabled( true );
+
+                _selection = selection;
+            }
+            else
+            {
+                setEnabled( false );
+
+                _selection = null;
+            }
+        }
+
+        @Override
+        public void run()
+        {
+            if( _selection != null )
+            {
+                final Object element = _selection.getFirstElement();
+
+                if( element instanceof File )
+                {
+                    getCommonViewer().expandAll();
+
+                    final File file = (File) element;
+
+                    final int i = _treeUtil.getIndexFromSelection( file );
+
+                    final List<IResource> list = _treeUtil.getTreeList();
+
+                    if( i < list.size() - 1 )
+                    {
+                        StructuredSelection structuredSelection = new StructuredSelection( list.get( i + 1 ) );
+
+                        getCommonViewer().setSelection( structuredSelection, true );
+                    }
+                }
+                else if( element instanceof MPTree )
+                {
+                    getCommonViewer().expandAll();
+
+                    final List<IResource> list = _treeUtil.getTreeList();
+
+                    StructuredSelection structuredSelection = new StructuredSelection( list.get( 0 ) );
+
+                    getCommonViewer().setSelection( structuredSelection, true );
+                }
+            }
+            else {
+                getCommonViewer().expandAll();
+
+                final List<IResource> list = _treeUtil.getTreeList();
+
+                StructuredSelection structuredSelection = new StructuredSelection( list.get( 0 ) );
+
+                getCommonViewer().setSelection( structuredSelection, true );
+            }
+        }
+    }
+
+    private final class PreviousAction extends SelectionProviderAction implements IAction
+    {
+
+        private IStructuredSelection _selection;
+
+        protected PreviousAction( ISelectionProvider provider )
+        {
+            super( provider, "Previous" );
+
+            ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
+            setImageDescriptor( images.getImageDescriptor( ISharedImages.IMG_TOOL_BACK ) );
+            setDisabledImageDescriptor( images.getImageDescriptor( ISharedImages.IMG_TOOL_BACK_DISABLED ) );
+            setToolTipText( "Previous" );
+            setEnabled( false );
+        }
+
+        public void selectionChanged( IStructuredSelection selection )
+        {
+            final Object element = selection.getFirstElement();
+
+            if( element instanceof File && !_treeUtil.isFirstElement( (File) element ) )
+            {
+                setEnabled( true );
+
+                _selection = selection;
+            }
+            else
+            {
+                setEnabled( false );
+
+                _selection = null;
+            }
+        }
+
+        @Override
+        public void run()
+        {
+            if( _selection != null )
+            {
+                final Object element = _selection.getFirstElement();
+
+                if( element instanceof File )
+                {
+                    getCommonViewer().expandAll();
+
+                    final File file = (File) element;
+
+                    final List<IResource> list = _treeUtil.getTreeList();
+
+                    final int i = _treeUtil.getIndexFromSelection( file );
+
+                    if( i > 0 )
+                    {
+                        final StructuredSelection structuredSelection = new StructuredSelection( list.get( i - 1 ) );
+
+                        getCommonViewer().setSelection( structuredSelection, true );
+                    }
+                }
+            }
+        }
+    }
 
 }
