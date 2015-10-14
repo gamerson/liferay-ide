@@ -15,14 +15,6 @@
 
 package com.liferay.ide.project.ui.migration;
 
-import blade.migrate.api.Migration;
-import blade.migrate.api.Problem;
-import blade.migrate.api.ProgressMonitor;
-
-import com.liferay.ide.project.ui.ProjectUI;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -43,12 +35,18 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import blade.migrate.api.Migration;
+import blade.migrate.api.Problem;
+import blade.migrate.api.ProgressMonitor;
+
+import com.liferay.ide.project.ui.ProjectUI;
+
 /**
  * @author Gregory Amerson
+ * @author Andy Wu
  */
 public class MigrateProjectHandler extends AbstractHandler
 {
@@ -121,10 +119,6 @@ public class MigrateProjectHandler extends AbstractHandler
                                 monitor.beginTask( taskName, totalWork );
                             }
                         };
-
-                        final Dictionary<String, Integer> properties = new Hashtable<>();
-
-                        properties.put( Constants.SERVICE_RANKING, 1000 );
 
                         try
                         {
