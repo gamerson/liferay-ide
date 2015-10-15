@@ -18,6 +18,7 @@ package com.liferay.ide.project.ui.migration;
 import java.net.URL;
 import java.util.List;
 
+import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
@@ -34,6 +35,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -58,7 +60,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
+import org.eclipse.ui.actions.SelectionProviderAction;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
@@ -93,8 +98,11 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
     private Browser _browser;
     private FormText _form;
+    private NextAction _nextAction;
+    private UpAction _upAction;
     private TableViewer _problemsViewer;
     private MigratorComparator _comparator;
+    private MigrationViewTreeUtil _treeUtil;
 
     private void createColumns( final TableViewer _problemsViewer )
     {
@@ -189,6 +197,10 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         super.createPartControl( viewParent );
 
+        ISelectionProvider sp = this.getViewSite().getSelectionProvider();
+
+        createActions( sp );
+
         SashForm detailParent = new SashForm( viewParent, SWT.VERTICAL );
 
         _problemsViewer =
@@ -200,9 +212,9 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         table.setHeaderVisible( true );
 
         _problemsViewer.setContentProvider( ArrayContentProvider.getInstance() );
-        _problemsViewer.setComparer(null);
+        _problemsViewer.setComparer( null );
         _comparator = new MigratorComparator();
-        _problemsViewer.setComparator(_comparator);
+        _problemsViewer.setComparator( _comparator );
 
         MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown( true );
@@ -212,7 +224,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
             {
                 MigrationView.this.fillContextMenu( manager, _problemsViewer );
             }
-        });
+        } );
 
         Menu menu = menuMgr.createContextMenu( _problemsViewer.getControl() );
         _problemsViewer.getControl().setMenu( menu );
@@ -273,7 +285,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                         }
                     }
                 }
-            });
+            } );
         }
         else
         {*/
@@ -284,7 +296,17 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         {
             public void selectionChanged( SelectionChangedEvent event )
             {
-                List<TaskProblem> problems = MigrationUtil.getTaskProblemsFromTreeNode( event.getSelection() );
+                List<TaskProblem> problems;
+
+                if( event.getSelection() instanceof IStructuredSelection &&
+                    ( (IStructuredSelection) event.getSelection() ).getFirstElement() instanceof MPTree )
+                {
+                    problems = MigrationUtil.getAllTaskProblems( getCommonViewer() );
+                }
+                else
+                {
+                    problems = MigrationUtil.getTaskProblemsFromTreeNode( event.getSelection() );
+                }
 
                 if( problems != null && problems.size() > 0 )
                 {
@@ -296,7 +318,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     _problemsViewer.setInput( null );
                 }
             }
-        });
+        } );
 
         _problemsViewer.addSelectionChangedListener( new ISelectionChangedListener()
         {
@@ -310,9 +332,13 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     }
                 }, 50 );
             }
-        });
+        } );
 
         getCommonViewer().addDoubleClickListener( this );
+
+        fillActionBars( getViewSite().getActionBars() );
+
+        _treeUtil = new MigrationViewTreeUtil( getCommonViewer() );
     }
 
     private void displayPopupHtml( final String title, final String html )
@@ -357,7 +383,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                 savePopupState( shell );
                 browser.dispose();
             }
-        });
+        } );
 
         shell.addListener( SWT.Traverse, new Listener()
         {
@@ -373,13 +399,18 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     break;
                 }
             }
-        });
+        } );
 
         shell.open();
     }
 
-    private TableViewerColumn createTableViewerColumn(
-        String title, int bound, TableViewer viewer )
+    private void createActions( ISelectionProvider sp )
+    {
+        _nextAction = new NextAction( sp );
+        _upAction = new UpAction( sp );
+    }
+
+    private TableViewerColumn createTableViewerColumn( String title, int bound, TableViewer viewer )
     {
         final TableViewerColumn viewerColumn = new TableViewerColumn( viewer, SWT.NONE );
         final TableColumn column = viewerColumn.getColumn();
@@ -412,6 +443,14 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         {
             MigrationUtil.openEditor( taskProblem );
         }
+    }
+
+    private void fillActionBars( IActionBars actionBars )
+    {
+        IToolBarManager menu = actionBars.getToolBarManager();
+
+        menu.add( _nextAction );
+        menu.add( _upAction );
     }
 
     private void fillContextMenu( IMenuManager manager, ISelectionProvider provider )
@@ -527,7 +566,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     ProjectUI.logError( "error opening browser", e );
                 }
             }
-        });
+        } );
     }
 
     private void savePopupState( Shell shell )
@@ -577,5 +616,129 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
             //}
         }
     };
+
+    private final class NextAction extends SelectionProviderAction implements IAction
+    {
+
+        private IStructuredSelection _selection;
+
+        public NextAction( ISelectionProvider provider )
+        {
+            super( provider, "Next" );
+
+            setImageDescriptor( ProjectUI.imageDescriptorFromPlugin( ProjectUI.PLUGIN_ID, "icons/e16/next.gif" )  );
+            setDisabledImageDescriptor( ProjectUI.imageDescriptorFromPlugin( ProjectUI.PLUGIN_ID, "icons/e16/next_dis.gif" ) );
+            setToolTipText( "Next" );
+            setEnabled( true );
+        }
+
+        public void selectionChanged( IStructuredSelection selection )
+        {
+            final Object element = selection.getFirstElement();
+
+            if( ( element instanceof File || element instanceof MPTree ) )
+            {
+                setEnabled( true );
+
+                _selection = selection;
+            }
+            else
+            {
+                setEnabled( false );
+
+                _selection = null;
+            }
+        }
+
+        @Override
+        public void run()
+        {
+            getCommonViewer().expandAll();
+
+            if( _selection != null )
+            {
+                final Object element = _selection.getFirstElement();
+
+                if( element instanceof File )
+                {
+
+                    final File file = (File) element;
+
+                    StructuredSelection structuredSelection =
+                        new StructuredSelection( _treeUtil.getNextResource( file ) );
+
+                    getCommonViewer().setSelection( structuredSelection, true );
+                }
+                else if( element instanceof MPTree )
+                {
+
+                    StructuredSelection structuredSelection = new StructuredSelection( _treeUtil.getFirsttResource() );
+
+                    getCommonViewer().setSelection( structuredSelection, true );
+                }
+            }
+            else
+            {
+                StructuredSelection structuredSelection = new StructuredSelection( _treeUtil.getFirsttResource() );
+
+                getCommonViewer().setSelection( structuredSelection, true );
+            }
+        }
+    }
+
+    private final class UpAction extends SelectionProviderAction implements IAction
+    {
+
+        private IStructuredSelection _selection;
+
+        protected UpAction( ISelectionProvider provider )
+        {
+            super( provider, "Up" );
+
+            setImageDescriptor( ProjectUI.imageDescriptorFromPlugin( ProjectUI.PLUGIN_ID, "icons/e16/up.gif" )  );
+            setDisabledImageDescriptor( ProjectUI.imageDescriptorFromPlugin( ProjectUI.PLUGIN_ID, "icons/e16/up_dis.gif" ) );
+            setToolTipText( "Up" );
+            setEnabled( false );
+        }
+
+        public void selectionChanged( IStructuredSelection selection )
+        {
+            final Object element = selection.getFirstElement();
+
+            if( element instanceof File )
+            {
+                setEnabled( true );
+
+                _selection = selection;
+            }
+            else
+            {
+                setEnabled( false );
+
+                _selection = null;
+            }
+        }
+
+        @Override
+        public void run()
+        {
+            if( _selection != null )
+            {
+                final Object element = _selection.getFirstElement();
+
+                if( element instanceof File )
+                {
+                    getCommonViewer().expandAll();
+
+                    final File file = (File) element;
+
+                    final StructuredSelection structuredSelection =
+                        new StructuredSelection( _treeUtil.getUpResource( file ) );
+
+                    getCommonViewer().setSelection( structuredSelection, true );
+                }
+            }
+        }
+    }
 
 }
