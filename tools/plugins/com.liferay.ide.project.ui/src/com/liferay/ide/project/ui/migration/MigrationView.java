@@ -15,6 +15,10 @@
 
 package com.liferay.ide.project.ui.migration;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.ui.ProjectUI;
+import com.liferay.ide.ui.util.UIUtil;
+
 import java.net.URL;
 import java.util.List;
 
@@ -28,16 +32,25 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IColorProvider;
+import org.eclipse.jface.viewers.IDecorationContext;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IFontProvider;
+import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -46,6 +59,8 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -58,6 +73,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
@@ -72,14 +88,11 @@ import org.eclipse.ui.navigator.INavigatorContentService;
 import org.eclipse.ui.navigator.NavigatorActionService;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.ui.util.UIUtil;
-
 /**
  * @author Gregory Amerson
  * @author Terry Jia
  * @author Lovett li
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class MigrationView extends CommonNavigator implements IDoubleClickListener
@@ -104,6 +117,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         TableViewerColumn col = createTableViewerColumn( titles[0], bounds[0], _problemsViewer );
         col.setLabelProvider( new ColumnLabelProvider()
         {
+            @Override
             public String getText( Object element )
             {
                 TaskProblem p = (TaskProblem) element;
@@ -115,6 +129,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         col = createTableViewerColumn( titles[1], bounds[1], _problemsViewer );
         col.setLabelProvider( new ColumnLabelProvider()
         {
+            @Override
             public String getText( Object element )
             {
                 TaskProblem p = (TaskProblem) element;
@@ -175,11 +190,69 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                 }
             }
 
+            @Override
             public String getText( Object element )
             {
                 return null;
             }
         });
+    }
+
+    private class LabelDecoratorProvider extends DecoratingStyledCellLabelProvider
+    {
+        public LabelDecoratorProvider(IStyledLabelProvider labelProvider,
+            ILabelDecorator decorator, IDecorationContext decorationContext)
+        {
+            super(labelProvider, decorator, decorationContext);
+        }
+
+        @Override
+        public void update(ViewerCell cell)
+        {
+            super.update(cell);
+
+            if (TableViewer.class.isInstance(getViewer()))
+            {
+                TableViewer tableViewer = ((TableViewer)getViewer());
+                Table table = tableViewer.getTable();
+
+                for (int i = 0, n = table.getColumnCount(); i < n; i++)
+                {
+                    if ( i == 0 )
+                    {
+                        table.getColumn(i).pack();
+                    }
+                }
+            }
+        }
+    }
+
+    private class MigratorDetailViewLabelProvider extends LabelProvider
+        implements IStyledLabelProvider, IColorProvider, IFontProvider
+    {
+        @Override
+        public Font getFont( Object element )
+        {
+            return null;
+        }
+
+        @Override
+        public Color getForeground( Object element )
+        {
+            return null;
+        }
+
+        @Override
+        public Color getBackground( Object element )
+        {
+            return null;
+        }
+
+        @Override
+        public StyledString getStyledText( Object element )
+        {
+            return new StyledString(getText(element));
+        }
     }
 
     @Override
@@ -196,6 +269,9 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         createColumns( _problemsViewer );
 
+        _problemsViewer.setLabelProvider(new LabelDecoratorProvider(new MigratorDetailViewLabelProvider(), PlatformUI.getWorkbench()
+            .getDecoratorManager().getLabelDecorator(), null));
+
         final Table table = _problemsViewer.getTable();
         table.setHeaderVisible( true );
 
@@ -208,6 +284,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         menuMgr.setRemoveAllWhenShown( true );
         menuMgr.addMenuListener( new IMenuListener()
         {
+            @Override
             public void menuAboutToShow( IMenuManager manager )
             {
                 MigrationView.this.fillContextMenu( manager, _problemsViewer );
@@ -242,14 +319,17 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
             _form.addHyperlinkListener( new IHyperlinkListener()
             {
+                @Override
                 public void linkExited( org.eclipse.ui.forms.events.HyperlinkEvent e )
                 {
                 }
 
+                @Override
                 public void linkEntered( org.eclipse.ui.forms.events.HyperlinkEvent e )
                 {
                 }
 
+                @Override
                 public void linkActivated( org.eclipse.ui.forms.events.HyperlinkEvent e )
                 {
                     if( e.data instanceof String )
@@ -282,6 +362,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         getCommonViewer().addSelectionChangedListener( new ISelectionChangedListener()
         {
+            @Override
             public void selectionChanged( SelectionChangedEvent event )
             {
                 List<TaskProblem> problems = MigrationUtil.getTaskProblemsFromTreeNode( event.getSelection() );
@@ -300,10 +381,12 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         _problemsViewer.addSelectionChangedListener( new ISelectionChangedListener()
         {
+            @Override
             public void selectionChanged( final SelectionChangedEvent event )
             {
                 UIUtil.async( new Runnable()
                 {
+                    @Override
                     public void run()
                     {
                         updateForm( event );
@@ -352,6 +435,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         shell.addDisposeListener( new DisposeListener()
         {
+            @Override
             public void widgetDisposed( DisposeEvent e )
             {
                 savePopupState( shell );
@@ -361,6 +445,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         shell.addListener( SWT.Traverse, new Listener()
         {
+            @Override
             public void handleEvent( Event event )
             {
                 switch( event.detail )
@@ -494,6 +579,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
     {
         return new SelectionAdapter()
         {
+            @Override
             public void widgetSelected( SelectionEvent e )
             {
                 _comparator.setColumn( index );
@@ -509,6 +595,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
     {
         Display.getDefault().asyncExec( new Runnable()
         {
+            @Override
             public void run()
             {
                 try
