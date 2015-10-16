@@ -36,7 +36,6 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -83,6 +82,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
     private TableViewer _problemsViewer;
     private MigratorComparator _comparator;
     private MigrationViewTreeUtil _treeUtil;
+
 
     private void createColumns( final TableViewer _problemsViewer )
     {
@@ -221,6 +221,8 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         _problemsViewer.getControl().setMenu( menu );
         getSite().registerContextMenu( menuMgr, _problemsViewer );
 
+        _treeUtil = new MigrationViewTreeUtil( getCommonViewer() );
+
         contributeToActionBars();
 
         _problemsViewer.addDoubleClickListener( this );
@@ -319,7 +321,6 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         getCommonViewer().addDoubleClickListener( this );
 
-        _treeUtil = new MigrationViewTreeUtil( getCommonViewer() );
     }
 
     /*private void displayPopupHtml( final String title, final String html )
@@ -405,8 +406,8 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         final IAction migrateAction = new RunMigrationToolAction( "Run Migration Tool" , getViewSite().getShell() );
         final IAction expandAllAction = new ExpandAllAction( "Expand All", this );
-        final IAction nextAction = new NextAction( getViewSite().getSelectionProvider() );
-        final IAction upAction = new UpAction( getViewSite().getSelectionProvider() );
+        final IAction nextAction = new NextProblemAction( getCommonViewer(), _treeUtil );
+        final IAction upAction = new PreviousProblemAction( getCommonViewer(), _treeUtil );
 
         manager.add( migrateAction );
         manager.add( expandAllAction );
