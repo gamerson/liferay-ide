@@ -72,7 +72,7 @@ import org.junit.Before;
 public class ProjectCoreBase extends ServerCoreBase
 {
 
-    private static final String bundleId = "com.liferay.ide.project.core.tests";
+    private static final String BUNDLE_ID = "com.liferay.ide.project.core.tests";
 
     public static void deleteAllWorkspaceProjects() throws Exception
     {
@@ -264,7 +264,7 @@ public class ProjectCoreBase extends ServerCoreBase
 
     protected String getBundleId()
     {
-        return bundleId;
+        return BUNDLE_ID;
     }
 
     @SuppressWarnings( "restriction" )
