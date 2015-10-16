@@ -50,4 +50,9 @@ public class SWTBotTestBase extends ProjectCoreBase
         {
         }
     }
+    
+    protected String getBundleId()
+    {
+        return BUNDLE_ID;
+    }
 }

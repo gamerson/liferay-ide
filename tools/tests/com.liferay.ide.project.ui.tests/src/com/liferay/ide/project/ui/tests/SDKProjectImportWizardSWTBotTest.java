@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.waits.ICondition;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,9 +44,18 @@ public class SDKProjectImportWizardSWTBotTest extends SWTBotTestBase
 
     private static IPath sdkLocation;
 
-    @AfterClass
-	public static void cleanUp()
-	{
+    @After
+    public void cleanUp()
+    {
+        try
+        {
+            bot.button( "Cancel" ).click();
+            bot.sleep( 1500 );
+        }
+        catch( Exception e )
+        {
+        }
+        
 		try
 		{
 			deleteAllWorkspaceProjects();
@@ -60,9 +68,7 @@ public class SDKProjectImportWizardSWTBotTest extends SWTBotTestBase
 
 	public static void openWizard()
     {
-        bot.menu( "File" ).setFocus();
-        bot.menu( "File" ).click();
-        bot.menu( "Import..." ).click();
+        bot.menu( "File" ).menu( "Import..." ).click();
 
         bot.tree().getTreeItem( "Liferay" ).select();
         bot.tree().getTreeItem( "Liferay" ).expand();
@@ -72,19 +78,6 @@ public class SDKProjectImportWizardSWTBotTest extends SWTBotTestBase
 
         ICondition condition = shellIsActive( "Import Project" );
         bot.waitUntil( condition, 5000 );
-    }
-
-    @After
-    public void after()
-    {
-        try
-        {
-            bot.button( "Cancel" ).click();
-            bot.sleep( 1500 );
-        }
-        catch( Exception e )
-        {
-        }
     }
 
     public void importSDKProject( String path, String projectName ) throws Exception
@@ -227,8 +220,7 @@ public class SDKProjectImportWizardSWTBotTest extends SWTBotTestBase
 
         openWizard();
 
-        String projectPath =
-            SDKUtil.getWorkspaceSDK().getLocation().append( "portlet/Import-223-portlet" ).toOSString();
+        String projectPath = SDKUtil.getWorkspaceSDK().getLocation().append( "portlet/Import-223-portlet" ).toOSString();
 
         bot.text( 0 ).setText( projectPath );
 
