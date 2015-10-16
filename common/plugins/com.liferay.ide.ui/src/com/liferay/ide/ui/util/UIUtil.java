@@ -352,8 +352,7 @@ public class UIUtil
     {
         try
         {
-            IViewPart view = PlatformUI.getWorkbench().getWorkbenchWindows()[0].getActivePage().showView( viewId );
-            return view;
+            return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView( viewId );
         }
         catch( PartInitException e )
         {
