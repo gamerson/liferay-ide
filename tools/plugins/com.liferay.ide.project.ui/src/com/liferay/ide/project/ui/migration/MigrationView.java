@@ -215,7 +215,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
             {
                 MigrationView.this.fillContextMenu( manager, _problemsViewer );
             }
-        } );
+        });
 
         Menu menu = menuMgr.createContextMenu( _problemsViewer.getControl() );
         _problemsViewer.getControl().setMenu( menu );
@@ -276,7 +276,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                         }
                     }
                 }
-            } );
+            });
         }
         else
         {*/
@@ -301,7 +301,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     _problemsViewer.setInput( null );
                 }
             }
-        } );
+        });
 
         _problemsViewer.addSelectionChangedListener( new ISelectionChangedListener()
         {
@@ -315,7 +315,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     }
                 }, 50 );
             }
-        } );
+        });
 
         getCommonViewer().addDoubleClickListener( this );
 
@@ -364,7 +364,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                 savePopupState( shell );
                 browser.dispose();
             }
-        } );
+        });
 
         shell.addListener( SWT.Traverse, new Listener()
         {
@@ -380,7 +380,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     break;
                 }
             }
-        } );
+        });
 
         shell.open();
     }*/

@@ -61,7 +61,7 @@ public class MPNode
                 {
                     return node1.incrementalPath.compareTo( node2.incrementalPath );
                 }
-            } );
+            });
 
             return;
         }
@@ -79,7 +79,7 @@ public class MPNode
                     {
                         return node1.incrementalPath.compareTo( node2.incrementalPath );
                     }
-                } );
+                });
 
                 currentChild.addElement( currentChild.incrementalPath, Arrays.copyOfRange( list, 1, list.length ) );
             }
