@@ -18,7 +18,7 @@ package com.liferay.ide.project.ui.migration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.internal.resources.File;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -26,7 +26,6 @@ import org.eclipse.ui.navigator.CommonViewer;
 /**
  * @author Terry Jia
  */
-@SuppressWarnings( "restriction" )
 public class MigrationViewTreeUtil
 {
 
@@ -42,7 +41,7 @@ public class MigrationViewTreeUtil
         this._commonViewer = commonViewer;
     }
 
-    public int getIndexFromSelection( File file )
+    public int getIndexFromSelection( IFile file )
     {
         List<MPNode> list = getTreeList();
 
@@ -103,7 +102,7 @@ public class MigrationViewTreeUtil
         }
     }
 
-    public IResource getNextResource( File file )
+    public IResource getNextResource( IFile file )
     {
         String path = "";
         int index = 0;
@@ -137,7 +136,7 @@ public class MigrationViewTreeUtil
         return null;
     }
 
-    public IResource getUpResource( File file )
+    public IResource getUpResource( IFile file )
     {
         String path = "";
         int index = 0;
