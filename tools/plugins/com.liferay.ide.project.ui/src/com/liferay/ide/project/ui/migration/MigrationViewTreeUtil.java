@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.navigator.CommonViewer;
 
@@ -34,46 +36,10 @@ public class MigrationViewTreeUtil
     private CommonViewer _commonViewer;
 
     private List<MPNode> _treeList;
-    private List<IResource> _treeResources;
 
     public MigrationViewTreeUtil( CommonViewer commonViewer )
     {
         this._commonViewer = commonViewer;
-    }
-
-    public int getIndexFromSelection( IFile file )
-    {
-        List<MPNode> list = getTreeList();
-
-        for( int i = 0; i < list.size(); i++ )
-        {
-            if( list.get( i ).equals( file ) )
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    public List<MPNode> getTreeList()
-    {
-        if( _treeList == null || _treeList.size() == 0 )
-        {
-            final ITreeContentProvider contentProvider =
-                _commonViewer.getNavigatorContentService().getContentExtensionById( CONTENT_PROVIDER_ID ).getContentProvider();
-
-            if( contentProvider != null && contentProvider instanceof MigrationContentProvider )
-            {
-                final MigrationContentProvider mcp = (MigrationContentProvider) contentProvider;
-
-                _treeList = new ArrayList<MPNode>();
-                fetchTreeList( mcp._root.root, _treeList );
-                _treeResources = mcp._resources;
-            }
-        }
-
-        return _treeList;
     }
 
     private void fetchTreeList( MPNode treeNode, List<MPNode> list )
@@ -92,14 +58,61 @@ public class MigrationViewTreeUtil
             {
                 MPNode node = treeNode.leafs.get( i );
 
-                if( node.incrementalPath.endsWith( "jsp" ) || node.incrementalPath.endsWith( "jspf" ) ||
-                    node.incrementalPath.endsWith( "xml" ) || node.incrementalPath.endsWith( "java" ) ||
-                    node.incrementalPath.endsWith( "properties" ) )
+                IPath path = new Path( node.incrementalPath );
+
+                if( path.getFileExtension() != null )
                 {
                     list.add( node );
                 }
             }
         }
+    }
+
+    private MigrationContentProvider getContentProvide()
+    {
+        final ITreeContentProvider contentProvider =
+            _commonViewer.getNavigatorContentService().getContentExtensionById( CONTENT_PROVIDER_ID ).getContentProvider();
+
+        if( contentProvider != null && contentProvider instanceof MigrationContentProvider )
+        {
+            return (MigrationContentProvider) contentProvider;
+        }
+
+        return null;
+    }
+
+    public IResource getFirsttResource()
+    {
+        if( getTreeList().size() > 0 )
+        {
+            String path = getTreeList().get( 0 ).incrementalPath;
+
+            for( IResource r : getTreeResources() )
+            {
+                if( r.getFullPath().toString().endsWith( path ) )
+                {
+                    return r;
+                }
+            }
+
+        }
+
+        return null;
+    }
+
+    public int getIndexFromSelection( IFile file )
+    {
+        List<MPNode> list = getTreeList();
+
+        for( int i = 0; i < list.size(); i++ )
+        {
+            if( list.get( i ).equals( file ) )
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     public IResource getNextResource( IFile file )
@@ -123,10 +136,10 @@ public class MigrationViewTreeUtil
         }
         else if( index == getTreeList().size() - 1 )
         {
-            path = getTreeList().get( index ).incrementalPath;
+            path = getTreeList().get( 0 ).incrementalPath;
         }
 
-        for( IResource r : _treeResources )
+        for( IResource r : getTreeResources() )
         {
             if( r.getFullPath().toString().endsWith( path ) )
             {
@@ -136,7 +149,7 @@ public class MigrationViewTreeUtil
         return null;
     }
 
-    public IResource getUpResource( IFile file )
+    public IResource getPreResource( IFile file )
     {
         String path = "";
         int index = 0;
@@ -158,10 +171,10 @@ public class MigrationViewTreeUtil
         }
         else if( index == 0 )
         {
-            path = getTreeList().get( index ).incrementalPath;
+            path = getTreeList().get( getTreeList().size() - 1 ).incrementalPath;
         }
 
-        for( IResource r : _treeResources )
+        for( IResource r : getTreeResources() )
         {
             if( r.getFullPath().toString().endsWith( path ) )
             {
@@ -172,22 +185,21 @@ public class MigrationViewTreeUtil
         return null;
     }
 
-    public IResource getFirsttResource()
+    public List<MPNode> getTreeList()
     {
-        if( getTreeList().size() > 0 )
+        if( _treeList == null || _treeList.size() == 0 )
         {
-            String path = getTreeList().get( 0 ).incrementalPath;
+            _treeList = new ArrayList<MPNode>();
 
-            for( IResource r : _treeResources )
-            {
-                if( r.getFullPath().toString().endsWith( path ) )
-                {
-                    return r;
-                }
-            }
-
+            fetchTreeList( getContentProvide()._root.root, _treeList );
         }
 
-        return null;
+        return _treeList;
     }
+
+    private List<IResource> getTreeResources()
+    {
+        return getContentProvide()._resources;
+    }
+
 }
