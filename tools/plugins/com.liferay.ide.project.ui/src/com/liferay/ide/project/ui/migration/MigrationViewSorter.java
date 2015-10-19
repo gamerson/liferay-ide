@@ -15,7 +15,6 @@
 
 package com.liferay.ide.project.ui.migration;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.jface.viewers.ViewerSorter;
 
 /**

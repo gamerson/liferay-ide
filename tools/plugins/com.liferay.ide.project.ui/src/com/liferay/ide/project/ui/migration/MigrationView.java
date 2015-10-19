@@ -81,6 +81,8 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 //    private FormText _form;
     private TableViewer _problemsViewer;
     private MigratorComparator _comparator;
+    private MigrationViewTreeUtil _treeUtil;
+
 
     private void createColumns( final TableViewer _problemsViewer )
     {
@@ -201,9 +203,9 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         table.setHeaderVisible( true );
 
         _problemsViewer.setContentProvider( ArrayContentProvider.getInstance() );
-        _problemsViewer.setComparer(null);
+        _problemsViewer.setComparer( null );
         _comparator = new MigratorComparator();
-        _problemsViewer.setComparator(_comparator);
+        _problemsViewer.setComparator( _comparator );
 
         MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown( true );
@@ -218,6 +220,8 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         Menu menu = menuMgr.createContextMenu( _problemsViewer.getControl() );
         _problemsViewer.getControl().setMenu( menu );
         getSite().registerContextMenu( menuMgr, _problemsViewer );
+
+        _treeUtil = new MigrationViewTreeUtil( getCommonViewer() );
 
         contributeToActionBars();
 
@@ -316,6 +320,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         });
 
         getCommonViewer().addDoubleClickListener( this );
+
     }
 
     /*private void displayPopupHtml( final String title, final String html )
@@ -381,8 +386,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         shell.open();
     }*/
 
-    private TableViewerColumn createTableViewerColumn(
-        String title, int bound, TableViewer viewer )
+    private TableViewerColumn createTableViewerColumn( String title, int bound, TableViewer viewer )
     {
         final TableViewerColumn viewerColumn = new TableViewerColumn( viewer, SWT.NONE );
         final TableColumn column = viewerColumn.getColumn();
@@ -402,8 +406,13 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
 
         final IAction migrateAction = new RunMigrationToolAction( "Run Migration Tool" , getViewSite().getShell() );
         final IAction expandAllAction = new ExpandAllAction( "Expand All", this );
+        final IAction nextAction = new NextProblemAction( getCommonViewer(), _treeUtil );
+        final IAction upAction = new PreviousProblemAction( getCommonViewer(), _treeUtil );
+
         manager.add( migrateAction );
         manager.add( expandAllAction );
+        manager.add( nextAction );
+        manager.add( upAction );
     }
 
     @Override
@@ -530,7 +539,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     ProjectUI.logError( "error opening browser", e );
                 }
             }
-        });
+        } );
     }
 
     private void savePopupState( Shell shell )

@@ -17,10 +17,13 @@ package com.liferay.ide.project.ui.migration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 public class MPNode
 {
@@ -52,6 +55,14 @@ public class MPNode
         {
             leafs.add( currentChild );
 
+            Collections.sort( leafs, new Comparator<MPNode>()
+            {
+                public int compare( MPNode node1, MPNode node2 )
+                {
+                    return node1.incrementalPath.compareTo( node2.incrementalPath );
+                }
+            });
+
             return;
         }
         else
@@ -61,6 +72,15 @@ public class MPNode
             if( index == -1 )
             {
                 childs.add( currentChild );
+
+                Collections.sort( childs, new Comparator<MPNode>()
+                {
+                    public int compare( MPNode node1, MPNode node2 )
+                    {
+                        return node1.incrementalPath.compareTo( node2.incrementalPath );
+                    }
+                });
+
                 currentChild.addElement( currentChild.incrementalPath, Arrays.copyOfRange( list, 1, list.length ) );
             }
             else
