@@ -123,7 +123,7 @@ public class MigrationViewTreeUtil
         }
         else if( index == getTreeList().size() - 1 )
         {
-            path = getTreeList().get( index ).incrementalPath;
+            path = getTreeList().get( 0 ).incrementalPath;
         }
 
         for( IResource r : _treeResources )
@@ -158,7 +158,7 @@ public class MigrationViewTreeUtil
         }
         else if( index == 0 )
         {
-            path = getTreeList().get( index ).incrementalPath;
+            path = getTreeList().get( getTreeList().size() - 1 ).incrementalPath;
         }
 
         for( IResource r : _treeResources )
