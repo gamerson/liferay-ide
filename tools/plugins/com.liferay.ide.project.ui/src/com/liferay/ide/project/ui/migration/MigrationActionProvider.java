@@ -17,6 +17,8 @@ package com.liferay.ide.project.ui.migration;
 
 import com.liferay.ide.core.util.CoreUtil;
 
+import java.util.Iterator;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -77,7 +79,7 @@ public class MigrationActionProvider extends CommonActionProvider
     @Override
     public void fillContextMenu( IMenuManager menu )
     {
-        final Object selection = getFirstSelectedElement();
+        final Object selection = getSelectedElements();
 
         if( selection instanceof TaskProblem )
         {
@@ -88,6 +90,17 @@ public class MigrationActionProvider extends CommonActionProvider
 
             final TaskProblem problem = (TaskProblem) selection;
 
+            if( problem.isResolved() )
+            {
+                _markDoneAction.setEnabled( false );
+                _markUndoneAction.setEnabled( true );
+            }
+            else
+            {
+                _markDoneAction.setEnabled( true );
+                _markUndoneAction.setEnabled( false );
+            }
+
             if( !CoreUtil.isNullOrEmpty( problem.autoCorrectContext ) )
             {
                 menu.add( _autoCorrectAction );
@@ -95,9 +108,28 @@ public class MigrationActionProvider extends CommonActionProvider
 
             menu.add( new Separator() );
         }
+        else if( selection instanceof IStructuredSelection )
+        {
+            final Iterator iterator = ( (IStructuredSelection) selection ).iterator();
+
+            while( iterator.hasNext() )
+            {
+                Object o = iterator.next();
+
+                if( !( o instanceof TaskProblem ) )
+                {
+                    return;
+                }
+            }
+
+            menu.add( new Separator() );
+            menu.add( _markDoneAction );
+            menu.add( _markUndoneAction );
+            menu.add( _ignoreAction );
+        }
     }
 
-    private Object getFirstSelectedElement()
+    private Object getSelectedElements()
     {
         final Object selection = getContext().getSelection();
 
@@ -105,7 +137,14 @@ public class MigrationActionProvider extends CommonActionProvider
         {
             final IStructuredSelection sSelection = (IStructuredSelection) selection;
 
-            return sSelection.getFirstElement();
+            if( sSelection.size() == 1 )
+            {
+                return sSelection.getFirstElement();
+            }
+            else
+            {
+                return sSelection;
+            }
         }
 
         return null;
