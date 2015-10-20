@@ -171,6 +171,34 @@ public class MigrationUtil
         return problems;
     }
 
+    public static List<TaskProblem> getResolvedTaskProblemsFromResource( IResource resource )
+    {
+        final List<TaskProblem> problems = new ArrayList<>();
+
+        try
+        {
+            final IMarker[] markers =
+                resource.findMarkers( MigrationConstants.MARKER_TYPE, true, IResource.DEPTH_ZERO );
+
+            for( IMarker marker : markers )
+            {
+                TaskProblem taskProblem = markerToTaskProblem( marker );
+
+                boolean resolved = marker.getAttribute( "migrationProblem.resolved", false );
+
+                if( taskProblem != null && resolved)
+                {
+                    problems.add( taskProblem );
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+        }
+
+        return problems;
+    }
+
     public static List<TaskProblem> getTaskProblemsFromTreeNode( ISelection selection, CommonViewer commonViewer )
     {
         if( selection instanceof IStructuredSelection )
