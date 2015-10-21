@@ -1232,19 +1232,11 @@
                class="com.liferay.ide.project.ui.migration.MigrationViewSorter"
                id="com.liferay.ide.project.ui.migration.MigrationViewSorter">
          </commonSorter>
+         <actionProvider
+               class="com.liferay.ide.project.ui.migration.MigrationTreeActionProvider"
+               id="com.liferay.ide.project.ui.migration.MigrationTreeActionProvider">
+         </actionProvider>
       </navigatorContent>
-   </extension>
-   <extension
-         point="org.eclipse.ui.navigator.viewer">
-      <viewerContentBinding
-            viewerId="com.liferay.ide.project.ui.migrationView">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="com.liferay.ide.project.ui.migration.content">
-            </contentExtension>
-         </includes>
-      </viewerContentBinding>
    </extension>
    <extension
          point="org.eclipse.ui.decorators">
@@ -1268,6 +1260,26 @@
            </or>
         </enablement>
       </decorator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="com.liferay.ide.project.ui.migrationView">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="com.liferay.ide.project.ui.migration.content">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+      <viewerActionBinding
+            viewerId="com.liferay.ide.project.ui.migrationView">
+         <includes>
+            <actionExtension
+                  pattern="com.liferay.ide.project.ui.migration.MigrationTreeActionProvider">
+            </actionExtension>
+         </includes>
+      </viewerActionBinding>
    </extension>
    <extension
          point="org.eclipse.core.runtime.adapters">
