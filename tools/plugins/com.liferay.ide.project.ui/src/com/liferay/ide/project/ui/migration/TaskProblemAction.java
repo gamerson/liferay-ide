@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -15,9 +15,6 @@
 
 package com.liferay.ide.project.ui.migration;
 
-import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.ui.util.UIUtil;
-
 import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
@@ -25,16 +22,20 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.actions.SelectionProviderAction;
+import org.eclipse.ui.progress.UIJob;
+
+import com.liferay.ide.project.ui.ProjectUI;
+import com.liferay.ide.ui.util.UIUtil;
 
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public abstract class TaskProblemAction extends SelectionProviderAction implements IAction
 {
@@ -59,9 +60,9 @@ public abstract class TaskProblemAction extends SelectionProviderAction implemen
     {
         final IResource resource = MigrationUtil.getIResourceFromTaskProblem( taskProblem );
 
-        new Job( "Marking migration problem as done" )
+        new UIJob( "Marking migration problem as done" )
         {
-            protected IStatus run( IProgressMonitor monitor )
+            public IStatus runInUIThread( IProgressMonitor monitor )
             {
                 IStatus retval = Status.OK_STATUS;
 
@@ -100,7 +101,6 @@ public abstract class TaskProblemAction extends SelectionProviderAction implemen
             }
 
         }.schedule();
-
     }
 
     protected abstract IStatus runWithMarker( TaskProblem taskProblem, IMarker marker );
