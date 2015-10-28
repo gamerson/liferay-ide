@@ -19,8 +19,13 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.ui.util.UIUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -36,6 +41,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -71,6 +77,7 @@ import org.eclipse.ui.navigator.NavigatorActionService;
 public class MigrationView extends CommonNavigator implements IDoubleClickListener
 {
 
+    private static final String CONTENT_PROVIDER_ID = "com.liferay.ide.project.ui.migration.content";
     public static final String ID = "com.liferay.ide.project.ui.migrationView";
     private static final Image IMAGE_CHECKED =
         ProjectUI.getDefault().getImageRegistry().get( ProjectUI.CHECKED_IMAGE_ID );
@@ -78,107 +85,9 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         ProjectUI.getDefault().getImageRegistry().get( ProjectUI.UNCHECKED_IMAGE_ID );
 
     private Browser _browser;
-//    private FormText _form;
-    private TableViewer _problemsViewer;
     private MigratorComparator _comparator;
-
-    private void createColumns( final TableViewer _problemsViewer )
-    {
-        final String[] titles = { "Resolved", "Line", "Problem" };
-        final int[] bounds = { 65, 55, 200 };
-
-        TableViewerColumn col = createTableViewerColumn( titles[0], bounds[0], _problemsViewer );
-        col.setEditingSupport( new EditingSupport( _problemsViewer )
-        {
-            @Override
-            protected void setValue( Object element, Object value )
-            {
-                if( value == Boolean.TRUE )
-                {
-                    new MarkDoneAction().run( (TaskProblem) element, _problemsViewer );
-                }
-                else
-                {
-                    new MarkUndoneAction().run( (TaskProblem) element, _problemsViewer );
-                }
-            }
-
-            @Override
-            protected Object getValue( Object element )
-            {
-                return ( (TaskProblem) element ).isResolved();
-            }
-
-            @Override
-            protected CellEditor getCellEditor( Object element )
-            {
-                return new CheckboxCellEditor( _problemsViewer.getTable() );
-            }
-
-            @Override
-            protected boolean canEdit( Object element )
-            {
-                return true;
-            }
-        });
-
-        col.setLabelProvider( new ColumnLabelProvider()
-        {
-            @Override
-            public Image getImage( Object element )
-            {
-                TaskProblem p = (TaskProblem) element;
-
-                if( p.isResolved() )
-                {
-                    return IMAGE_CHECKED;
-                }
-                else
-                {
-                    return IMAGE_UNCHECKED;
-                }
-            }
-
-            public String getText( Object element )
-            {
-                return null;
-            }
-        });
-
-        col = createTableViewerColumn( titles[1], bounds[1], _problemsViewer );
-        col.setLabelProvider( new ColumnLabelProvider()
-        {
-            @Override
-            public String getText( Object element )
-            {
-                TaskProblem p = (TaskProblem) element;
-
-                return p.lineNumber > -1 ? ( p.lineNumber + "" ) : "";
-            }
-        });
-
-        col = createTableViewerColumn( titles[2], bounds[2], _problemsViewer );
-        col.setLabelProvider( new ColumnLabelProvider()
-        {
-            @Override
-            public String getText( Object element )
-            {
-                TaskProblem p = (TaskProblem) element;
-
-                return p.title;
-            }
-
-            @Override
-            public void update(ViewerCell cell)
-            {
-                super.update(cell);
-
-                Table table = _problemsViewer.getTable();
-
-                table.getColumn(2).pack();
-            }
-        });
-    }
+    //    private FormText _form;
+    private TableViewer _problemsViewer;
 
     @Override
     public void createPartControl( Composite parent )
@@ -201,9 +110,9 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         table.setHeaderVisible( true );
 
         _problemsViewer.setContentProvider( ArrayContentProvider.getInstance() );
-        _problemsViewer.setComparer(null);
+        _problemsViewer.setComparer( null );
         _comparator = new MigratorComparator();
-        _problemsViewer.setComparator(_comparator);
+        _problemsViewer.setComparator( _comparator );
 
         MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown( true );
@@ -318,71 +227,121 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         getCommonViewer().addDoubleClickListener( this );
     }
 
-    /*private void displayPopupHtml( final String title, final String html )
+    private void contributeToActionBars()
     {
-        final Shell shell = new Shell( this.getViewSite().getShell(), SWT.DIALOG_TRIM | SWT.ON_TOP | SWT.RESIZE );
-        shell.setText( title );
-        shell.setLayout( new FillLayout() );
+        final IActionBars bars = getViewSite().getActionBars();
+        final IToolBarManager manager = bars.getToolBarManager();
 
-        final Browser browser;
+        final IAction migrateAction = new RunMigrationToolAction( "Run Migration Tool" , getViewSite().getShell() );
+        final IAction expandAllAction = new ExpandAllAction( "Expand All", this );
+        final IAction nextAction = new NextProblemAction( this );
+        final IAction upAction = new PreviousProblemAction( this );
 
-        try
+        manager.add( migrateAction );
+        manager.add( expandAllAction );
+        manager.add( nextAction );
+        manager.add( upAction );
+    }
+
+    private void createColumns( final TableViewer _problemsViewer )
+    {
+        final String[] titles = { "Resolved", "Line", "Problem" };
+        final int[] bounds = { 65, 55, 200 };
+
+        TableViewerColumn col = createTableViewerColumn( titles[0], bounds[0], _problemsViewer );
+        col.setEditingSupport( new EditingSupport( _problemsViewer )
         {
-            browser = new Browser( shell, SWT.NONE );
-            browser.setText( html );
-        }
-        catch( SWTError e )
-        {
-            return;
-        }
-
-        shell.setSize( 900, 900 );
-
-        Integer popupLastX = getMemento().getInteger( "popupLastX" );
-        Integer popupLastY = getMemento().getInteger( "popupLastY" );
-        Integer popupSizeX = getMemento().getInteger( "popupSizeX" );
-        Integer popupSizeY = getMemento().getInteger( "popupSizeY" );
-
-        if( popupLastX != null && popupLastY != null )
-        {
-            shell.setLocation( popupLastX, popupLastY );
-        }
-
-        if( popupSizeX != null && popupSizeY != null )
-        {
-            shell.setSize( popupSizeX, popupSizeY );
-        }
-
-        shell.addDisposeListener( new DisposeListener()
-        {
-            public void widgetDisposed( DisposeEvent e )
+            @Override
+            protected boolean canEdit( Object element )
             {
-                savePopupState( shell );
-                browser.dispose();
+                return true;
             }
-        });
 
-        shell.addListener( SWT.Traverse, new Listener()
-        {
-            public void handleEvent( Event event )
+            @Override
+            protected CellEditor getCellEditor( Object element )
             {
-                switch( event.detail )
+                return new CheckboxCellEditor( _problemsViewer.getTable() );
+            }
+
+            @Override
+            protected Object getValue( Object element )
+            {
+                return ( (TaskProblem) element ).isResolved();
+            }
+
+            @Override
+            protected void setValue( Object element, Object value )
+            {
+                if( value == Boolean.TRUE )
                 {
-                case SWT.TRAVERSE_ESCAPE:
-                    savePopupState( shell );
-                    shell.close();
-                    event.detail = SWT.TRAVERSE_NONE;
-                    event.doit = false;
-                    break;
+                    new MarkDoneAction().run( (TaskProblem) element, _problemsViewer );
+                }
+                else
+                {
+                    new MarkUndoneAction().run( (TaskProblem) element, _problemsViewer );
                 }
             }
         });
 
-        shell.open();
-    }*/
+        col.setLabelProvider( new ColumnLabelProvider()
+        {
+            @Override
+            public Image getImage( Object element )
+            {
+                TaskProblem p = (TaskProblem) element;
 
-    private TableViewerColumn createTableViewerColumn(
-        String title, int bound, TableViewer viewer )
+                if( p.isResolved() )
+                {
+                    return IMAGE_CHECKED;
+                }
+                else
+                {
+                    return IMAGE_UNCHECKED;
+                }
+            }
+
+            public String getText( Object element )
+            {
+                return null;
+            }
+        });
+
+        col = createTableViewerColumn( titles[1], bounds[1], _problemsViewer );
+        col.setLabelProvider( new ColumnLabelProvider()
+        {
+            @Override
+            public String getText( Object element )
+            {
+                TaskProblem p = (TaskProblem) element;
+
+                return p.lineNumber > -1 ? ( p.lineNumber + "" ) : "";
+            }
+        });
+
+        col = createTableViewerColumn( titles[2], bounds[2], _problemsViewer );
+        col.setLabelProvider( new ColumnLabelProvider()
+        {
+            @Override
+            public String getText( Object element )
+            {
+                TaskProblem p = (TaskProblem) element;
+
+                return p.title;
+            }
+
+            @Override
+            public void update(ViewerCell cell)
+            {
+                super.update(cell);
+
+                Table table = _problemsViewer.getTable();
+
+                table.getColumn(2).pack();
+            }
+        });
+    }
+
+    private TableViewerColumn createTableViewerColumn( String title, int bound, TableViewer viewer )
     {
         final TableViewerColumn viewerColumn = new TableViewerColumn( viewer, SWT.NONE );
         final TableColumn column = viewerColumn.getColumn();
@@ -393,17 +352,6 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         column.addSelectionListener( getSelectionAdapter( column, viewer.getTable().indexOf( column ) ) );
 
         return viewerColumn;
-    }
-
-    private void contributeToActionBars()
-    {
-        final IActionBars bars = getViewSite().getActionBars();
-        final IToolBarManager manager = bars.getToolBarManager();
-
-        final IAction migrateAction = new RunMigrationToolAction( "Run Migration Tool" , getViewSite().getShell() );
-        final IAction expandAllAction = new ExpandAllAction( "Expand All", this );
-        manager.add( migrateAction );
-        manager.add( expandAllAction );
     }
 
     @Override
@@ -469,6 +417,116 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         return navigatorActionService.getActionProviderInstance( providerDescriptors[0] );
     }
 
+    private MigrationContentProvider getContentProvider()
+    {
+        final ITreeContentProvider contentProvider =
+            getCommonViewer().getNavigatorContentService().getContentExtensionById( CONTENT_PROVIDER_ID ).getContentProvider();
+
+        if( contentProvider != null && contentProvider instanceof MigrationContentProvider )
+        {
+            return (MigrationContentProvider) contentProvider;
+        }
+
+        return null;
+    }
+
+    public IResource getFirstTreeResource()
+    {
+        if( getTreeList().size() > 0 )
+        {
+            String path = getTreeList().get( 0 ).incrementalPath;
+
+            for( IResource r : getTreeResources() )
+            {
+                if( r.getFullPath().toString().endsWith( path ) )
+                {
+                    return r;
+                }
+            }
+
+        }
+
+        return null;
+    }
+
+    /*private void displayPopupHtml( final String title, final String html )
+    {
+        final Shell shell = new Shell( this.getViewSite().getShell(), SWT.DIALOG_TRIM | SWT.ON_TOP | SWT.RESIZE );
+        shell.setText( title );
+        shell.setLayout( new FillLayout() );
+
+        final Browser browser;
+
+        try
+        {
+            browser = new Browser( shell, SWT.NONE );
+            browser.setText( html );
+        }
+        catch( SWTError e )
+        {
+            return;
+        }
+
+        shell.setSize( 900, 900 );
+
+        Integer popupLastX = getMemento().getInteger( "popupLastX" );
+        Integer popupLastY = getMemento().getInteger( "popupLastY" );
+        Integer popupSizeX = getMemento().getInteger( "popupSizeX" );
+        Integer popupSizeY = getMemento().getInteger( "popupSizeY" );
+
+        if( popupLastX != null && popupLastY != null )
+        {
+            shell.setLocation( popupLastX, popupLastY );
+        }
+
+        if( popupSizeX != null && popupSizeY != null )
+        {
+            shell.setSize( popupSizeX, popupSizeY );
+        }
+
+        shell.addDisposeListener( new DisposeListener()
+        {
+            public void widgetDisposed( DisposeEvent e )
+            {
+                savePopupState( shell );
+                browser.dispose();
+            }
+        });
+
+        shell.addListener( SWT.Traverse, new Listener()
+        {
+            public void handleEvent( Event event )
+            {
+                switch( event.detail )
+                {
+                case SWT.TRAVERSE_ESCAPE:
+                    savePopupState( shell );
+                    shell.close();
+                    event.detail = SWT.TRAVERSE_NONE;
+                    event.doit = false;
+                    break;
+                }
+            }
+        });
+
+        shell.open();
+    }*/
+
+    public int getTreeIndexFromSelection( IFile file )
+    {
+        List<MPNode> list = getTreeList();
+
+        for( int i = 0; i < list.size(); i++ )
+        {
+            if( list.get( i ).equals( file ) )
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     private String getLinkTags( String ticketNumbers )
     {
         String[] ticketNumberArray = ticketNumbers.split( "," );
@@ -493,6 +551,76 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         return sb.toString();
     }
 
+    public IResource getNextTreeResource( IFile file )
+    {
+        String path = "";
+        int index = 0;
+
+        for( int i = 0; i < getTreeList().size(); i++ )
+        {
+            MPNode node = getTreeList().get( i );
+            if( file.getFullPath().toString().endsWith( node.incrementalPath ) )
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if( index < getTreeList().size() - 1 )
+        {
+            path = getTreeList().get( index + 1 ).incrementalPath;
+        }
+        else if( index == getTreeList().size() - 1 )
+        {
+            path = getTreeList().get( 0 ).incrementalPath;
+        }
+
+        for( IResource r : getTreeResources() )
+        {
+            if( r.getFullPath().toString().endsWith( path ) )
+            {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    public IResource getPreviousTreeResource( IFile file )
+    {
+        String path = "";
+        int index = 0;
+
+        for( int i = 0; i < getTreeList().size(); i++ )
+        {
+            MPNode node = getTreeList().get( i );
+
+            if( file.getFullPath().toString().endsWith( node.incrementalPath ) )
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if( index > 0 )
+        {
+            path = getTreeList().get( index - 1 ).incrementalPath;
+        }
+        else if( index == 0 )
+        {
+            path = getTreeList().get( getTreeList().size() - 1 ).incrementalPath;
+        }
+
+        for( IResource r : getTreeResources() )
+        {
+            if( r.getFullPath().toString().endsWith( path ) )
+            {
+                return r;
+            }
+        }
+
+        return null;
+    }
+
     private SelectionAdapter getSelectionAdapter( final TableColumn column, final int index )
     {
         return new SelectionAdapter()
@@ -506,6 +634,48 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                 _problemsViewer.refresh();
             }
         };
+    }
+
+    public List<MPNode> getTreeList()
+    {
+        return getTreeList( getContentProvider()._root.root );
+    }
+
+    public List<MPNode> getTreeList( MPNode treeNode )
+    {
+        final List<MPNode> retval = new ArrayList<>();
+
+        if( treeNode.childs.size() > 0 )
+        {
+            for( int i = 0; i < treeNode.childs.size(); i++ )
+            {
+                final List<MPNode> nodes = getTreeList( treeNode.childs.get( i ) );
+
+                retval.addAll( nodes );
+            }
+        }
+
+        if( treeNode.leafs.size() > 0 )
+        {
+            for( int i = 0; i < treeNode.leafs.size(); i++ )
+            {
+                MPNode node = treeNode.leafs.get( i );
+
+                IPath path = new Path( node.incrementalPath );
+
+                if( path.getFileExtension() != null )
+                {
+                    retval.add( node );
+                }
+            }
+        }
+
+        return retval;
+    }
+
+    private List<IResource> getTreeResources()
+    {
+        return getContentProvider()._resources;
     }
 
     /*private void openBrowser( final String url )
@@ -530,7 +700,7 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
                     ProjectUI.logError( "error opening browser", e );
                 }
             }
-        });
+        } );
     }
 
     private void savePopupState( Shell shell )

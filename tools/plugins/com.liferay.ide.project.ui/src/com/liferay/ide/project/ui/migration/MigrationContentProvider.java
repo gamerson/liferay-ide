@@ -129,7 +129,7 @@ public class MigrationContentProvider implements ITreeContentProvider
     @Override
     public Object[] getElements( Object inputElement )
     {
-        return new Object[] { _root };
+        return getChildren( _root );
     }
 
     private MPTree getFileTree( IMarker[] markers )

@@ -85,7 +85,7 @@ public class MigrationAdapterFactory implements IAdapterFactory, IWorkbenchAdapt
     {
         if( element instanceof MPTree )
         {
-            return "Migration Problems";
+            return "Migration problems found";
         }
         else if( element instanceof MPNode )
         {

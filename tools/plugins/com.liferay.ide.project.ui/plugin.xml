@@ -1126,7 +1126,7 @@
             class="com.liferay.ide.project.ui.migration.MigrationView"
             icon="icons/e16/migration-tasks.png"
             id="com.liferay.ide.project.ui.migrationView"
-            name="Liferay Plugin Migration"
+            name="Liferay Migration Problems"
             restorable="true">
       </view>
    </extension>
