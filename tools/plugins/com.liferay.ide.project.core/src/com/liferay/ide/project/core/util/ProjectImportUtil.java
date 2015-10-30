@@ -419,6 +419,28 @@ public class ProjectImportUtil
         return project;
     }
 
+
+    private static boolean isProjectInWorkspace( String projectName )
+    {
+        if( projectName == null )
+        {
+            return false;
+        }
+
+        IProject[] workspaceProjects = getProjectsInWorkspace();
+
+        for( int i = 0; i < workspaceProjects.length; i++ )
+        {
+            if( projectName.equals( workspaceProjects[i].getName() ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     /**
      * This method is used to validate whether the given plugin binary is a valid Liferay Plugin Archieve
      *
@@ -503,63 +525,156 @@ public class ProjectImportUtil
         return isValid;
     }
 
-    public static IStatus validateSDKPath(final String currentPath)
+    private static IProject[] getProjectsInWorkspace()
     {
-        IStatus retVal = Status.OK_STATUS;
+        return ProjectUtil.getAllPluginsSDKProjects();
+    }
 
-        if( !org.eclipse.core.runtime.Path.EMPTY.isValidPath( currentPath ) )
+    public static BinaryProjectRecord[] updateBinaryProjectsList( String path )
+    {
+        Object[] selectedProjects = new BinaryProjectRecord[0];
+
+        if( path == null || path.length() == 0 )
         {
-            retVal = ProjectCore.createErrorStatus( "\"" + currentPath + "\" is not a valid path." );
+
+            selectedProjects = new ProjectRecord[0];
+
+            return null;
         }
-        else
+
+        final File directory = new File( path );
+
+        try
         {
-            IPath osPath = org.eclipse.core.runtime.Path.fromOSString( currentPath );
+            selectedProjects = new BinaryProjectRecord[0];
 
-            if( !osPath.toFile().isAbsolute() )
+            Collection<File> projectBinaries = new ArrayList<File>();
+
+            if( directory.isDirectory() )
             {
-                retVal = ProjectCore.createErrorStatus( "\"" + currentPath + "\" is not an absolute path." );
-            }
-            else
-            {
-                if( !osPath.toFile().exists() )
+                if( !ProjectImportUtil.collectBinariesFromDirectory( projectBinaries, directory, true, new NullProgressMonitor() ) )
                 {
-                    retVal = ProjectCore.createErrorStatus( "Directory doesn't exist." );
+                    return null;
                 }
-                else
+
+                selectedProjects = new BinaryProjectRecord[projectBinaries.size()];
+
+                int index = 0;
+
+
+                for( File binaryFile : projectBinaries )
                 {
-                    SDK sdk = SDKUtil.createSDKFromLocation( osPath );
-
-                    if( sdk != null )
-                    {
-                        try
-                        {
-                            IProject workspaceSdkProject = SDKUtil.getWorkspaceSDKProject();
-
-                            if( workspaceSdkProject != null )
-                            {
-                                if( !workspaceSdkProject.getLocation().equals( sdk.getLocation() ) )
-                                {
-                                    return ProjectCore.createErrorStatus(
-                                        "This project has different sdk than current workspace sdk" );
-                                }
-                            }
-                        }
-                        catch( CoreException e )
-                        {
-                            return ProjectCore.createErrorStatus("Can't find sdk in workspace");
-                        }
-
-                        retVal = sdk.validate();
-                    }
-                    else
-                    {
-                        retVal = ProjectCore.createErrorStatus( "SDK does not exist." );
-                    }
+                    selectedProjects[index++] = new BinaryProjectRecord( binaryFile );
                 }
             }
         }
+        catch( Exception e )
+        {
+            ProjectCore.logError( e );
+        }
 
-        return retVal;
+        Object[] projects = getBinaryProjectRecords( selectedProjects );
+
+        return (BinaryProjectRecord[])projects;
+    }
+
+
+    public static ProjectRecord[] updateProjectsList( final String path )
+    {
+        Object[] selectedProjects = new ProjectRecord[0];
+
+        // on an empty path empty selectedProjects
+        if( path == null || path.length() == 0 )
+        {
+
+            selectedProjects = new ProjectRecord[0];
+
+            return null;
+        }
+
+        final File directory = new File( path );
+
+        try
+        {
+            selectedProjects = new ProjectRecord[0];
+
+            Collection<File> eclipseProjectFiles = new ArrayList<File>();
+
+            Collection<File> liferayProjectDirs = new ArrayList<File>();
+
+
+            if( directory.isDirectory() )
+            {
+                if( !ProjectUtil.collectProjectsFromDirectory(
+                    eclipseProjectFiles, liferayProjectDirs, directory, null, true, new NullProgressMonitor() ) )
+                {
+                    return null;
+                }
+
+                selectedProjects = new ProjectRecord[eclipseProjectFiles.size() + liferayProjectDirs.size()];
+
+                int index = 0;
+
+
+                for( File eclipseProjectFile : eclipseProjectFiles )
+                {
+                    selectedProjects[index++] = new ProjectRecord( eclipseProjectFile );
+                }
+
+                for( File liferayProjectDir : liferayProjectDirs )
+                {
+                    selectedProjects[index++] = new ProjectRecord( liferayProjectDir );
+                }
+            }
+
+
+        }
+        catch( Exception e )
+        {
+            ProjectCore.logError( e );
+        }
+
+        Object[] projects = getProjectRecords( selectedProjects );
+
+        return (ProjectRecord[])projects;
+    }
+
+    @SuppressWarnings( { "rawtypes", "unchecked" } )
+    private static Object[] getBinaryProjectRecords( final Object[] selectedProjects )
+    {
+        List projectRecords = new ArrayList();
+
+        for( int i = 0; i < selectedProjects.length; i++ )
+        {
+            BinaryProjectRecord binaryProjectRecord = (BinaryProjectRecord) selectedProjects[i];
+            if( isProjectInWorkspace( binaryProjectRecord.getLiferayPluginName() ) )
+            {
+                binaryProjectRecord.setConflicts( true );
+            }
+
+            projectRecords.add( selectedProjects[i] );
+        }
+
+        return projectRecords.toArray( new BinaryProjectRecord[projectRecords.size()] );
+    }
+
+    @SuppressWarnings( { "rawtypes", "unchecked" } )
+    private static Object[] getProjectRecords( final Object[] selectedProjects )
+    {
+        List projectRecords = new ArrayList();
+
+        for( int i = 0; i < selectedProjects.length; i++ )
+        {
+            ProjectRecord projectRecord = (ProjectRecord) selectedProjects[i];
+            if( isProjectInWorkspace( projectRecord.getProjectName() ) )
+            {
+                projectRecord.setHasConflicts( true );
+            }
+
+            projectRecords.add( selectedProjects[i] );
+        }
+
+        return projectRecords.toArray( new ProjectRecord[projectRecords.size()] );
     }
 
     public static IStatus validateSDKProjectPath(final String currentPath)

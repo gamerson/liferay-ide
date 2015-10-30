@@ -24,6 +24,8 @@ import static com.liferay.ide.sdk.core.ISDKConstants.PORTLET_PLUGIN_PROJECT_SUFF
 import static com.liferay.ide.sdk.core.ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX;
 import static com.liferay.ide.sdk.core.ISDKConstants.WEB_PLUGIN_PROJECT_SUFFIX;
 
+import com.liferay.ide.core.util.StringPool;
+
 import java.io.File;
 
 /**
@@ -281,5 +283,41 @@ public class BinaryProjectRecord
     {
         return isExt;
     }
+
+    public String getPluginType()
+    {
+        String pluginType = null;
+
+        if( binaryName != null )
+        {
+            if( binaryName.contains( HOOK_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                pluginType = HOOK_PLUGIN_PROJECT_SUFFIX ;
+            }
+            else if( binaryName.contains( THEME_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                pluginType =   THEME_PLUGIN_PROJECT_SUFFIX;
+            }
+            else if( binaryName.contains( PORTLET_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                pluginType = PORTLET_PLUGIN_PROJECT_SUFFIX;
+            }
+            else if( binaryName.contains( LAYOUTTPL_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                pluginType = LAYOUTTPL_PLUGIN_PROJECT_SUFFIX;
+            }
+            else if( binaryName.contains( EXT_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                pluginType = EXT_PLUGIN_PROJECT_SUFFIX;
+            }
+            else if( binaryName.contains( WEB_PLUGIN_PROJECT_SUFFIX ) )
+            {
+                pluginType = WEB_PLUGIN_PROJECT_SUFFIX;
+            }
+        }
+
+        return pluginType.replace( "-", StringPool.EMPTY ); //$NON-NLS-1$
+    }
+
 
 }

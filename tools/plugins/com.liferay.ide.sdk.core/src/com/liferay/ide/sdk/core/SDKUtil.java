@@ -34,9 +34,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.osgi.framework.Version;
@@ -48,6 +50,23 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class SDKUtil
 {
+
+    public static int countPossibleWorkspaceSDKProjects()
+    {
+        int sdkCount = 0;
+        final IProject[] projects = CoreUtil.getAllProjects();
+
+        for( IProject project : projects )
+        {
+            if( isValidSDKLocation( project.getLocation().toOSString() ) )
+            {
+                sdkCount++;
+            }
+        }
+
+        return sdkCount;
+    }
+
 
     public static SDK createSDKFromLocation( IPath path )
     {
@@ -332,4 +351,64 @@ public class SDKUtil
 
         return sdk;
     }
+
+    public static IStatus validateSDKPath(final String currentPath)
+    {
+        IStatus retVal = Status.OK_STATUS;
+
+        if( !org.eclipse.core.runtime.Path.EMPTY.isValidPath( currentPath ) )
+        {
+            retVal = SDKCorePlugin.createErrorStatus( "\"" + currentPath + "\" is not a valid path." );
+        }
+        else
+        {
+            IPath osPath = org.eclipse.core.runtime.Path.fromOSString( currentPath );
+
+            if( !osPath.toFile().isAbsolute() )
+            {
+                retVal = SDKCorePlugin.createErrorStatus( "\"" + currentPath + "\" is not an absolute path." );
+            }
+            else
+            {
+                if( !osPath.toFile().exists() )
+                {
+                    retVal = SDKCorePlugin.createErrorStatus( "Directory doesn't exist." );
+                }
+                else
+                {
+                    SDK sdk = SDKUtil.createSDKFromLocation( osPath );
+
+                    if( sdk != null )
+                    {
+                        try
+                        {
+                            IProject workspaceSdkProject = SDKUtil.getWorkspaceSDKProject();
+
+                            if( workspaceSdkProject != null )
+                            {
+                                if( !workspaceSdkProject.getLocation().equals( sdk.getLocation() ) )
+                                {
+                                    return SDKCorePlugin.createErrorStatus(
+                                        "This project has different sdk than current workspace sdk" );
+                                }
+                            }
+                        }
+                        catch( CoreException e )
+                        {
+                            return SDKCorePlugin.createErrorStatus("Can't find sdk in workspace");
+                        }
+
+                        retVal = sdk.validate();
+                    }
+                    else
+                    {
+                        retVal = SDKCorePlugin.createErrorStatus( "SDK does not exist." );
+                    }
+                }
+            }
+        }
+
+        return retVal;
+    }
+
 }

@@ -15,39 +15,59 @@
 
 package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.project.core.model.SDKProjectsImportOp;
+import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.sdk.core.SDKUtil;
 
-import org.eclipse.sapphire.modeling.Path;
+import org.eclipse.sapphire.FilteredListener;
+import org.eclipse.sapphire.Listener;
+import org.eclipse.sapphire.PropertyContentEvent;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.platform.StatusBridge;
 import org.eclipse.sapphire.services.ValidationService;
 
 /**
  * @author Simon Jiang
  */
-public class SDKImportLocationValidationService extends ValidationService
+public class HasWorkspaceSDKValidationService extends ValidationService
 {
+
+    @Override
+    protected void initValidationService()
+    {
+        super.initValidationService();
+
+        final Listener listener = new FilteredListener<PropertyContentEvent>()
+        {
+            @Override
+            protected void handleTypedEvent( PropertyContentEvent event )
+            {
+                refresh();
+            }
+        };
+
+        op().getProjectProvider().attach( listener );
+    }
 
     @Override
     protected Status compute()
     {
         Status retval = Status.createOkStatus();
 
-        final Path currentProjectLocation = op().getSdkLocation().content( true );
-
-        if( currentProjectLocation != null && !currentProjectLocation.isEmpty() )
+        if ( op().getProjectProvider().content().getShortName().equals( "ant" ))
         {
-            final String currentPath = currentProjectLocation.toOSString();
+            int sdkCount = SDKUtil.countPossibleWorkspaceSDKProjects();
 
-            retval = StatusBridge.create( SDKUtil.validateSDKPath( currentPath ) );
+            if ( sdkCount > 1 )
+            {
+                retval = Status.createErrorStatus( "This workspace has more than one SDK, please make sure only one sdk in workspace" );
+            }
         }
 
         return retval;
     }
 
-    private SDKProjectsImportOp op()
+    private NewLiferayPluginProjectOp op()
     {
-        return context( SDKProjectsImportOp.class );
+        return context( NewLiferayPluginProjectOp.class );
     }
+
 }

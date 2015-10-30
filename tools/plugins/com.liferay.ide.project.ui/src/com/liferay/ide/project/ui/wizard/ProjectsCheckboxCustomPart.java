@@ -25,6 +25,7 @@ import com.liferay.ide.ui.util.UIUtil;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -36,8 +37,11 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.sapphire.ElementList;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -45,15 +49,20 @@ import org.eclipse.swt.graphics.RGB;
  */
 public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomPart
 {
+    protected IProject[] wsProjects;
+
     class ProjectCheckboxElement extends CheckboxElement
     {
         public final String location;
+        public final boolean isConflict;
 
-        public ProjectCheckboxElement( String name, String context, String location )
+        public ProjectCheckboxElement( String name, String context, String location, boolean isConflict )
         {
             super( name, context );
             this.location = location;
+            this.isConflict = isConflict;
         }
+
     }
 
     class SDKImportProjectsLabelProvider extends ElementLabelProvider implements IColorProvider, IStyledLabelProvider
@@ -67,6 +76,20 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
             COLOR_REGISTRY.put( GREY_COLOR, new RGB( 128, 128, 128 ) );
             GREYED_STYLER = StyledString.createColorRegistryStyler( GREY_COLOR, null );
         }
+
+        @Override
+        public Color getForeground( Object element )
+        {
+            final ProjectCheckboxElement projectCheckboxElement =  (ProjectCheckboxElement) element;
+
+            if( projectCheckboxElement.isConflict )
+            {
+                return Display.getCurrent().getSystemColor( SWT.COLOR_GRAY );
+            }
+
+            return null;
+        }
+
 
         @Override
         public Image getImage( Object element )
@@ -126,10 +149,6 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
     @Override
     protected void checkAndUpdateCheckboxElement()
     {
-        List<ProjectCheckboxElement> checkboxElementList = getInitItemsList();
-
-        checkboxElements = checkboxElementList.toArray( new ProjectCheckboxElement[checkboxElementList.size()]);
-
         UIUtil.async
         (
             new Runnable()
@@ -137,34 +156,48 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
                 @Override
                 public void run()
                 {
+                    List<ProjectCheckboxElement> checkboxElementList = getInitItemsList();
+
+                    if ( checkboxElementList == null )
+                    {
+                        return;
+                    }
+
+                    checkboxElements = checkboxElementList.toArray( new ProjectCheckboxElement[checkboxElementList.size()]);
+
                     checkBoxViewer.setInput( checkboxElements );
 
                     ElementList<ProjectNamedItem> selectedElements = getSelectedElements();
 
                     Iterator<ProjectNamedItem> iterator = selectedElements.iterator();
 
-                    while( iterator.hasNext() )
+                    for( ProjectCheckboxElement checkboxElement : checkboxElements )
                     {
-                        NamedItem projectItem = iterator.next();
-
-                        for( CheckboxElement checkboxElement : checkboxElements )
+                        if ( checkboxElement.isConflict )
                         {
-                            if ( checkboxElement.name.equals( projectItem.getName().content() ))
+                            checkBoxViewer.setGrayed( checkboxElement, true );
+                        }
+                        else
+                        {
+                            while( iterator.hasNext() )
                             {
-                                checkBoxViewer.setChecked( checkboxElement, true );
-                                break;
+                                NamedItem projectItem = iterator.next();
+
+                                if ( checkboxElement.name.equals( projectItem.getName().content() ))
+                                {
+                                    checkBoxViewer.setChecked( checkboxElement, true );
+                                    break;
+                                }
                             }
                         }
                     }
-
                     updateValidation();
-
+                    checkBoxViewer.refresh( true );
                 }
             }
         );
     }
 
-    protected abstract ElementList<ProjectNamedItem> getCheckboxList();
 
     protected abstract List<ProjectCheckboxElement> getInitItemsList();
 
@@ -175,12 +208,7 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
     {
         if( event.getSource().equals( checkBoxViewer ) )
         {
-            final Object element = event.getElement();
-
-            if( element instanceof CheckboxElement )
-            {
-                checkBoxViewer.setGrayed( element, false );
-            }
+            ProjectCheckboxElement element = (ProjectCheckboxElement) event.getElement();
 
             ElementList<ProjectNamedItem> selectedElements = getSelectedElements();
 
@@ -198,6 +226,11 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
                         newProjectItem.setLocation( checkboxElement.location );
                     }
                 }
+
+                if( element.isConflict )
+                {
+                    checkBoxViewer.setChecked( element, false );
+                }
             }
 
             updateValidation();
@@ -211,7 +244,7 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
         {
             checkBoxViewer.setChecked( checkboxElement, false );
         }
-        getCheckboxList().clear();
+        getSelectedElements().clear();
         updateValidation();
     }
 
@@ -221,7 +254,7 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
         for( ProjectCheckboxElement checkboxElement : checkboxElements )
         {
             checkBoxViewer.setChecked( checkboxElement, true );
-            ElementList<ProjectNamedItem> projectItems = getCheckboxList();
+            ElementList<ProjectNamedItem> projectItems = getSelectedElements();
             if ( !projectItems.contains( checkboxElement ) )
             {
                 ProjectNamedItem projectItem = projectItems.insert();

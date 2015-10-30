@@ -170,24 +170,25 @@
       </wizard>
       <wizard
             category="com.liferay.ide.projects.import"
-            class="com.liferay.ide.project.ui.wizard.BinaryProjectImportWizard"
+            class="com.liferay.ide.project.ui.wizard.BinarySDKProjectImportWizard"
             icon="icons/e16/import.png"
-            id="com.liferay.ide.project.ui.wizard.PluginBinaryProjectImportWizard"
+            id="com.liferay.ide.project.ui.wizard.BinarySDKProjectImportWizard"
             name="%import.binary.plugin.wizard.name">
          <description>
             %import.binary.plugin.wizard.description
          </description>
       </wizard>
+      
       <wizard
             category="com.liferay.ide.projects.import"
-            class="com.liferay.ide.project.ui.wizard.BinaryProjectsImportWizard"
+            class="com.liferay.ide.project.ui.wizard.BinarySDKProjectsImportWizard"
             icon="icons/e16/import.png"
-            id="com.liferay.ide.project.ui.wizard.PluginBinaryProjectImportWizard"
+            id="com.liferay.ide.project.ui.wizard.BinarySDKProjectsImportWizard"
             name="%import.binary.plugins.wizard.name">
          <description>
             %import.binary.plugins.wizard.description
          </description>
-      </wizard>
+      </wizard>      
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">

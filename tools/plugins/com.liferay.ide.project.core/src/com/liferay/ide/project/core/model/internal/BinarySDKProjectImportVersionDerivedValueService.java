@@ -12,42 +12,49 @@
  * details.
  *
  *******************************************************************************/
-
 package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.project.core.model.SDKProjectsImportOp;
-import com.liferay.ide.sdk.core.SDKUtil;
+import com.liferay.ide.project.core.model.BinarySDKProjectImportOp;
 
+import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.modeling.Path;
-import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.platform.StatusBridge;
-import org.eclipse.sapphire.services.ValidationService;
+
 
 /**
  * @author Simon Jiang
  */
-public class SDKImportLocationValidationService extends ValidationService
+public class BinarySDKProjectImportVersionDerivedValueService extends AbstractBinarySDKProjectImportVersionDerivedValueService
 {
-
     @Override
-    protected Status compute()
+    protected void  bindSdkLocation()
     {
-        Status retval = Status.createOkStatus();
-
-        final Path currentProjectLocation = op().getSdkLocation().content( true );
-
-        if( currentProjectLocation != null && !currentProjectLocation.isEmpty() )
-        {
-            final String currentPath = currentProjectLocation.toOSString();
-
-            retval = StatusBridge.create( SDKUtil.validateSDKPath( currentPath ) );
-        }
-
-        return retval;
+        op().property( BinarySDKProjectImportOp.PROP_SDK_LOCATION ).attach( this.listener );
     }
 
-    private SDKProjectsImportOp op()
+    private BinarySDKProjectImportOp op()
     {
-        return context( SDKProjectsImportOp.class );
+        return context( BinarySDKProjectImportOp.class );
+    }
+
+    @Override
+    protected Path getOpSDKLocation()
+    {
+        Value<Path> sdkLocation = op().getSdkLocation();
+
+        if ( sdkLocation != null && !sdkLocation.empty() )
+        {
+            return op().getSdkLocation().content( true );
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void unBindSdkLocation()
+    {
+        if ( op() != null)
+        {
+            op().property( BinarySDKProjectImportOp.PROP_SDK_LOCATION ).detach( this.listener );
+        }
     }
 }

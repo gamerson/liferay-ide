@@ -14,7 +14,6 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.project.core.model.SDKProjectsImportOp;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
 
@@ -29,15 +28,13 @@ import org.eclipse.sapphire.platform.PathBridge;
 /**
  * @author Simon Jiang
  */
-public class SDKImportVersionDerivedValueService extends DerivedValueService
+public abstract class AbstractBinarySDKProjectImportVersionDerivedValueService extends DerivedValueService
 {
-    private FilteredListener<PropertyContentEvent> listener;
+    protected FilteredListener<PropertyContentEvent> listener;
 
     @Override
     protected void initDerivedValueService()
     {
-        super.initDerivedValueService();
-
         this.listener = new FilteredListener<PropertyContentEvent>()
         {
             @Override
@@ -47,26 +44,32 @@ public class SDKImportVersionDerivedValueService extends DerivedValueService
             }
         };
 
-        op().property( SDKProjectsImportOp.PROP_SDK_LOCATION ).attach( this.listener );
+        bindSdkLocation();
     }
+
+    protected abstract void  bindSdkLocation();
+    protected abstract void  unBindSdkLocation();
+    protected abstract Path getOpSDKLocation();
 
     @Override
     protected String compute()
     {
         String retVal = null;
 
-        if ( op().getSdkLocation() != null )
+        final Path sdkPath = getOpSDKLocation();
+
+        if( sdkPath != null && !sdkPath.isEmpty() )
         {
-            if ( op().getSdkLocation().content() != null && !op().getSdkLocation().content().isEmpty() )
+            final String currentPath = sdkPath.toOSString();
+
+            IStatus sdkValidate = SDKUtil.validateSDKPath( currentPath );
+
+            if ( sdkValidate.isOK() )
             {
-                final Path sdkPath = op().getSdkLocation().content();
-                final IStatus status = SDKUtil.validateSDKPath(
-                    op().getSdkLocation().content().toPortableString() );
+                SDK sdk = SDKUtil.createSDKFromLocation( PathBridge.create( sdkPath ) );
 
-                if ( status.isOK() )
+                if ( sdk.validate().isOK() )
                 {
-                    SDK sdk = SDKUtil.createSDKFromLocation( PathBridge.create( sdkPath ) );
-
                     retVal = sdk.getVersion();
                 }
             }
@@ -75,19 +78,13 @@ public class SDKImportVersionDerivedValueService extends DerivedValueService
         return retVal;
     }
 
-    private SDKProjectsImportOp op()
-    {
-        return context( SDKProjectsImportOp.class );
-    }
-
     @Override
     public void dispose()
     {
-        if ( op() != null)
+        if ( listener != null )
         {
-            op().property( SDKProjectsImportOp.PROP_SDK_LOCATION ).detach( this.listener );
+            unBindSdkLocation();
         }
-
         super.dispose();
     }
 }

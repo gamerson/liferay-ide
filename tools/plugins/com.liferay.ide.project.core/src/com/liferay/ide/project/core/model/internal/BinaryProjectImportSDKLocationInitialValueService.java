@@ -15,39 +15,36 @@
 
 package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.project.core.model.SDKProjectsImportOp;
+import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
 
-import org.eclipse.sapphire.modeling.Path;
-import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.platform.StatusBridge;
-import org.eclipse.sapphire.services.ValidationService;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.sapphire.InitialValueService;
 
 /**
  * @author Simon Jiang
  */
-public class SDKImportLocationValidationService extends ValidationService
+public class BinaryProjectImportSDKLocationInitialValueService extends InitialValueService
 {
 
     @Override
-    protected Status compute()
+    protected String compute()
     {
-        Status retval = Status.createOkStatus();
+        String value = "";
 
-        final Path currentProjectLocation = op().getSdkLocation().content( true );
-
-        if( currentProjectLocation != null && !currentProjectLocation.isEmpty() )
+        try
         {
-            final String currentPath = currentProjectLocation.toOSString();
+            final SDK sdk = SDKUtil.getWorkspaceSDK();
 
-            retval = StatusBridge.create( SDKUtil.validateSDKPath( currentPath ) );
+            if ( sdk != null && sdk.validate().isOK() )
+            {
+                return sdk.getLocation().toOSString();
+            }
+        }
+        catch( CoreException e )
+        {
         }
 
-        return retval;
-    }
-
-    private SDKProjectsImportOp op()
-    {
-        return context( SDKProjectsImportOp.class );
+        return value;
     }
 }
