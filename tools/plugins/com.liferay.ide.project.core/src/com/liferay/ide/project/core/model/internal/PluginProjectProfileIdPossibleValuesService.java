@@ -14,30 +14,26 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model.internal;
 
-import java.util.List;
-import java.util.Set;
+import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
+import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
 
-import org.eclipse.sapphire.PossibleValuesService;
+import java.util.Set;
 
 
 /**
- * @author Gregory Amerson
+ * @author Simon Jiang
  */
-public abstract class ProjectProviderPossibleValuesService extends PossibleValuesService
+public class PluginProjectProfileIdPossibleValuesService extends ProfileIdPossibleValuesService
 {
-
-    protected List<String> possibleValues;
-
-    @Override
-    protected void compute( Set<String> values )
+    private NewLiferayPluginProjectOp op()
     {
-        values.addAll( this.possibleValues );
+        return context( NewLiferayPluginProjectOp.class );
     }
 
     @Override
-    public boolean ordered()
+    protected Set<String> getPossibleProfileIds()
     {
-        return true;
+        return NewLiferayPluginProjectOpMethods.getPossibleProfileIds( op(), true );
     }
 
 }

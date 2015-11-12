@@ -15,8 +15,6 @@
 
 package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
@@ -31,7 +29,7 @@ import org.eclipse.sapphire.services.ValidationService;
  * @author Gregory Amerson
  */
 @SuppressWarnings( "restriction" )
-public class GroupIdValidationService extends ValidationService
+public abstract class GroupIdValidationService extends ValidationService
 {
 
     private Listener listener;
@@ -39,9 +37,11 @@ public class GroupIdValidationService extends ValidationService
     @Override
     protected Status compute()
     {
-        if( "maven".equals( op().getProjectProvider().content( true ).getShortName() ) )
+        final String projectProviderShortName = getProjectProviderShortName();
+
+        if( "maven".equals( projectProviderShortName ) )
         {
-            final String groupId = op().getGroupId().content( true );
+            final String groupId = getMavenGroupId();
 
             final IStatus javaStatus =
                 JavaConventions.validatePackageName( groupId, CompilerOptions.VERSION_1_5, CompilerOptions.VERSION_1_5 );
@@ -60,17 +60,20 @@ public class GroupIdValidationService extends ValidationService
         this.listener = new FilteredListener<PropertyContentEvent>()
         {
 
+            @Override
             protected void handleTypedEvent( final PropertyContentEvent event )
             {
                 refresh();
             }
         };
 
-        op().getProjectProvider().attach( this.listener );
+        attachedListener( this.listener );
     }
 
-    private NewLiferayPluginProjectOp op()
-    {
-        return context( NewLiferayPluginProjectOp.class );
-    }
+    protected abstract void attachedListener( final Listener listener );
+
+    protected abstract String getProjectProviderShortName();
+
+    protected abstract String getMavenGroupId();
+
 }

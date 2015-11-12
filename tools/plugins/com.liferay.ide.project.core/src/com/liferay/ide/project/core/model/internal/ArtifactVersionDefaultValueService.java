@@ -14,37 +14,23 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
-
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.sapphire.DefaultValueService;
 import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.Listener;
 import org.eclipse.sapphire.PropertyContentEvent;
-import org.eclipse.sapphire.modeling.Path;
 
 /**
  * @author Tao Tao
+ * @author Simon Jiang
  */
-public class ArtifactVersionDefaultValueService extends DefaultValueService
+public abstract class ArtifactVersionDefaultValueService extends DefaultValueService
 {
     @Override
     protected String compute()
     {
         String data = null;
 
-        final Path location = op().getLocation().content();
-
-        if( location != null )
-        {
-            final NewLiferayPluginProjectOp op = op();
-            final String parentProjectLocation = location.toOSString();
-            final IPath parentProjectOsPath = org.eclipse.core.runtime.Path.fromOSString( parentProjectLocation );
-            final String projectName = op().getProjectName().content();
-
-            data = NewLiferayPluginProjectOpMethods.getMavenParentPomVersion( op, projectName, parentProjectOsPath );
-        }
+        data = getMavenParentPomVersion();
 
         if( data == null )
         {
@@ -54,6 +40,7 @@ public class ArtifactVersionDefaultValueService extends DefaultValueService
         return data;
     }
 
+    @Override
     protected void initDefaultValueService()
     {
         super.initDefaultValueService();
@@ -67,12 +54,11 @@ public class ArtifactVersionDefaultValueService extends DefaultValueService
             }
         };
 
-        op().getLocation().attach( listener );
-        op().getProjectName().attach( listener );
+        attachedListener(listener);
     }
 
-    private NewLiferayPluginProjectOp op()
-    {
-        return context( NewLiferayPluginProjectOp.class );
-    }
+
+    protected abstract void attachedListener( final Listener listener );
+
+    protected abstract String getMavenParentPomVersion();
 }

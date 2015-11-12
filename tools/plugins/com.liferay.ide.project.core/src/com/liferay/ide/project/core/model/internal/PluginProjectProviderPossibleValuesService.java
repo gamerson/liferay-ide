@@ -14,53 +14,35 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.liferay.ide.core.ILiferayProjectProvider;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
 
-import org.eclipse.sapphire.PossibleValuesService;
-import org.eclipse.sapphire.Value;
-import org.eclipse.sapphire.modeling.Status;
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 /**
  * @author Gregory Amerson
- * @author Simon Jiang
  */
-public abstract class ProfileIdPossibleValuesService extends PossibleValuesService
+public class PluginProjectProviderPossibleValuesService extends ProjectProviderPossibleValuesService
 {
-
-    private List<String> possibleValues = new ArrayList<String>();
-
-    private void fillPossibleValues()
-    {
-        Set<String> possibleProfileIds = getPossibleProfileIds();;
-
-        possibleValues.clear();
-        possibleValues.addAll( possibleProfileIds );
-    }
-
-    @Override
-    protected void compute( Set<String> values )
-    {
-        values.addAll( possibleValues );
-    }
-
 
     @Override
     protected void initPossibleValuesService()
     {
         super.initPossibleValuesService();
 
-        fillPossibleValues();
+        possibleValues = new ArrayList<String>();
+
+        for( final ILiferayProjectProvider provider : LiferayCore.getProviders() )
+        {
+            if( provider instanceof NewLiferayProjectProvider )
+            {
+                possibleValues.add( provider.getShortName() );
+            }
+        }
+
+        Collections.sort( possibleValues );
     }
-
-    @Override
-    public Status problem( Value<?> value )
-    {
-        return Status.createOkStatus();
-    }
-
-    protected abstract Set<String> getPossibleProfileIds();
-
 }

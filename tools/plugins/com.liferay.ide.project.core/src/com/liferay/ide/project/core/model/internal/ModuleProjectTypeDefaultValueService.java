@@ -12,32 +12,24 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.model.internal;
 
-import java.util.List;
-import java.util.Set;
+import com.liferay.blade.api.ProjectType;
 
-import org.eclipse.sapphire.PossibleValuesService;
-
+import org.eclipse.sapphire.DefaultValueService;
 
 /**
- * @author Gregory Amerson
+ * @author Simon Jiang
  */
-public abstract class ProjectProviderPossibleValuesService extends PossibleValuesService
+public class ModuleProjectTypeDefaultValueService extends DefaultValueService
 {
 
-    protected List<String> possibleValues;
-
     @Override
-    protected void compute( Set<String> values )
+    protected String compute()
     {
-        values.addAll( this.possibleValues );
+        return ProjectType.portlet.toString();
     }
 
-    @Override
-    public boolean ordered()
-    {
-        return true;
-    }
 
 }

@@ -12,32 +12,34 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.model.internal;
+
+import com.liferay.blade.api.ProjectType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.sapphire.PossibleValuesService;
-import org.eclipse.sapphire.Value;
-import org.eclipse.sapphire.modeling.Status;
 
 
 /**
- * @author Gregory Amerson
  * @author Simon Jiang
  */
-public abstract class ProfileIdPossibleValuesService extends PossibleValuesService
+public class ModuleProjectTypePossibleValuesService extends PossibleValuesService
 {
+    private List<String> possibleValues;
 
-    private List<String> possibleValues = new ArrayList<String>();
-
-    private void fillPossibleValues()
+    @Override
+    protected void initPossibleValuesService()
     {
-        Set<String> possibleProfileIds = getPossibleProfileIds();;
+        possibleValues = new ArrayList<String>();
 
-        possibleValues.clear();
-        possibleValues.addAll( possibleProfileIds );
+        for( ProjectType pluginType : ProjectType.values() )
+        {
+            possibleValues.add( pluginType.name() );
+        }
     }
 
     @Override
@@ -46,21 +48,10 @@ public abstract class ProfileIdPossibleValuesService extends PossibleValuesServi
         values.addAll( possibleValues );
     }
 
-
     @Override
-    protected void initPossibleValuesService()
+    public boolean ordered()
     {
-        super.initPossibleValuesService();
-
-        fillPossibleValues();
+        return true;
     }
-
-    @Override
-    public Status problem( Value<?> value )
-    {
-        return Status.createOkStatus();
-    }
-
-    protected abstract Set<String> getPossibleProfileIds();
 
 }
