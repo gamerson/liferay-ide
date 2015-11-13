@@ -12,12 +12,14 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 
 
 /**
  * @author Gregory Amerson
+ * @author Lovett Li
  */
 public class CopyPortalSettingsHandler extends AbstractOSGiCommandHandler
 {
@@ -37,6 +39,19 @@ public class CopyPortalSettingsHandler extends AbstractOSGiCommandHandler
         final Command command = new CopyPortalSettingsHandler().getCommand();
 
         final Map<String, File> parameters = new HashMap<>();
+
+        final Path sourceLocation = op.getSourceLiferayLocation().content();
+        final Path destinationLocation = op.getDestinationLiferayLocation().content();
+
+        if( sourceLocation == null || sourceLocation.isEmpty() )
+        {
+            return Status.createErrorStatus( "Previous Liferay Location can not be empty" );
+        }
+
+        if( destinationLocation == null || destinationLocation.isEmpty() )
+        {
+            return Status.createErrorStatus( "New Liferay Location can not be empty" );
+        }
 
         parameters.put( "source", op.getSourceLiferayLocation().content().toFile() );
         parameters.put( "dest", op.getDestinationLiferayLocation().content().toFile() );
