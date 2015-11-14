@@ -28,18 +28,22 @@ import org.eclipse.sapphire.DefaultValueService;
 /**
  * @author Simon Jiang
  */
-public class ProjectProviderDefaultValueService extends DefaultValueService
+public abstract class ProjectProviderDefaultValueService extends DefaultValueService
 {
+
+   protected abstract String getDefaultLastProviderType();
+
+   protected abstract String getDefaultBuildProviderTypeOption();
 
     @Override
     protected String compute()
     {
-        String retval = "ant";
+        String retval = getDefaultLastProviderType();
 
         final IScopeContext[] prefContexts = { DefaultScope.INSTANCE, InstanceScope.INSTANCE };
         final String defaultProjectBuildType =
             Platform.getPreferencesService().getString(
-                ProjectCore.PLUGIN_ID, ProjectCore.PREF_DEFAULT_PROJECT_BUILD_TYPE_OPTION, null,
+                ProjectCore.PLUGIN_ID, getDefaultBuildProviderTypeOption(), null,
                     prefContexts );
 
         if( defaultProjectBuildType != null )

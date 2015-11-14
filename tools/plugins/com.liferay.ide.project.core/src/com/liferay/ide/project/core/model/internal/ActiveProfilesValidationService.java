@@ -15,7 +15,6 @@
 package com.liferay.ide.project.core.model.internal;
 
 import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 
 import org.eclipse.sapphire.Event;
 import org.eclipse.sapphire.FilteredListener;
@@ -26,7 +25,7 @@ import org.eclipse.sapphire.services.ValidationService;
 /**
  * @author Tao Tao
  */
-public class ActiveProfilesValidationService extends ValidationService
+public abstract class ActiveProfilesValidationService extends ValidationService
 {
 
     private Listener listener = null;
@@ -34,10 +33,12 @@ public class ActiveProfilesValidationService extends ValidationService
     @Override
     protected Status compute()
     {
-        String activeProfileId = op().getActiveProfilesValue().content();
         Status retval = Status.createOkStatus();
 
-        if( "maven".equals( op().getProjectProvider().content( true ).getShortName() ) )
+        String activeProfileId = getActiveProfilesId();
+        String projectProviderShortName = getProjectProviderShortName();
+
+        if( "maven".equals( projectProviderShortName ) )
         {
             if( activeProfileId != null && activeProfileId.contains( StringPool.SPACE ) )
             {
@@ -55,17 +56,19 @@ public class ActiveProfilesValidationService extends ValidationService
 
         this.listener = new FilteredListener<Event>()
         {
+            @Override
             protected void handleTypedEvent( Event event )
             {
                 refresh();
             }
         };
 
-        op().getProjectProvider().attach( this.listener );
+        attachedListener( this.listener );
     }
 
-    private NewLiferayPluginProjectOp op()
-    {
-        return context( NewLiferayPluginProjectOp.class );
-    }
+    protected abstract void attachedListener( final Listener listener );
+
+    protected abstract String getProjectProviderShortName();
+
+    protected abstract String getActiveProfilesId();
 }

@@ -12,55 +12,42 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.model.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.liferay.ide.project.core.model.NewLiferayModuleProjectOp;
 
-import org.eclipse.sapphire.PossibleValuesService;
-import org.eclipse.sapphire.Value;
-import org.eclipse.sapphire.modeling.Status;
+import org.eclipse.sapphire.Listener;
 
 
 /**
- * @author Gregory Amerson
  * @author Simon Jiang
  */
-public abstract class ProfileIdPossibleValuesService extends PossibleValuesService
+public class ModuleProjectGroupIdValidationService extends GroupIdValidationService
 {
 
-    private List<String> possibleValues = new ArrayList<String>();
-
-    private void fillPossibleValues()
+    private NewLiferayModuleProjectOp op()
     {
-        Set<String> possibleProfileIds = getPossibleProfileIds();;
-
-        possibleValues.clear();
-        possibleValues.addAll( possibleProfileIds );
+        return context( NewLiferayModuleProjectOp.class );
     }
 
     @Override
-    protected void compute( Set<String> values )
+    protected void attachedListener( Listener listener )
     {
-        values.addAll( possibleValues );
-    }
-
-
-    @Override
-    protected void initPossibleValuesService()
-    {
-        super.initPossibleValuesService();
-
-        fillPossibleValues();
+        op().getProjectProvider().attach( listener );
     }
 
     @Override
-    public Status problem( Value<?> value )
+    protected String getProjectProviderShortName()
     {
-        return Status.createOkStatus();
+        return op().getProjectProvider().content( true ).getShortName();
     }
 
-    protected abstract Set<String> getPossibleProfileIds();
+    @Override
+    protected String getMavenGroupId()
+    {
+        return  op().getGroupId().content( true );
+    }
+
 
 }

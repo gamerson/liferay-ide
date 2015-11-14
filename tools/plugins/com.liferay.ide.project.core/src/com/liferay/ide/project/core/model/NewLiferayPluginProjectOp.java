@@ -17,28 +17,28 @@ package com.liferay.ide.project.core.model;
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.model.internal.ActiveProfilesValidationService;
 import com.liferay.ide.project.core.model.internal.ArchetypeDefaultValueService;
-import com.liferay.ide.project.core.model.internal.ArtifactVersionDefaultValueService;
 import com.liferay.ide.project.core.model.internal.CreateNewPortletDefaultValueService;
 import com.liferay.ide.project.core.model.internal.DisplayNameDefaultValueService;
-import com.liferay.ide.project.core.model.internal.GroupIdDefaultValueService;
-import com.liferay.ide.project.core.model.internal.GroupIdValidationService;
 import com.liferay.ide.project.core.model.internal.HasWorkspaceSdkDefaultValueService;
 import com.liferay.ide.project.core.model.internal.IncludeSampleCodeDefaultValueService;
 import com.liferay.ide.project.core.model.internal.LocationValidationService;
+import com.liferay.ide.project.core.model.internal.PluginProjectActiveProfilesValidationService;
+import com.liferay.ide.project.core.model.internal.PluginProjectArtifactVersionDefaultValueService;
+import com.liferay.ide.project.core.model.internal.PluginProjectGroupIdDefaultValueService;
+import com.liferay.ide.project.core.model.internal.PluginProjectGroupIdValidationService;
+import com.liferay.ide.project.core.model.internal.PluginProjectProfileIdPossibleValuesService;
+import com.liferay.ide.project.core.model.internal.PluginProjectProviderDefaultValueService;
+import com.liferay.ide.project.core.model.internal.PluginProjectProviderPossibleValuesService;
 import com.liferay.ide.project.core.model.internal.PluginTypeListener;
 import com.liferay.ide.project.core.model.internal.PluginTypePossibleValuesService;
 import com.liferay.ide.project.core.model.internal.PluginTypeValidationService;
 import com.liferay.ide.project.core.model.internal.PortletFrameworkAdvancedPossibleValuesService;
 import com.liferay.ide.project.core.model.internal.PortletFrameworkPossibleValuesService;
 import com.liferay.ide.project.core.model.internal.PortletFrameworkValidationService;
-import com.liferay.ide.project.core.model.internal.ProfileIdPossibleValuesService;
 import com.liferay.ide.project.core.model.internal.ProjectNameListener;
-import com.liferay.ide.project.core.model.internal.ProjectNameValidationService;
-import com.liferay.ide.project.core.model.internal.ProjectProviderDefaultValueService;
+import com.liferay.ide.project.core.model.internal.PluginProjectNameValidationService;
 import com.liferay.ide.project.core.model.internal.ProjectProviderListener;
-import com.liferay.ide.project.core.model.internal.ProjectProviderPossibleValuesService;
 import com.liferay.ide.project.core.model.internal.SDKLocationListener;
 import com.liferay.ide.project.core.model.internal.SDKLocationValidationService;
 import com.liferay.ide.project.core.model.internal.ThemeFrameworkValidationService;
@@ -92,7 +92,7 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
 
     @Label( standard = "project name" )
     @Listeners( ProjectNameListener.class )
-    @Service( impl = ProjectNameValidationService.class )
+    @Service( impl = PluginProjectNameValidationService.class )
     @Required
     ValueProperty PROP_PROJECT_NAME = new ValueProperty( TYPE, "ProjectName" ); //$NON-NLS-1$
 
@@ -154,8 +154,8 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
     (
         value=
         {
-            @Service( impl = ProjectProviderPossibleValuesService.class ),
-            @Service( impl = ProjectProviderDefaultValueService.class )
+            @Service( impl = PluginProjectProviderPossibleValuesService.class ),
+            @Service( impl = PluginProjectProviderDefaultValueService.class )
         }
     )
     ValueProperty PROP_PROJECT_PROVIDER = new ValueProperty( TYPE, "ProjectProvider" ); //$NON-NLS-1$
@@ -281,7 +281,7 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
     // *** ArtifactVersion ***
 
     @Label( standard = "artifact version" )
-    @Service( impl = ArtifactVersionDefaultValueService.class )
+    @Service( impl = PluginProjectArtifactVersionDefaultValueService.class )
     ValueProperty PROP_ARTIFACT_VERSION = new ValueProperty( TYPE, "ArtifactVersion" ); //$NON-NLS-1$
 
     Value<String> getArtifactVersion();
@@ -295,8 +295,8 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
     (
         value =
         {
-            @Service( impl = GroupIdValidationService.class ),
-            @Service( impl = GroupIdDefaultValueService.class )
+            @Service( impl = PluginProjectGroupIdValidationService.class ),
+            @Service( impl = PluginProjectGroupIdDefaultValueService.class )
         }
     )
     @Whitespace( trim = false )
@@ -310,7 +310,7 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
 
     @Label( standard = "active profiles" )
     @Fact( statement = "Supports comma separated list of active profiles" )
-    @Service( impl = ActiveProfilesValidationService.class )
+    @Service( impl = PluginProjectActiveProfilesValidationService.class )
     @Whitespace( trim = false )
     ValueProperty PROP_ACTIVE_PROFILES_VALUE = new ValueProperty( TYPE, "ActiveProfilesValue" );
 
@@ -322,7 +322,7 @@ public interface NewLiferayPluginProjectOp extends ExecutableElement
 
     @Type( base = Profile.class )
     @Label( standard = "selected profiles" )
-    @Service( impl = ProfileIdPossibleValuesService.class )
+    @Service( impl = PluginProjectProfileIdPossibleValuesService.class )
     ListProperty PROP_SELECTED_PROFILES = new ListProperty( TYPE, "SelectedProfiles" );
 
     ElementList<Profile> getSelectedProfiles();

@@ -38,7 +38,7 @@ import org.eclipse.sapphire.services.ValidationService;
  * @author Terry Jia
  * @author Simon Jiang
  */
-public class ProjectNameValidationService extends ValidationService
+public class PluginProjectNameValidationService extends ValidationService
 {
     private static final String MAVEN_PROJECT_NAME_REGEX = "[A-Za-z0-9_\\-.]+";
 

@@ -14,30 +14,28 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model.internal;
 
-import java.util.List;
-import java.util.Set;
+import com.liferay.ide.project.core.model.NewLiferayModuleProjectOp;
 
-import org.eclipse.sapphire.PossibleValuesService;
-
+import org.eclipse.sapphire.PropertyContentEvent;
 
 /**
  * @author Gregory Amerson
  */
-public abstract class ProjectProviderPossibleValuesService extends PossibleValuesService
+public class ModuleProjectUseDefaultLocationListener extends ModuleProjectNameListener
 {
-
-    protected List<String> possibleValues;
-
     @Override
-    protected void compute( Set<String> values )
+    protected void handleTypedEvent( PropertyContentEvent event )
     {
-        values.addAll( this.possibleValues );
-    }
+        final NewLiferayModuleProjectOp op = op( event );
 
-    @Override
-    public boolean ordered()
-    {
-        return true;
-    }
+        if( op.getUseDefaultLocation().content( true ) )
+        {
+            super.handleTypedEvent( event );
+        }
+        else
+        {
+            op.setLocation( (String) null );
+        }
 
+    }
 }
