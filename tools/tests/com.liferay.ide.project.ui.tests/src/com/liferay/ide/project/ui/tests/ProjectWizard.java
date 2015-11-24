@@ -33,7 +33,7 @@ public interface ProjectWizard
     public final String MENU_EXT = "Ext";
     public final String MENU_THEME = "Theme";
     public final String MENU_HOOK = "Hook";
-    public final String MENU_LAYOUT_TAMPLATE = "Layout Tamplate";
+    public final String MENU_LAYOUT_TEMPLATE = "Layout Template";
     public final String MENU_WEB = "Web";
 
 }

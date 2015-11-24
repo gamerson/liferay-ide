@@ -28,6 +28,7 @@ public class SWTBotBase implements UIBase
 {
 
     public static SWTWorkbenchBot bot;
+
     public static ButtonUtil buttonUtil;
     public static TextUtil textUtil;
     public static ToolbarUtil toolbarUtil;
@@ -36,15 +37,9 @@ public class SWTBotBase implements UIBase
     public static TreeUtil treeUtil;
     public static ViewUtil viewUtil;
 
-    private final static String skipUITests = System.getProperty( "skipUITests" );
-
     @BeforeClass
     public static void beforeClass() throws Exception
     {
-        if( shouldSkipBundleTests() )
-        {
-            return;
-        }
 
         bot = new SWTWorkbenchBot();
 
@@ -58,11 +53,6 @@ public class SWTBotBase implements UIBase
 
         viewUtil.close( VIEW_WELCOME );
         bot.perspectiveByLabel( "Liferay" ).activate();
-    }
-
-    protected static boolean shouldSkipBundleTests()
-    {
-        return "true".equals( skipUITests );
     }
 
 }
