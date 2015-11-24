@@ -12,23 +12,28 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core;
+package com.liferay.ide.project.core.modules;
 
-import com.liferay.ide.core.ILiferayProjectProvider;
+import com.liferay.blade.api.ProjectTemplate;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.sapphire.ExecutableElement;
+import org.eclipse.sapphire.ConversionException;
+import org.eclipse.sapphire.ConversionService;
 
 
 /**
  * @author Gregory Amerson
  */
-public abstract interface NewLiferayProjectProvider<T extends ExecutableElement> extends ILiferayProjectProvider
+public class ProjectTemplateToStringConversionService extends ConversionService<ProjectTemplate, String>
 {
-    public abstract IStatus createNewProject( T op, IProgressMonitor monitor ) throws CoreException;
 
-    public abstract IStatus validateProjectLocation( String projectName, IPath path );
+    public ProjectTemplateToStringConversionService()
+    {
+        super( ProjectTemplate.class, String.class );
+    }
+
+    @Override
+    public String convert( ProjectTemplate template ) throws ConversionException
+    {
+        return template.name();
+    }
 }

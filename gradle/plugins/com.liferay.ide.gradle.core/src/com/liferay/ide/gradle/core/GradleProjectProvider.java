@@ -15,20 +15,38 @@
 
 package com.liferay.ide.gradle.core;
 
-import org.eclipse.buildship.core.configuration.GradleProjectNature;
-import org.eclipse.core.resources.IProject;
-
+import com.gradleware.tooling.toolingclient.GradleDistribution;
+import com.liferay.blade.api.ProjectBuild;
+import com.liferay.blade.api.ProjectTemplate;
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.modules.ModulesUtil;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
+
+import java.util.ArrayList;
+
+import org.eclipse.buildship.core.configuration.GradleProjectNature;
+import org.eclipse.buildship.core.projectimport.ProjectImportConfiguration;
+import org.eclipse.buildship.core.util.gradle.GradleDistributionWrapper;
+import org.eclipse.buildship.core.util.progress.AsyncHandler;
+import org.eclipse.buildship.core.workspace.SynchronizeGradleProjectJob;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.sapphire.platform.PathBridge;
 
 /**
  * @author Gregory Amerson
  * @author Terry Jia
  * @author Andy Wu
+ * @author Simon Jiang
  */
-public class GradleProjectProvider extends AbstractLiferayProjectProvider implements ILiferayProjectProvider
+public class GradleProjectProvider extends AbstractLiferayProjectProvider implements NewLiferayProjectProvider<NewLiferayModuleProjectOp>
 {
 
     public GradleProjectProvider()
@@ -47,7 +65,7 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider implem
 
             try
             {
-                if( LiferayNature.hasNature(  project ) && GradleProjectNature.INSTANCE.isPresentOn( project ) )
+                if( LiferayNature.hasNature( project ) && GradleProjectNature.INSTANCE.isPresentOn( project ) )
                 {
                     return new LiferayGradleProject( project );
                 }
@@ -57,6 +75,46 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider implem
                 // ignore errors
             }
         }
+
+        return retval;
+    }
+
+    @Override
+    public IStatus createNewProject( NewLiferayModuleProjectOp op, IProgressMonitor monitor ) throws CoreException
+    {
+        IStatus retval = null;
+
+        final String projectName = op.getProjectName().content();
+
+        IPath location = PathBridge.create( op.getLocation().content() );
+
+        final ProjectTemplate projectTemplate = op.getProjectTemplate().content();
+
+        retval = ModulesUtil.createModuleProject( location.toFile(), projectTemplate, ProjectBuild.gradle, projectName,
+            null, null, null );
+
+        if( retval.isOK() )
+        {
+            ProjectImportConfiguration configuration = new ProjectImportConfiguration();
+            GradleDistributionWrapper from = GradleDistributionWrapper.from( GradleDistribution.fromBuild() );
+            configuration.setGradleDistribution( from );
+            configuration.setProjectDir( location.toFile() );
+            configuration.setApplyWorkingSets( false );
+            configuration.setWorkingSets( new ArrayList<String>() );
+            new SynchronizeGradleProjectJob(
+                configuration.toFixedAttributes(), configuration.getWorkingSets().getValue(),
+                AsyncHandler.NO_OP ).schedule();
+        }
+
+        return retval;
+    }
+
+    @Override
+    public IStatus validateProjectLocation( String projectName, IPath path )
+    {
+        IStatus retval = Status.OK_STATUS;
+
+        //TODO validation gradle project location
 
         return retval;
     }

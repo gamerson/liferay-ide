@@ -12,23 +12,27 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core;
+package com.liferay.ide.project.core.modules;
 
-import com.liferay.ide.core.ILiferayProjectProvider;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.sapphire.ExecutableElement;
-
+import org.eclipse.sapphire.PropertyContentEvent;
 
 /**
- * @author Gregory Amerson
+ * @author Simon Jiang
  */
-public abstract interface NewLiferayProjectProvider<T extends ExecutableElement> extends ILiferayProjectProvider
+public class ModuleProjectUseDefaultLocationListener extends ModuleProjectNameListener
 {
-    public abstract IStatus createNewProject( T op, IProgressMonitor monitor ) throws CoreException;
+    @Override
+    protected void handleTypedEvent( PropertyContentEvent event )
+    {
+        final NewLiferayModuleProjectOp op = op( event );
 
-    public abstract IStatus validateProjectLocation( String projectName, IPath path );
+        if( op.getUseDefaultLocation().content( true ) )
+        {
+            super.handleTypedEvent( event );
+        }
+        else
+        {
+            op.setLocation( (String) null );
+        }
+    }
 }

@@ -12,13 +12,12 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.core.ILiferayProjectProvider;
-import com.liferay.ide.core.LiferayCore;
+package com.liferay.ide.project.core.modules;
+
+import com.liferay.blade.api.ProjectTemplate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -26,32 +25,29 @@ import org.eclipse.sapphire.PossibleValuesService;
 
 
 /**
- * @author Gregory Amerson
+ * @author Simon Jiang
  */
-public class ProjectProviderPossibleValuesService extends PossibleValuesService
+public class ModuleProjectTypePossibleValuesService extends PossibleValuesService
 {
-
     private List<String> possibleValues;
 
     @Override
     protected void initPossibleValuesService()
     {
-        super.initPossibleValuesService();
-
         possibleValues = new ArrayList<String>();
 
-        for( final ILiferayProjectProvider provider : LiferayCore.getProviders( "plugin" ) )
-        {
-            possibleValues.add( provider.getShortName() );
-        }
+        final ProjectTemplate[] templates = ModulesUtil.getProjectTemplates();
 
-        Collections.sort( possibleValues );
+        for( ProjectTemplate template : templates )
+        {
+            possibleValues.add( template.name() );
+        }
     }
 
     @Override
     protected void compute( Set<String> values )
     {
-        values.addAll( this.possibleValues );
+        values.addAll( possibleValues );
     }
 
     @Override
@@ -59,5 +55,4 @@ public class ProjectProviderPossibleValuesService extends PossibleValuesService
     {
         return true;
     }
-
 }
