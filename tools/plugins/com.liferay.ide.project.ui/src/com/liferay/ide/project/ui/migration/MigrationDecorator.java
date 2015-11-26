@@ -14,6 +14,7 @@
  *******************************************************************************/
 package com.liferay.ide.project.ui.migration;
 
+import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.ui.util.UIUtil;
 
@@ -39,44 +40,44 @@ public class MigrationDecorator extends BaseLabelProvider implements ILightweigh
     @Override
     public void decorate( Object element, IDecoration decoration )
     {
-        if( element instanceof MPNode )
-        {
-            final MPNode node = (MPNode) element;
+//        if( element instanceof MPNode )
+//        {
+//            final MPNode node = (MPNode) element;
+//
+//            final IResource member = CoreUtil.getWorkspaceRoot().findMember( node.incrementalPath );
+//
+//            if( member != null && member.exists() )
+//            {
+//                element = member;
+//            }
+//        }
 
-            final IResource member = CoreUtil.getWorkspaceRoot().findMember( node.incrementalPath );
+        final List<Problem> problems = new ArrayList<>();
 
-            if( member != null && member.exists() )
-            {
-                element = member;
-            }
-        }
-
-        final List<TaskProblem> problems = new ArrayList<>();
-
-        final List<TaskProblem> resolvedProblems = new ArrayList<>();
+        final List<Problem> resolvedProblems = new ArrayList<>();
 
         if( element instanceof IResource )
         {
             final IResource resource = (IResource) element;
 
-            problems.addAll( MigrationUtil.getTaskProblemsFromResource( resource ) );
+            problems.addAll( MigrationUtil.getProblemsFromResource( resource ) );
             resolvedProblems.addAll( MigrationUtil.getResolvedTaskProblemsFromResource( resource ) );
         }
-        else if( element instanceof MPTree )
-        {
-            final IViewPart view = UIUtil.findView( VIEW_ID );
-
-            if( view instanceof MigrationView )
-            {
-                problems.addAll( MigrationUtil.getAllTaskProblems( ( (MigrationView) view ).getCommonViewer() ) );
-            }
-        }
+//        else if( element instanceof MPTree )
+//        {
+//            final IViewPart view = UIUtil.findView( VIEW_ID );
+//
+//            if( view instanceof MigrationView )
+//            {
+//                problems.addAll( MigrationUtil.getAllTaskProblems( ( (MigrationView) view ).getCommonViewer() ) );
+//            }
+//        }
 
         if( problems != null && problems.size() > 0 )
         {
-            for( TaskProblem problem : problems )
+            for( Problem problem : problems )
             {
-                if( problem.isResolved() && !resolvedProblems.contains( problem ))
+                if( problem.getStatus() == Problem.STATUS_RESOLVED && !resolvedProblems.contains( problem ))
                 {
                     resolvedProblems.add( problem );
                 }
@@ -84,11 +85,11 @@ public class MigrationDecorator extends BaseLabelProvider implements ILightweigh
 
             final StringBuilder sb = new StringBuilder();
 
-            sb.append( String.format(
-                " [%d%s problem%s",
-                problems.size(),
-                ( element instanceof MPTree ? " total" : ""),
-                ( problems.size() > 1 ? "s" : "") ) );
+//            sb.append( String.format(
+//                " [%d%s problem%s",
+//                problems.size(),
+//                ( element instanceof MPTree ? " total" : ""),
+//                ( problems.size() > 1 ? "s" : "") ) );
 
             if( resolvedProblems.size() > 0 )
             {
