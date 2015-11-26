@@ -1281,6 +1281,12 @@
                      value="com.liferay.ide.project.ui.migration.TaskProblem">
                </instanceof>
                <instanceof
+                     value="com.liferay.ide.project.core.upgrade.FileProblems">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.ide.project.core.upgrade.LiferayProblems">
+               </instanceof>
+               <instanceof
                      value="org.eclipse.core.resources.IFile">
                </instanceof>
                <instanceof
@@ -1298,6 +1304,12 @@
                </instanceof>
                <instanceof
                      value="com.liferay.ide.project.ui.migration.TaskProblem">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.ide.project.core.upgrade.FileProblems">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.ide.project.core.upgrade.LiferayProblems">
                </instanceof>
                <instanceof
                      value="org.eclipse.core.resources.IFile">
@@ -1347,6 +1359,12 @@
                      name="com.liferay.ide.project.ui.migration.MPNode">
                </objectClass>
                <objectClass
+                     name="com.liferay.ide.project.core.upgrade.FileProblems">
+               </objectClass>
+               <objectClass
+                     name="com.liferay.ide.project.core.upgrade.LiferayProblems">
+               </objectClass>
+               <objectClass
                      name="org.eclipse.core.resources.IResource">
                </objectClass>
            </or>
@@ -1364,6 +1382,20 @@
       </factory>
       <factory
             adaptableType="com.liferay.ide.project.ui.migration.MPNode"
+            class="com.liferay.ide.project.ui.migration.MigrationAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="com.liferay.ide.project.core.upgrade.FileProblems"
+            class="com.liferay.ide.project.ui.migration.MigrationAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="com.liferay.ide.project.core.upgrade.LiferayProblems"
             class="com.liferay.ide.project.ui.migration.MigrationAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
@@ -1394,5 +1426,5 @@
          </command>
       </menuContribution>
    </extension>
-  
+
 </plugin>

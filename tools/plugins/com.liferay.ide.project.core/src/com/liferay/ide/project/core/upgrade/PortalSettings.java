@@ -5,7 +5,7 @@ import com.liferay.blade.api.Problem;
 /**
  * @author Lovett Li
  */
-public class PortalSettings
+public class PortalSettings implements LiferayProblems
 {
 
     private String _previousLiferayPortalLocation;
@@ -64,6 +64,11 @@ public class PortalSettings
     public void setProblems( Problem[] problems )
     {
         _problems = problems;
+    }
+
+    public String getType()
+    {
+        return "Portal Setting";
     }
 
 }

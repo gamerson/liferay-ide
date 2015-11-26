@@ -48,12 +48,15 @@ import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.ProgressMonitor;
 
 import com.liferay.ide.core.util.MarkerUtil;
+import com.liferay.ide.project.core.upgrade.CodeProblems;
+import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 
 /**
  * @author Gregory Amerson
  * @author Andy Wu
  * @author Lovett Li
+ * @author Terry Jia
  */
 public class MigrateProjectHandler extends AbstractHandler
 {
@@ -161,9 +164,15 @@ public class MigrateProjectHandler extends AbstractHandler
                         {
                             final List<Problem> problems = m.findProblems( location.toFile(), override );
 
-                            problems.addAll( problems );
+                            allProblems.addAll( problems );
                         }
                     }
+
+                    CodeProblems cp = new CodeProblems();
+
+                    cp.setProblems( allProblems.toArray( new Problem[0] ) );
+
+                    UpgradeAssistantSettingsUtil.setObjectToStore( CodeProblems.class, cp );
 
                     m.reportProblems( allProblems, Migration.DETAIL_LONG, "ide" );
                 }

@@ -16,8 +16,12 @@
 package com.liferay.ide.project.ui.migration;
 
 import com.liferay.blade.api.MigrationConstants;
-
-import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.upgrade.CodeProblems;
+import com.liferay.ide.project.core.upgrade.FileProblems;
+import com.liferay.ide.project.core.upgrade.FileProblemsUtil;
+import com.liferay.ide.project.core.upgrade.Liferay7UpgradeAssistantSettings;
+import com.liferay.ide.project.core.upgrade.LiferayProblems;
+import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +29,6 @@ import java.util.List;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -38,6 +40,8 @@ public class MigrationContentProvider implements ITreeContentProvider
 
     List<IResource> _resources;
     MPTree _root;
+    List<FileProblems> fp;
+    List<LiferayProblems> _problems;
 
     @Override
     public void dispose()
@@ -47,6 +51,17 @@ public class MigrationContentProvider implements ITreeContentProvider
     @Override
     public Object[] getChildren( Object parentElement )
     {
+        if( parentElement instanceof MPTree )
+        {
+            return _problems.toArray();
+        }
+        else if( parentElement instanceof LiferayProblems )
+        {
+            return FileProblemsUtil.getFileProblemsArray( ( (LiferayProblems) parentElement ).getProblems() ).toArray();
+        }
+
+        return null;
+        /**
         if( parentElement != null && parentElement.equals( _root ) )
         {
             final MPNode commonRoot = _root.getCommonRoot();
@@ -101,6 +116,7 @@ public class MigrationContentProvider implements ITreeContentProvider
         }
 
         return null;
+        **/
     }
 
     private MPNode tryToCollapseNodes( MPNode node )
@@ -169,6 +185,10 @@ public class MigrationContentProvider implements ITreeContentProvider
 
             return node.childs.size() > 0 || node.leafs.size() > 0;
         }
+        else if( element instanceof LiferayProblems )
+        {
+            return FileProblemsUtil.getFileProblemsArray( ( (LiferayProblems) element ).getProblems() ).size() > 0;
+        }
 
         return false;
     }
@@ -181,15 +201,22 @@ public class MigrationContentProvider implements ITreeContentProvider
             final IWorkspaceRoot root = (IWorkspaceRoot) newInput;
 
             _resources = new ArrayList<>();
+            _problems= new ArrayList<LiferayProblems>();
 
             try
             {
+                Liferay7UpgradeAssistantSettings setting = UpgradeAssistantSettingsUtil.getObjectFromStore( Liferay7UpgradeAssistantSettings.class );
+                CodeProblems cp = UpgradeAssistantSettingsUtil.getObjectFromStore( CodeProblems.class );
+
+                _problems.add( setting.getPortalSettings() );
+                _problems.add( cp );
+
                 final IMarker[] markers =
                     root.findMarkers( MigrationConstants.MARKER_TYPE, true, IResource.DEPTH_INFINITE );
 
                 _root = getFileTree( markers );
             }
-            catch( CoreException e )
+            catch( Exception e )
             {
             }
         }

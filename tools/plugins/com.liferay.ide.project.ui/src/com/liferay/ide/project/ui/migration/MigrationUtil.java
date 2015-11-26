@@ -15,8 +15,9 @@
 package com.liferay.ide.project.ui.migration;
 
 import com.liferay.blade.api.MigrationConstants;
-
+import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.upgrade.FileProblems;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class MigrationUtil
         return problems;
     }
 
-    public static IResource getIResourceFromTaskProblem( TaskProblem taskProblem )
+    public static IResource getIResourceFromTaskProblem( Problem taskProblem )
     {
         IResource retval = null;
 
@@ -154,6 +155,23 @@ public class MigrationUtil
             if( element instanceof TaskProblem )
             {
                 return (TaskProblem) element;
+            }
+        }
+
+        return null;
+    }
+
+    public static Problem getProblemFromSelection( ISelection selection )
+    {
+        if( selection instanceof IStructuredSelection )
+        {
+            final IStructuredSelection ss = (IStructuredSelection) selection;
+
+            Object element = ss.getFirstElement();
+
+            if( element instanceof Problem )
+            {
+                return (Problem) element;
             }
         }
 
@@ -249,6 +267,23 @@ public class MigrationUtil
         return null;
     }
 
+    public static List<Problem> getProblemsFromTreeNode( ISelection selection )
+    {
+        if( selection instanceof IStructuredSelection )
+        {
+            final IStructuredSelection ss = (IStructuredSelection) selection;
+
+            final Object element = ss.getFirstElement();
+            if( element instanceof FileProblems )
+            {
+                FileProblems fp = (FileProblems) element;
+                return fp.getProblems();
+            }
+        }
+
+        return null;
+    }
+
     public static TaskProblem markerToTaskProblem( IMarker marker )
     {
         final String title = marker.getAttribute( IMarker.MESSAGE, "" );
@@ -270,11 +305,11 @@ public class MigrationUtil
             resolved, markerId );
     }
 
-    public static void openEditor( TaskProblem taskProblem )
+    public static void openEditor( Problem Problem )
     {
         try
         {
-            final IResource resource = getIResourceFromTaskProblem( taskProblem );
+            final IResource resource = getIResourceFromTaskProblem( Problem );
 
             if( resource instanceof IFile )
             {
@@ -287,8 +322,8 @@ public class MigrationUtil
                 {
                     final ITextEditor textEditor = (ITextEditor) editor;
 
-                    textEditor.selectAndReveal( taskProblem.startOffset, taskProblem.endOffset -
-                        taskProblem.startOffset );
+                    textEditor.selectAndReveal( Problem.startOffset, Problem.endOffset -
+                        Problem.startOffset );
                 }
             }
         }
