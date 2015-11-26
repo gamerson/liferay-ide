@@ -48,12 +48,15 @@ import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.ProgressMonitor;
 
 import com.liferay.ide.core.util.MarkerUtil;
+import com.liferay.ide.project.core.upgrade.CodeProblems;
+import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 
 /**
  * @author Gregory Amerson
  * @author Andy Wu
  * @author Lovett Li
+ * @author Terry Jia
  */
 public class MigrateProjectHandler extends AbstractHandler
 {
@@ -96,14 +99,18 @@ public class MigrateProjectHandler extends AbstractHandler
 
                 final IPath location = project.getLocation();
 
-                findMigrationProblems( new IPath[] { location } );
+                findMigrationProblems( new IPath[] { location }, project.getName() );
             }
         }
 
         return null;
     }
 
-    public void findMigrationProblems( final IPath[] locations )
+    public void findMigrationProblems( final IPath[] locations ){
+        findMigrationProblems( locations, "" );
+    }
+
+    public void findMigrationProblems( final IPath[] locations, final String projectName )
     {
         Job job = new WorkspaceJob( "Finding migration problems..." )
         {
@@ -161,8 +168,23 @@ public class MigrateProjectHandler extends AbstractHandler
                         {
                             final List<Problem> problems = m.findProblems( location.toFile(), override );
 
-                            problems.addAll( problems );
+                            allProblems.addAll( problems );
                         }
+                    }
+
+                    CodeProblems cp = new CodeProblems();
+
+                    cp.setProblems( allProblems.toArray( new Problem[0] ) );
+                    cp.setType("Code Problems");
+                    cp.setSuffix( projectName );
+
+                    if( !projectName.equals( "" ) )
+                    {
+                        UpgradeAssistantSettingsUtil.setObjectToStore( CodeProblems.class, projectName, cp );
+                    }
+                    else
+                    {
+                        UpgradeAssistantSettingsUtil.setObjectToStore( CodeProblems.class, cp );
                     }
 
                     m.reportProblems( allProblems, Migration.DETAIL_LONG, "ide" );

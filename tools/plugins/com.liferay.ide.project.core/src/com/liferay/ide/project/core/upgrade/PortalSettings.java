@@ -4,13 +4,15 @@ import com.liferay.blade.api.Problem;
 
 /**
  * @author Lovett Li
+ * @author Terry Jia
  */
-public class PortalSettings
+public class PortalSettings implements LiferayProblems
 {
 
     private String _previousLiferayPortalLocation;
     private String _newName;
     private String _newliferayPortalLocation;
+    private String _type;
     private Problem[] _problems;
 
     public PortalSettings()
@@ -18,12 +20,14 @@ public class PortalSettings
         super();
     }
 
-    public PortalSettings( String previousLiferayPortalLocation, String newName, String newliferayPortalLocation )
+    public PortalSettings(
+        String previousLiferayPortalLocation, String newName, String newliferayPortalLocation, String type )
     {
         super();
         _previousLiferayPortalLocation = previousLiferayPortalLocation;
         _newName = newName;
         _newliferayPortalLocation = newliferayPortalLocation;
+        _type = type;
     }
 
     public String getPreviousLiferayPortalLocation()
@@ -64,6 +68,16 @@ public class PortalSettings
     public void setProblems( Problem[] problems )
     {
         _problems = problems;
+    }
+
+    public String getType()
+    {
+        return _type;
+    }
+
+    public void setType( String type )
+    {
+        _type = type;
     }
 
 }
