@@ -15,6 +15,9 @@
 package com.liferay.ide.project.ui.migration;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.upgrade.CodeProblems;
+import com.liferay.ide.project.core.upgrade.FileProblems;
+import com.liferay.ide.project.core.upgrade.LiferayProblems;
 import com.liferay.ide.project.ui.ProjectUI;
 
 import org.eclipse.core.resources.IProject;
@@ -29,8 +32,9 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
-@SuppressWarnings( { "rawtypes", "unchecked" } )
+@SuppressWarnings( { "rawtypes" } )
 public class MigrationAdapterFactory implements IAdapterFactory, IWorkbenchAdapter
 {
     private static final Object instance = new MigrationAdapterFactory();
@@ -76,6 +80,16 @@ public class MigrationAdapterFactory implements IAdapterFactory, IWorkbenchAdapt
                     ISharedImages.IMG_OBJ_FOLDER ) );
             }
         }
+        else if( element instanceof FileProblems )
+        {
+            return ImageDescriptor.createFromImage( PlatformUI.getWorkbench().getSharedImages().getImage(
+                ISharedImages.IMG_OBJ_FILE ) );
+        }
+        else if( element instanceof LiferayProblems )
+        {
+            return ImageDescriptor.createFromImage( PlatformUI.getWorkbench().getSharedImages().getImage(
+                ISharedImages.IMG_OBJ_FOLDER ) );
+        }
 
         return null;
     }
@@ -99,6 +113,28 @@ public class MigrationAdapterFactory implements IAdapterFactory, IWorkbenchAdapt
             }
 
             return label;
+        }
+        else if( element instanceof FileProblems )
+        {
+            FileProblems fp = (FileProblems) element;
+
+            return fp.getFile().getName();
+        }
+        else if( element instanceof LiferayProblems )
+        {
+            if( element instanceof CodeProblems )
+            {
+                CodeProblems cp = (CodeProblems) element;
+
+                return cp.getType() + "(" + cp.getSuffix() + ")";
+            }
+            else
+            {
+                LiferayProblems lp = (LiferayProblems) element;
+
+                return lp.getType();
+            }
+
         }
 
         return null;
