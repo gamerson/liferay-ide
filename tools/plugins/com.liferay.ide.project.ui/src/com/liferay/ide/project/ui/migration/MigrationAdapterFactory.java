@@ -15,6 +15,8 @@
 package com.liferay.ide.project.ui.migration;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.upgrade.FileProblems;
+import com.liferay.ide.project.core.upgrade.LiferayProblems;
 import com.liferay.ide.project.ui.ProjectUI;
 
 import org.eclipse.core.resources.IProject;
@@ -29,6 +31,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings( { "rawtypes", "unchecked" } )
 public class MigrationAdapterFactory implements IAdapterFactory, IWorkbenchAdapter
@@ -76,6 +79,16 @@ public class MigrationAdapterFactory implements IAdapterFactory, IWorkbenchAdapt
                     ISharedImages.IMG_OBJ_FOLDER ) );
             }
         }
+        else if( element instanceof FileProblems )
+        {
+            return ImageDescriptor.createFromImage( PlatformUI.getWorkbench().getSharedImages().getImage(
+                ISharedImages.IMG_OBJ_FILE ) );
+        }
+        else if( element instanceof LiferayProblems )
+        {
+            return ImageDescriptor.createFromImage( PlatformUI.getWorkbench().getSharedImages().getImage(
+                ISharedImages.IMG_OBJ_FOLDER ) );
+        }
 
         return null;
     }
@@ -99,6 +112,18 @@ public class MigrationAdapterFactory implements IAdapterFactory, IWorkbenchAdapt
             }
 
             return label;
+        }
+        else if( element instanceof FileProblems )
+        {
+            FileProblems fp = (FileProblems) element;
+
+            return fp.getFile().getName();
+        }
+        else if( element instanceof LiferayProblems )
+        {
+            LiferayProblems lp = (LiferayProblems) element;
+
+            return lp.getType();
         }
 
         return null;
