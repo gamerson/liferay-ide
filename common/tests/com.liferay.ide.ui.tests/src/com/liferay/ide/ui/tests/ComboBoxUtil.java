@@ -19,6 +19,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
  * @author Terry Jia
+ * @author Ashley Yuan
  */
 public class ComboBoxUtil extends SWTBotUtil
 {
@@ -28,11 +29,24 @@ public class ComboBoxUtil extends SWTBotUtil
         super( bot );
     }
 
-    public void select( String label, String value )
+    public String getText( int index )
     {
-        bot.comboBox( label ).setSelection( value );
+        return bot.comboBox( index ).getText();
+    }
 
-        sleep();
+    public String getText( String label )
+    {
+        return bot.comboBoxWithLabel( label ).getText();
+    }
+
+    public boolean isEnabled( int index )
+    {
+        return bot.comboBox( index ).isEnabled();
+    }
+
+    public boolean isEnabled( String label )
+    {
+        return bot.comboBoxWithLabel( label ).isEnabled();
     }
 
     public void select( int index, String value )
@@ -49,4 +63,10 @@ public class ComboBoxUtil extends SWTBotUtil
         sleep();
     }
 
+    public void select( String label, String value )
+    {
+        bot.comboBoxWithLabel( label ).setSelection( value );
+
+        sleep();
+    }
 }

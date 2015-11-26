@@ -19,6 +19,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
  * @author Terry Jia
+ * @author Ashley Yuan
  */
 public class TextUtil extends SWTBotUtil
 {
@@ -28,9 +29,29 @@ public class TextUtil extends SWTBotUtil
         super( bot );
     }
 
+    public String getStyledText()
+    {
+        return bot.styledText().getText();
+    }
+
+    public String getText( int index )
+    {
+        return bot.text( index ).getText();
+    }
+
+    public String getText( String textLabel )
+    {
+        return bot.textWithLabel( textLabel ).getText();
+    }
+
+    public void setStyledText( String text )
+    {
+        bot.styledText().setText( text );
+    }
+
     public void setText( String textLabel, String textValue )
     {
         bot.textWithLabel( textLabel ).setText( textValue );
+        sleep();
     }
-
 }

@@ -19,6 +19,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
  * @author Terry Jia
+ * @auther Ashley Yuan
  */
 public class ButtonUtil extends SWTBotUtil
 {
@@ -31,14 +32,22 @@ public class ButtonUtil extends SWTBotUtil
     public void click( String buttonLabel )
     {
         bot.button( buttonLabel ).click();
-
         sleep();
+    }
+
+    public boolean isEnabled( int index )
+    {
+        return bot.button( index ).isEnabled();
     }
 
     public boolean isEnabled( String buttonLabel )
     {
-
         return bot.button( buttonLabel ).isEnabled();
+    }
+
+    public boolean isTooltipEnabled( String tooltip )
+    {
+        return bot.toolbarButtonWithTooltip( tooltip ).isEnabled();
     }
 
 }

@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 /**
  * @author Terry Jia
+ * @author Ashley Yuan
  */
 @RunWith( SWTBotJunit4ClassRunner.class )
 public class SWTBotBase implements UIBase
@@ -30,10 +31,14 @@ public class SWTBotBase implements UIBase
     public static SWTWorkbenchBot bot;
 
     public static ButtonUtil buttonUtil;
+    public static CheckBoxUtil checkBoxUtil;
+    public static ComboBoxUtil comboBoxUtil;
+    public static EditorUtil editorUtil;
+    public static LabelUtil labelUtil;
+    public static RadioUtil radioUtil;
+    public static ShellUtil shellUtil;
     public static TextUtil textUtil;
     public static ToolbarUtil toolbarUtil;
-    public static ComboBoxUtil comboBoxUtil;
-    public static ShellUtil shellUtil;
     public static TreeUtil treeUtil;
     public static ViewUtil viewUtil;
 
@@ -50,6 +55,10 @@ public class SWTBotBase implements UIBase
         shellUtil = new ShellUtil( bot );
         treeUtil = new TreeUtil( bot );
         viewUtil = new ViewUtil( bot );
+        checkBoxUtil = new CheckBoxUtil( bot );
+        editorUtil = new EditorUtil( bot );
+        labelUtil = new LabelUtil( bot );
+        radioUtil = new RadioUtil( bot );
 
         viewUtil.close( VIEW_WELCOME );
         bot.perspectiveByLabel( "Liferay" ).activate();

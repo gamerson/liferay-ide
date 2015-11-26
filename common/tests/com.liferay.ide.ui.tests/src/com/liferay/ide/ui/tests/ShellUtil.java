@@ -16,9 +16,11 @@
 package com.liferay.ide.ui.tests;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 
 /**
  * @author Terry Jia
+ * @author Ashley Yuan
  */
 public class ShellUtil extends SWTBotUtil
 {
@@ -33,4 +35,10 @@ public class ShellUtil extends SWTBotUtil
         bot.activeShell().close();
     }
 
+    public SWTBotShell shell( String shellName )
+    {
+        sleep();
+        return bot.shell( shellName );
+
+    }
 }

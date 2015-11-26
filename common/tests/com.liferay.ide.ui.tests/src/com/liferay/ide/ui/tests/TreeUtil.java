@@ -15,11 +15,15 @@
 
 package com.liferay.ide.ui.tests;
 
+import java.util.List;
+
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.swt.finder.utils.internal.Assert;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
 /**
  * @author Terry Jia
+ * @auther Ashley Yuan
  */
 public class TreeUtil extends SWTBotUtil
 {
@@ -29,9 +33,39 @@ public class TreeUtil extends SWTBotUtil
         super( bot );
     }
 
-    public void select( String name )
+    public void click( String node, String context )
     {
-        bot.tree().getTreeItem( name ).select();
+        bot.tree().getTreeItem( node ).contextMenu( context ).click();
+        sleep();
+    }
+
+    public void click( String node, String context, String menuName )
+    {
+        bot.tree().getTreeItem( node ).contextMenu( context ).menu( menuName ).click();
+        sleep();
+    }
+
+    public void doubleClick( String node, String... nodes )
+    {
+        expandNode( nodes ).getNode( node ).doubleClick();
+        sleep();
+    }
+
+    public SWTBotTreeItem expandNode( String... nodes )
+    {
+        SWTBotTreeItem treeItem = bot.tree().expandNode( nodes );
+        sleep();
+        return treeItem;
+    }
+
+    public SWTBotTreeItem[] getItems()
+    {
+        return bot.tree().getAllItems();
+    }
+
+    public SWTBotTreeItem getNode( String node )
+    {
+        return bot.tree().getTreeItem( node );
     }
 
     public boolean hasItems()
@@ -39,9 +73,9 @@ public class TreeUtil extends SWTBotUtil
         return bot.tree().hasItems();
     }
 
-    public SWTBotTreeItem[] getItems()
+    public void select( String node )
     {
-        return bot.tree().getAllItems();
+        bot.tree().getTreeItem( node ).select();
     }
 
 }

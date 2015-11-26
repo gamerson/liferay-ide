@@ -20,7 +20,10 @@ Require-Bundle: com.liferay.ide.core,
  org.eclipse.swtbot.eclipse.finder,
  org.eclipse.swtbot.junit4_x,
  org.hamcrest.core,
- org.eclipse.swt
+ org.eclipse.swt,
+ org.eclipse.debug.ui,
+ org.eclipse.ui.console,
+ org.eclipse.swtbot.swt.finder
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.ui.tests

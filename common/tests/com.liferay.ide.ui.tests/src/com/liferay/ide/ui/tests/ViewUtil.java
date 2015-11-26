@@ -16,9 +16,11 @@
 package com.liferay.ide.ui.tests;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 
 /**
  * @author Terry Jia
+ * @author Ashley Yuan
  */
 public class ViewUtil extends SWTBotUtil
 {
@@ -28,13 +30,18 @@ public class ViewUtil extends SWTBotUtil
         super( bot );
     }
 
+    public void close( String title )
+    {
+        bot.viewByTitle( title ).close();
+    }
+
     public void show( String title )
     {
         bot.viewByTitle( title ).show();
     }
-
-    public void close( String title )
+    
+    public SWTBotView view( String title )
     {
-        bot.viewByTitle( title ).close();
+        return bot.viewByTitle( title );
     }
 }
