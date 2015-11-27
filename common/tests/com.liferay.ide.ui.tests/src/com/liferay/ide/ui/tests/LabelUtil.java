@@ -21,7 +21,6 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotLabel;
 /**
  * @author Ashley Yuan
  */
-
 public class LabelUtil extends SWTBotUtil
 {
 

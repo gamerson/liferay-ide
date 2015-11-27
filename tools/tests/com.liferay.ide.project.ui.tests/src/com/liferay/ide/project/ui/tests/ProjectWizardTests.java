@@ -16,21 +16,13 @@
 package com.liferay.ide.project.ui.tests;
 
 import static org.eclipse.swtbot.swt.finder.SWTBotAssert.assertContains;
-import static org.eclipse.swtbot.swt.finder.SWTBotAssert.assertVisible;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.liferay.ide.ui.tests.CheckBoxUtil;
-import com.liferay.ide.ui.tests.LabelUtil;
 import com.liferay.ide.ui.tests.SWTBotBase;
-import com.liferay.ide.ui.tests.TextUtil;
-import com.liferay.ide.ui.tests.CheckBoxUtil;
 import com.liferay.ide.ui.tests.UITestsUtils;
 
-import org.eclipse.swtbot.swt.finder.SWTBotAssert;
-import org.eclipse.swtbot.swt.finder.widgets.SWTBotMenu;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -46,6 +38,13 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
 
     public static boolean added = false;
 
+    private boolean addedProjecs()
+    {
+        viewUtil.show( "Package Explorer" );
+
+        return treeUtil.hasItems();
+    }
+
     @AfterClass
     public static void cleanAll()
     {
@@ -57,19 +56,6 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
             bot.checkBox().click();
             buttonUtil.click( BUTTON_OK );
         }
-    }
-
-    public static void deleteProjectInSdk( String projectName, String... nodes )
-    {
-        treeUtil.expandNode( nodes ).getNode( projectName ).contextMenu( "Delete" ).click();
-        buttonUtil.click( BUTTON_OK );
-    }
-
-    private boolean addedProjecs()
-    {
-        viewUtil.show( "Package Explorer" );
-
-        return treeUtil.hasItems();
     }
 
     @After
@@ -257,6 +243,12 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
         shellUtil.close();
     }
 
+    public static void deleteProjectInSdk( String projectName, String... nodes )
+    {
+        treeUtil.expandNode( nodes ).getNode( projectName ).contextMenu( "Delete" ).click();
+        buttonUtil.click( BUTTON_OK );
+    }
+
     @Before
     public void openWizard()
     {
@@ -280,6 +272,7 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
         assertTrue( buttonUtil.isEnabled( BUTTON_CANCEL ) );
 
         textUtil.setText( TEXT_PROJECT_NAME, "test" );
+
         assertEquals( textUtil.getText( INDEX_VALIDATION_MESSAGE3 ), TEXT_CREATE_NEW_PROJECT_AS_LIFERAY_PLUGIN );
         assertTrue( buttonUtil.isEnabled( BUTTON_NEXT ) );
         assertFalse( buttonUtil.isEnabled( BUTTON_FINISH ) );

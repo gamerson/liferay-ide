@@ -39,6 +39,5 @@ public class ShellUtil extends SWTBotUtil
     {
         sleep();
         return bot.shell( shellName );
-
     }
 }

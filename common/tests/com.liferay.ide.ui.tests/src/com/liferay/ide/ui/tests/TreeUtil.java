@@ -15,10 +15,7 @@
 
 package com.liferay.ide.ui.tests;
 
-import java.util.List;
-
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
-import org.eclipse.swtbot.swt.finder.utils.internal.Assert;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
 /**
