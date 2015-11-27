@@ -28,6 +28,8 @@ public interface ProjectWizard
     public final String TEXT_DISPLAY_NAME = "Display name:";
     public final String TEXT_PORTLET_NAME = "Portlet name:";
     public final String TEXT_BUILD_TYPE = "Build type:";
+    public final String TEXT_BLANK = "";
+
     public final String TEXT_PROJECT_NAME_MUST_SPECIFIED = "Project name must be specified";
     public final String TEXT_ENTER_PROJECT_NAME = "Please enter a project name.";
     public final String TEXT_INCLUDE_SAMPLE_CODE = "Include sample code";
@@ -50,6 +52,8 @@ public interface ProjectWizard
     public final String TEXT_JSF_FRAMEWORK = "JSF 2.x";
     public final String TEXT_SPRING_MVC_FRAMEWORK = "Spring MVC";
     public final String TEXT_VAADIN_FRAMEWORK = "Vaadin";
+    public final String TEXT_WEB_SDK_62_ERRORR_MESSAGE = " The selected Plugins SDK does not support creating new web type plugins.  Please configure version 7.0.0 or greater.";
+    public final String TEXT_PROJECT_NAME_MUST_BE_SPECIFIED = " Project name must be specified";
 
     public final String TOOLTIP_CREATE_LIFERAY_PROJECT = "Create a new Liferay Plugin Project";
     public final String TOOLTIP_MENU_ITEM_NEW_LIFERAY_PROJECT = "New Liferay Plugin Project";
@@ -57,7 +61,7 @@ public interface ProjectWizard
     public final String TOOLTIP_BROWSE = "Browse";
     public final String TOOLTIP_NEW_LIFERAY_PORTLET = "New Liferay Portlet";
 
-    public final int INDEX_VALIDATION_MESSAGE3 = 2; 
+    public final int INDEX_VALIDATION_MESSAGE3 = 2;
     public final int INDEX_VALIDATION_MESSAGE2 = 1;
     public final int INDEX_VALIDATION_MESSAGE1 = 0;
 
@@ -81,5 +85,5 @@ public interface ProjectWizard
     public final String MANU_THEME_FRAMEWORK_FREEMARKER = "Freemarker";
     public final String MANU_THEME_FRAMEWORK_VELOCITY = "Velocity";
     public final String MANU_THEME_FRAMEWORK_JSP = "JSP";
-    
+
 }

@@ -16,6 +16,7 @@
 package com.liferay.ide.ui.tests;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
 /**
@@ -67,7 +68,18 @@ public class TreeUtil extends SWTBotUtil
 
     public boolean hasItems()
     {
-        return bot.tree().hasItems();
+        SWTBotTree tree;
+
+        try
+        {
+            tree = bot.tree();
+        }
+        catch( Exception e )
+        {
+            return false;
+        }
+
+        return tree.hasItems();
     }
 
     public void select( String node )
