@@ -18,6 +18,7 @@ package com.liferay.ide.project.ui.tests;
 /**
  * @author Terry Jia
  * @author Ashley Yuan
+ * @author Ying Xu
  */
 public interface ProjectWizard
 {
@@ -85,5 +86,7 @@ public interface ProjectWizard
     public final String MANU_THEME_FRAMEWORK_FREEMARKER = "Freemarker";
     public final String MANU_THEME_FRAMEWORK_VELOCITY = "Velocity";
     public final String MANU_THEME_FRAMEWORK_JSP = "JSP";
+
+    public final int INDEX_VALIDATION_MESSAGE_WEB_SDKVERSION = 1;
 
 }

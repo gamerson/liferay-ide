@@ -20,6 +20,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 /**
  * @author Terry Jia
  * @author Ashley Yuan
+ * @author Ying Xu
  */
 public class ComboBoxUtil extends SWTBotUtil
 {

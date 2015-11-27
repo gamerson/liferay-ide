@@ -18,6 +18,7 @@ package com.liferay.ide.ui.tests;
 /**
  * @author Terry Jia
  * @author Ashley Yuan
+ * @author Ying Xu
  */
 public interface UIBase
 {
@@ -29,6 +30,8 @@ public interface UIBase
     public final String BUTTON_CANCEL = "Cancel";
     public final String BUTTON_HELP = "Help";
     public final String BUTTON_BROWSE = "Browse...";
+
+    public final String CHECKBOX_INCLUDE_SAMPLE_CODE = "Include sample code";
 
     public final String VIEW_PACKAGE_EXPLORER = "Package Explorer";
     public final String VIEW_WELCOME = "Welcome";

@@ -33,6 +33,7 @@ import org.junit.Test;
  * @author Terry Jia
  * @author Ashley Yuan
  * @author Vicky Wang
+ * @author Ying Xu
  */
 public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
 {
@@ -66,12 +67,16 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
     {
         SWTBotTreeItem[] items = treeUtil.getItems();
 
-        for( SWTBotTreeItem item : items )
-        {
-            item.contextMenu( "Delete" ).click();
-            bot.checkBox().click();
-            buttonUtil.click( BUTTON_OK );
-        }
+        try {
+			for( SWTBotTreeItem item : items )
+			{
+			    item.contextMenu( "Delete" ).click();
+			    bot.checkBox().click();
+			    buttonUtil.click( BUTTON_OK );
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
     @After
@@ -93,6 +98,8 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
         checkAndAddSDK();
 
         buttonUtil.click( BUTTON_FINISH );
+
+        assertTrue(treeUtil.getTreeItem("testExt-ext").isVisible());
     }
 
     @Test
@@ -105,8 +112,11 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
         checkAndAddSDK();
 
         buttonUtil.click( BUTTON_FINISH );
+
+        assertTrue(treeUtil.getTreeItem("testHook-hook").isVisible());
     }
 
+    @Test
     public void createServiceBuilderPortletProject()
     {
         currentType = "service-builder-portlet";
@@ -120,6 +130,31 @@ public class ProjectWizardTests extends SWTBotBase implements ProjectWizard
         checkAndAddSDK();
 
         buttonUtil.click( BUTTON_FINISH );
+        comboBoxUtil.sleep(5000);
+        assertTrue(treeUtil.getTreeItem("testServiceBuilder-portlet").isVisible());
+        assertTrue((treeUtil.expandNode("testServiceBuilder-portlet").expandNode("docroot").getNode("view.jsp")).isVisible());
+        assertTrue((treeUtil.expandNode("testServiceBuilder-portlet").expandNode("docroot").expandNode("css").getNode("main.css")).isVisible());
+        assertTrue((treeUtil.expandNode("testServiceBuilder-portlet").expandNode("docroot").expandNode("js").getNode("main.js")).isVisible());
+
+    }
+
+    @Test
+    public void createServiceBuilderPortletProjectWithoutSampleCode()
+    {
+    	textUtil.setText( TEXT_PROJECT_NAME, "testServiceBuilderWithoutSampleCode" );
+    	comboBoxUtil.select( TEXT_PLUGIN_TYPE, MENU_SERVICE_BUILDER_PORTLET );
+
+    	if(checkBoxUtil.isChecked(CHECKBOX_INCLUDE_SAMPLE_CODE)){
+    		checkBoxUtil.click( CHECKBOX_INCLUDE_SAMPLE_CODE );
+    	}
+
+        if( !added )
+        {
+            setSDKLocation();
+        }
+
+        buttonUtil.click( BUTTON_FINISH );
+        assertTrue(treeUtil.getTreeItem("testServiceBuilderWithoutSampleCode-portlet").isVisible());
     }
 
     @Test

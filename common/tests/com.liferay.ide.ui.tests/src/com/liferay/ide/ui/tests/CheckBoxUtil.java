@@ -19,6 +19,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
  * @author Ashley Yuan
+ * @author Ying Xu
  */
 public class CheckBoxUtil extends SWTBotUtil
 {
