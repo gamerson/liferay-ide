@@ -29,6 +29,12 @@ public class CheckBoxUtil extends SWTBotUtil
         super( bot );
     }
 
+    public void click()
+    {
+        bot.checkBox().click();
+        sleep();
+    }
+
     public void click( int index )
     {
         bot.checkBox( index ).click();

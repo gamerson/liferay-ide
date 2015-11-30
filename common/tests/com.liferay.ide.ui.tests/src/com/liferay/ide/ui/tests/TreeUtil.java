@@ -88,12 +88,14 @@ public class TreeUtil extends SWTBotUtil
         bot.tree().getTreeItem( node ).select();
     }
 
-    public SWTBotTreeItem getTreeItem(String name){
-    	return bot.tree().getTreeItem(name);
+    public SWTBotTreeItem getTreeItem( String name )
+    {
+        return bot.tree().getTreeItem( name );
     }
-    
-    public SWTBotTreeItem expandNode(String nodeText){
-    	return bot.tree().expandNode(nodeText);
+
+    public SWTBotTreeItem expandNode( String nodeText )
+    {
+        return bot.tree().expandNode( nodeText );
     }
-    
+
 }
