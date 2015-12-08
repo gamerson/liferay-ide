@@ -62,5 +62,33 @@
             <image>NewLiferayModuleProjectWizard.png</image>
         </page>
         <description>Create a new project configured as a Liferay plugin</description>
+        <page>
+            <id>LiferayServiceWrapperSettingWizardPage</id>
+            <label>Liferay Service Or ServiceWrapper Module  Project</label>
+            <description>Set Service or ServiceWrapper Advance setting.</description>
+            <visible-when>${ ProjectTemplate == 'servicewrapper' || ProjectTemplate == 'service' }</visible-when>
+            <content>
+	            <custom>
+                	<scale-vertically>true</scale-vertically>
+                    <class>com.liferay.ide.project.ui.modules.LiferayServiceModuleCustomPart</class>
+                </custom>  
+            </content>
+            <margin-right>10</margin-right>
+            <margin-left>0</margin-left>
+        </page>
+        <page>
+            <id>LiferayPotletSettingWizardPage</id>
+            <label>Liferay Portlet Module Project</label>
+            <description>Set Portlet Or JSPPortlet Advance setting.</description>
+            <visible-when>${ ProjectTemplate == 'portlet' || ProjectTemplate == 'jspportlet' || ProjectTemplate == 'servicebuilder' }</visible-when>
+            <content>
+	            <custom>
+                	<scale-vertically>true</scale-vertically>
+                    <class>com.liferay.ide.project.ui.modules.LiferayPortletModuleCustomPart</class>
+                </custom>  
+            </content>
+            <margin-right>10</margin-right>
+            <margin-left>0</margin-left>
+        </page>                        
     </wizard>
 </definition>
