@@ -15,6 +15,7 @@
 
 package com.liferay.ide.project.ui.migration;
 
+import com.liferay.blade.api.Problem;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.ui.util.UIUtil;
 
@@ -36,10 +37,10 @@ import org.eclipse.ui.actions.SelectionProviderAction;
 /**
  * @author Gregory Amerson
  */
-public abstract class TaskProblemAction extends SelectionProviderAction implements IAction
+public abstract class ProblemAction extends SelectionProviderAction implements IAction
 {
 
-    public TaskProblemAction( ISelectionProvider provider, String text )
+    public ProblemAction( ISelectionProvider provider, String text )
     {
         super( provider, text );
     }
@@ -47,17 +48,17 @@ public abstract class TaskProblemAction extends SelectionProviderAction implemen
     @Override
     public void run()
     {
-        final List<TaskProblem> taskProblems = MigrationUtil.getTaskProblemsFromSelection( getSelection() );
+        final List<Problem> Problems = MigrationUtil.getProblemsFromSelection( getSelection() );
 
-        for( TaskProblem taskProblem : taskProblems )
+        for( Problem problem : Problems )
         {
-            run( taskProblem, getSelectionProvider() );
+            run( problem, getSelectionProvider() );
         }
     }
 
-    public void run( final TaskProblem taskProblem, final ISelectionProvider provider )
+    public void run( final Problem problem, final ISelectionProvider provider )
     {
-        final IResource resource = MigrationUtil.getIResourceFromTaskProblem( taskProblem );
+        final IResource resource = MigrationUtil.getIResourceFromProblem( problem );
 
         new Job( "Marking migration problem as done" )
         {
@@ -67,11 +68,11 @@ public abstract class TaskProblemAction extends SelectionProviderAction implemen
 
                 if( resource != null && resource.exists() )
                 {
-                    final IMarker marker = resource.getMarker( taskProblem.getMarkerId() );
+                    final IMarker marker = resource.getMarker( problem.getMarkerId() );
 
                     if( marker != null )
                     {
-                        retval = runWithMarker( taskProblem, marker );
+                        retval = runWithMarker( problem, marker );
 
                         if( provider instanceof Viewer )
                         {
@@ -103,13 +104,13 @@ public abstract class TaskProblemAction extends SelectionProviderAction implemen
 
     }
 
-    protected abstract IStatus runWithMarker( TaskProblem taskProblem, IMarker marker );
+    protected abstract IStatus runWithMarker( Problem problem, IMarker marker );
 
     @Override
     public void selectionChanged( IStructuredSelection selection )
     {
         Object element = selection.getFirstElement();
 
-        setEnabled( element instanceof TaskProblem );
+        setEnabled( element instanceof Problem );
     }
 }

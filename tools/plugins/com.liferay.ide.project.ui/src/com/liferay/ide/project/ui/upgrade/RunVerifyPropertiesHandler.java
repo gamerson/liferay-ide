@@ -18,6 +18,7 @@ package com.liferay.ide.project.ui.upgrade;
 import com.liferay.blade.api.Command;
 import com.liferay.blade.api.Problem;
 import com.liferay.ide.project.core.upgrade.Liferay7UpgradeAssistantSettings;
+import com.liferay.ide.project.core.upgrade.PortalSettings;
 import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
 
 import java.io.File;
@@ -48,10 +49,12 @@ public class RunVerifyPropertiesHandler extends AbstractOSGiCommandHandler
 
         try
         {
-            final Liferay7UpgradeAssistantSettings settings =
-                UpgradeAssistantSettingsUtil.getObjectFromStore( Liferay7UpgradeAssistantSettings.class );
+//            final Liferay7UpgradeAssistantSettings settings =
+//                UpgradeAssistantSettingsUtil.getObjectFromStore( Liferay7UpgradeAssistantSettings.class );
 
-            parameters.put( "portalDir", new File( settings.getPortalSettings().getNewLiferayPortalLocation() ) );
+            parameters.put( "portalDir", new File( "D:\\work\\liferay-bundle\\liferay-portal-7.0-ce-a1") );
+            parameters.put( "implJar", new File( "D:\\work\\liferay-bundle\\liferay-portal-7.0-ce-a1\\tomcat-7.0.62\\webapps\\ROOT\\WEB-INF\\lib\\portal-impl.jar") );
+            parameters.put( "serviceJar", new File( "D:\\work\\liferay-bundle\\liferay-portal-7.0-ce-a1\\tomcat-7.0.62\\lib\\ext\\portal-service.jar") );
 
             final Object o = command.execute( parameters );
 
@@ -60,6 +63,10 @@ public class RunVerifyPropertiesHandler extends AbstractOSGiCommandHandler
                 @SuppressWarnings( "unchecked" )
                 final List<Problem> problems = (List<Problem>) o;
 
+                Liferay7UpgradeAssistantSettings settings = new Liferay7UpgradeAssistantSettings();
+
+                PortalSettings ps = new PortalSettings();
+                settings.setPortalSettings( ps );
                 settings.getPortalSettings().setProblems( problems.toArray( new Problem[0] ) );
 
                 UpgradeAssistantSettingsUtil.setObjectToStore( Liferay7UpgradeAssistantSettings.class, settings );
