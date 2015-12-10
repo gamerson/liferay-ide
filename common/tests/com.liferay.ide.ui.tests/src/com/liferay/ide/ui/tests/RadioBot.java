@@ -12,28 +12,47 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.server.ui.navigator;
 
-import org.eclipse.ui.navigator.ICommonContentExtensionSite;
-import org.eclipse.wst.server.core.IServer;
-import org.osgi.framework.dto.BundleDTO;
-
+package com.liferay.ide.ui.tests;
 
 /**
- * @author Gregory Amerson
+ * @author Ashley Yuan
  */
-public class WorkspaceBundlesFolder extends BundlesFolder
+import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotRadio;
+
+public class RadioBot extends Bot
 {
 
-    public WorkspaceBundlesFolder( ICommonContentExtensionSite config, IServer server )
+    public RadioBot( SWTWorkbenchBot bot )
     {
-        super( config, server );
+        super( bot );
     }
 
-    @Override
-    protected boolean filter( BundleDTO bundle )
+    public void click( int index )
     {
-        return bundle != null && isWorkspaceBundle( bundle );
+        bot.radio( index ).click();
+        sleep();
     }
 
+    public void click( String label )
+    {
+        bot.radioWithLabel( label ).click();
+        sleep();
+    }
+
+    public SWTBotRadio radio()
+    {
+        return bot.radio();
+    }
+
+    public SWTBotRadio radio( int index )
+    {
+        return bot.radio( index );
+    }
+
+    public SWTBotRadio radio( String mnemonicText )
+    {
+        return bot.radio( mnemonicText );
+    }
 }

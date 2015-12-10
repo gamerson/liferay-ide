@@ -12,15 +12,42 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.server.ui.navigator;
 
-import org.osgi.framework.dto.BundleDTO;
+package com.liferay.ide.ui.tests;
 
+import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
- * @author Gregory Amerson
+ * @author Terry Jia
+ * @auther Ashley Yuan
  */
-public class BundleDTOLoading extends BundleDTO
+public class ButtonBot extends Bot
 {
+
+    public ButtonBot( SWTWorkbenchBot bot )
+    {
+        super( bot );
+    }
+
+    public void click( String buttonLabel )
+    {
+        bot.button( buttonLabel ).click();
+        sleep();
+    }
+
+    public boolean isEnabled( int index )
+    {
+        return bot.button( index ).isEnabled();
+    }
+
+    public boolean isEnabled( String buttonLabel )
+    {
+        return bot.button( buttonLabel ).isEnabled();
+    }
+
+    public boolean isTooltipEnabled( String tooltip )
+    {
+        return bot.toolbarButtonWithTooltip( tooltip ).isEnabled();
+    }
 
 }
