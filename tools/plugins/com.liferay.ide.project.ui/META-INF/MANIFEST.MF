@@ -45,7 +45,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.equinox.ds,
  org.eclipse.equinox.util,
  com.liferay.blade.api;bundle-version="1.0.0",
- org.apache.felix.gogo.runtime
+ org.apache.felix.gogo.runtime,
+ org.eclipse.m2e.core,
+ org.eclipse.m2e.maven.runtime,
+ org.eclipse.compare
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.project.ui,
@@ -58,3 +61,4 @@ Export-Package: com.liferay.ide.project.ui,
  com.liferay.ide.project.ui.wizard
 Service-Component: OSGI-INF/com.liferay.ide.project.ui.migration.IDEReporter.xml,
  OSGI-INF/com.liferay.ide.project.ui.migration.WorkspaceMigrationImpl.xml
+Import-Package: com.liferay.ide.maven.core

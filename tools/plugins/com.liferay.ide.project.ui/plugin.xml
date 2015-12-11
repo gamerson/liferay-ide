@@ -1394,5 +1394,18 @@
          </command>
       </menuContribution>
    </extension>
-  
+
+   <extension point="org.eclipse.ui.views">
+		<category
+			id="com.liferay.ide.project.ui.liferay"
+			name="Liferay">
+		</category>
+		<view
+			name="Jsp Compare View"
+			category="blade"
+			class="com.liferay.ide.project.ui.upgrade.FileCompareView"
+			id="blade.FileCompareView">
+		</view>
+   </extension>
+
 </plugin>
