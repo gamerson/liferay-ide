@@ -62,5 +62,32 @@
             <image>NewLiferayModuleProjectWizard.png</image>
         </page>
         <description>Create a new project configured as a Liferay plugin</description>
+        <page>
+            <id>LiferayServiceSettingWizardPage</id>
+            <label>Liferay Module Service Project</label>
+            <description>Set Service Advance setting.</description>
+            <visible-when>${ ProjectTemplate == 'service' }</visible-when>
+            <content>
+	            <custom>
+                	<scale-vertically>true</scale-vertically>
+                    <class>com.liferay.ide.project.ui.modules.ServiceModuleCustomPart</class>
+                </custom>  
+            </content>
+            <margin-right>10</margin-right>
+            <margin-left>0</margin-left>
+        </page>   
+        <page>
+            <id>LiferayServiceWrapperSettingWizardPage</id>
+            <label>Liferay Module ServiceWrapper Project</label>
+            <description>Set Service or ServiceWrapper Advance setting.</description>
+            <visible-when>${ ProjectTemplate == 'servicewrapper' }</visible-when>
+            <content>
+                <property-editor>
+                    <property>ServiceName</property>
+                </property-editor>
+            </content>
+            <margin-right>10</margin-right>
+            <margin-left>0</margin-left>
+        </page>              
     </wizard>
 </definition>
