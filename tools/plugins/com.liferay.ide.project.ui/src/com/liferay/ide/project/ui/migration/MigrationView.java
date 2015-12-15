@@ -581,4 +581,9 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         }
     };
 
+    public TableViewer getProblemsViewer()
+    {
+        return _problemsViewer;
+    }
+
 }
