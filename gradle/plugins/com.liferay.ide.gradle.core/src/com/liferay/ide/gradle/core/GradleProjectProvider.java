@@ -91,7 +91,7 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider implem
         final ProjectTemplate projectTemplate = op.getProjectTemplate().content();
 
         retval = ModulesUtil.createModuleProject( location.toFile(), projectTemplate, ProjectBuild.gradle, projectName,
-            null, null, null );
+            op.getComponentName().content(), op.getServiceName().content(), op.getPackageName().content() );
 
         if( retval.isOK() )
         {

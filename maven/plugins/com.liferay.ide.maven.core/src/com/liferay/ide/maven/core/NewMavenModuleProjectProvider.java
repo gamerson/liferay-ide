@@ -62,27 +62,21 @@ public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider i
 
         IPath location = PathBridge.create( op.getLocation().content() );
 
-        // for location we should use the parent location
-        if( location.lastSegment().equals( projectName ) )
-        {
-            // use parent dir since maven archetype will generate new dir under this location
-            location = location.removeLastSegments( 1 );
-        }
-
         final List<IProject> newProjects = new ArrayList<IProject>();
 
-        retval = ModulesUtil.createModuleProject(
-            location.toFile(), op.getProjectTemplate().content(), ProjectBuild.maven, projectName, null, null, null );
+        retval =
+            ModulesUtil.createModuleProject(
+                location.toFile(), op.getProjectTemplate().content(), ProjectBuild.maven, projectName,
+                op.getComponentName().content(), op.getServiceName().content(), op.getPackageName().content() );
 
         if ( retval.isOK() )
         {
             final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-            IPath pomPath = location.append( projectName ).append( "pom.xml" );
+            IPath pomPath = location.append( "pom.xml" );
 
             if ( pomPath != null && pomPath.toFile().exists() )
             {
-                File pomFile = new File( location.append( projectName ).append( "pom.xml" ).toPortableString() );
+                File pomFile = new File( location.append( "pom.xml" ).toPortableString() );
                 MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
                 final ResolverConfiguration resolverConfig = new ResolverConfiguration();
                 final ArrayList<MavenProjectInfo> projectInfos = new ArrayList<MavenProjectInfo>();
