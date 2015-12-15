@@ -14,6 +14,7 @@
  *******************************************************************************/
 package com.liferay.ide.project.ui.migration;
 
+import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.ui.util.UIUtil;
 
@@ -51,15 +52,15 @@ public class MigrationDecorator extends BaseLabelProvider implements ILightweigh
             }
         }
 
-        final List<TaskProblem> problems = new ArrayList<>();
+        final List<Problem> problems = new ArrayList<>();
 
-        final List<TaskProblem> resolvedProblems = new ArrayList<>();
+        final List<Problem> resolvedProblems = new ArrayList<>();
 
         if( element instanceof IResource )
         {
             final IResource resource = (IResource) element;
 
-            problems.addAll( MigrationUtil.getTaskProblemsFromResource( resource ) );
+            problems.addAll( MigrationUtil.getProblemsFromResource( resource ) );
             resolvedProblems.addAll( MigrationUtil.getResolvedTaskProblemsFromResource( resource ) );
         }
         else if( element instanceof MPTree )
@@ -74,9 +75,9 @@ public class MigrationDecorator extends BaseLabelProvider implements ILightweigh
 
         if( problems != null && problems.size() > 0 )
         {
-            for( TaskProblem problem : problems )
+            for( Problem problem : problems )
             {
-                if( problem.isResolved() && !resolvedProblems.contains( problem ))
+                if( problem.getStatus() == Problem.STATUS_RESOLVED && !resolvedProblems.contains( problem ))
                 {
                     resolvedProblems.add( problem );
                 }
