@@ -18,6 +18,7 @@ import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
@@ -48,8 +49,8 @@ public class NewLiferayModuleProjectOpMethods
             final NewLiferayProjectProvider<NewLiferayModuleProjectOp> projectProvider = op.getProjectProvider().content( true );
 
             //IDE-1306  If the user types too quickly all the model changes may not have propagated
-            final Path projectLocation = op.getLocation().content();
-            updateLocation( op, projectLocation );
+            //final Path projectLocation = op.getLocation().content();
+            //updateLocation( op, projectLocation );
 
             final IStatus status = projectProvider.createNewProject( op, monitor );
 
@@ -110,25 +111,6 @@ public class NewLiferayModuleProjectOpMethods
 
     public static void updateLocation( final NewLiferayModuleProjectOp op, final Path baseLocation )
     {
-        final String projectName = op.getProjectName().content();
-
-        if ( baseLocation == null)
-        {
-            return ;
-        }
-
-        final String lastSegment = baseLocation.lastSegment();
-
-        if ( baseLocation!= null && baseLocation.segmentCount()>0)
-        {
-            if ( lastSegment.equals( projectName ))
-            {
-                return;
-            }
-        }
-
-        final Path newLocation = baseLocation.append( projectName );
-
-        op.setLocation( newLocation );
+        op.setLocation( baseLocation );
     }
 }
