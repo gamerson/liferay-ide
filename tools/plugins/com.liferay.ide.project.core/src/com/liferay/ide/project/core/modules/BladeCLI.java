@@ -5,8 +5,10 @@ import aQute.bnd.osgi.Processor;
 
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.StringBufferOutputStream;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -147,6 +149,59 @@ public class BladeCLI
         }
 
         return projectTemplateNames;
+    }
+
+    public static void addProperties( File dest, List<String> properties ) throws Exception
+    {
+
+        if( properties == null || properties.size() < 1 )
+        {
+            return;
+        }
+
+        String content = new String( FileUtil.readContents( dest, true ) );
+
+        String fontString = content.substring( 0, content.indexOf( "property" ) );
+
+        String endString = content.substring( content.indexOf( "}," ) + 2 );
+
+        String property = content.substring( content.indexOf( "property" ), content.indexOf( "}," ) );
+
+        property = property.substring( property.indexOf( "{" ) + 1 );
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append( "property = {\n" );
+
+        if( !CoreUtil.isNullOrEmpty( property ) )
+        {
+            property = property.substring( 1 );
+            property = property.substring( 0, property.lastIndexOf( "\t" ) );
+            property += ",\t";
+            sb.append( property );
+        }
+
+        for( String str : properties )
+        {
+            sb.append( "\t\t\"" + str + "\",\t" );
+        }
+
+        sb.deleteCharAt( sb.toString().length() - 2 );
+
+        sb.append( "\t}," );
+
+        StringBuilder all = new StringBuilder();
+
+        all.append( fontString );
+        all.append( sb.toString() );
+        all.append( endString );
+
+        String newContent = all.toString();
+
+        if( !content.equals( newContent ) )
+        {
+            FileUtil.writeFileFromStream( dest, new ByteArrayInputStream( newContent.getBytes() ) );
+        }
     }
 
     public static void main(String[] args) throws Exception
