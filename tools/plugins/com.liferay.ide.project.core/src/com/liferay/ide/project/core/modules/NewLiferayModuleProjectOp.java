@@ -100,6 +100,7 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
     @Type( base = ILiferayProjectProvider.class )
     @Label( standard = "build type" )
     @Listeners( ModuleProjectNameListener.class )
+    @Enablement ( expr = "false" )
     @Services
     (
         value=
@@ -163,14 +164,31 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
     void setFinalProjectName( String value );
 
 
-    // *** PortletName ***
+    // *** ComponentName ***
 
-    @Label( standard = "portlet name" )
+    @Label( standard = "Component Name" )
     @DefaultValue( text = "${ProjectName}" )
-    ValueProperty PROP_PORTLET_NAME = new ValueProperty( TYPE, "PortletName" );
+    ValueProperty PROP_COMPONENT_NAME = new ValueProperty( TYPE, "ComponentName" );
 
-    Value<String> getPortletName();
-    void setPortletName( String value );
+    Value<String> getComponentName();
+    void setComponentName( String value );
+
+    // *** ServiceName ***
+
+    @Label( standard = "Service Name" )
+    ValueProperty PROP_SERVICE_NAME = new ValueProperty( TYPE, "ServiceName" );
+
+    Value<String> getServiceName();
+    void setServiceName( String value );
+
+    // *** PackageeName ***
+
+    @Label( standard = "Package Name" )
+    @DefaultValue( text = "${ProjectName}" )
+    ValueProperty PROP_PACKAGE_NAME = new ValueProperty( TYPE, "PackageName" );
+
+    Value<String> getPackageName();
+    void setPackageName( String value );
 
     // *** ProjectNames ***
 
@@ -178,6 +196,13 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
     ListProperty PROP_PROJECT_NAMES = new ListProperty( TYPE, "ProjectNames" );
 
     ElementList<ProjectName> getProjectNames();
+
+
+    // *** PropertyKeys ***
+    @Type( base = PropertyKey.class )
+    @Label( standard = "Properties" )
+    ListProperty PROP_PROPERTY_KEYS = new ListProperty( TYPE, "PropertyKeys" );
+    ElementList<PropertyKey> getPropertyKeys();
 
     // *** Method: execute ***
 
