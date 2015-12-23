@@ -14,9 +14,12 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.modules;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
 
@@ -46,10 +49,6 @@ public class NewLiferayModuleProjectOpMethods
         try
         {
             final NewLiferayProjectProvider<NewLiferayModuleProjectOp> projectProvider = op.getProjectProvider().content( true );
-
-            //IDE-1306  If the user types too quickly all the model changes may not have propagated
-            final Path projectLocation = op.getLocation().content();
-            updateLocation( op, projectLocation );
 
             final IStatus status = projectProvider.createNewProject( op, monitor );
 
@@ -110,25 +109,59 @@ public class NewLiferayModuleProjectOpMethods
 
     public static void updateLocation( final NewLiferayModuleProjectOp op, final Path baseLocation )
     {
-        final String projectName = op.getProjectName().content();
+        op.setLocation( baseLocation );
+    }
 
-        if ( baseLocation == null)
+    public static void addProperties( File dest, List<String> properties ) throws Exception
+    {
+
+        if( properties == null || properties.size() < 1 )
         {
-            return ;
+            return;
         }
 
-        final String lastSegment = baseLocation.lastSegment();
+        String content = new String( FileUtil.readContents( dest, true ) );
 
-        if ( baseLocation!= null && baseLocation.segmentCount()>0)
+        String fontString = content.substring( 0, content.indexOf( "property" ) );
+
+        String endString = content.substring( content.indexOf( "}," ) + 2 );
+
+        String property = content.substring( content.indexOf( "property" ), content.indexOf( "}," ) );
+
+        property = property.substring( property.indexOf( "{" ) + 1 );
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append( "property = {\n" );
+
+        if( !CoreUtil.isNullOrEmpty( property ) )
         {
-            if ( lastSegment.equals( projectName ))
-            {
-                return;
-            }
+            property = property.substring( 1 );
+            property = property.substring( 0, property.lastIndexOf( "\t" ) );
+            property += ",\t";
+            sb.append( property );
         }
 
-        final Path newLocation = baseLocation.append( projectName );
+        for( String str : properties )
+        {
+            sb.append( "\t\t\"" + str + "\",\t" );
+        }
 
-        op.setLocation( newLocation );
+        sb.deleteCharAt( sb.toString().length() - 2 );
+
+        sb.append( "\t}," );
+
+        StringBuilder all = new StringBuilder();
+
+        all.append( fontString );
+        all.append( sb.toString() );
+        all.append( endString );
+
+        String newContent = all.toString();
+
+        if( !content.equals( newContent ) )
+        {
+            FileUtil.writeFileFromStream( dest, new ByteArrayInputStream( newContent.getBytes() ) );
+        }
     }
 }
