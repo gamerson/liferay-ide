@@ -17,6 +17,7 @@ package com.liferay.ide.project.ui;
 
 import java.net.URL;
 
+import org.eclipse.buildship.core.CorePlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -28,6 +29,8 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+
+import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOpMethods;
 
 /**
  * The activator class controls the plugin life cycle
@@ -177,6 +180,8 @@ public class ProjectUI extends AbstractUIPlugin
         super.start( context );
 
         plugin = this;
+
+        CorePlugin.listenerRegistry().addEventListener( NewLiferayWorkspaceOpMethods.getInstance() );
     }
 
     /*
@@ -189,6 +194,8 @@ public class ProjectUI extends AbstractUIPlugin
         plugin = null;
 
         super.stop( context );
+
+        CorePlugin.listenerRegistry().removeEventListener( NewLiferayWorkspaceOpMethods.getInstance() );
     }
 
 }

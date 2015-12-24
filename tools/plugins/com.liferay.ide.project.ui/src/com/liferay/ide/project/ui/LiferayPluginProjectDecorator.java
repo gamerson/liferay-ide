@@ -15,7 +15,7 @@
 
 package com.liferay.ide.project.ui;
 
-import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.LiferayProjectNature;
 
 import java.net.URL;
 
@@ -120,7 +120,7 @@ public class LiferayPluginProjectDecorator extends LabelProvider implements ILig
             {
                 overlay = getLiferay();
             }
-            else if ( hasNature( project, LiferayNature.NATURE_ID ) )
+            else if ( hasNature( project, LiferayProjectNature.NATURE_ID ) )
             {
                 overlay = getLiferay();
             }

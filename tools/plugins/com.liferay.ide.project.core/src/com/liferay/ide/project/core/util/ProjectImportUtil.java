@@ -17,6 +17,7 @@
 
 package com.liferay.ide.project.core.util;
 
+import com.gradleware.tooling.toolingclient.GradleDistribution;
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.BinaryProjectRecord;
@@ -42,6 +43,10 @@ import java.util.jar.JarFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.eclipse.buildship.core.projectimport.ProjectImportConfiguration;
+import org.eclipse.buildship.core.util.gradle.GradleDistributionWrapper;
+import org.eclipse.buildship.core.util.progress.AsyncHandler;
+import org.eclipse.buildship.core.workspace.SynchronizeGradleProjectJob;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -330,6 +335,21 @@ public class ProjectImportUtil
         sb.append( configFile );
         return sb.toString();
 
+    }
+
+    public static void importGradleProject(File dir)
+    {
+        ProjectImportConfiguration configuration = new ProjectImportConfiguration();
+        GradleDistributionWrapper from = GradleDistributionWrapper.from( GradleDistribution.fromBuild() );
+
+        configuration.setGradleDistribution( from );
+        configuration.setProjectDir( dir );
+        configuration.setApplyWorkingSets( false );
+        configuration.setWorkingSets( new ArrayList<String>() );
+
+        new SynchronizeGradleProjectJob(
+            configuration.toFixedAttributes(), configuration.getWorkingSets().getValue(),
+            AsyncHandler.NO_OP ).schedule();
     }
 
     public static IProject importProject(
