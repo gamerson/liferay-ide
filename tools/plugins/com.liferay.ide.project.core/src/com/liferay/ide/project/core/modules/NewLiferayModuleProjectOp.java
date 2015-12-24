@@ -41,7 +41,8 @@ import org.eclipse.sapphire.modeling.annotations.Type;
 import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
 import org.eclipse.sapphire.modeling.annotations.Whitespace;
 
-/**
+
+/** 
  * @author Simon Jiang
  */
 public interface NewLiferayModuleProjectOp extends ExecutableElement
@@ -100,6 +101,7 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
     @Type( base = ILiferayProjectProvider.class )
     @Label( standard = "build type" )
     @Listeners( ModuleProjectNameListener.class )
+    @Enablement ( expr = "false" )
     @Services
     (
         value=
@@ -163,14 +165,39 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
     void setFinalProjectName( String value );
 
 
-    // *** PortletName ***
-
-    @Label( standard = "portlet name" )
+    // *** ComponentName ***
+    @Label( standard = "Component Name" )
     @DefaultValue( text = "${ProjectName}" )
-    ValueProperty PROP_PORTLET_NAME = new ValueProperty( TYPE, "PortletName" );
+    @Service( impl = ComponentNameValidationService.class )
+    ValueProperty PROP_COMPONENT_NAME = new ValueProperty( TYPE, "ComponentName" );
 
-    Value<String> getPortletName();
-    void setPortletName( String value );
+    Value<String> getComponentName();
+    void setComponentName( String value );
+
+    // *** ServiceName ***
+    @Label( standard = "Service Name" )
+    @Services
+    ( 
+        {
+            @Service( impl = ServicePossibleValuesService.class ),
+            @Service( impl = ServiceNameValidataionService.class )
+        }
+    )
+    @Required
+    ValueProperty PROP_SERVICE_NAME = new ValueProperty( TYPE, "ServiceName" );
+
+    Value<String> getServiceName();
+    void setServiceName( String value );
+
+    // *** PackageeName ***
+
+    @Label( standard = "Package Name" )
+    @DefaultValue( text = "${ProjectName}" )
+    @Service( impl = PackageNameValidationService.class )
+    ValueProperty PROP_PACKAGE_NAME = new ValueProperty( TYPE, "PackageName" );
+
+    Value<String> getPackageName();
+    void setPackageName( String value );
 
     // *** ProjectNames ***
 
@@ -179,6 +206,13 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
 
     ElementList<ProjectName> getProjectNames();
 
+
+    // *** PropertyKeys ***
+    @Type( base = PropertyKey.class )
+    @Label( standard = "Properties" )
+    ListProperty PROP_PROPERTYKEYS = new ListProperty( TYPE, "PropertyKeys" );
+    ElementList<PropertyKey> getPropertyKeys();
+    
     // *** Method: execute ***
 
     @Override
