@@ -42,7 +42,7 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
     {
         final String currentProjectName = op.getProjectName().content(true);
 
-        if( currentProjectName == null )
+        if( currentProjectName == null || CoreUtil.isNullOrEmpty( currentProjectName.trim() ) )
         {
             return;
         }
