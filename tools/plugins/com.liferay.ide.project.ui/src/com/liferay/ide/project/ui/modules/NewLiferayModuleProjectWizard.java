@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.ui.modules;
 
 import com.liferay.ide.core.util.CoreUtil;
@@ -43,24 +44,32 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.eclipse.wst.web.internal.DelegateConfigurationElement;
 
-
 /**
  * @author Simon Jiang
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
 public class NewLiferayModuleProjectWizard extends SapphireWizard<NewLiferayModuleProjectOp>
     implements IWorkbenchWizard, INewWizard
 {
+
     private boolean firstErrorMessageRemoved = false;
 
     public NewLiferayModuleProjectWizard()
     {
-        super( createDefaultOp(), DefinitionLoader.sdef( NewLiferayModuleProjectWizard.class ).wizard() );
+        this( "NewLiferayModuleProjectWizard", "mvcportlet" );
+
+    }
+
+    public NewLiferayModuleProjectWizard( String wizardId, String defaultTemplateName )
+    {
+        super( createDefaultOp( defaultTemplateName ), DefinitionLoader.sdef( NewLiferayModuleProjectWizard.class ).wizard(
+            wizardId ) );
     }
 
     private void addToWorkingSets( IProject newProject ) throws Exception
     {
-        if (newProject != null )
+        if( newProject != null )
         {
             for( final FormComponentPart formPart : part().getPages().get( 0 ).children().all() )
             {
@@ -69,9 +78,9 @@ public class NewLiferayModuleProjectWizard extends SapphireWizard<NewLiferayModu
                     final WorkingSetCustomPart workingSetPart = (WorkingSetCustomPart) formPart;
                     final IWorkingSet[] workingSets = workingSetPart.getWorkingSets();
 
-                    if( ! CoreUtil.isNullOrEmpty( workingSets ) )
+                    if( !CoreUtil.isNullOrEmpty( workingSets ) )
                     {
-                        PlatformUI.getWorkbench().getWorkingSetManager().addToWorkingSets(newProject, workingSets);
+                        PlatformUI.getWorkbench().getWorkingSetManager().addToWorkingSets( newProject, workingSets );
                     }
                 }
             }
@@ -90,7 +99,7 @@ public class NewLiferayModuleProjectWizard extends SapphireWizard<NewLiferayModu
             final String message = wizardPage.getMessage();
             final int messageType = wizardPage.getMessageType();
 
-            if( messageType == IMessageProvider.ERROR && ! CoreUtil.isNullOrEmpty( message ) )
+            if( messageType == IMessageProvider.ERROR && !CoreUtil.isNullOrEmpty( message ) )
             {
                 wizardPage.setMessage( "Please enter a project name.", SapphireWizardPage.NONE ); //$NON-NLS-1$
                 firstErrorMessageRemoved = true;
@@ -111,6 +120,7 @@ public class NewLiferayModuleProjectWizard extends SapphireWizard<NewLiferayModu
         // open the "final" perspective
         final IConfigurationElement element = new DelegateConfigurationElement( null )
         {
+
             @Override
             public String getAttribute( String aName )
             {
@@ -163,17 +173,19 @@ public class NewLiferayModuleProjectWizard extends SapphireWizard<NewLiferayModu
             }
         }
 
-        if ( projects.size() > 0 )
+        if( projects.size() > 0 )
         {
-            final IProject finalProject = projects.get(0);
+            final IProject finalProject = projects.get( 0 );
 
             openLiferayPerspective( finalProject );
         }
-     }
+    }
 
-    private static NewLiferayModuleProjectOp createDefaultOp()
+    protected static NewLiferayModuleProjectOp createDefaultOp( String defaultTemplateName )
     {
-        return NewLiferayModuleProjectOp.TYPE.instantiate();
+        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+        op.setProjectTemplateName( defaultTemplateName );
+        return op;
     }
 
 }

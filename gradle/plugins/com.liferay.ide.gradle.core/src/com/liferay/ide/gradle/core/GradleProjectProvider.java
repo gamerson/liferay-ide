@@ -15,7 +15,22 @@
 
 package com.liferay.ide.gradle.core;
 
+import com.liferay.ide.core.AbstractLiferayProjectProvider;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.model.ProjectName;
+import com.liferay.ide.project.core.modules.BladeCLI;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
+import com.liferay.ide.project.core.modules.OSGiCustomJSP;
+import com.liferay.ide.project.core.modules.PropertyKey;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +44,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
 import org.gradle.jarjar.org.apache.commons.lang.WordUtils;
-
-import com.liferay.ide.core.AbstractLiferayProjectProvider;
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayNature;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.model.ProjectName;
-import com.liferay.ide.project.core.modules.BladeCLI;
-import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
-import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
-import com.liferay.ide.project.core.modules.PropertyKey;
 
 /**
  * @author Gregory Amerson
@@ -96,6 +100,42 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
 
         final String packageName = op.getPackageName().content();
 
+        final String hostBundle = op.getCustomOSGiBundle().content();
+
+        IPath temp = GradleCore.getDefault().getStateLocation().append( hostBundle );
+
+        try
+        {
+            ZipUtil.unzip( new File( op.getRealOSGiBundleFile().content() ), temp.toFile() );
+        }
+        catch( IOException e1 )
+        {
+            e1.printStackTrace();
+        }
+
+        String bundleSymbolicName = "";
+        String version = "";
+
+        if( temp.toFile().exists() )
+        {
+            File file = temp.append( "META-INF" ).append( "MANIFEST.MF" ).toFile();
+            String[] contents = FileUtil.readLinesFromFile( file );
+
+            for( String content : contents )
+            {
+                if( content.contains( "Bundle-SymbolicName:" ) )
+                {
+                    bundleSymbolicName =
+                        content.substring( content.indexOf( "Bundle-SymbolicName:" ) + "Bundle-SymbolicName:".length() );
+                }
+
+                if( content.contains( "Bundle-Version:" ) )
+                {
+                    version = content.substring( content.indexOf( "Bundle-Version:" ) + "Bundle-Version:".length() );
+                }
+            }
+        }
+
         ElementList<PropertyKey> propertyKeys = op.getPropertyKeys();
 
         final List<String> properties = new ArrayList<String>();
@@ -105,26 +145,45 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
             properties.add( propertyKey.getName().content( true ) + "=" + propertyKey.getValue().content( true ) );
         }
 
+        ElementList<OSGiCustomJSP> jsps = op.getCustomJSPs();
+
         final String projectTemplateName = op.getProjectTemplateName().content();
+
+        boolean isJSPHook = false;
+
+        if( projectTemplateName.equals( "jsphook" ) )
+        {
+            isJSPHook = true;
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append( "create " );
         sb.append( "-d \"" + location.toFile().getAbsolutePath() + "\" " );
         sb.append( "-t " + projectTemplateName + " " );
 
-        if( className != null )
+        if( className != null && !isJSPHook )
         {
             sb.append( "-c " + className + " " );
         }
 
-        if( serviceName != null )
+        if( serviceName != null && !isJSPHook )
         {
             sb.append( "-s " + serviceName + " " );
         }
 
-        if( packageName != null )
+        if( packageName != null && !isJSPHook )
         {
             sb.append( "-p " + packageName + " " );
+        }
+
+        if( !bundleSymbolicName.equals( "" ) )
+        {
+            sb.append( "-h " + bundleSymbolicName + " " );
+        }
+
+        if( !version.equals( "" ) )
+        {
+            sb.append( "-H " + version + " " );
         }
 
         sb.append( "\"" + projectName + "\" " );
@@ -156,18 +215,47 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
                     projecLocation = location.append( projectName );
                 }
             }
-            
+
             final IPath finalClassPath =
-                            getClassFilePath( projectName, className, packageName, projectTemplateName, projecLocation );
+                getClassFilePath( projectName, className, packageName, projectTemplateName, projecLocation );
 
             final File finalClassFile = finalClassPath.toFile();
-    
-            if( finalClassFile.exists() )
+
+            if( finalClassFile.exists() && !isJSPHook )
             {
                 NewLiferayModuleProjectOpMethods.addProperties( finalClassFile, properties );
             }
 
-            GradleUtil.importGradleProject( projecLocation.toFile() , monitor);
+            if( jsps.size() > 0 && isJSPHook )
+            {
+                for( OSGiCustomJSP jsp : jsps )
+                {
+                    File jspFile = temp.append( jsp.getValue().content() ).toFile();
+
+                    if( jspFile.exists() )
+                    {
+                        String parent = jspFile.getParentFile().getPath();;
+                        String metaInfResources = "META-INF\\resources";
+
+                        parent = parent.substring( parent.indexOf( metaInfResources ) + metaInfResources.length() );
+
+                        IPath resources =
+                            location.append( projectName ).append( "src" ).append( "main" ).append( "resources" ).append(
+                                "META-INF" ).append( "resources" );
+                        File folder = resources.toFile();
+
+                        if( !parent.equals( "resources" ) && !parent.equals( "" ) )
+                        {
+                            folder = resources.append( parent ).toFile();
+                            folder.mkdirs();
+                        }
+
+                        FileUtil.copyFileToDir( jspFile, folder );
+                    }
+                }
+            }
+
+            GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
         }
         catch( Exception e )
         {
