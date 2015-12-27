@@ -17,6 +17,9 @@ package com.liferay.ide.project.core.modules;
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.model.ProjectName;
+import com.liferay.ide.project.core.model.internal.OSGiBundlePossibleValuesService;
+import com.liferay.ide.project.core.model.internal.PortalBundleNameDefaultValueService;
+import com.liferay.ide.project.core.model.internal.PortalBundleNamePossibleValuesService;
 
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ElementType;
@@ -41,9 +44,9 @@ import org.eclipse.sapphire.modeling.annotations.Type;
 import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
 import org.eclipse.sapphire.modeling.annotations.Whitespace;
 
-
-/** 
+/**
  * @author Simon Jiang
+ * @author Terry Jia
  */
 public interface NewLiferayModuleProjectOp extends ExecutableElement
 {
@@ -182,7 +185,7 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
     // *** ServiceName ***
     @Label( standard = "Service Name" )
     @Services
-    ( 
+    (
         {
             @Service( impl = ServicePossibleValuesService.class ),
             @Service( impl = ServiceNameValidataionService.class )
@@ -222,7 +225,50 @@ public interface NewLiferayModuleProjectOp extends ExecutableElement
     @Label( standard = "Properties" )
     ListProperty PROP_PROPERTYKEYS = new ListProperty( TYPE, "PropertyKeys" );
     ElementList<PropertyKey> getPropertyKeys();
-    
+
+    // *** Liferay Bundle ***
+
+    @Label( standard = "Portal Bundle" )
+    @Services
+    (
+        value =
+        {
+            @Service( impl = PortalBundleNamePossibleValuesService.class ),
+            @Service( impl = PortalBundleNameDefaultValueService.class ),
+            @Service( impl = NewLiferayBundleValidationService.class )
+        }
+    )
+    ValueProperty PROP_BUNDLE_NAME = new ValueProperty( TYPE, "BundleName" );
+
+    Value<String> getBundleName();
+    void setBundleName( String value );
+
+    // *** CustomOSGiBundle ***
+
+    @Label( standard = "OSGi Bundle" )
+    @Service( impl = OSGiBundlePossibleValuesService.class )
+    @Listeners( OSGiBundleListener.class )
+    @Required
+    ValueProperty PROP_CUSTOM_OSGI_BUNDLE = new ValueProperty( TYPE, "CustomOSGiBundle" );
+
+    Value<String> getCustomOSGiBundle();
+    void setCustomOSGiBundle(String value);
+
+    // *** CustomJSPs ***
+
+    @Type( base = OSGiCustomJSP.class )
+    @Label( standard = "custom jsps" )
+    ListProperty PROP_CUSTOM_JSPS = new ListProperty( TYPE, "CustomJSPs" );
+
+    ElementList<OSGiCustomJSP> getCustomJSPs();
+
+    // *** RealOSGiBUndleFile ***
+
+    ValueProperty PROP_REAL_OSGI_BUNDLE_FILE = new ValueProperty( TYPE, "RealOSGiBundleFile" );
+
+    Value<String> getRealOSGiBundleFile();
+    void setRealOSGiBundleFile( String value );
+
     // *** Method: execute ***
 
     @Override

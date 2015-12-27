@@ -17,6 +17,10 @@
  -->
 <definition>
     <import>
+        <package>org.eclipse.sapphire.ui.renderers.swt</package>
+        <package>com.liferay.ide.project.ui.action</package>
+        <package>com.liferay.ide.project.ui.wizard</package>
+        <package>org.eclipse.sapphire.ui.forms.swt</package>
         <package>com.liferay.ide.project.ui.modules</package>
     </import>
     <wizard>
@@ -34,13 +38,13 @@
                 </property-editor>
                 <property-editor>
                     <property>Location</property>
-                </property-editor>   
+                </property-editor>
                 <spacer/>
                 <property-editor>
                     <property>ProjectProvider</property>
                     <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
                 </property-editor>
-                <spacer/>               
+                <spacer/>
                 <property-editor>
                     <property>ProjectTemplateName</property>
                     <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
@@ -107,4 +111,89 @@
             <margin-left>0</margin-left>
         </page>
     </wizard>
+    <wizard>
+        <id>NewLiferayJSPFragmentProjectWizard</id>
+        <element-type>com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp</element-type>
+        <label>New Liferay JSP Fragment Project</label>
+        <page>
+            <id>LiferayJSPFragmentProjectWizardPage</id>
+            <label>Liferay JSP Fragment Project</label>
+            <content>
+                <property-editor>ProjectName</property-editor>
+                <spacer/>
+                <property-editor>
+                    <property>UseDefaultLocation</property>
+                </property-editor>
+                <property-editor>
+                    <property>Location</property>
+                </property-editor>
+                <property-editor>
+                    <label>Liferay runtime</label>
+                    <property>BundleName</property>
+                    <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
+                    <action>
+                        <id>ModuleNewLiferayRuntime</id>
+                        <label>New Liferay runtime...</label>
+                        <image>server_new.png</image>
+                    </action>
+                    <action-handler>
+                        <action>ModuleNewLiferayRuntime</action>
+                        <id>ModuleNewLiferayRuntimeHandler</id>
+                        <impl>ModuleNewLiferayRuntimeAction</impl>
+                    </action-handler>
+                </property-editor>
+                <spacer/>
+                <custom>
+                    <class>com.liferay.ide.project.ui.wizard.WorkingSetCustomPart</class>
+                </custom>
+            </content>
+            <description>Create a new project configured as a Liferay JSF Fragment Project</description>
+            <scale-vertically>true</scale-vertically>
+            <margin-right>10</margin-right>
+            <scroll-vertically>true</scroll-vertically>
+            <margin-left>0</margin-left>
+            <margin-bottom>0</margin-bottom>
+            <margin-top>0</margin-top>
+            <margin-horizontal>0</margin-horizontal>
+            <margin-vertical>0</margin-vertical>
+            <margin>0</margin>
+            <image>NewLiferayJSPFragmentProjectWizard.png</image>
+        </page>
+        <page>
+            <id>LiferayJSPFragmentSelectHostPage</id>
+            <label>Liferay JSP Fragment Project</label>
+            <content>
+                <property-editor>
+                    <property>CustomOSGiBundle</property>
+                </property-editor>
+                <spacer/>
+                <property-editor>
+                    <property>CustomJSPs</property>
+                    <action>
+                        <id>AddJSPsFromOSGiBundle</id>
+                        <label>Add jsps from OSGi Bundle...</label>
+                        <image>server_new.png</image>
+                    </action>
+                    <action-handler>
+                        <action>AddJSPsFromOSGiBundle</action>
+                        <id>AddJSPsFromOSGiBundleHandler</id>
+                        <impl>AddJSPsFromOSGiBundleAction</impl>
+                    </action-handler>
+                </property-editor>
+            </content>
+            <description>Create a new project configured as a Liferay JSF Fragment Project</description>
+            <scale-vertically>true</scale-vertically>
+            <margin-right>10</margin-right>
+            <scroll-vertically>true</scroll-vertically>
+            <margin-left>0</margin-left>
+            <margin-bottom>0</margin-bottom>
+            <margin-top>0</margin-top>
+            <margin-horizontal>0</margin-horizontal>
+            <margin-vertical>0</margin-vertical>
+            <margin>0</margin>
+            <image>NewLiferayJSPFragmentProjectWizard.png</image>
+        </page>
+        <description>Create a new project configured as a Liferay JSP Fragment plugin</description>
+    </wizard>
+
 </definition>
