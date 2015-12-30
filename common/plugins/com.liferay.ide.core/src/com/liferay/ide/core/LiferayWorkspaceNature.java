@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class LiferayWorkspaceNature extends AbstractLiferayNature
 {
+
     public static final String NATURE_ID = LiferayCore.PLUGIN_ID + ".liferayWorkspaceNature";
     private static final String NATURE_IDS[] = { LiferayWorkspaceNature.NATURE_ID };
 
