@@ -12,65 +12,33 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.ui.workspace;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.sapphire.ui.def.DefinitionLoader;
-import org.eclipse.sapphire.ui.forms.FormComponentPart;
-import org.eclipse.sapphire.ui.forms.swt.SapphireWizard;
-import org.eclipse.sapphire.ui.forms.swt.SapphireWizardPage;
-import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWizard;
-import org.eclipse.ui.IWorkingSet;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
-import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.eclipse.wst.web.internal.DelegateConfigurationElement;
+package com.liferay.ide.project.ui.workspace;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 import com.liferay.ide.project.core.workspace.WorkspaceNameValidationService;
 import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.project.ui.wizard.WorkingSetCustomPart;
-import com.liferay.ide.ui.LiferayPerspectiveFactory;
+import com.liferay.ide.project.ui.wizard.AbstractLiferayWizard;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.sapphire.ui.def.DefinitionLoader;
+import org.eclipse.sapphire.ui.forms.swt.SapphireWizardPage;
 
 /**
  * @author Andy Wu
  */
-@SuppressWarnings( "restriction" )
-public class NewLiferayWorkspaceWizard extends SapphireWizard<NewLiferayWorkspaceOp>
-    implements IWorkbenchWizard, INewWizard
+
+public class NewLiferayWorkspaceWizard extends AbstractLiferayWizard<NewLiferayWorkspaceOp>
 {
+
     private boolean firstErrorMessageRemoved = false;
 
     public NewLiferayWorkspaceWizard()
     {
         super( createDefaultOp(), DefinitionLoader.sdef( NewLiferayWorkspaceWizard.class ).wizard() );
-    }
-
-    private void addToWorkingSets( IProject newProject ) throws Exception
-    {
-        if (newProject != null )
-        {
-            for( final FormComponentPart formPart : part().getPages().get( 0 ).children().all() )
-            {
-                if( formPart instanceof WorkingSetCustomPart )
-                {
-                    final WorkingSetCustomPart workingSetPart = (WorkingSetCustomPart) formPart;
-                    final IWorkingSet[] workingSets = workingSetPart.getWorkingSets();
-
-                    if( ! CoreUtil.isNullOrEmpty( workingSets ) )
-                    {
-                        PlatformUI.getWorkbench().getWorkingSetManager().addToWorkingSets(newProject, workingSets);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -85,11 +53,12 @@ public class NewLiferayWorkspaceWizard extends SapphireWizard<NewLiferayWorkspac
             final String message = wizardPage.getMessage();
             final int messageType = wizardPage.getMessageType();
 
-            if( messageType == IMessageProvider.ERROR && ! CoreUtil.isNullOrEmpty( message ) )
+            if( messageType == IMessageProvider.ERROR && !CoreUtil.isNullOrEmpty( message ) )
             {
-                if(WorkspaceNameValidationService.hasLiferayWorkspace())
+                if( WorkspaceNameValidationService.hasLiferayWorkspace() )
                 {
-                    wizardPage.setMessage( WorkspaceNameValidationService.hasLiferayWorkspaceMsg, SapphireWizardPage.ERROR );
+                    wizardPage.setMessage(
+                        WorkspaceNameValidationService.hasLiferayWorkspaceMsg, SapphireWizardPage.ERROR );
                 }
                 else
                 {
@@ -101,35 +70,6 @@ public class NewLiferayWorkspaceWizard extends SapphireWizard<NewLiferayWorkspac
         }
 
         return wizardPages;
-    }
-
-    @Override
-    public void init( IWorkbench workbench, IStructuredSelection selection )
-    {
-    }
-
-    private void openLiferayPerspective( IProject newProject )
-    {
-        final IWorkbench workbench = PlatformUI.getWorkbench();
-        // open the "final" perspective
-        final IConfigurationElement element = new DelegateConfigurationElement( null )
-        {
-            @Override
-            public String getAttribute( String aName )
-            {
-                if( aName.equals( "finalPerspective" ) )
-                {
-                    return LiferayPerspectiveFactory.ID;
-                }
-
-                return super.getAttribute( aName );
-            }
-        };
-
-        BasicNewProjectResourceWizard.updatePerspective( element );
-
-        // select and reveal
-        BasicNewResourceWizard.selectAndReveal( newProject, workbench.getActiveWorkbenchWindow() );
     }
 
     @Override
@@ -151,7 +91,7 @@ public class NewLiferayWorkspaceWizard extends SapphireWizard<NewLiferayWorkspac
         }
 
         openLiferayPerspective( newProject );
-     }
+    }
 
     private static NewLiferayWorkspaceOp createDefaultOp()
     {

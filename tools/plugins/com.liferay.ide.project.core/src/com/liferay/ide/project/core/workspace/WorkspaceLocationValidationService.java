@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.workspace;
 
 import java.io.File;
@@ -24,12 +25,12 @@ import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.services.ValidationService;
 
-
 /**
  * @author Andy Wu
  */
 public class WorkspaceLocationValidationService extends ValidationService
 {
+
     private Listener listener;
 
     private boolean canCreate( File file )
@@ -57,7 +58,7 @@ public class WorkspaceLocationValidationService extends ValidationService
 
         // Location won't be validated if the UseDefaultLocation has an error. Get the validation of the property might
         // not work as excepted, let's use call the validation service manually.
-        if( ! op().getUseDefaultLocation().content( true ) )
+        if( !op().getUseDefaultLocation().content( true ) )
         {
             /*
              * IDE-1150, instead of using annotation "@Required",use this service to validate the custom project
@@ -78,20 +79,19 @@ public class WorkspaceLocationValidationService extends ValidationService
                     {
                         IPath osPath = org.eclipse.core.runtime.Path.fromOSString( currentPath );
 
-                        if( ! osPath.toFile().isAbsolute() )
+                        if( !osPath.toFile().isAbsolute() )
                         {
                             retval = Status.createErrorStatus( "\"" + currentPath + "\" is not an absolute path." ); //$NON-NLS-1$ //$NON-NLS-2$
                         }
                         else
                         {
-                            if( ! osPath.toFile().exists() )
+                            if( !osPath.toFile().exists() )
                             {
                                 // check non-existing external location
                                 if( !canCreate( osPath.toFile() ) )
                                 {
-                                    retval =
-                                        Status.createErrorStatus( "Cannot create project content at \"" + //$NON-NLS-1$
-                                             currentPath + "\"" ); //$NON-NLS-1$
+                                    retval = Status.createErrorStatus( "Cannot create project content at \"" + //$NON-NLS-1$
+                                        currentPath + "\"" ); //$NON-NLS-1$
                                 }
                             }
                         }
@@ -125,6 +125,7 @@ public class WorkspaceLocationValidationService extends ValidationService
     {
         this.listener = new FilteredListener<PropertyContentEvent>()
         {
+
             @Override
             protected void handleTypedEvent( final PropertyContentEvent event )
             {
