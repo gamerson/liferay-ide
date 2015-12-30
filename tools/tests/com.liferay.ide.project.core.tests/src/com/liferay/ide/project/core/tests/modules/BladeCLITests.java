@@ -14,13 +14,19 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.tests.modules;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.liferay.ide.project.core.modules.BladeCLI;
 
+import aQute.remote.api.Agent;
+
 import java.io.File;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -74,6 +80,72 @@ public class BladeCLITests
         assertNotNull( projectTemplates );
 
         assertTrue( projectTemplates.length > 0 );
+    }
+
+    @Test
+    public void bladeCLIGetIntegrationPoints() throws Exception
+    {
+        if( testConnect() )
+        {
+            String[] IntegrationPoints = BladeCLI.getIntegrationPoints();
+
+            assertNotNull( IntegrationPoints );
+
+            assertTrue( IntegrationPoints.length > 0 );
+        }
+    }
+
+    @Test
+    public void bladeCLIGetServiceBundle() throws Exception
+    {
+        if( testConnect() )
+        {
+            String[] serviceBundle =
+                BladeCLI.getServiceBundle( "com.liferay.bookmarks.service.BookmarksEntryLocalService" );
+            String[] serviceBundleNoExportPackage =
+                BladeCLI.getServiceBundle( "com.liferay.site.teams.web.upgrade.SiteTeamsWebUpgrade" );
+
+            assertEquals( "com.liferay.bookmarks.api", serviceBundle[0] );
+            assertEquals( "1.0.0", serviceBundle[1] );
+
+            assertEquals( "com.liferay.site.teams.web", serviceBundleNoExportPackage[0] );
+            assertEquals( "1.0.0", serviceBundleNoExportPackage[1] );
+        }
+    }
+
+    private boolean testConnect()
+    {
+        InetSocketAddress address = new InetSocketAddress( "localhost", Integer.valueOf( Agent.DEFAULT_PORT ) );
+        InetSocketAddress local = new InetSocketAddress( 0 );
+
+        InputStream in = null;
+
+        try(Socket socket = new Socket())
+        {
+            socket.bind( local );
+            socket.connect( address, 3000 );
+            in = socket.getInputStream();
+
+            return true;
+        }
+        catch( Exception e )
+        {
+        }
+        finally
+        {
+            if( in != null )
+            {
+                try
+                {
+                    in.close();
+                }
+                catch( Exception e )
+                {
+                }
+            }
+        }
+
+        return false;
     }
 
 }
