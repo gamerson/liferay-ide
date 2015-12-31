@@ -15,23 +15,17 @@
 
 package com.liferay.ide.gradle.core;
 
-import com.gradleware.tooling.toolingclient.GradleDistribution;
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.LiferayProjectNature;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.BladeCLIException;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
-
-import java.util.ArrayList;
+import com.liferay.ide.project.core.util.ProjectImportUtil;
 
 import org.eclipse.buildship.core.configuration.GradleProjectNature;
-import org.eclipse.buildship.core.projectimport.ProjectImportConfiguration;
-import org.eclipse.buildship.core.util.gradle.GradleDistributionWrapper;
-import org.eclipse.buildship.core.util.progress.AsyncHandler;
-import org.eclipse.buildship.core.workspace.SynchronizeGradleProjectJob;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -63,9 +57,11 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider implem
         {
             final IProject project = (IProject) adaptable;
 
+            LiferayProjectNature liferayProjectNature = new LiferayProjectNature();
+
             try
             {
-                if( LiferayNature.hasNature( project ) && GradleProjectNature.INSTANCE.isPresentOn( project ) )
+                if( liferayProjectNature.hasNature( project ) && GradleProjectNature.INSTANCE.isPresentOn( project ) )
                 {
                     return new LiferayGradleProject( project );
                 }
@@ -107,15 +103,7 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider implem
 
         if( retval.isOK() )
         {
-            ProjectImportConfiguration configuration = new ProjectImportConfiguration();
-            GradleDistributionWrapper from = GradleDistributionWrapper.from( GradleDistribution.fromBuild() );
-            configuration.setGradleDistribution( from );
-            configuration.setProjectDir( location.toFile() );
-            configuration.setApplyWorkingSets( false );
-            configuration.setWorkingSets( new ArrayList<String>() );
-            new SynchronizeGradleProjectJob(
-                configuration.toFixedAttributes(), configuration.getWorkingSets().getValue(),
-                AsyncHandler.NO_OP ).schedule();
+            ProjectImportUtil.importGradleProject( location.toFile() );
         }
 
         return retval;

@@ -15,7 +15,7 @@
 
 package com.liferay.ide.gradle.core;
 
-import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.LiferayProjectNature;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.gradle.toolingapi.custom.CustomModel;
@@ -201,7 +201,9 @@ public class GradleCore extends Plugin implements EventListener
 
             final IProject project = projectCreatedEvent.getProject();
 
-            if( !LiferayNature.hasNature( project ) )
+            LiferayProjectNature liferayProjectNature = new LiferayProjectNature();
+
+            if( !liferayProjectNature.hasNature( project ) )
             {
                 try
                 {
@@ -211,7 +213,7 @@ public class GradleCore extends Plugin implements EventListener
                         customModel.hasPlugin( "com.liferay.gradle.plugins.LiferayPlugin" ) ||
                         customModel.hasPlugin( "com.liferay.gradle.plugins.gulp.GulpPlugin" ) )
                     {
-                        LiferayNature.addLiferayNature( project, npm );
+                        liferayProjectNature.addLiferayNature( project, npm );
                     }
                 }
                 catch( Exception e )

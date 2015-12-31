@@ -15,7 +15,7 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.LiferayProjectNature;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
@@ -62,9 +62,11 @@ public class BundleProjectConfigurator extends AbstractProjectConfigurator imple
 
         IProject project = request.getProject();
 
+        LiferayProjectNature liferayProjectNature = new LiferayProjectNature();
+
         if( isMavenBundlePlugin( project ) )
         {
-            LiferayNature.addLiferayNature( project, monitor );
+            liferayProjectNature.addLiferayNature( project, monitor );
         }
 
         monitor.worked( 100 );
