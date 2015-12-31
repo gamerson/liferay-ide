@@ -100,7 +100,7 @@ public abstract class LiferayMavenProjectTestCase extends AbstractMavenProjectTe
     {
         super.setUp();
 
-        base.setupPluginsSDKAndRuntime();
+        base.setupRuntime();
     }
 
     protected boolean shouldSkipBundleTests() { return "true".equals( skipBundleTests ); }

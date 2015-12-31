@@ -15,21 +15,32 @@
 package com.liferay.ide.core;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.MarkerUtil;
+
+import java.io.File;
 
 import org.eclipse.core.net.proxy.IProxyService;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  *
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class LiferayCore extends Plugin
 {
@@ -40,6 +51,8 @@ public class LiferayCore extends Plugin
 
     private static LiferayLanguagePropertiesListener liferayLanguagePropertiesListener;
 
+    private final static String ID_WORKSPACE_SDK_INVALID = "workspace-sdk-invalid";
+
     // The shared instance
     private static LiferayCore plugin;
 
@@ -47,6 +60,62 @@ public class LiferayCore extends Plugin
     public static final String PLUGIN_ID = "com.liferay.ide.core";
 
     private static LiferayProjectProviderReader providerReader;
+
+    private void checkMultipleSDKMarker( final IProgressMonitor monitor ) throws CoreException
+    {
+        boolean findSDK = false;
+        final IProject[] projects = CoreUtil.getAllProjects();
+
+        for( final IProject existProject : projects )
+        {
+            if ( validateSDK( existProject.getLocation().toPortableString() ) )
+            {
+                final IMarker[] problemMarkers =
+                                MarkerUtil.findMarkers( existProject, IMarker.PROBLEM, ID_WORKSPACE_SDK_INVALID );
+
+                if ( findSDK == false )
+                {
+                    if ( problemMarkers != null && problemMarkers.length > 0)
+                    {
+                        MarkerUtil.clearMarkers( existProject, IMarker.PROBLEM, ID_WORKSPACE_SDK_INVALID );
+                    }
+
+                    findSDK = true;
+                }
+                else
+                {
+                    if ( problemMarkers == null || problemMarkers.length < 1 )
+                    {
+                        MarkerUtil.setMarker(existProject, IMarker.PROBLEM, IMarker.SEVERITY_ERROR,
+                            "Workspace has more than one SDK", existProject.getFullPath().toPortableString(),ID_WORKSPACE_SDK_INVALID);
+                    }
+                }
+                existProject.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+            }
+        }
+    }
+
+    private void checkMultipleSDKs()
+    {
+        Job job = new WorkspaceJob( "Processing SDK build properties file" )
+        {
+            @Override
+            public IStatus runInWorkspace( final IProgressMonitor monitor ) throws CoreException
+            {
+                try
+                {
+                    checkMultipleSDKMarker( monitor );
+                }
+                catch(CoreException e)
+                {
+                    LiferayCore.logError( e );
+                }
+
+                return Status.OK_STATUS;
+            }
+        };
+        job.schedule();
+    }
 
     public static ILiferayProject create( Object adaptable )
     {
@@ -270,6 +339,8 @@ public class LiferayCore extends Plugin
         super.start( context );
         plugin = this;
 
+        checkMultipleSDKs();
+
         if( liferayLanguagePropertiesListener == null )
         {
             liferayLanguagePropertiesListener = new LiferayLanguagePropertiesListener();
@@ -295,4 +366,27 @@ public class LiferayCore extends Plugin
         }
     }
 
+    private boolean validateSDK( final String loc)
+    {
+        boolean retval = false;
+
+        try
+        {
+            File sdkDir = new File( loc );
+
+            File buildProperties = new File( sdkDir, "build.properties" );
+            File portletsBuildXml = new File( sdkDir, "portlets/build.xml" );
+            File hooksBuildXml = new File( sdkDir, "hooks/build.xml" );
+            File extBuildXml = new File( sdkDir, "ext/build.xml" );
+
+            retval =
+                buildProperties.exists() && portletsBuildXml.exists() && hooksBuildXml.exists() && extBuildXml.exists();
+        }
+        catch( Exception e )
+        {
+            // best effort we didn't find a valid location
+        }
+
+        return retval;
+    }
 }
