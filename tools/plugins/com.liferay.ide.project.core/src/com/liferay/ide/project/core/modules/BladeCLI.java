@@ -149,6 +149,36 @@ public class BladeCLI
         return projectTemplateNames;
     }
 
+    public static String[] getIntegrationPoints() throws BladeCLIException
+    {
+        String[] servicesInterationPoints;
+        try
+        {
+            servicesInterationPoints = new ServicesCommand().execute();
+        }
+        catch( Exception e )
+        {
+            throw new BladeCLIException( e.getMessage() );
+        }
+
+        return servicesInterationPoints;
+    }
+
+    public static String[] getServiceBundle(String serviceName) throws BladeCLIException
+    {
+        String[] serviceBundle;
+        try
+        {
+            serviceBundle = new ServicesCommand(serviceName).execute();
+        }
+        catch( Exception e )
+        {
+            throw new BladeCLIException( e.getMessage() );
+        }
+
+        return serviceBundle;
+    }
+
     public static void main(String[] args) throws Exception
     {
         String[] output = execute( "help" );
