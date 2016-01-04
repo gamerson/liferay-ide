@@ -69,9 +69,9 @@
       <wizard
             category="com.liferay.ide.newWizards"
             finalPerspective="com.liferay.ide.eclipse.ui.perspective.liferay"
-            icon="icons/n16/bundle_new.png"
+            icon="icons/e16/liferay_logo_16.png"
             id="com.liferay.ide.project.ui.workspace.NewLiferayWorkspaceWizard"
-            name="Liferay Workspace Wizard"
+            name="Liferay Workspace"
             preferredPerspectives="com.liferay.ide.eclipse.ui.perspective.liferay,org.eclipse.jst.j2ee.J2EEPerspective"
             project="true">
          <class class="com.liferay.ide.project.ui.workspace.NewLiferayWorkspaceWizard">
@@ -79,7 +79,7 @@
 			<parameter name="menuIndex" value="12" />
          </class>
          <description>
-            %new.project.wizard.description
+            Create a Liferay Workspace for developing Liferay Plugins
          </description>
          <selection
                class="org.eclipse.core.resources.IResource">
