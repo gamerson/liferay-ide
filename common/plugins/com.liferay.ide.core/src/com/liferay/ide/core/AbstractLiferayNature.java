@@ -62,14 +62,11 @@ public abstract class AbstractLiferayNature implements IProjectNature
             IProjectDescription description = project.getDescription();
 
             String[] prevNatures = description.getNatureIds();
-            String[] newNatures = new String[prevNatures.length + getNatureIds().length];
+            String[] newNatures = new String[prevNatures.length + 1];
 
             System.arraycopy( prevNatures, 0, newNatures, 0, prevNatures.length );
 
-            for( int i = 0; i < getNatureIds().length; i++ )
-            {
-                newNatures[prevNatures.length + i] = getNatureIds()[i];
-            }
+            newNatures[prevNatures.length] = getNatureId();
 
             description.setNatureIds( newNatures );
             project.setDescription( description, monitor );
@@ -108,12 +105,9 @@ public abstract class AbstractLiferayNature implements IProjectNature
     {
         try
         {
-            for( int i = 0; i < getNatureIds().length; i++ )
+            if( !project.hasNature( getNatureId() ) )
             {
-                if( !project.hasNature( getNatureIds()[i] ) )
-                {
-                    return false;
-                }
+                return false;
             }
         }
         catch( CoreException e )
@@ -136,21 +130,16 @@ public abstract class AbstractLiferayNature implements IProjectNature
             IProjectDescription description = project.getDescription();
 
             String[] prevNatures = description.getNatureIds();
-            String[] newNatures = new String[prevNatures.length - getNatureIds().length];
+            String[] newNatures = new String[prevNatures.length - 1];
 
             int k = 0;
 
-            head: for( int i = 0; i < prevNatures.length; i++ )
+            for( int i = 0; i < prevNatures.length; i++ )
             {
-                for( int j = 0; j < getNatureIds().length; j++ )
+                if( !prevNatures[i].equals( getNatureId() ) )
                 {
-                    if( prevNatures[i].equals( getNatureIds()[j] ) )
-                    {
-                        continue head;
-                    }
+                    newNatures[k++] = prevNatures[i];
                 }
-
-                newNatures[k++] = prevNatures[i];
             }
 
             description.setNatureIds( newNatures );
@@ -172,7 +161,5 @@ public abstract class AbstractLiferayNature implements IProjectNature
     }
 
     protected abstract String getNatureId();
-
-    protected abstract String[] getNatureIds();
 
 }

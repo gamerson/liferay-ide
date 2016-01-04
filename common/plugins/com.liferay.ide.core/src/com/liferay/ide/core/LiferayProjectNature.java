@@ -26,7 +26,6 @@ public class LiferayProjectNature extends AbstractLiferayNature
 {
 
     public static final String NATURE_ID = LiferayCore.PLUGIN_ID + ".liferayNature";
-    private static final String NATURE_IDS[] = { LiferayProjectNature.NATURE_ID };
 
     public LiferayProjectNature()
     {
@@ -42,12 +41,6 @@ public class LiferayProjectNature extends AbstractLiferayNature
     protected String getNatureId()
     {
         return NATURE_ID;
-    }
-
-    @Override
-    protected String[] getNatureIds()
-    {
-        return NATURE_IDS;
     }
 
 }

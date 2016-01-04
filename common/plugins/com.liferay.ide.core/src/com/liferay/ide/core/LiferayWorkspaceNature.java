@@ -25,7 +25,6 @@ public class LiferayWorkspaceNature extends AbstractLiferayNature
 {
 
     public static final String NATURE_ID = LiferayCore.PLUGIN_ID + ".liferayWorkspaceNature";
-    private static final String NATURE_IDS[] = { LiferayWorkspaceNature.NATURE_ID };
 
     public LiferayWorkspaceNature()
     {
@@ -41,12 +40,6 @@ public class LiferayWorkspaceNature extends AbstractLiferayNature
     protected String getNatureId()
     {
         return NATURE_ID;
-    }
-
-    @Override
-    protected String[] getNatureIds()
-    {
-        return NATURE_IDS;
     }
 
 }
