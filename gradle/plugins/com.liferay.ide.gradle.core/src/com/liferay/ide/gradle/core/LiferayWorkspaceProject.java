@@ -13,33 +13,41 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.core;
+package com.liferay.ide.gradle.core;
 
+import com.liferay.ide.core.BaseLiferayProject;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IPath;
 
 /**
  * @author Andy Wu
  */
-public class LiferayWorkspaceNature extends AbstractLiferayNature
+public class LiferayWorkspaceProject extends BaseLiferayProject
 {
 
-    public static final String NATURE_ID = LiferayCore.PLUGIN_ID + ".liferayWorkspaceNature";
-
-    public LiferayWorkspaceNature()
+    public LiferayWorkspaceProject( IProject project )
     {
-        super();
-    }
-
-    public LiferayWorkspaceNature( IProject project, IProgressMonitor monitor )
-    {
-        super( project, monitor );
+        super( project );
     }
 
     @Override
-    protected String getNatureId()
+    public IFile getDescriptorFile( String name )
     {
-        return NATURE_ID;
+        return null;
+    }
+
+    @Override
+    public IPath getLibraryPath( String filename )
+    {
+        return null;
+    }
+
+    @Override
+    public String getProperty( String key, String defaultValue )
+    {
+        return null;
     }
 
 }

@@ -14,7 +14,8 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.workspace;
 
-import org.eclipse.core.resources.IProject;
+import com.liferay.ide.core.util.CoreUtil;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sapphire.FilteredListener;
@@ -22,9 +23,6 @@ import org.eclipse.sapphire.PropertyContentEvent;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.StatusBridge;
 import org.eclipse.sapphire.services.ValidationService;
-
-import com.liferay.ide.core.LiferayWorkspaceNature;
-import com.liferay.ide.core.util.CoreUtil;
 
 /**
  * @author Andy Wu
@@ -60,7 +58,7 @@ public class WorkspaceNameValidationService extends ValidationService
     {
         Status retval = Status.createOkStatus();
 
-        if( hasLiferayWorkspace() )
+        if( LiferayWorkspaceUtil.hasLiferayWorkspace() )
         {
             retval = Status.createErrorStatus( hasLiferayWorkspaceMsg );
 
@@ -110,21 +108,6 @@ public class WorkspaceNameValidationService extends ValidationService
     private NewLiferayWorkspaceOp op()
     {
         return context( NewLiferayWorkspaceOp.class );
-    }
-
-    public static boolean hasLiferayWorkspace()
-    {
-        IProject[] projects = CoreUtil.getAllProjects();
-
-        LiferayWorkspaceNature liferayWorkspaceNature = new LiferayWorkspaceNature();
-
-        for(IProject project : projects)
-        {
-            if(liferayWorkspaceNature.hasNature( project ))
-                return true;
-        }
-
-        return false;
     }
 
 }

@@ -16,6 +16,7 @@
 package com.liferay.ide.project.ui.workspace;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.workspace.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 import com.liferay.ide.project.core.workspace.WorkspaceNameValidationService;
 import com.liferay.ide.project.ui.ProjectUI;
@@ -55,7 +56,7 @@ public class NewLiferayWorkspaceWizard extends AbstractLiferayWizard<NewLiferayW
 
             if( messageType == IMessageProvider.ERROR && !CoreUtil.isNullOrEmpty( message ) )
             {
-                if( WorkspaceNameValidationService.hasLiferayWorkspace() )
+                if( LiferayWorkspaceUtil.hasLiferayWorkspace() )
                 {
                     wizardPage.setMessage(
                         WorkspaceNameValidationService.hasLiferayWorkspaceMsg, SapphireWizardPage.ERROR );

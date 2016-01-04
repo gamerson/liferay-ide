@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.core;
 
 import org.eclipse.core.resources.IProject;
@@ -28,6 +29,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
  */
 public abstract class AbstractLiferayNature implements IProjectNature
 {
+
     private IProject currentProject;
     private IProgressMonitor monitor;
 

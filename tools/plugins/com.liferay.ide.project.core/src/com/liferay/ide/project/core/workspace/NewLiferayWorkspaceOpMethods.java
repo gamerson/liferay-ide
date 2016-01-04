@@ -15,40 +15,23 @@
 
 package com.liferay.ide.project.core.workspace;
 
-import org.eclipse.buildship.core.event.Event;
-import org.eclipse.buildship.core.event.EventListener;
-import org.eclipse.buildship.core.workspace.ProjectCreatedEvent;
-import org.eclipse.core.resources.IProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.ProjectCore;
+
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
-
-import com.liferay.ide.core.LiferayWorkspaceNature;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.modules.BladeCLI;
-import com.liferay.ide.project.core.util.ProjectImportUtil;
+import org.eclipse.sapphire.platform.StatusBridge;
 
 /**
  * @author Andy Wu
  */
-public class NewLiferayWorkspaceOpMethods implements EventListener
+public class NewLiferayWorkspaceOpMethods
 {
-    public static NewLiferayWorkspaceOpMethods instance ;
-
-    public static String currentProject ;
-
-    public static NewLiferayWorkspaceOpMethods getInstance()
-    {
-        if( instance == null )
-        {
-            instance = new NewLiferayWorkspaceOpMethods();
-        }
-
-        return instance;
-    }
 
     public static final Status execute( final NewLiferayWorkspaceOp op, final ProgressMonitor pm )
     {
@@ -56,14 +39,20 @@ public class NewLiferayWorkspaceOpMethods implements EventListener
 
         monitor.beginTask( "Creating Liferay Workspace project (this process may take several minutes)", 100 ); //$NON-NLS-1$
 
-        Status retval = Status.createOkStatus();
-
-        final Path projectLocation = op.getLocation().content();
-        updateLocation( op, projectLocation );
+        Status retval = null;
 
         try
         {
-            createWorkspace( op, monitor );
+            final Path projectLocation = op.getLocation().content();
+            updateLocation( op, projectLocation );
+
+            @SuppressWarnings( "unchecked" )
+            NewLiferayProjectProvider<NewLiferayWorkspaceOp> provider =
+                (NewLiferayProjectProvider<NewLiferayWorkspaceOp>) LiferayCore.getProvider( "liferay-workspace" );
+
+            final IStatus status = provider.createNewProject( op, monitor );
+
+            retval = StatusBridge.create( status );
         }
         catch( Exception e )
         {
@@ -77,33 +66,20 @@ public class NewLiferayWorkspaceOpMethods implements EventListener
         return retval;
     }
 
-    private static void createWorkspace( final NewLiferayWorkspaceOp op, final IProgressMonitor pm ) throws Exception
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "-b " );
-        // quote with quotation marks to deal with whitespace in command line
-        sb.append( "\"" + op.getLocation() + "\" " );
-        sb.append( "init" );
-
-        BladeCLI.execute( sb.toString() );
-        ProjectImportUtil.importGradleProject( op.getLocation().content().toFile() );
-        currentProject = op.getLocation().content().lastSegment();
-    }
-
     public static void updateLocation( final NewLiferayWorkspaceOp op, final Path baseLocation )
     {
         final String projectName = op.getWorkspaceName().content();
 
-        if ( baseLocation == null)
+        if( baseLocation == null )
         {
-            return ;
+            return;
         }
 
         final String lastSegment = baseLocation.lastSegment();
 
-        if ( baseLocation!= null && baseLocation.segmentCount()>0)
+        if( baseLocation != null && baseLocation.segmentCount() > 0 )
         {
-            if ( lastSegment.equals( projectName ))
+            if( lastSegment.equals( projectName ) )
             {
                 return;
             }
@@ -114,30 +90,4 @@ public class NewLiferayWorkspaceOpMethods implements EventListener
         op.setLocation( newLocation );
     }
 
-    @Override
-    public void onEvent( Event event )
-    {
-        if( event instanceof ProjectCreatedEvent )
-        {
-            final IProgressMonitor npm = new NullProgressMonitor();
-            final ProjectCreatedEvent projectCreatedEvent = (ProjectCreatedEvent) event;
-
-            final IProject project = projectCreatedEvent.getProject();
-
-            LiferayWorkspaceNature liferayWorkspaceNature = new LiferayWorkspaceNature();
-
-            if( currentProject.equals( project.getName() ) && !liferayWorkspaceNature.hasNature( project ))
-            {
-                try
-                {
-                    liferayWorkspaceNature.addLiferayNature( project, npm );
-                }
-                catch( Exception e )
-                {
-                    final String msg = "Error adding Liferay Workspace nature.";
-                    ProjectCore.logError( msg, e );
-                }
-            }
-        }
-    }
 }
