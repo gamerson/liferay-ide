@@ -14,6 +14,8 @@
  *******************************************************************************/
 package com.liferay.ide.project.ui.migration;
 
+import com.liferay.blade.api.Problem;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -26,7 +28,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 /**
  * @author Lovett Li
  */
-public class IgnoreAllAction extends TaskProblemAction
+public class IgnoreAllAction extends ProblemAction
 {
     public IgnoreAllAction( ISelectionProvider provider )
     {
@@ -34,7 +36,7 @@ public class IgnoreAllAction extends TaskProblemAction
     }
 
     @Override
-    protected IStatus runWithMarker( TaskProblem taskProblem, IMarker marker )
+    protected IStatus runWithMarker( Problem problem, IMarker marker )
     {
         IStatus retval = Status.OK_STATUS;
 
