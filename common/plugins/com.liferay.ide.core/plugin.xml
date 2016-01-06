@@ -71,16 +71,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="com.liferay.ide.core.LiferayProjectNature">
-         </run>
-      </runtime>
-   </extension>
-   <extension
-         id="com.liferay.ide.core.liferayWorkspaceNature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="com.liferay.ide.core.LiferayWorkspaceNature">
+               class="com.liferay.ide.core.LiferayNature">
          </run>
       </runtime>
    </extension>

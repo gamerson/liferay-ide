@@ -25,20 +25,23 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 /**
+ * @author Terry Jia
  * @author Andy Wu
  */
-public abstract class AbstractLiferayNature implements IProjectNature
+public class LiferayNature implements IProjectNature
 {
+
+    public static final String NATURE_ID = LiferayCore.PLUGIN_ID + ".liferayNature";
 
     private IProject currentProject;
     private IProgressMonitor monitor;
 
-    public AbstractLiferayNature()
+    public LiferayNature()
     {
         monitor = new NullProgressMonitor();
     }
 
-    public AbstractLiferayNature( IProject project, IProgressMonitor monitor )
+    public LiferayNature( IProject project, IProgressMonitor monitor )
     {
         currentProject = project;
 
@@ -52,7 +55,7 @@ public abstract class AbstractLiferayNature implements IProjectNature
         }
     }
 
-    public void addLiferayNature( IProject project, IProgressMonitor monitor ) throws CoreException
+    public static void addLiferayNature( IProject project, IProgressMonitor monitor ) throws CoreException
     {
         if( monitor != null && monitor.isCanceled() )
         {
@@ -68,7 +71,7 @@ public abstract class AbstractLiferayNature implements IProjectNature
 
             System.arraycopy( prevNatures, 0, newNatures, 0, prevNatures.length );
 
-            newNatures[prevNatures.length] = getNatureId();
+            newNatures[prevNatures.length] = NATURE_ID;
 
             description.setNatureIds( newNatures );
             project.setDescription( description, monitor );
@@ -103,11 +106,11 @@ public abstract class AbstractLiferayNature implements IProjectNature
         return this.currentProject;
     }
 
-    public boolean hasNature( IProject project )
+    public static boolean hasNature( IProject project )
     {
         try
         {
-            if( !project.hasNature( getNatureId() ) )
+            if( !project.hasNature( NATURE_ID ) )
             {
                 return false;
             }
@@ -120,7 +123,7 @@ public abstract class AbstractLiferayNature implements IProjectNature
         return true;
     }
 
-    public void removeLiferayNature( IProject project, IProgressMonitor monitor ) throws CoreException
+    public static void removeLiferayNature( IProject project, IProgressMonitor monitor ) throws CoreException
     {
         if( monitor != null && monitor.isCanceled() )
         {
@@ -138,7 +141,7 @@ public abstract class AbstractLiferayNature implements IProjectNature
 
             for( int i = 0; i < prevNatures.length; i++ )
             {
-                if( !prevNatures[i].equals( getNatureId() ) )
+                if( !prevNatures[i].equals( NATURE_ID ) )
                 {
                     newNatures[k++] = prevNatures[i];
                 }
@@ -161,7 +164,5 @@ public abstract class AbstractLiferayNature implements IProjectNature
     {
         this.currentProject = project;
     }
-
-    protected abstract String getNatureId();
 
 }

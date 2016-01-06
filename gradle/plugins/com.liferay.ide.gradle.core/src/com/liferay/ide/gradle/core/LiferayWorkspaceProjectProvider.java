@@ -17,14 +17,13 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayWorkspaceNature;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.BladeCLIException;
+import com.liferay.ide.project.core.workspace.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
-import org.eclipse.buildship.core.configuration.GradleProjectNature;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -84,18 +83,9 @@ public class LiferayWorkspaceProjectProvider extends AbstractLiferayProjectProvi
         {
             final IProject project = (IProject) adaptable;
 
-            LiferayWorkspaceNature liferayWorkspaceNature = new LiferayWorkspaceNature();
-
-            try
+            if( LiferayWorkspaceUtil.isValidWorkspace( project ) )
             {
-                if( liferayWorkspaceNature.hasNature( project ) && GradleProjectNature.INSTANCE.isPresentOn( project ) )
-                {
-                    return new LiferayWorkspaceProject( project );
-                }
-            }
-            catch( Exception e )
-            {
-                // ignore errors
+                return new LiferayWorkspaceProject( project );
             }
         }
 

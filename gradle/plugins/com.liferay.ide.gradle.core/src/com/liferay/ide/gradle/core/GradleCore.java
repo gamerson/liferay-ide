@@ -15,12 +15,10 @@
 
 package com.liferay.ide.gradle.core;
 
-import com.liferay.ide.core.LiferayProjectNature;
-import com.liferay.ide.core.LiferayWorkspaceNature;
+import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.gradle.toolingapi.custom.CustomModel;
-import com.liferay.ide.project.core.workspace.LiferayWorkspaceUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -203,9 +201,7 @@ public class GradleCore extends Plugin implements EventListener
 
             final IProject project = projectCreatedEvent.getProject();
 
-            LiferayProjectNature liferayProjectNature = new LiferayProjectNature();
-
-            if( !liferayProjectNature.hasNature( project ) )
+            if( !LiferayNature.hasNature( project ) )
             {
                 try
                 {
@@ -215,29 +211,13 @@ public class GradleCore extends Plugin implements EventListener
                         customModel.hasPlugin( "com.liferay.gradle.plugins.LiferayPlugin" ) ||
                         customModel.hasPlugin( "com.liferay.gradle.plugins.gulp.GulpPlugin" ) )
                     {
-                        liferayProjectNature.addLiferayNature( project, npm );
+                        LiferayNature.addLiferayNature( project, npm );
                     }
                 }
                 catch( Exception e )
                 {
                     logError( "Unable to get tooling model", e );
                 }
-            }
-
-            LiferayWorkspaceNature liferayWorkspaceNature = new LiferayWorkspaceNature();
-
-            String location = project.getLocation().toOSString();
-
-            try
-            {
-                if( LiferayWorkspaceUtil.isValidWorkspaceLocation( location ) )
-                {
-                    liferayWorkspaceNature.addLiferayNature( project, npm );
-                }
-            }
-            catch(Exception e)
-            {
-                logError( "Unable to add Liferay Workspace nature", e );
             }
         }
     }

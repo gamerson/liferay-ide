@@ -16,7 +16,7 @@ package com.liferay.ide.maven.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayProjectNature;
+import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.maven.core.aether.AetherUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.descriptor.UpdateDescriptorVersionOperation;
@@ -395,13 +395,11 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider
         {
             final IProject project = (IProject) adaptable;
 
-            LiferayProjectNature liferayProjectNature = new LiferayProjectNature();
-
             try
             {
                 if( MavenUtil.isMavenProject( project ) )
                 {
-                    if( liferayProjectNature.hasNature( project ) )
+                    if( LiferayNature.hasNature( project ) )
                     {
                         return new MavenBundlePluginProject( project );
                     }

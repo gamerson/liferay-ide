@@ -17,7 +17,7 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayProjectNature;
+import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.BladeCLI;
@@ -56,11 +56,9 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider implem
         {
             final IProject project = (IProject) adaptable;
 
-            LiferayProjectNature liferayProjectNature = new LiferayProjectNature();
-
             try
             {
-                if( liferayProjectNature.hasNature( project ) && GradleProjectNature.INSTANCE.isPresentOn( project ) )
+                if( LiferayNature.hasNature( project ) && GradleProjectNature.INSTANCE.isPresentOn( project ) )
                 {
                     return new LiferayGradleProject( project );
                 }
