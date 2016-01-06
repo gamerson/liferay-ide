@@ -550,12 +550,20 @@ public class CoreUtil
         }
     }
 
-    public static String readPropertyFileValue( File propertiesFile, String key ) throws FileNotFoundException,
-        IOException
+    public static String readPropertyFileValue( File propertiesFile, String key )
     {
-        Properties props = new Properties();
-        props.load( new FileInputStream( propertiesFile ) );
-        return props.getProperty( key );
+        try
+        {
+            Properties props = new Properties();
+            FileInputStream fis = new FileInputStream( propertiesFile );
+            props.load( fis );
+            fis.close();
+            return props.getProperty( key );
+        }
+        catch(Exception s)
+        {
+            return null;
+        }
     }
 
     public static String readStreamToString( InputStream contents ) throws IOException
