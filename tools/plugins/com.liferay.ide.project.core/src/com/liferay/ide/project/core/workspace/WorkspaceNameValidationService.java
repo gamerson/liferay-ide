@@ -17,6 +17,7 @@ package com.liferay.ide.project.core.workspace;
 import com.liferay.ide.core.util.CoreUtil;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.PropertyContentEvent;
@@ -58,9 +59,18 @@ public class WorkspaceNameValidationService extends ValidationService
     {
         Status retval = Status.createOkStatus();
 
-        if( LiferayWorkspaceUtil.hasLiferayWorkspace() )
+        try
         {
-            retval = Status.createErrorStatus( hasLiferayWorkspaceMsg );
+            if( LiferayWorkspaceUtil.hasLiferayWorkspace() )
+            {
+                retval = Status.createErrorStatus( hasLiferayWorkspaceMsg );
+
+                return retval;
+            }
+        }
+        catch(CoreException e)
+        {
+            retval = StatusBridge.create( e.getStatus() );
 
             return retval;
         }

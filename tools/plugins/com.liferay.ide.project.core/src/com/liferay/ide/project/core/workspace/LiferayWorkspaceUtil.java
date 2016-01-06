@@ -15,13 +15,14 @@
 
 package com.liferay.ide.project.core.workspace;
 
-import com.liferay.ide.core.LiferayWorkspaceNature;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.project.core.ProjectCore;
 
 import java.io.File;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 
 /**
  * @author Andy Wu
@@ -29,22 +30,59 @@ import org.eclipse.core.resources.IProject;
 public class LiferayWorkspaceUtil
 {
 
+    public static String multiWorkspaceError = "more than one Liferay Workspace in workspace";
+
     public static boolean isValidWorkspaceLocation( String location )
     {
-        boolean retval = false;
-
         File workspaceDir = new File( location );
 
         File buildGradle = new File( workspaceDir, "build.gradle" );
         File settingsGradle = new File( workspaceDir, "settings.gradle" );
+        File gradleProperties = new File( workspaceDir, "gradle.properties" );
 
-        // TODO need more check
-        retval = buildGradle.exists() && settingsGradle.exists();
+        if( !( buildGradle.exists() && settingsGradle.exists() && gradleProperties.exists() ) )
+        {
+            return false;
+        }
 
-        return retval;
+        try
+        {
+            //TODO Waiting for new release about changing
+            //String modulesDir = CoreUtil.readPropertyFileValue( gradleProperties, "liferay.workspace.modules.dir" );
+            //String themesDir = CoreUtil.readPropertyFileValue( gradleProperties, "liferay.workspace.themes.dir" );
+
+            String modulesDir = CoreUtil.readPropertyFileValue( gradleProperties, "modules.dir" );
+            String themesDir = CoreUtil.readPropertyFileValue( gradleProperties, "themes.dir" );
+
+            if( CoreUtil.empty( modulesDir ) || CoreUtil.empty( themesDir ) )
+            {
+                return false;
+            }
+
+            File modules = new File( workspaceDir, modulesDir );
+            File themes = new File( workspaceDir, themesDir );
+
+            if( !( modules.exists() && themes.exists() ) )
+            {
+                return false;
+            }
+        }
+        catch( Exception e )
+        {
+            // ignore exception
+        }
+
+        return true;
     }
 
-    //For import liferay workspace wizard
+    public static boolean isValidWorkspace( IProject project )
+    {
+        String location = project.getLocation().toOSString();
+
+        return isValidWorkspaceLocation( location );
+    }
+
+    // For import liferay workspace wizard
     public static void clearWorkspace( String location )
     {
         File projectFile = new File( location, ".project" );
@@ -67,18 +105,27 @@ public class LiferayWorkspaceUtil
         }
     }
 
-    public static boolean hasLiferayWorkspace()
+    public static boolean hasLiferayWorkspace() throws CoreException
     {
         IProject[] projects = CoreUtil.getAllProjects();
 
-        LiferayWorkspaceNature liferayWorkspaceNature = new LiferayWorkspaceNature();
+        int count = 0;
 
         for( IProject project : projects )
         {
-            if( liferayWorkspaceNature.hasNature( project ) )
+            if( isValidWorkspace( project ) )
             {
-                return true;
+                ++count;
             }
+        }
+
+        if( count == 1 )
+        {
+            return true;
+        }
+        else if( count > 1 )
+        {
+            throw new CoreException( ProjectCore.createErrorStatus( multiWorkspaceError ) );
         }
 
         return false;

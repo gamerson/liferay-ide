@@ -39,10 +39,10 @@ import org.eclipse.wst.web.internal.DelegateConfigurationElement;
  * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
-public class AbstractLiferayWizard<M extends Element> extends SapphireWizard implements IWorkbenchWizard, INewWizard
+public class AbstractLiferayWizard<T extends Element> extends SapphireWizard implements IWorkbenchWizard, INewWizard
 {
 
-    public AbstractLiferayWizard( final M op, final DefinitionLoader.Reference<WizardDef> definition )
+    public AbstractLiferayWizard( final T op, final DefinitionLoader.Reference<WizardDef> definition )
     {
         super( op, definition );
     }

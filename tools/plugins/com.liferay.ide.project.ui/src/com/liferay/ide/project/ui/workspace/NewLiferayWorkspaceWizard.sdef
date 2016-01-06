@@ -50,8 +50,8 @@
             <margin-horizontal>0</margin-horizontal>
             <margin-vertical>0</margin-vertical>
             <margin>0</margin>
-            <image>NewLiferayWorkspaceWizard.png</image>
         </page>
-        <description>Create a new project configured as a Liferay plugin</description>
+        <description>Create a new Liferay Workspace project for developing modules and themes for Liferay 7</description>
+        <image>NewLiferayWorkspaceWizard.png</image>
     </wizard>
 </definition>

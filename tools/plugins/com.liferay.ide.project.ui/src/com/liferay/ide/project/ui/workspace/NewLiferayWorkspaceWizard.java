@@ -23,6 +23,7 @@ import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.wizard.AbstractLiferayWizard;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
@@ -56,14 +57,21 @@ public class NewLiferayWorkspaceWizard extends AbstractLiferayWizard<NewLiferayW
 
             if( messageType == IMessageProvider.ERROR && !CoreUtil.isNullOrEmpty( message ) )
             {
-                if( LiferayWorkspaceUtil.hasLiferayWorkspace() )
+                try
                 {
-                    wizardPage.setMessage(
-                        WorkspaceNameValidationService.hasLiferayWorkspaceMsg, SapphireWizardPage.ERROR );
+                    if( LiferayWorkspaceUtil.hasLiferayWorkspace() )
+                    {
+                        wizardPage.setMessage(
+                            WorkspaceNameValidationService.hasLiferayWorkspaceMsg, SapphireWizardPage.ERROR );
+                    }
+                    else
+                    {
+                        wizardPage.setMessage( "Please enter the workspace name.", SapphireWizardPage.NONE ); //$NON-NLS-1$
+                    }
                 }
-                else
+                catch(CoreException e)
                 {
-                    wizardPage.setMessage( "Please enter the workspace name.", SapphireWizardPage.NONE ); //$NON-NLS-1$
+                    wizardPage.setMessage( LiferayWorkspaceUtil.multiWorkspaceError , SapphireWizardPage.ERROR ); //$NON-NLS-1$
                 }
 
                 firstErrorMessageRemoved = true;

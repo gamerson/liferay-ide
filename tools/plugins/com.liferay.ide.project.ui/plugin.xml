@@ -79,7 +79,7 @@
 			<parameter name="menuIndex" value="12" />
          </class>
          <description>
-            Create a Liferay Workspace for developing Liferay Plugins
+            Create a new Liferay Workspace project for developing modules and themes for Liferay 7
          </description>
          <selection
                class="org.eclipse.core.resources.IResource">
