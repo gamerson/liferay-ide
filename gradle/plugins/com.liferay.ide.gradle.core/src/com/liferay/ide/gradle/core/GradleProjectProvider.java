@@ -19,13 +19,18 @@ import com.gradleware.tooling.toolingclient.GradleDistribution;
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.model.ProjectName;
 import com.liferay.ide.project.core.modules.BladeCLI;
-import com.liferay.ide.project.core.modules.BladeCLIException;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
+import com.liferay.ide.project.core.modules.PropertyKey;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.buildship.core.configuration.GradleProjectNature;
 import org.eclipse.buildship.core.projectimport.ProjectImportConfiguration;
@@ -38,7 +43,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
+import org.gradle.jarjar.org.apache.commons.lang.WordUtils;
 
 /**
  * @author Gregory Amerson
@@ -46,7 +53,8 @@ import org.eclipse.sapphire.platform.PathBridge;
  * @author Andy Wu
  * @author Simon Jiang
  */
-public class GradleProjectProvider extends AbstractLiferayProjectProvider implements NewLiferayProjectProvider<NewLiferayModuleProjectOp>
+public class GradleProjectProvider extends AbstractLiferayProjectProvider
+    implements NewLiferayProjectProvider<NewLiferayModuleProjectOp>
 {
 
     public GradleProjectProvider()
@@ -82,51 +90,172 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider implem
     @Override
     public IStatus createNewProject( NewLiferayModuleProjectOp op, IProgressMonitor monitor ) throws CoreException
     {
-        IStatus retval = null;
+        IStatus retval = Status.OK_STATUS;
 
         final String projectName = op.getProjectName().content();
 
         IPath location = PathBridge.create( op.getLocation().content() );
 
+        String className = op.getComponentName().content();
+
+        final String serviceName = op.getServiceName().content();
+
+        final String packageName = op.getPackageName().content();
+
+        ElementList<PropertyKey> propertyKeys = op.getPropertyKeys();
+
+        final List<String> properties = new ArrayList<String>();
+
+        for( PropertyKey propertyKey : propertyKeys )
+        {
+            properties.add( propertyKey.getName().content( true ) + "=" + propertyKey.getValue().content( true ) );
+        }
+
         final String projectTemplateName = op.getProjectTemplateName().content();
 
         StringBuilder sb = new StringBuilder();
         sb.append( "create " );
-        sb.append( "-d \"" + location.toFile().getAbsolutePath() +  "\" " );
+        sb.append( "-d \"" + location.toFile().getAbsolutePath() + "\" " );
         sb.append( "-t " + projectTemplateName + " " );
-        sb.append( "\"" + projectName + "\"");
+
+        if( className != null )
+        {
+            sb.append( "-c " + className + " " );
+        }
+
+        if( serviceName != null )
+        {
+            sb.append( "-s " + serviceName + " " );
+        }
+
+        if( packageName != null )
+        {
+            sb.append( "-p " + packageName + " " );
+        }
+
+        sb.append( "\"" + projectName + "\" " );
 
         try
         {
-            BladeCLI.execute( sb.toString() );
-        }
-        catch( BladeCLIException e )
-        {
-            retval = ProjectCore.createErrorStatus( e );
-        }
+            final String[] ret = BladeCLI.execute( sb.toString() );
 
-        if( retval.isOK() )
+            final String errors = checkForErrors(ret);
+
+            if( errors.length() > 0 )
+            {
+                retval = GradleCore.createErrorStatus( "Project create error: " + errors );
+                return retval;
+            }
+
+            if( ret.length == 0 )
+            {
+                ElementList<ProjectName> projectNames = op.getProjectNames();
+                
+                projectNames.insert().setName( projectName );
+                
+                IPath projecLocation = location;
+
+                final String lastSegment = location.lastSegment();
+
+                if( location != null && location.segmentCount() > 0 )
+                {
+                    if( !lastSegment.equals( projectName ) )
+                    {
+                        projecLocation = location.append( projectName );
+                    }
+                }
+
+                ProjectImportConfiguration configuration = new ProjectImportConfiguration();
+                GradleDistributionWrapper from = GradleDistributionWrapper.from( GradleDistribution.fromBuild() );
+                configuration.setGradleDistribution( from );
+                configuration.setProjectDir( projecLocation.toFile() );
+                configuration.setApplyWorkingSets( false );
+                configuration.setWorkingSets( new ArrayList<String>() );
+                SynchronizeGradleProjectJob synchronizeGradleProjectJob =
+                    new SynchronizeGradleProjectJob(
+                        configuration.toFixedAttributes(), configuration.getWorkingSets().getValue(),
+                        AsyncHandler.NO_OP );
+
+                final IPath finalClassPath =
+                    getClassFilePath( projectName, className, packageName, projectTemplateName, projecLocation );
+
+                final File finalClassFile = finalClassPath.toFile();
+
+                if ( finalClassFile.exists() )
+                {
+                    NewLiferayModuleProjectOpMethods.addProperties( finalClassFile, properties );    
+                }
+
+                synchronizeGradleProjectJob.runInWorkspace( monitor );
+                synchronizeGradleProjectJob.setUser( true );
+                synchronizeGradleProjectJob.schedule();
+            }
+        }
+        catch( Exception e )
         {
-            ProjectImportConfiguration configuration = new ProjectImportConfiguration();
-            GradleDistributionWrapper from = GradleDistributionWrapper.from( GradleDistribution.fromBuild() );
-            configuration.setGradleDistribution( from );
-            configuration.setProjectDir( location.toFile() );
-            configuration.setApplyWorkingSets( false );
-            configuration.setWorkingSets( new ArrayList<String>() );
-            new SynchronizeGradleProjectJob(
-                configuration.toFixedAttributes(), configuration.getWorkingSets().getValue(),
-                AsyncHandler.NO_OP ).schedule();
+            retval = ProjectCore.createErrorStatus( "can't create module project.", e );
         }
 
         return retval;
+    }
+
+    private IPath getClassFilePath(
+        final String projectName, String className, final String packageName, final String projectTemplateName,
+        IPath projecLocation )
+    {
+        if( CoreUtil.isNullOrEmpty( className ) )
+        {
+            className = WordUtils.capitalize( projectName );
+        }
+
+        if( projectTemplateName.equals( "servicebuilder" ) || projectTemplateName.equals( "portlet" ) ||
+            projectTemplateName.equals( "mvcportlet" ) )
+        {
+            if( !className.contains( "Portlet" ) )
+            {
+                className += "Portlet";
+            }
+        }
+
+        final String finalClassName = className + ".java";
+
+        String[] finalPakcage = packageName.split( "\\." );
+
+        IPath packageNamePath = projecLocation.append( "src" ).append( "main" ).append( "java" );
+
+        for( String pack : finalPakcage )
+        {
+            packageNamePath = packageNamePath.append( pack );
+        }
+
+        final IPath finalClassPath = packageNamePath.append( finalClassName );
+
+        return finalClassPath;
+    }
+
+    private String checkForErrors( String[] lines )
+    {
+        boolean hasErrors = false;
+        final StringBuilder errors = new StringBuilder();
+
+        for( String line : lines )
+        {
+            if( line.startsWith( "Error" ) ) {
+                hasErrors = true;
+            }
+            else if( hasErrors )
+            {
+                errors.append( line );
+            }
+        }
+
+        return errors.toString();
     }
 
     @Override
     public IStatus validateProjectLocation( String projectName, IPath path )
     {
         IStatus retval = Status.OK_STATUS;
-
-        //TODO validation gradle project location
 
         return retval;
     }
