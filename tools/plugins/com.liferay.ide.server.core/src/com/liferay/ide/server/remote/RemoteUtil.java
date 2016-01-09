@@ -15,11 +15,16 @@
 
 package com.liferay.ide.server.remote;
 
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 
 /**
  * @author Greg Amerson
+ * @author Lovett Li
  */
 public class RemoteUtil
 {
@@ -37,5 +42,40 @@ public class RemoteUtil
         }
 
         return null;
+    }
+
+    public static boolean canConnect( String host, int port )
+    {
+        InetSocketAddress address = new InetSocketAddress( host, Integer.valueOf( port ) );
+        InetSocketAddress local = new InetSocketAddress( 0 );
+
+        InputStream in = null;
+
+        try(Socket socket = new Socket())
+        {
+            socket.bind( local );
+            socket.connect( address, 3000 );
+            in = socket.getInputStream();
+
+            return true;
+        }
+        catch( Exception e )
+        {
+        }
+        finally
+        {
+            if( in != null )
+            {
+                try
+                {
+                    in.close();
+                }
+                catch( Exception e )
+                {
+                }
+            }
+        }
+
+        return false;
     }
 }
