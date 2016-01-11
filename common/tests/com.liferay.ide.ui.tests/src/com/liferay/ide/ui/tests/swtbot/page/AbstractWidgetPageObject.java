@@ -29,23 +29,23 @@ public abstract class AbstractWidgetPageObject<T extends SWTBot> extends Abstrac
         super( bot );
     }
 
-    public AbstractWidgetPageObject( T bot, String label )
-    {
-        super( bot );
-        this.label = label;
-    }
-
     public AbstractWidgetPageObject( T bot, int index )
     {
         super( bot );
         this.index = index;
     }
 
+    public AbstractWidgetPageObject( T bot, String label )
+    {
+        super( bot );
+        this.label = label;
+    }
+
     public AbstractWidgetPageObject( T bot, String label, int index )
     {
         super( bot );
         this.index = index;
-        this.label=label;
+        this.label = label;
     }
 
     public String getLabel()

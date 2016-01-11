@@ -32,18 +32,18 @@ public abstract class ClosingButtonPageObject<T extends SWTBot> extends ShellPag
         super( bot, title );
     }
 
-    protected void clickClosingButton( SWTBotButton button )
-    {
-        clickButton( button );
-
-        waitForPageToClose();
-    }
-
     protected void clickButton( SWTBotButton button )
     {
         bot.waitUntil( new WidgetEnabledCondition( button, true ) );
 
         button.click();
+    }
+
+    protected void clickClosingButton( SWTBotButton button )
+    {
+        clickButton( button );
+
+        // waitForPageToClose();
     }
 
 }

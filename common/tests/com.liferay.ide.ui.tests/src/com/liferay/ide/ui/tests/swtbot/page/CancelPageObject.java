@@ -44,4 +44,8 @@ public class CancelPageObject<T extends SWTBot> extends ClosingButtonPageObject<
         return bot.button( text );
     }
 
+    public boolean isButtonEnabled( String buttonText )
+    {
+        return bot.button( buttonText ).isEnabled();
+    }
 }
