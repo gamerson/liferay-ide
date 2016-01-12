@@ -25,23 +25,23 @@ import org.eclipse.swtbot.swt.finder.SWTBot;
 public abstract class AbstractProjectPageObject<T extends SWTBot> extends WizardPageObject<T> implements ProjectWizard
 {
 
-    TextPageObject<SWTBot> projectNameText;
     CheckBoxPageObject<SWTBot> addToWorkingSetCheckbox;
+    TextPageObject<SWTBot> projectNameText;
     ComboBoxPageObject<SWTBot> workingSetCombobox;
 
     public AbstractProjectPageObject( T bot )
     {
-        this( bot, TEXT_BLANK, INDEX_DEFAULT_VALIDATION_MESSAGE );
+        this( bot, INDEX_DEFAULT_VALIDATION_MESSAGE );
     }
 
-    public AbstractProjectPageObject( T bot, int invalidationMessageIndex )
+    public AbstractProjectPageObject( T bot, int index )
     {
-        this( bot, TEXT_BLANK, invalidationMessageIndex );
+        this( bot, TEXT_BLANK, index );
     }
 
-    public AbstractProjectPageObject( T bot, String title, int validationMessageIndex )
+    public AbstractProjectPageObject( T bot, String title, int index )
     {
-        super( bot, title, BUTTON_CANCEL, BUTTON_FINISH, BUTTON_BACK, BUTTON_NEXT, validationMessageIndex );
+        super( bot, title, BUTTON_CANCEL, BUTTON_FINISH, BUTTON_BACK, BUTTON_NEXT, index );
 
         projectNameText = new TextPageObject<SWTBot>( bot, LABEL_PROJECT_NAME );
         addToWorkingSetCheckbox = new CheckBoxPageObject<SWTBot>( bot, TEXT_ADD_PROJECT_TO_WORKING_SET );

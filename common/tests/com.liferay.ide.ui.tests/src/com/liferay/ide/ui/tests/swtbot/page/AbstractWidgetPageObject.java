@@ -22,7 +22,7 @@ public abstract class AbstractWidgetPageObject<T extends SWTBot> extends Abstrac
 {
 
     protected String label;
-    protected int index = 0;
+    protected int index = -1;
 
     public AbstractWidgetPageObject( T bot )
     {
