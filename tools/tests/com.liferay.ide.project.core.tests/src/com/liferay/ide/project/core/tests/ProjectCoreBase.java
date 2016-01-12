@@ -78,16 +78,7 @@ import org.junit.BeforeClass;
 @SuppressWarnings( "restriction" )
 public class ProjectCoreBase extends ServerCoreBase
 {
-	@BeforeClass
-	public static void OpenEclipse() throws Exception {
 
-		SWTWorkbenchBot bot=new SWTWorkbenchBot();
-		bot.viewByTitle("Welcome").close();
-		bot.toolbarButtonWithTooltip("Open Perspective").click();
-		bot.table().select("Liferay");
-		bot.button("OK").click();
-
-	}
     private static final String BUNDLE_ID = "com.liferay.ide.project.core.tests";
 
     public static void deleteAllWorkspaceProjects() throws Exception
