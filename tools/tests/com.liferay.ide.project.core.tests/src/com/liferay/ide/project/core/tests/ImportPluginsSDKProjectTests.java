@@ -17,15 +17,6 @@ package com.liferay.ide.project.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.ZipUtil;
-import com.liferay.ide.project.core.PluginClasspathContainerInitializer;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.SDKClasspathContainer;
-import com.liferay.ide.project.core.util.ProjectImportUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
@@ -34,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -44,6 +34,14 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.junit.AfterClass;
 import org.junit.Test;
+
+import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.project.core.PluginClasspathContainerInitializer;
+import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.SDKClasspathContainer;
+import com.liferay.ide.project.core.util.ProjectImportUtil;
+import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKUtil;
 
 /**
  * @author Simon Jiang
