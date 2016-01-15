@@ -15,6 +15,18 @@
 
 package com.liferay.ide.gradle.core;
 
+import com.liferay.ide.core.AbstractLiferayProjectProvider;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.model.ProjectName;
+import com.liferay.ide.project.core.modules.BladeCLI;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
+import com.liferay.ide.project.core.modules.PropertyKey;
+import com.liferay.ide.project.core.modules.ServiceCommand;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,17 +41,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
 import org.gradle.jarjar.org.apache.commons.lang.WordUtils;
-
-import com.liferay.ide.core.AbstractLiferayProjectProvider;
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayNature;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.model.ProjectName;
-import com.liferay.ide.project.core.modules.BladeCLI;
-import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
-import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
-import com.liferay.ide.project.core.modules.PropertyKey;
 
 /**
  * @author Gregory Amerson
@@ -165,6 +166,20 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
             if( finalClassFile.exists() )
             {
                 NewLiferayModuleProjectOpMethods.addProperties( finalClassFile, properties );
+            }
+
+            if( serviceName != null )
+            {
+                ServiceCommand dependenceService = new ServiceCommand( serviceName );
+                String[] dependences = dependenceService.execute();
+
+                IPath buildGradlePath = projecLocation.append( "build.gradle" );
+
+                if( buildGradlePath.toFile() != null && buildGradlePath.toFile().exists() )
+                {
+                    NewLiferayModuleProjectOpMethods.addDenpendencies(
+                        buildGradlePath.toFile(), dependences[0], dependences[1] );
+                }
             }
 
             GradleUtil.importGradleProject( projecLocation.toFile() , monitor);
