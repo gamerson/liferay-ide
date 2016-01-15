@@ -811,7 +811,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return _bundleSupervisor;
     }
 
-    void startBundleSupervisor() throws Exception
+    public void startBundleSupervisor() throws Exception
     {
         _bundleSupervisor = new BundleSupervisor();
         int agentPort = getServer().getAttribute( "AGENT_PORT", Agent.DEFAULT_PORT );
@@ -819,7 +819,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         _bundleSupervisor.connect( getServer().getHost(), agentPort );
     }
 
-    void stopBundleSupervisor() throws IOException
+    public void stopBundleSupervisor() throws IOException
     {
         if( _bundleSupervisor != null )
         {

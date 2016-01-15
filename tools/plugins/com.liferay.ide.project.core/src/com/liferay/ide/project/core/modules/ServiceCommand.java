@@ -15,6 +15,15 @@
 
 package com.liferay.ide.project.core.modules;
 
+import aQute.remote.api.Agent;
+import aQute.remote.api.Event;
+import aQute.remote.api.Supervisor;
+import aQute.remote.util.AgentSupervisor;
+
+import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.server.core.portal.PortalServerBehavior;
+import com.liferay.ide.server.util.SocketUtil;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -33,24 +42,18 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
 
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.server.util.SocketUtil;
-
-import aQute.remote.api.Agent;
-import aQute.remote.api.Event;
-import aQute.remote.api.Supervisor;
-import aQute.remote.util.AgentSupervisor;
-
 /**
  * @author Lovett Li
+ * @author Simon Jiang
  */
 public class ServiceCommand
 {
+
     private IServer _server;
 
     private String _serviceName;
 
-    public ServiceCommand(IServer server)
+    public ServiceCommand( IServer server )
     {
         _server = server;
     }
@@ -63,8 +66,8 @@ public class ServiceCommand
 
     private File checkStaticServicesFile() throws Exception
     {
-        URL url = FileLocator.toFileURL(
-            ProjectCore.getDefault().getBundle().getEntry( "OSGI-INF/services-static.json" ) );
+        URL url =
+            FileLocator.toFileURL( ProjectCore.getDefault().getBundle().getEntry( "OSGI-INF/services-static.json" ) );
         File servicesFile = new File( url.getFile() );
 
         if( servicesFile.exists() )
@@ -90,13 +93,6 @@ public class ServiceCommand
         ServicesSupervisor supervisor = new ServicesSupervisor();
         supervisor.connect( host, agentPort );
 
-        if( !supervisor.getAgent().redirect( -1 ) )
-        {
-            supervisor.close();
-
-            return null;
-        }
-
         return supervisor;
     }
 
@@ -104,17 +100,27 @@ public class ServiceCommand
     {
         ServicesSupervisor supervisor = null;
         String[] result = null;
+        PortalServerBehavior serverBehavior = null;
 
         try
         {
+            /* disconnect bundleSuperVisor and redirect outputstream */
+            serverBehavior = (PortalServerBehavior) _server.loadAdapter( PortalServerBehavior.class, null );
+
+            if( serverBehavior != null )
+            {
+                serverBehavior.stopBundleSupervisor();
+            }
+
             if( _server == null )
             {
                 if( _serviceName == null )
                 {
                     result = getStaticServices();
                 }
-                else{
-                    result = getStaticServiceBundle(_serviceName);
+                else
+                {
+                    result = getStaticServiceBundle( _serviceName );
                 }
 
                 return result;
@@ -139,6 +145,13 @@ public class ServiceCommand
                 }
             }
 
+            if( !supervisor.getAgent().redirect( -1 ) )
+            {
+                supervisor.close();
+
+                return null;
+            }
+
             if( _serviceName == null )
             {
                 result = getServices( supervisor );
@@ -152,6 +165,11 @@ public class ServiceCommand
         }
         finally
         {
+            if( serverBehavior != null )
+            {
+                serverBehavior.startBundleSupervisor();
+            }
+
             if( supervisor != null )
             {
                 supervisor.close();
@@ -326,8 +344,9 @@ public class ServiceCommand
         return null;
     }
 
-    public class ServicesSupervisor extends AgentSupervisor<Supervisor, Agent> implements Supervisor
+    public class ServicesSupervisor extends AgentSupervisor<Supervisor, Agent>implements Supervisor
     {
+
         private String outinfo;
 
         public void connect( String host, int port ) throws Exception
