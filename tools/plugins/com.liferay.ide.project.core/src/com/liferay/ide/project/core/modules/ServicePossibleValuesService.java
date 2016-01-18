@@ -15,6 +15,8 @@
 
 package com.liferay.ide.project.core.modules;
 
+import com.liferay.ide.project.core.ProjectCore;
+
 import java.util.Arrays;
 import java.util.Set;
 
@@ -28,15 +30,29 @@ import org.eclipse.sapphire.modeling.Status;
 
 public class ServicePossibleValuesService extends PossibleValuesService
 {
+
     @Override
     public Status problem( final Value<?> value )
     {
         return Status.createOkStatus();
     }
-   
+
     @Override
     protected void compute( final Set<String> values )
     {
-        values.addAll( Arrays.asList( NewLiferayModuleProjectOpMethods.getServices() ) );
+        try
+        {
+            ServiceCommand serviceCommand = new ServiceCommand();
+
+            String[] allServices = serviceCommand.execute();
+
+            values.addAll( Arrays.asList( allServices ) );
+
+        }
+        catch( Exception e )
+        {
+            ProjectCore.logError( "Get services list error. ", e );
+        }
+
     }
 }
