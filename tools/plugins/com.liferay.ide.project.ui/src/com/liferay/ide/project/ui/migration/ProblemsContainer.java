@@ -15,48 +15,33 @@
 
 package com.liferay.ide.project.ui.migration;
 
+import com.liferay.ide.project.core.upgrade.UpgradeProblems;
+
+import java.util.List;
+
 /**
- * @author Gregory Amerson
+ * @author Terry Jia
  */
-public class MPTree
+public class ProblemsContainer
 {
-    MPNode root;
-    MPNode commonRoot;
 
-    public MPTree( MPNode root )
+    private List<UpgradeProblems> upgradeProblemsList;
+    private String type;
+
+    public List<UpgradeProblems> getUpgradeProblemsList()
     {
-        this.root = root;
-        commonRoot = null;
+        return upgradeProblemsList;
     }
 
-    public void addElement( String elementValue )
+    public String getType()
     {
-        String[] list = elementValue.split( "/" );
-
-        // latest element of the list is the filename.extrension
-        root.addElement( root.incrementalPath, list );
+        return type;
     }
 
-    public MPNode getCommonRoot()
+    public void setUpgradeProblemsList( List<UpgradeProblems> listUpgradeProblems )
     {
-        if( commonRoot != null )
-        {
-            return commonRoot;
-        }
-        else
-        {
-            MPNode current = root;
-
-            while( current.leafs.size() <= 0 && current.childs.size() == 1 )
-            {
-                current = current.childs.get( 0 );
-            }
-
-            commonRoot = current;
-
-            return commonRoot;
-        }
-
+        this.upgradeProblemsList = listUpgradeProblems;
+        type = listUpgradeProblems.get( 0 ).getType();
     }
 
 }

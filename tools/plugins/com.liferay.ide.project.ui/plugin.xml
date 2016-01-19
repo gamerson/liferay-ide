@@ -1291,13 +1291,16 @@
          <triggerPoints>
             <or>
                <instanceof
-                     value="com.liferay.ide.project.ui.migration.MPTree">
+                     value="com.liferay.ide.project.core.upgrade.FileProblems">
                </instanceof>
                <instanceof
-                     value="com.liferay.ide.project.ui.migration.MPNode">
+                     value="com.liferay.ide.project.core.upgrade.UpgradeProblems">
                </instanceof>
                <instanceof
-                     value="com.liferay.ide.project.ui.migration.TaskProblem">
+                     value="com.liferay.ide.project.ui.migration.ProblemsContainer">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.blade.api.Problem">
                </instanceof>
                <instanceof
                      value="org.eclipse.core.resources.IFile">
@@ -1310,13 +1313,16 @@
          <possibleChildren>
              <or>
                <instanceof
-                     value="com.liferay.ide.project.ui.migration.MPTree">
+                     value="com.liferay.ide.project.core.upgrade.FileProblems">
                </instanceof>
                <instanceof
-                     value="com.liferay.ide.project.ui.migration.MPNode">
+                     value="com.liferay.ide.project.core.upgrade.UpgradeProblems">
                </instanceof>
                <instanceof
-                     value="com.liferay.ide.project.ui.migration.TaskProblem">
+                     value="com.liferay.ide.project.ui.migration.ProblemsContainer">
+               </instanceof>
+               <instanceof
+                     value="com.liferay.blade.api.Problem">
                </instanceof>
                <instanceof
                      value="org.eclipse.core.resources.IFile">
@@ -1360,10 +1366,7 @@
          <enablement>
             <or>
                <objectClass
-                     name="com.liferay.ide.project.ui.migration.MPTree">
-               </objectClass>
-               <objectClass
-                     name="com.liferay.ide.project.ui.migration.MPNode">
+                     name="com.liferay.ide.project.core.upgrade.FileProblems">
                </objectClass>
                <objectClass
                      name="org.eclipse.core.resources.IResource">
@@ -1375,14 +1378,21 @@
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
-            adaptableType="com.liferay.ide.project.ui.migration.MPTree"
+            adaptableType="com.liferay.ide.project.core.upgrade.FileProblems"
             class="com.liferay.ide.project.ui.migration.MigrationAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
       </factory>
       <factory
-            adaptableType="com.liferay.ide.project.ui.migration.MPNode"
+            adaptableType="com.liferay.ide.project.ui.migration.ProblemsContainer"
+            class="com.liferay.ide.project.ui.migration.MigrationAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="com.liferay.ide.project.core.upgrade.UpgradeProblems"
             class="com.liferay.ide.project.ui.migration.MigrationAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
@@ -1413,5 +1423,5 @@
          </command>
       </menuContribution>
    </extension>
-  
+
 </plugin>
