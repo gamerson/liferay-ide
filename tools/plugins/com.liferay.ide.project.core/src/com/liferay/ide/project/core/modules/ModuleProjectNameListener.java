@@ -21,7 +21,6 @@ import org.eclipse.sapphire.PropertyContentEvent;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.platform.PathBridge;
 
-
 /**
  * @author Simon Jiang
  */
@@ -33,12 +32,12 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
         updateLocation( op( event ) );
     }
 
-    protected NewLiferayModuleProjectOp op( PropertyContentEvent event )
+    protected BaseModuleOp op( PropertyContentEvent event )
     {
-        return event.property().element().nearest( NewLiferayModuleProjectOp.class );
+        return event.property().element().nearest( BaseModuleOp.class );
     }
 
-    public static void updateLocation( final NewLiferayModuleProjectOp op )
+    public static void updateLocation( final BaseModuleOp op )
     {
         final String currentProjectName = op.getProjectName().content(true);
 
@@ -57,7 +56,7 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
 
             if( newLocationBase != null )
             {
-                NewLiferayModuleProjectOpMethods.updateLocation( op, newLocationBase );
+                BaseOpMethods.updateLocation( op, newLocationBase );
             }
         }
     }
