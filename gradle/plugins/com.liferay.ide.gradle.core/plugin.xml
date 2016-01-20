@@ -17,5 +17,12 @@
             shortName="liferay-workspace"
             projectType="workspace">
       </liferayProjectProvider>
+      <liferayProjectProvider
+            class="com.liferay.ide.gradle.core.JSPHookProjectProvider"
+            displayName="JSP Hook Module Project Provider"
+            id="com.liferay.ide.gradle.core.jspHookModuleProjectProvider"
+            shortName="jsp-hook"
+            projectType="jspfragment">
+      </liferayProjectProvider>
    </extension>
 </plugin>
