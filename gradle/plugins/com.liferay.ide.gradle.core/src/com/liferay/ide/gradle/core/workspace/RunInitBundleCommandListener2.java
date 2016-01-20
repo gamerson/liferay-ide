@@ -12,52 +12,29 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.workspace;
+
+package com.liferay.ide.gradle.core.workspace;
 
 import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.PropertyContentEvent;
-import org.eclipse.sapphire.modeling.Path;
-import org.eclipse.sapphire.platform.PathBridge;
-
-import com.liferay.ide.core.util.CoreUtil;
 
 /**
  * @author Andy Wu
  */
-public class WorkspaceNameListener extends FilteredListener<PropertyContentEvent>
+public class RunInitBundleCommandListener2 extends FilteredListener<PropertyContentEvent>
 {
+
     @Override
     protected void handleTypedEvent( PropertyContentEvent event )
     {
-        updateLocation( op( event ) );
+        if( !op( event ).getRunInitBundleCommand().content() )
+        {
+            op( event ).setAddServer( false );
+        }
     }
 
     protected NewLiferayWorkspaceOp op( PropertyContentEvent event )
     {
         return event.property().element().nearest( NewLiferayWorkspaceOp.class );
-    }
-
-    public static void updateLocation( final NewLiferayWorkspaceOp op )
-    {
-        final String currentWorkspaceName = op.getWorkspaceName().content(true);
-
-        if( currentWorkspaceName == null )
-        {
-            return;
-        }
-
-        final boolean useDefaultLocation = op.getUseDefaultLocation().content( true );
-
-        if( useDefaultLocation )
-        {
-            Path newLocationBase = null;
-
-            newLocationBase = PathBridge.create( CoreUtil.getWorkspaceRoot().getLocation() );
-
-            if( newLocationBase != null )
-            {
-                NewLiferayWorkspaceOpMethods.updateLocation( op, newLocationBase );
-            }
-        }
     }
 }
