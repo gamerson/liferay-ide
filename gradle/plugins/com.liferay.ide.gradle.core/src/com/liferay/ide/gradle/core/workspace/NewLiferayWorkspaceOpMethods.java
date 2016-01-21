@@ -13,10 +13,10 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.core.workspace;
+package com.liferay.ide.gradle.core.workspace;
 
 import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.gradle.core.LiferayWorkspaceProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,7 +37,7 @@ public class NewLiferayWorkspaceOpMethods
     {
         final IProgressMonitor monitor = ProgressMonitorBridge.create( pm );
 
-        monitor.beginTask( "Creating Liferay Workspace project (this process may take several minutes)", 100 ); //$NON-NLS-1$
+        monitor.beginTask( "Creating Liferay Workspace project...", 100 ); //$NON-NLS-1$
 
         Status retval = null;
 
@@ -46,13 +46,46 @@ public class NewLiferayWorkspaceOpMethods
             final Path projectLocation = op.getLocation().content();
             updateLocation( op, projectLocation );
 
-            @SuppressWarnings( "unchecked" )
-            NewLiferayProjectProvider<NewLiferayWorkspaceOp> provider =
-                (NewLiferayProjectProvider<NewLiferayWorkspaceOp>) LiferayCore.getProvider( "liferay-workspace" );
+            LiferayWorkspaceProjectProvider provider =
+                (LiferayWorkspaceProjectProvider) LiferayCore.getProvider( "liferay-workspace" );
 
-            final IStatus status = provider.createNewProject( op, monitor );
+            IStatus createStatus = provider.createNewProject( op, monitor );
 
-            retval = StatusBridge.create( status );
+            retval = StatusBridge.create( createStatus );
+
+            if( !retval.ok() )
+            {
+                return retval;
+            }
+
+            String location = projectLocation.toOSString();
+
+            boolean isInitBundle = op.getRunInitBundleCommand().content();
+
+            IStatus importStatus = null;
+
+            if( isInitBundle )
+            {
+                importStatus = provider.importProject( location, monitor, "initBundle" );
+            }
+            else
+            {
+                importStatus = provider.importProject( location, monitor, null );
+            }
+
+            retval = StatusBridge.create( importStatus );
+
+            if( !retval.ok() )
+            {
+                return retval;
+            }
+
+            if( isInitBundle )
+            {
+                String serverRuntimeName = op.getServerName().content();
+
+                LiferayWorkspaceImportOpMethods.addPortalRuntimeAndServer( serverRuntimeName, location, monitor );
+            }
         }
         catch( Exception e )
         {
@@ -60,7 +93,7 @@ public class NewLiferayWorkspaceOpMethods
 
             ProjectCore.logError( msg, e );
 
-            return Status.createErrorStatus( msg + " Please see Eclipse error log for more details.", e );
+            return Status.createErrorStatus( msg , e );
         }
 
         return retval;

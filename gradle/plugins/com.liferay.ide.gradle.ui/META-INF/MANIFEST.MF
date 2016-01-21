@@ -9,7 +9,18 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui,
  com.liferay.ide.project.ui;bundle-version="3.0.0",
- com.liferay.ide.ui;bundle-version="3.0.0"
+ com.liferay.ide.ui;bundle-version="3.0.0",
+ org.eclipse.debug.core,
+ org.eclipse.buildship.core,
+ org.gradle.toolingapi,
+ com.gradleware.tooling.model,
+ org.eclipse.sapphire.ui;bundle-version="[8.1.0,9.0.0)",
+ com.liferay.ide.gradle.core,
+ org.eclipse.ui.ide,
+ org.eclipse.wst.web,
+ org.eclipse.e4.core.contexts,
+ org.eclipse.e4.core.commands,
+ org.eclipse.core.expressions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
