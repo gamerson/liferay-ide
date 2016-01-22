@@ -14,7 +14,7 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.model.internal;
 
-import static com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods.supportsWebTypePlugin;
+import static com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods.supportsExtOrWebTypePlugin;
 
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.PluginType;
@@ -66,11 +66,17 @@ public class PluginTypeValidationService extends ValidationService
             {
                 final NewLiferayPluginProjectOp op = op();
 
-                if( op.getPluginType().content().equals( PluginType.web ) && ! supportsWebTypePlugin( op ) )
+                if( op.getPluginType().content().equals( PluginType.web ) && !supportsExtOrWebTypePlugin( op, "web" ) )
                 {
                     retval =
-                        Status.createErrorStatus( "The selected Plugins SDK does not support creating new web type plugins.  " +
-                            "Please configure version 7.0.0 or greater." );
+                        Status.createErrorStatus( "The selected Plugins SDK does not support creating new web type plugins.  "
+                            + "Please configure version 7.0.0 or greater." );
+                }
+                else if( op.getPluginType().content().equals( PluginType.ext ) && !supportsExtOrWebTypePlugin( op, "ext" ) )
+                {
+                    retval =
+                        Status.createErrorStatus( "The selected Plugins SDK does not support creating ext type plugins.  "
+                            + "Please configure version 6.2.0 or less." );
                 }
             }
         }
