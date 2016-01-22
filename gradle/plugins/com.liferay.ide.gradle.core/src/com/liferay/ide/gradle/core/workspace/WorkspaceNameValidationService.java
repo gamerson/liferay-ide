@@ -12,7 +12,7 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.workspace;
+package com.liferay.ide.gradle.core.workspace;
 
 import com.liferay.ide.core.util.CoreUtil;
 
@@ -33,8 +33,6 @@ import org.eclipse.sapphire.services.ValidationService;
 public class WorkspaceNameValidationService extends ValidationService
 {
     private FilteredListener<PropertyContentEvent> listener;
-
-    public static String hasLiferayWorkspaceMsg = "A Liferay Workspace project already exists in this Eclipse instance.";
 
     @Override
     protected void initValidationService()
@@ -65,7 +63,7 @@ public class WorkspaceNameValidationService extends ValidationService
         {
             if( LiferayWorkspaceUtil.hasLiferayWorkspace() )
             {
-                retval = Status.createErrorStatus( hasLiferayWorkspaceMsg );
+                retval = Status.createErrorStatus( LiferayWorkspaceUtil.hasLiferayWorkspaceMsg );
 
                 return retval;
             }

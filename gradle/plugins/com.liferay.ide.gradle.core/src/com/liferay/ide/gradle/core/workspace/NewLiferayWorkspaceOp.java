@@ -12,10 +12,9 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.workspace;
+package com.liferay.ide.gradle.core.workspace;
 
 import org.eclipse.sapphire.ElementType;
-import org.eclipse.sapphire.ExecutableElement;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.Path;
@@ -36,7 +35,7 @@ import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
 /**
  * @author Andy Wu
  */
-public interface NewLiferayWorkspaceOp extends ExecutableElement
+public interface NewLiferayWorkspaceOp extends BaseLiferayWorkspaceOp
 {
     ElementType TYPE = new ElementType( NewLiferayWorkspaceOp.class );
 
@@ -76,6 +75,11 @@ public interface NewLiferayWorkspaceOp extends ExecutableElement
     Value<Path> getLocation();
     void setLocation( String value );
     void setLocation( Path value );
+
+    // *** serverName ***
+
+    @Service( impl = NewLiferayWorkspaceServerNameService.class )
+    ValueProperty PROP_SERVER_NAME = new ValueProperty( TYPE, BaseLiferayWorkspaceOp.PROP_SERVER_NAME );
 
     // *** Method: execute ***
 
