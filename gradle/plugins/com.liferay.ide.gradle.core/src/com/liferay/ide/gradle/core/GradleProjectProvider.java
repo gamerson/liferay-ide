@@ -17,10 +17,13 @@ package com.liferay.ide.gradle.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.buildship.core.configuration.GradleProjectNature;
+import org.eclipse.buildship.core.workspace.SynchronizeGradleProjectsJob;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -40,6 +43,7 @@ import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
 import com.liferay.ide.project.core.modules.PropertyKey;
+import com.liferay.ide.project.core.workspace.LiferayWorkspaceUtil;
 
 /**
  * @author Gregory Amerson
@@ -156,18 +160,32 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
                     projecLocation = location.append( projectName );
                 }
             }
-            
+
             final IPath finalClassPath =
-                            getClassFilePath( projectName, className, packageName, projectTemplateName, projecLocation );
+                getClassFilePath( projectName, className, packageName, projectTemplateName, projecLocation );
 
             final File finalClassFile = finalClassPath.toFile();
-    
+
             if( finalClassFile.exists() )
             {
                 NewLiferayModuleProjectOpMethods.addProperties( finalClassFile, properties );
             }
 
-            GradleUtil.importGradleProject( projecLocation.toFile() , monitor);
+            boolean hasLiferayWorkspace = LiferayWorkspaceUtil.hasLiferayWorkspace();
+
+            if( hasLiferayWorkspace )
+            {
+                IProject liferayWorkspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
+
+                IProject[] projects = new IProject[] { liferayWorkspaceProject };
+                SynchronizeGradleProjectsJob synchronizeJob =
+                    new SynchronizeGradleProjectsJob( Arrays.asList( projects ) );
+                synchronizeJob.schedule();
+            }
+            else
+            {
+                GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
+            }
         }
         catch( Exception e )
         {

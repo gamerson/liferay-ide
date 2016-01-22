@@ -22,6 +22,7 @@ import java.io.File;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 
 /**
  * @author Andy Wu
@@ -101,6 +102,51 @@ public class LiferayWorkspaceUtil
         }
 
         return false;
+    }
+
+    public static IProject getLiferayWorkspaceProject()
+    {
+        IProject[] projects = CoreUtil.getAllProjects();
+
+        for( IProject project : projects )
+        {
+            if( isValidWorkspace( project ) )
+            {
+                return project;
+            }
+        }
+        return null;
+    }
+
+    public static String getLiferayWorkspaceProjectModulesDir( final IProject project )
+    {
+        try
+        {
+            if( project != null )
+            {
+                final IPath projectLocation = project.getLocation();
+
+                if( projectLocation != null )
+                {
+                    final IPath gradlePropertiesLocation = projectLocation.append( "gradle.properties" );
+
+                    if( gradlePropertiesLocation.toFile().exists() )
+                    {
+                        String readPropertyFileValue = CoreUtil.readPropertyFileValue(
+                            gradlePropertiesLocation.toFile(), "liferay.workspace.modules.dir" );
+
+                        return readPropertyFileValue;
+                    }
+                }
+            }
+
+        }
+        catch( Exception e )
+        {
+            ProjectCore.logError( "Can't read gradle properties from workspaceProject. ", e );
+        }
+
+        return null;
     }
 
 }
