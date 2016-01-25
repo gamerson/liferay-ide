@@ -26,6 +26,7 @@ import org.eclipse.sapphire.modeling.annotations.DelegateImplementation;
 import org.eclipse.sapphire.modeling.annotations.Derived;
 import org.eclipse.sapphire.modeling.annotations.FileSystemResourceType;
 import org.eclipse.sapphire.modeling.annotations.Label;
+import org.eclipse.sapphire.modeling.annotations.Listeners;
 import org.eclipse.sapphire.modeling.annotations.Required;
 import org.eclipse.sapphire.modeling.annotations.Service;
 import org.eclipse.sapphire.modeling.annotations.Type;
@@ -57,6 +58,7 @@ public interface ImportLiferayWorkspaceOp extends BaseLiferayWorkspaceOp
 
     @Derived
     @Service( impl = HasBundlesDirDerivedValueService.class )
+    @Listeners( HasBundlesDirListener.class )
     @Type( base = Boolean.class )
     ValueProperty PROP_HAS_BUNDLES_DIR = new ValueProperty( TYPE, "hasBundlesDir" );
 
