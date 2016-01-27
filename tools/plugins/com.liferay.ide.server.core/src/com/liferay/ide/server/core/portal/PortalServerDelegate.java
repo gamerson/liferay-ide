@@ -51,22 +51,7 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     @Override
     public IStatus canModifyModules( IModule[] add, IModule[] remove )
     {
-        IStatus retval = Status.OK_STATUS;
-
-        if( !CoreUtil.isNullOrEmpty( add ) )
-        {
-            for( IModule module : add )
-            {
-                if( !"liferay.bundle".equals( module.getModuleType().getId() ) )
-                {
-                    retval =
-                        LiferayServerCore.error( "Unable to add module with type " + module.getModuleType().getName() );
-                    break;
-                }
-            }
-        }
-
-        return retval;
+        return Status.OK_STATUS;
     }
 
     public int getAutoPublishTime()
