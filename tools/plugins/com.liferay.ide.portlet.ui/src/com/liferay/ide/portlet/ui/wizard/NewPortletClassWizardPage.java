@@ -15,11 +15,13 @@
 
 package com.liferay.ide.portlet.ui.wizard;
 
+import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.ui.dialog.FilteredTypesSelectionDialogEx;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -33,6 +35,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -60,6 +63,8 @@ import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
 import org.eclipse.jst.j2ee.internal.wizard.NewJavaClassWizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -344,6 +349,31 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
         superCombo = new Combo( parent, SWT.DROP_DOWN );
         superCombo.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
         synchHelper.synchCombo( superCombo, INewJavaClassDataModelProperties.SUPERCLASS, null );
+
+        superCombo.addModifyListener( new ModifyListener()
+        {
+
+            @Override
+            public void modifyText( ModifyEvent arg0 )
+            {
+                try
+                {
+                    String version = SDKUtil.getWorkspaceSDK().getVersion();
+
+                    if( superCombo.getText().equals( INewPortletClassDataModelProperties.QUALIFIED_MVC_PORTLET ) &&
+                        version.equals( ILiferayConstants.V700.toString() ) )
+                    {
+                        setMessage(
+                            "com.liferay.util.bridges.mvc.MVCPortlet has been deprecated in liferay portal 7.",
+                            Status.WARNING );
+                    }
+                }
+                catch( CoreException e )
+                {
+                    e.printStackTrace();
+                }
+            }
+        } );
 
         if( this.fragment )
         {

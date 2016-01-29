@@ -202,7 +202,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
     {
         if( SUPERCLASS.equals( propertyName ) )
         {
-            return QUALIFIED_MVC_PORTLET;
+            return QUALIFIED_NEW_MVC_PORTLET;
         }
         else if( CONSTRUCTOR.equals( propertyName ) )
         {
@@ -684,8 +684,8 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
         if( SUPERCLASS.equals( propertyName ) )
         {
             String defaults =
-                QUALIFIED_MVC_PORTLET + StringPool.COMMA + QUALIFIED_LIFERAY_PORTLET + StringPool.COMMA +
-                    QUALIFIED_GENERIC_PORTLET;
+                QUALIFIED_NEW_MVC_PORTLET + StringPool.COMMA + QUALIFIED_MVC_PORTLET + StringPool.COMMA +
+                QUALIFIED_LIFERAY_PORTLET + StringPool.COMMA + QUALIFIED_GENERIC_PORTLET;
 
             String[] defaultVals = defaults.split( StringPool.COMMA );
 

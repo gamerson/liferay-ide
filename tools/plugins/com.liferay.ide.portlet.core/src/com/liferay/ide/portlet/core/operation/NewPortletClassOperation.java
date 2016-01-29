@@ -56,9 +56,10 @@ public class NewPortletClassOperation extends NewWebClassOperation
     public IStatus execute( IProgressMonitor monitor, IAdaptable info ) throws ExecutionException
     {
         String defaultSuperclasses =
+            INewPortletClassDataModelProperties.QUALIFIED_NEW_MVC_PORTLET + StringPool.COMMA +
             INewPortletClassDataModelProperties.QUALIFIED_MVC_PORTLET + StringPool.COMMA +
-                INewPortletClassDataModelProperties.QUALIFIED_LIFERAY_PORTLET + StringPool.COMMA +
-                INewPortletClassDataModelProperties.QUALIFIED_GENERIC_PORTLET;
+            INewPortletClassDataModelProperties.QUALIFIED_LIFERAY_PORTLET + StringPool.COMMA +
+            INewPortletClassDataModelProperties.QUALIFIED_GENERIC_PORTLET;
         try
         {
             Preferences preferences = PortletCore.getPreferences();
