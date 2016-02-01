@@ -114,7 +114,7 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
         final IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( getProject(), monitor );
         final MavenProject mavenProject = projectFacade.getMavenProject( monitor );
 
-        final String targetName = mavenProject.getBuild().getFinalName() + ".jar";
+        final String targetName = mavenProject.getBuild().getFinalName();
 
         // TODO find a better way to get the target folder
         final IFolder targetFolder = getProject().getFolder( "target" );
@@ -122,11 +122,16 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
         if( targetFolder.exists() )
         {
             // targetFolder.refreshLocal( IResource.DEPTH_ONE, monitor );
-            final IPath targetFile = targetFolder.getRawLocation().append( targetName );
+            final IPath targetJarFile = targetFolder.getRawLocation().append( targetName + ".jar" );
+            final IPath targetWarFile = targetFolder.getRawLocation().append( targetName + ".war" );
 
-            if( targetFile.toFile().exists() )
+            if( targetJarFile.toFile().exists() )
             {
-                outputJar = targetFile;
+                outputJar = targetJarFile;
+            }
+            else if( targetWarFile.toFile().exists() )
+            {
+                outputJar = targetWarFile;
             }
         }
 

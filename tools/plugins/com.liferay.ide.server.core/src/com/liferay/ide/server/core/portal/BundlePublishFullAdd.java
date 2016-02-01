@@ -100,7 +100,8 @@ public class BundlePublishFullAdd extends BundlePublishOperation
 
                 if( outputJar!= null && outputJar.toFile().exists() )
                 {
-                    if( this.server.getServerState() == IServer.STATE_STARTED )
+                    if( this.server.getServerState() == IServer.STATE_STARTED &&
+                        outputJar.toFile().getName().endsWith( "jar" ) )
                     {
                         monitor.subTask( "Remotely deploying " + module.getName() + " to Liferay module framework..." );
 
