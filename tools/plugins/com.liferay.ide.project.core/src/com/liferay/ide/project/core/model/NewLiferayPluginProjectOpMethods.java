@@ -386,6 +386,17 @@ public class NewLiferayPluginProjectOpMethods
                 {
                     retval = true;
                 }
+                else
+                {
+                    if( type.equals( "web" ) )
+                    {
+                        retval = false;
+                    }
+                    else if( type.equals( "ext" ) )
+                    {
+                        retval = true;
+                    }
+                }
             }
             else
             {
