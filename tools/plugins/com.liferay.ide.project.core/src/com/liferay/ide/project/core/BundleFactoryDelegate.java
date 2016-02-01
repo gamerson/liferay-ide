@@ -17,6 +17,7 @@ package com.liferay.ide.project.core;
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.LiferayNature;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,12 @@ public class BundleFactoryDelegate extends ProjectModuleFactoryDelegate
 
         if( liferayProject instanceof IBundleProject )
         {
-            retval = new IModule[] { createSimpleModule( project ) };
+            boolean hasNature = LiferayNature.hasNature( project );
+
+            if( hasNature )
+            {
+                retval = new IModule[] { createSimpleModule( project ) };
+            }
         }
 
         return retval;
