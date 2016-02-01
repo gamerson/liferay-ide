@@ -17,11 +17,13 @@ package com.liferay.ide.project.core;
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.LiferayNature;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
@@ -53,11 +55,24 @@ public class BundleFactoryDelegate extends ProjectModuleFactoryDelegate
     {
         IModule[] retval = new IModule[0];
 
-        ILiferayProject liferayProject = LiferayCore.create( project );
-
-        if( liferayProject instanceof IBundleProject )
+        try
         {
-            retval = new IModule[] { createSimpleModule( project ) };
+            ILiferayProject liferayProject = LiferayCore.create( project );
+
+            if( liferayProject instanceof IBundleProject )
+            {
+                boolean liferayNature = LiferayNature.hasNature( project );
+                boolean mavenNature = project.hasNature( "org.eclipse.m2e.core.maven2Nature" );
+
+                if( liferayNature && !mavenNature )
+                {
+                    retval = new IModule[] { createSimpleModule( project ) };
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+            ProjectCore.logError( " fail to get liferay budle module. ", e );
         }
 
         return retval;
