@@ -44,7 +44,6 @@ import org.eclipse.core.runtime.Path;
 /**
  * @author Gregory Amerson
  */
-
 public class BladeCLI
 {
     static IPath cachedBladeCLIPath;

@@ -15,12 +15,15 @@
 
 package com.liferay.ide.project.core;
 
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.descriptor.IDescriptorOperation;
 import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
 import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.BladeCLIException;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +34,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -333,6 +337,18 @@ public class ProjectCore extends Plugin
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(
             sdkBuildPropertiesResourceListener, IResourceChangeEvent.POST_CHANGE );
+
+        File repoCacheFile = LiferayCore.GLOBAL_SETTINGS_PATH.append( "repoCache" ).toFile();
+
+        if( !repoCacheFile.exists() )
+        {
+            final URL repoCacheZipUrl =
+                Platform.getBundle( "com.liferay.ide.project.core" ).getEntry( "files/repoCache.zip" );
+
+            final File repoCacheZipFile = new File( FileLocator.toFileURL( repoCacheZipUrl ).getFile() );
+
+            ZipUtil.unzip( repoCacheZipFile, LiferayCore.GLOBAL_SETTINGS_PATH.toFile() );
+        }
 
         final Job job = new Job( "Checking for the latest Blade CLI" )
         {
