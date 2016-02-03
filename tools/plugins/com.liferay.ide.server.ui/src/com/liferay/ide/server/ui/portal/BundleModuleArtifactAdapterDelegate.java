@@ -15,6 +15,8 @@
 package com.liferay.ide.server.ui.portal;
 
 import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.IWebProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.LiferayNature;
 
@@ -93,7 +95,8 @@ public class BundleModuleArtifactAdapterDelegate extends ModuleArtifactAdapterDe
     {
         final IBundleProject bundleProject = LiferayCore.create( IBundleProject.class, project );
         final boolean hasNature = LiferayNature.hasNature( project );
+        ILiferayProject liferayProject = LiferayCore.create( project );
 
-        return bundleProject != null && hasNature == true;
+        return bundleProject != null && hasNature == true && !( liferayProject instanceof IWebProject );
     }
 }
