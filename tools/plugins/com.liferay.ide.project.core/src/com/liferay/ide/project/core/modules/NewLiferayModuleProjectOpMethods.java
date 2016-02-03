@@ -165,37 +165,37 @@ public class NewLiferayModuleProjectOpMethods extends BaseOpMethods
         }
     }
 
-    public static void addDependencies( File file, String bundleId )
-    {
-        IServer runningServer = null;
-        final IServer[] servers = ServerCore.getServers();
-
-        for( IServer server : servers )
-        {
-            if( server.getServerState() == IServer.STATE_STARTED &&
-                server.getServerType().getId().equals( "com.liferay.ide.server.portal" ) )
-            {
-                runningServer = server;
-                break;
-            }
-        }
-
-        final ServiceCommand serviceCommand = new ServiceCommand( runningServer, bundleId );
-
-        try
-        {
-            final String[] osgiService = serviceCommand.execute();
-
-            if( osgiService != null )
-            {
-                setDenpendencies( file, osgiService[0], osgiService[1] );
-            }
-        }
-        catch( Exception e )
-        {
-            ProjectCore.logError( "Can't update project denpendencies. ", e );
-        }
-    }
+//    public static void addDependencies( File file, String bundleId )
+//    {
+//        IServer runningServer = null;
+//        final IServer[] servers = ServerCore.getServers();
+//
+//        for( IServer server : servers )
+//        {
+//            if( server.getServerState() == IServer.STATE_STARTED &&
+//                server.getServerType().getId().equals( "com.liferay.ide.server.portal" ) )
+//            {
+//                runningServer = server;
+//                break;
+//            }
+//        }
+//
+//        final ServiceCommand serviceCommand = new ServiceCommand( runningServer, bundleId );
+//
+//        try
+//        {
+//            final String[] osgiService = serviceCommand.execute();
+//
+//            if( osgiService != null )
+//            {
+//                setDenpendencies( file, osgiService[0], osgiService[1] );
+//            }
+//        }
+//        catch( Exception e )
+//        {
+//            ProjectCore.logError( "Can't update project denpendencies. ", e );
+//        }
+//    }
 
     private static void setDenpendencies(File file , String bundleId , String bundleVersion) throws Exception
     {
