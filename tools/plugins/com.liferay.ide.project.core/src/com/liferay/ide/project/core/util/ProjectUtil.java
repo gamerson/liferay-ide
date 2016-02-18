@@ -1209,6 +1209,18 @@ public class ProjectUtil
         return hasFacet( project, IPluginFacetConstants.LIFERAY_EXT_PROJECT_FACET );
     }
 
+    public static boolean isGradleProject(String location)
+    {
+        boolean retval = false;
+        File build = new File( location, "build.gradle" );
+        if( build.exists() )
+        {
+            retval = true;
+        }
+
+        return retval;
+    }
+
     public static boolean isHookProject( IProject project )
     {
         return hasFacet( project, IPluginFacetConstants.LIFERAY_HOOK_PROJECT_FACET );
@@ -1343,6 +1355,18 @@ public class ProjectUtil
         }
         catch( Exception e)
         {
+        }
+
+        return retval;
+    }
+
+    public static boolean isMavenProject(String location)
+    {
+        boolean retval = false;
+        File pom = new File( location, "pom.xml" );
+        if( pom.exists() )
+        {
+            retval = true;
         }
 
         return retval;
