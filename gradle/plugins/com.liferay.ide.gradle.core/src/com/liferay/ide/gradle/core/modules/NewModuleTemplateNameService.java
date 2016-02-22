@@ -13,48 +13,54 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.core.modules;
+package com.liferay.ide.gradle.core.modules;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.modules.BladeCLI;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.sapphire.PossibleValuesService;
-import org.eclipse.sapphire.Value;
-import org.eclipse.sapphire.modeling.Status;
 
 /**
  * @author Simon Jiang
  */
-
-public class NewModuleComopnentProjectService extends PossibleValuesService
+public class NewModuleTemplateNameService extends PossibleValuesService
 {
-    @Override
-    public Status problem( final Value<?> value )
-    {
-        return Status.createOkStatus();
-    }
+
+    private List<String> possibleValues;
 
     @Override
-    protected void compute( final Set<String> values )
+    protected void initPossibleValuesService()
     {
+        possibleValues = new ArrayList<String>();
+
         try
         {
-            IProject[] allProjects = CoreUtil.getAllProjects();
-            
-            for( IProject project : allProjects )
+            for( String projectTemplate : BladeCLI.getProjectTemplates() )
             {
-                if ( project.hasNature( "org.eclipse.buildship.core.gradleprojectnature" ) )
+                if( !projectTemplate.contains( "hook" ) && !projectTemplate.contains( "fragment" ) &&
+                    !projectTemplate.contains( "servicebuilder" ) )
                 {
-                    values.add( project.getName()  );
+                    possibleValues.add( projectTemplate );
                 }
             }
         }
         catch( Exception e )
         {
-            ProjectCore.logError( "Get project list error. ", e );
         }
+    }
+
+    @Override
+    protected void compute( Set<String> values )
+    {
+        values.addAll( possibleValues );
+    }
+
+    @Override
+    public boolean ordered()
+    {
+        return true;
     }
 }

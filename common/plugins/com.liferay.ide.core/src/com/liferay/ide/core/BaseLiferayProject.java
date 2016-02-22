@@ -83,14 +83,21 @@ public abstract class BaseLiferayProject implements ILiferayProject
 
     public IFolder getSourceFolder( String classification )
     {
-        final List<IFolder> folders = CoreUtil.getSourceFolders( JavaCore.create( project ) );
+        IFolder retval = null;
+        
+        final List<IFolder> sourceFolders = CoreUtil.getSourceFolders( JavaCore.create( getProject() ) );
 
-        if( !CoreUtil.isNullOrEmpty( folders ) )
+        for( IFolder folder : sourceFolders )
         {
-            return folders.get( 0 );
+            if( folder.getName().equals( classification ) )
+            {
+                retval = folder;
+
+                break;
+            }
         }
 
-        return null;
+        return retval;
     }
 
     @Override
