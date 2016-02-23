@@ -206,6 +206,11 @@
    <extension
          point="org.eclipse.ui.preferenceTransfer">
       <settingsTransfer
+            class="com.liferay.ide.ui.workspace.CreateLiferay7WorkspaceTransfer"
+            id="com.liferay.ide.ui.workspace.CreateLiferay7WorkspaceTransfer"
+            name="Create Liferay 7 Workspace">
+      </settingsTransfer>
+      <settingsTransfer
             class="com.liferay.ide.ui.workspace.WorkbenchPreferencesTransfer"
             id="com.liferay.ide.ui.workspace.WorkbenchPreferencesTransfer"
             name="Preferences">
