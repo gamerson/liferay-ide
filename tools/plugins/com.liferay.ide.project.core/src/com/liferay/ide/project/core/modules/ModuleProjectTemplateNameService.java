@@ -15,6 +15,8 @@
 
 package com.liferay.ide.project.core.modules;
 
+import com.liferay.ide.core.util.BladeCLI;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

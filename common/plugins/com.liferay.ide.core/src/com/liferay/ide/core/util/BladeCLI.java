@@ -12,12 +12,10 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.modules;
+package com.liferay.ide.core.util;
 
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.StringBufferOutputStream;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.project.core.ProjectCore;
 
 import java.io.File;
 import java.io.IOException;
@@ -146,7 +144,7 @@ public class BladeCLI
 
             try
             {
-                final URL url = ProjectCore.getDefault().getBundle().getEntry( "lib/com.liferay.blade.cli.jar" );
+                final URL url = LiferayCore.getDefault().getBundle().getEntry( "lib/com.liferay.blade.cli.jar" );
                 cachedBladeCLIPath = new Path( FileLocator.toFileURL( url ).getFile() );
             }
             catch( Exception e )

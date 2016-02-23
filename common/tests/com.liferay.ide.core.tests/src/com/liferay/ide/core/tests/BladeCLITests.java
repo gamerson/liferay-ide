@@ -12,13 +12,13 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.tests.modules;
+package com.liferay.ide.core.tests;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.liferay.ide.project.core.modules.BladeCLI;
+import com.liferay.ide.core.util.BladeCLI;
 
 import java.io.File;
 import java.nio.file.Files;
