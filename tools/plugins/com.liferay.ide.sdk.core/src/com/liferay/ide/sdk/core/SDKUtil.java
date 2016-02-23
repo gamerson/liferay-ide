@@ -27,8 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.core.internal.resources.FilterDescriptor;
+import org.eclipse.core.resources.FileInfoMatcherDescription;
+import org.eclipse.core.resources.IFilterMatcherDescriptor;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceFilterDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -309,6 +315,31 @@ public class SDKUtil
                 }
 
                 sdkProject.open( npm );
+
+                IFilterMatcherDescriptor descriptor = null;
+                IFilterMatcherDescriptor[] descriptors = ResourcesPlugin.getWorkspace().getFilterMatcherDescriptors();
+
+                for( int i = 0; i < descriptors.length; i++ )
+                {
+                    if( descriptors[i].getName().equals( "AND" ) )
+                    {
+                        descriptor = descriptors[i];
+                    }
+                }
+
+                if( descriptor != null )
+                {
+                    FileInfoMatcherDescription fmd = new FileInfoMatcherDescription( descriptor.getId(), null );
+
+                    IFolder[] folders = { sdkProject.getFolder( "portlets" ), sdkProject.getFolder( "layouttpl" ),
+                        sdkProject.getFolder( "themes" ), sdkProject.getFolder( "hooks" ),
+                        sdkProject.getFolder( "ext" ), sdkProject.getFolder( "webs" ) };
+
+                    for( IFolder folder : folders )
+                    {
+                        folder.createFilter( 10, fmd, IResource.BACKGROUND_REFRESH, npm );
+                    }
+                }
             }
             catch( Exception e )
             {
