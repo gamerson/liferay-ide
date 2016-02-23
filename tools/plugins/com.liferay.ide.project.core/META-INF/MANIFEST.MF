@@ -36,7 +36,6 @@ Require-Bundle: org.eclipse.wst.common.project.facet.core;bundle-version="[1.4.1
  org.apache.commons.io;bundle-version="2.0.1",
  com.liferay.blade.api;bundle-version="1.0.0",
  org.apache.felix.gogo.runtime,
- org.apache.ant,
  biz.aQute.bndlib,
  biz.aQute.repository,
  biz.aQute.remote.api

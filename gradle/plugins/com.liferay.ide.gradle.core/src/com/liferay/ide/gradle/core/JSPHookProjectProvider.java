@@ -17,12 +17,12 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.util.BladeCLI;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.gradle.core.modules.NewJSPHookModuleOp;
 import com.liferay.ide.gradle.core.modules.OSGiCustomJSP;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.modules.BladeCLI;
 
 import java.io.File;
 import java.io.IOException;
