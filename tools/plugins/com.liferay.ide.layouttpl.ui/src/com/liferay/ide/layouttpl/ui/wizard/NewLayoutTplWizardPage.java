@@ -157,7 +157,7 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
             public void widgetSelected( SelectionEvent e )
             {
                 handleFileBrowseButton(
-                    NewLayoutTplWizardPage.this.thumbnailFile, Msgs.wapTemplateFileSelection,
+                    NewLayoutTplWizardPage.this.thumbnailFile, Msgs.thumbnailFileSelection,
                     Msgs.chooseThumbnailFile );
             }
 
@@ -232,6 +232,7 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
         public static String templateFile;
         public static String templateFileSelection;
         public static String thumbnailFile;
+        public static String thumbnailFileSelection;
         public static String wapTemplateFile;
         public static String wapTemplateFileSelection;
 
