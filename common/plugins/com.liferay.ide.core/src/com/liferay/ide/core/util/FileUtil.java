@@ -391,7 +391,7 @@ public class FileUtil
         return out.toString();
     }
 
-    public static String[] readLinesFromFile( File file )
+    public static String[] readLinesFromFile( File file, boolean includeNewlines )
     {
         if( file == null )
         {
@@ -416,7 +416,14 @@ public class FileUtil
 
             while( ( line = bufferedReader.readLine() ) != null )
             {
-                lines.add( line );
+                StringBuffer contents = new StringBuffer(line);
+
+                if( includeNewlines )
+                {
+                    contents.append( System.getProperty( "line.separator" ) ); //$NON-NLS-1$
+                }
+                
+                lines.add( contents.toString() );
             }
         }
         catch( Exception e )
