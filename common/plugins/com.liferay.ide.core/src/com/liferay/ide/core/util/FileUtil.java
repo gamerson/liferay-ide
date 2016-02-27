@@ -436,6 +436,62 @@ public class FileUtil
         return lines.toArray( new String[lines.size()] );
     }
 
+    public static String[] readLinesFromFile( File file, boolean includeNewlines  )
+    {
+        if( file == null )
+        {
+            return null;
+        }
+
+        if( !file.exists() )
+        {
+            return null;
+        }
+
+        List<String> lines = new ArrayList<String>();
+        BufferedReader bufferedReader = null;
+
+        try
+        {
+            FileReader fileReader = new FileReader( file );
+
+            bufferedReader = new BufferedReader( fileReader );
+
+            String line;
+
+            while( ( line = bufferedReader.readLine() ) != null )
+            {
+                StringBuffer contents = new StringBuffer(line);
+                if( includeNewlines )
+                {
+                    contents.append( System.getProperty( "line.separator" ) ); //$NON-NLS-1$
+                }
+                
+                lines.add( contents.toString() );
+            }
+        }
+        catch( Exception e )
+        {
+            LiferayCore.logError( "Could not read file: " + file.getPath() ); //$NON-NLS-1$
+        }
+        finally
+        {
+            if( bufferedReader != null )
+            {
+                try
+                {
+                    bufferedReader.close();
+                }
+                catch( Exception e )
+                {
+                    // no need to log, best effort
+                }
+            }
+        }
+
+        return lines.toArray( new String[lines.size()] );
+    }
+
     public static Document readXML( InputStream inputStream, EntityResolver resolver, ErrorHandler error )
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
