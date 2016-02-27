@@ -1,7 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.liferay.ide.newWizards"
+            name="New Module Wizard">
+      </category>
+      <wizard
+            category="com.liferay.ide.newWizards"
+            icon="icons/n16/bundle_new.png"
+            id="com.liferay.ide.project.ui.modules.NewLiferayModuleWizard"
+            name="Liferay Component">
+         <class class="com.liferay.ide.project.ui.modules.NewLiferayModuleWizard">
+            <parameter name="liferay_artifact" value="true"/>
+            <parameter name="menuIndex" value="10" />
+         </class>
+         <description>
+            "New Liferay Module Wizard"
+         </description>
+      </wizard>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution objectClass="org.eclipse.core.resources.IResource" adaptable="true" id="com.liferay.ide.ui.popupmenu">
+         <menu
+               icon="icons/e16/liferay.png"
+               id="liferayPopupMenuCategory"
+               label="%liferay.menu.label">
+            <separator name="slot1"/>
+         </menu>
+    </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="com.liferay.ide.project.ui.newModule"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="com.liferay.ide.project.ui.modules.NewModuleAction"
+               enablesFor="1"
+               icon="icons/n16/bundle_new.png"
+               id="com.liferay.ide.project.ui.modules.NewModuleAction"
+               label="New Project Component"
+               menubarPath="liferayPopupMenuCategory/slot1">
+         </action>
+         <!--
+         <enablement>
+           <adapt type="org.eclipse.core.resources.IProject">
+             <test
+          property="com.liferay.ide.project.ui.isGradleProject" />
+           </adapt>
+         </enablement>
+         -->
+      </objectContribution>
+   </extension>
    <extension
          point="org.eclipse.ui.newWizards">
       <category
@@ -1434,5 +1486,4 @@
             name="Create Liferay 7 Workspace">
       </settingsTransfer>
    </extension>
-
 </plugin>
