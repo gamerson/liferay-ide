@@ -19,10 +19,12 @@ Require-Bundle: org.eclipse.core.runtime,
  com.liferay.blade.api,
  com.liferay.blade.gradle.model,
  com.gradleware.tooling.client;bundle-version="0.10.0",
- com.gradleware.tooling.utils;bundle-version="0.10.0"
+ com.gradleware.tooling.utils;bundle-version="0.10.0",
+ org.eclipse.jdt.launching
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.gradle.core,
  com.liferay.ide.gradle.core.modules,
  com.liferay.ide.gradle.core.workspace
 Bundle-ClassPath: .
+Import-Package: org.apache.commons.io
