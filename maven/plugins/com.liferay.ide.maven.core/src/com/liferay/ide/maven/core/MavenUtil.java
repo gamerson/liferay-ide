@@ -61,8 +61,10 @@ import org.eclipse.m2e.core.project.LocalProjectScanner;
 import org.eclipse.m2e.core.project.MavenProjectInfo;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
+import org.eclipse.m2e.core.ui.internal.wizards.ImportMavenProjectsJob;
 import org.eclipse.m2e.wtp.ProjectUtils;
 import org.eclipse.m2e.wtp.WarPluginConfiguration;
+import org.eclipse.ui.IWorkingSet;
 import org.eclipse.wst.xml.core.internal.provisional.format.NodeFormatter;
 import org.osgi.framework.Version;
 import org.w3c.dom.Document;
@@ -241,11 +243,7 @@ public class MavenUtil
 
             Collection<MavenProjectInfo> children = info.getProjects();
 
-            if( children.isEmpty() )
-            {
-                results.add( info );
-            }
-            else
+            if( !children.isEmpty() )
             {
                 findChildMavenProjects( results, children );
             }
@@ -520,9 +518,11 @@ public class MavenUtil
         ResolverConfiguration resolverConfig = new ResolverConfiguration();
         ProjectImportConfiguration importConfiguration = new ProjectImportConfiguration( resolverConfig );
 
-        IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
+        List<IWorkingSet> workingSets = new ArrayList<IWorkingSet>();
 
-        projectConfigurationManager.importProjects( mavenProjects, importConfiguration, monitor );
+        ImportMavenProjectsJob job = new ImportMavenProjectsJob( mavenProjects, workingSets, importConfiguration );
+        job.setRule( MavenPlugin.getProjectConfigurationManager().getRule() );
+        job.schedule();
     }
 
     public static boolean isMavenProject( IProject project ) throws CoreException
