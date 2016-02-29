@@ -2,6 +2,28 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         id="com.liferay.ide.portlet.ui.newModuleWizard"
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.liferay.ide.newWizards"
+            name="New Module Wizard">
+      </category>
+      <wizard
+            category="com.liferay.ide.newWizards"
+            icon="icons/e16/bundle_new.png"
+            id="com.liferay.ide.eclipse.ui.wizard.module"
+            name="Liferay Module Wizard">
+         <class class="com.liferay.ide.gradle.ui.modules.NewLiferayModuleWizard">
+            <parameter name="liferay_artifact" value="true"/>
+            <parameter name="menuIndex" value="10" />
+            <parameter name="validProjectTypes" value="module" />
+         </class>
+         <description>
+            "New Liferay Module Wizard"
+         </description>
+      </wizard>
+   </extension>
+   <extension
          point="org.eclipse.ui.newWizards">
          <wizard
             category="com.liferay.ide.newWizards"
@@ -163,4 +185,35 @@
             type="org.eclipse.core.resources.IFile">
       </propertyTester>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution objectClass="org.eclipse.core.resources.IResource" adaptable="true" id="com.liferay.ide.ui.popupmenu">
+         <menu
+               icon="icons/e16/liferay.png"
+               id="liferayPopupMenuCategory"
+               label="%liferay.menu.label">
+            <separator name="slot1"/>
+         </menu>
+    </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="com.liferay.ide.gradle.ui.newModule"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="com.liferay.ide.gradle.ui.action.NewModuleAction"
+               enablesFor="1"
+               icon="icons/e16/bundle_new.png"
+               id="com.liferay.ide.gradle.ui.newModule"
+               label="New Project Module"
+               menubarPath="liferayPopupMenuCategory/slot1">
+         </action>
+         <enablement>
+           <adapt type="org.eclipse.core.resources.IProject">
+             <test
+          property="com.liferay.ide.gradle.ui.isGradleProject" />
+           </adapt>
+         </enablement>
+      </objectContribution>
+   </extension>   
 </plugin>
