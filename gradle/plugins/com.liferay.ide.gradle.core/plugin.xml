@@ -26,4 +26,14 @@
             id="com.liferay.ide.gradle.core.GradleModuleProjectImporter">
       </liferayProjectImporter>
    </extension>
+   <extension
+         point="com.liferay.ide.core.liferayOsgiModuleProviders">
+      <liferayOsgiModuleProvider
+            class="com.liferay.ide.gradle.core.GradleModuleProvider"
+            default="true"
+            shortName="component"
+            id="com.liferay.ide.gradle.core.GradleModuleProvider"
+            projectType="gradle">
+      </liferayOsgiModuleProvider>
+   </extension>
 </plugin>

@@ -61,4 +61,10 @@
         <implementation>com.liferay.ide.project.core.modules.ProjectTemplateToStringConversionService</implementation>
         <overrides>Sapphire.ConversionService.ObjectToString</overrides>
     </service>
+    <service>
+        <id>Sapphire.ConversionService.StringToILiferyModuleProvider</id>
+        <implementation>com.liferay.ide.project.core.model.internal.StringToILiferayModuleProviderConversionService</implementation>
+        <context>Sapphire</context>
+        <description>ConversionService implementation for String to ILiferyModuleProvider conversions.</description>
+    </service>     
 </extension>

@@ -17,6 +17,7 @@ package com.liferay.ide.core;
 import com.liferay.ide.core.util.CoreUtil;
 
 import org.eclipse.core.net.proxy.IProxyService;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -49,6 +50,8 @@ public class LiferayCore extends Plugin
     private static LiferayProjectProviderReader providerReader;
 
     private static LiferayProjectImporterReader importerReader;
+    
+    private static LiferayOsgiModuleProviderReader moduleProviderReader;
 
     public static ILiferayProject create( Object adaptable )
     {
@@ -231,6 +234,46 @@ public class LiferayCore extends Plugin
         return providerReader.getProviders( type );
     }
 
+    public static synchronized ILiferayOsgiModuleProvider[] getModuleProviders()
+    {
+        if( moduleProviderReader == null )
+        {
+            moduleProviderReader = new LiferayOsgiModuleProviderReader();
+        }
+
+        return moduleProviderReader.getProviders();
+    }
+    
+    public static synchronized ILiferayOsgiModuleProvider[] getModuleProviders( String shortName )
+    {
+        if( moduleProviderReader == null )
+        {
+            moduleProviderReader = new LiferayOsgiModuleProviderReader();
+        }
+
+        return moduleProviderReader.getProviders( shortName );
+    }
+    
+    public static synchronized ILiferayOsgiModuleProvider getModuleProvider( String projectType )
+    {
+        if( moduleProviderReader == null )
+        {
+            moduleProviderReader = new LiferayOsgiModuleProviderReader();
+        }
+
+        return moduleProviderReader.getProvider( projectType );
+    }    
+    
+    public static synchronized ILiferayOsgiModuleProvider getModuleProvider( IProject project )
+    {
+        if( moduleProviderReader == null )
+        {
+            moduleProviderReader = new LiferayOsgiModuleProviderReader();
+        }
+
+        return moduleProviderReader.getProvider( project );
+    }
+    
     public static IProxyService getProxyService()
     {
         final ServiceTracker<Object, Object> proxyTracker =
