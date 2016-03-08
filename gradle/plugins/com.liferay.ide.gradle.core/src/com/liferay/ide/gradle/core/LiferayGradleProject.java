@@ -24,6 +24,7 @@ import com.gradleware.tooling.toolingmodel.repository.FixedRequestAttributes;
 import com.liferay.blade.gradle.model.CustomModel;
 import com.liferay.ide.core.BaseLiferayProject;
 import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.project.core.modules.IDSComponentProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -242,4 +243,23 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
             showExecutionView, showConsoleView );
     }
 
+    @Override
+    public <T> T adapt( Class<T> adapterType )
+    {
+        T adapter = super.adapt( adapterType );
+
+        if( adapter != null )
+        {
+            return adapter;
+        }
+
+        if( IDSComponentProvider.class.equals( adapterType ) )
+        {
+            final IDSComponentProvider dsComponentProvider = new GradleDSComponentProvider();
+
+            return adapterType.cast( dsComponentProvider );
+        }
+
+        return null;
+    }
 }
