@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+  <template name="com.liferay.portlet.add-default-resource" description="Liferay Component Properties"
+    id="com.liferay.portlet.add-default-resource" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.add-default-resource=${true}"
+  </template>
+    <template name="com.liferay.portlet.ajaxable" description="Liferay Component Properties"
+    id="com.liferay.portlet.ajaxable" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.ajaxable=${false}"
+  </template>
+    <template name="com.liferay.portlet.preferences-owned-by-group" description="Liferay Component Properties"
+    id="com.liferay.portlet.preferences-owned-by-group" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.preferences-owned-by-group=${true}"
+  </template>
+    <template name="com.liferay.portlet.private-request-attributes" description="Liferay Component Properties"
+    id="com.liferay.portlet.private-request-attributes" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.private-request-attributes=${false}"
+  </template>
+    <template name="com.liferay.portlet.private-session-attributes" description="Liferay Component Properties"
+    id="com.liferay.portlet.private-session-attributes" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.private-session-attributes=${false}"
+  </template>
+    <template name="com.liferay.portlet.show-portlet-access-denied" description="Liferay Component Properties"
+    id="com.liferay.portlet.show-portlet-access-denied" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.show-portlet-access-denied=${false}"
+  </template>
+    <template name="com.liferay.portlet.show-portlet-inactive" description="Liferay Component Properties"
+    id="com.liferay.portlet.show-portlet-inactive" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.show-portlet-inactive=${false}"
+  </template>
+    <template name="com.liferay.portlet.system" description="Liferay Component Properties"
+    id="com.liferay.portlet.system" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.system=${false}"
+  </template>
+    <template name="com.liferay.portlet.use-default-template" description="Liferay Component Properties"
+    id="com.liferay.portlet.use-default-template" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.use-default-template=${false}"
+  </template>
+    <template name="com.liferay.portlet.active" description="Liferay Component Properties"
+    id="com.liferay.portlet.active" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.active=${true}"
+  </template>
+     <template name="com.liferay.portlet.instanceable" description="Liferay Component Properties"
+    id="com.liferay.portlet.instanceable" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.instanceable=${true}"
+  </template>
+    <template name="com.liferay.portlet.layout-cacheable" description="Liferay Component Properties"
+    id="com.liferay.portlet.layout-cacheable" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.layout-cacheable=${true}"
+  </template>
+    <template name="com.liferay.portlet.scopeable" description="Liferay Component Properties"
+    id="com.liferay.portlet.scopeable" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.scopeable=${true}"
+  </template>
+    <template name="javax.portlet.init-param.copy-request-parameters" description="Liferay Component Properties"
+    id="javax.portlet.init-param.copy-request-parameters" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.init-param.copy-request-parameters=${true}"
+  </template>
+    <template name="com.liferay.portlet.remoteable" description="Liferay Component Properties"
+    id="com.liferay.portlet.remoteable" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.remoteable=${true}"
+  </template>
+  <template name="com.liferay.portlet.restore-current-view" description="Liferay Component Properties"
+    id="com.liferay.portlet.restore-current-view" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.restore-current-view=${false}"
+  </template>
+  <template name="com.liferay.portlet.preferences-company-wide" description="Liferay Component Properties"
+    id="com.liferay.portlet.preferences-company-wide" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.preferences-company-wide=${false}"
+  </template>
+   <template name="com.liferay.portlet.preferences-unique-per-layout" description="Liferay Component Properties"
+    id="com.liferay.portlet.preferences-unique-per-layout" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.preferences-unique-per-layout=${false}"
+  </template>
+   <template name="com.liferay.portlet.single-page-application" description="Liferay Component Properties"
+    id="com.liferay.portlet.single-page-application" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.single-page-application=${false}"
+  </template>
+   <template name="com.liferay.portlet.icon" description="Liferay Component Properties"
+    id="com.liferay.portlet.icon" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.icon=/icons/icon.png${cursor}"
+  </template>
+  <template name="com.liferay.portlet.render-weight" description="Liferay Component Properties"
+    id="com.liferay.portlet.render-weight" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.render-weight=${1}"
+  </template>
+   <template name="com.liferay.portlet.application-type" description="Liferay Component Properties"
+    id="com.liferay.portlet.application-type" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.application-type=Full-page-application${cursor}"
+  </template>
+   <template name="com.liferay.portlet.css-class-wrapper" description="Liferay Component Properties"
+    id="com.liferay.portlet.css-class-wrapper" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.css-class-wrapper=Portlet-forms-display${cursor}"
+  </template>
+   <template name="com.liferay.portlet.display-category" description="Liferay Component Properties"
+    id="com.liferay.portlet.display-category" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.display-category=category.samples${cursor}"
+  </template>
+   <template name="com.liferay.portlet.friendly-url-mapping" description="Liferay Component Properties"
+    id="com.liferay.portlet.friendly-url-mapping" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.friendly-url-mapping=${cursor}"
+  </template>
+   <template name="com.liferay.portlet.header-portlet-css" description="Liferay Component Properties"
+    id="com.liferay.portlet.header-portlet-css" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.header-portlet-css=/css/main.css${cursor}"
+  </template>
+   <template name="com.liferay.portlet.autopropagated-parameters" description="Liferay Component Properties"
+    id="com.liferay.portlet.autopropagated-parameters" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.autopropagated-parameters=${cursor}"
+  </template>
+   <template name="com.liferay.portlet.header-portlet-javascript" description="Liferay Component Properties"
+    id="com.liferay.portlet.header-portlet-javascript" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.header-portlet-javascript=/js/main.js${cursor}"
+  </template>
+   <template name="com.liferay.portlet.facebook-integration" description="Liferay Component Properties"
+    id="com.liferay.portlet.facebook-integration" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.facebook-integration=${fbml}"
+  </template>
+   <template name="com.liferay.portlet.footer-portlet-javascript" description="Liferay Component Properties"
+    id="com.liferay.portlet.footer-portlet-javascript" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.footer-portlet-javascript=/js/main.js${cursor}"
+  </template>
+   <template name="com.liferay.portlet.struts-path" description="Liferay Component Properties"
+    id="com.liferay.portlet.struts-path" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.struts-path=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.action-timeout" description="Liferay Component Properties"
+    id="com.liferay.portlet.action-timeout" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.action-timeout=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.configuration-path" description="Liferay Component Properties"
+    id="com.liferay.portlet.configuration-path" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.configuration-path=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.control-panel-entry-category" description="Liferay Component Properties"
+    id="com.liferay.portlet.control-panel-entry-category" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.control-panel-entry-category=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.control-panel-entry-weight" description="Liferay Component Properties"
+    id="com.liferay.portlet.control-panel-entry-weight" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.control-panel-entry-weight=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.footer-portlet-css" description="Liferay Component Properties"
+    id="com.liferay.portlet.footer-portlet-css" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.footer-portlet-css=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.maximize-edit" description="Liferay Component Properties"
+    id="com.liferay.portlet.maximize-edit" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.maximize-edit=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.maximize-help" description="Liferay Component Properties"
+    id="com.liferay.portlet.maximize-help" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.maximize-help=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.pop-up-print" description="Liferay Component Properties"
+    id="com.liferay.portlet.pop-up-print" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.pop-up-print=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.preferences-unique-per-layout" description="Liferay Component Properties"
+    id="com.liferay.portlet.preferences-unique-per-layout" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.preferences-unique-per-layout=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.render-timeout" description="Liferay Component Properties"
+    id="com.liferay.portlet.render-timeout" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.render-timeout=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.requires-namespaced-parameters" description="Liferay Component Properties"
+    id="com.liferay.portlet.requires-namespaced-parameters" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.requires-namespaced-parameters=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.user-principal-strategy" description="Liferay Component Properties"
+    id="com.liferay.portlet.user-principal-strategy" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.user-principal-strategy=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.virtual-path" description="Liferay Component Properties"
+    id="com.liferay.portlet.virtual-path" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.virtual-path=${cursor}"
+  </template>
+     <template name="com.liferay.portlet.parent-struts-path" description="Liferay Component Properties"
+    id="com.liferay.portlet.parent-struts-path" context="java"
+    enabled="true" autoinsert="false">
+    "com.liferay.portlet.parent-struts-path=${cursor}"
+  </template>
+   <template name="javax.portlet.expiration-cache" description="Liferay Component Properties"
+    id="javax.portlet.expiration-cache" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.expiration-cache=${cursor}"
+  </template>
+   <template name="javax.portlet.description" description="Liferay Component Properties"
+    id="javax.portlet.description" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.description=${cursor}"
+  </template>
+   <template name="javax.portlet.display-name" description="Liferay Component Properties"
+    id="javax.portlet.display-name" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.display-name=${cursor}"
+  </template>
+   <template name="javax.portlet.info.keywords" description="Liferay Component Properties"
+    id="javax.portlet.info.keywords" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.info.keywords=${cursor}"
+  </template>
+   <template name="javax.portlet.info.short-title" description="Liferay Component Properties"
+    id="javax.portlet.info.short-title" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.info.short-title=${cursor}"
+  </template>
+   <template name="javax.portlet.info.title" description="Liferay Component Properties"
+    id="javax.portlet.info.title" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.info.title=${cursor}"
+  </template>
+   <template name="javax.portlet.portlet-name" description="Liferay Component Properties"
+    id="javax.portlet.portlet-name" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.portlet-name=${cursor}"
+  </template>
+   <template name="javax.portlet.supported-processing-event" description="Liferay Component Properties"
+    id="javax.portlet.supported-processing-event" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.supported-processing-event=${cursor}"
+  </template>
+   <template name="javax.portlet.supported-public-render-parameter" description="Liferay Component Properties"
+    id="javax.portlet.supported-public-render-parameter" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.supported-public-render-parameter=${cursor}"
+  </template>
+   <template name="javax.portlet.supported-publishing-even" description="Liferay Component Properties"
+    id="javax.portlet.supported-publishing-even" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.supported-publishing-even=${cursor}"
+  </template>
+    <template name="javax.portlet.window-state" description="Liferay Component Properties"
+    id="javax.portlet.window-state" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.window-state=${cursor}"
+  </template>
+   <template name="javax.portlet.portlet-mode" description="Liferay Component Properties"
+    id="javax.portlet.portlet-mode" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.portlet-mode=text/html${cursor}"
+  </template>
+   <template name="javax.portlet.resource-bundle" description="Liferay Component Properties"
+    id="javax.portlet.resource-bundle" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.resource-bundle=content.Language${cursor}"
+  </template>
+   <template name="javax.portlet.preferences" description="Liferay Component Properties"
+    id="javax.portlet.preferences" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.preferences=classpath:/META-INF/portlet-preferences/default-portlet-preferences.xml${cursor}"
+  </template>
+   <template name="javax.portlet.security-role-ref" description="Liferay Component Properties"
+    id="javax.portlet.security-role-ref" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.security-role-ref=guest,power-user,user${cursor}"
+  </template>
+   <template name="javax.portlet.supported-public-render-parameter" description="Liferay Component Properties"
+    id="javax.portlet.supported-public-render-parameter" context="java"
+    enabled="true" autoinsert="false">
+    "javax.portlet.supported-public-render-parameter=${categoryId}"
+  </template>
+</templates> 

@@ -1434,5 +1434,11 @@
             name="Create Liferay 7 Workspace">
       </settingsTransfer>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <include
+            file="templates/properties-templates.xml">
+      </include>
+   </extension>
 
 </plugin>
