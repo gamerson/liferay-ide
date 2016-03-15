@@ -165,4 +165,10 @@
             type="org.eclipse.core.resources.IFile">
       </propertyTester>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <include
+            file="templates/properties-templates.xml">
+      </include>
+   </extension>
 </plugin>
