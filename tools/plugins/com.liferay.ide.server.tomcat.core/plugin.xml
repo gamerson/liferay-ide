@@ -63,6 +63,7 @@
    </extension>
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
+         <!--
       <serverType
             behaviourClass="com.liferay.ide.server.tomcat.core.LiferayTomcatServerBehavior"
             class="com.liferay.ide.server.tomcat.core.LiferayTomcatServer"
@@ -93,6 +94,7 @@
             stopTimeout="300000"
             supportsRemoteHosts="false">
       </serverType>
+      -->
       <serverType
             behaviourClass="com.liferay.ide.server.tomcat.core.LiferayTomcatServerBehavior"
             class="com.liferay.ide.server.tomcat.core.LiferayTomcatServer"
