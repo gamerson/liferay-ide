@@ -95,7 +95,7 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
         if( temp.toFile().exists() )
         {
             final File file = temp.append( "META-INF/MANIFEST.MF" ).toFile();
-            final String[] contents = FileUtil.readLinesFromFile( file );
+            final String[] contents = FileUtil.readLinesFromFile( file, false );
 
             for( String content : contents )
             {
