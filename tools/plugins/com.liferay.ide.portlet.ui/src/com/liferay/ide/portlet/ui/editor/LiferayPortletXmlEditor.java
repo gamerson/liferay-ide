@@ -14,11 +14,17 @@
 
 package com.liferay.ide.portlet.ui.editor;
 
-
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.portlet.core.lfportlet.model.LiferayPortletXml;
+import com.liferay.ide.portlet.core.lfportlet.model.LiferayPortletXml70;
+import com.liferay.ide.sdk.core.SDKUtil;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.sapphire.ElementType;
 import org.eclipse.sapphire.ui.swt.xml.editor.SapphireEditorForXml;
 import org.eclipse.ui.PartInitException;
+import org.osgi.framework.Version;
 
 /**
  * @author Simon Jiang
@@ -26,9 +32,26 @@ import org.eclipse.ui.PartInitException;
  */
 public class LiferayPortletXmlEditor extends SapphireEditorForXml
 {
+
+    static ElementType liferayPortletXml = LiferayPortletXml.TYPE;
+
+    static
+    {
+        try
+        {
+            if( CoreUtil.compareVersions( new Version( SDKUtil.getWorkspaceSDK().getVersion() ), ILiferayConstants.V700 ) >=0 )
+            {
+                liferayPortletXml = LiferayPortletXml70.TYPE;
+            }
+        }
+        catch( CoreException e )
+        {
+        }
+    }
+
     public LiferayPortletXmlEditor()
     {
-        super( LiferayPortletXml.TYPE, null );
+        super( liferayPortletXml, null );
     }
 
     @Override
@@ -36,4 +59,5 @@ public class LiferayPortletXmlEditor extends SapphireEditorForXml
     {
         addDeferredPage( 1, "Overview", "liferay-portlet-app.editor" );
     }
+
 }
