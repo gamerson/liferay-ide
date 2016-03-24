@@ -32,6 +32,7 @@ import com.liferay.ide.server.remote.IRemoteServer;
 import com.liferay.ide.server.remote.IServerManagerConnection;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -134,7 +136,7 @@ public class ServerUtil
     {
         IProject retval = null;
 
-        if( ! CoreUtil.isNullOrEmpty( contextName ) )
+        if( !CoreUtil.isNullOrEmpty( contextName ) )
         {
             for( IProject project : CoreUtil.getAllProjects() )
             {
@@ -216,7 +218,8 @@ public class ServerUtil
             final String type = runtime.getAppServerType();
 
             if( ( CoreUtil.compareVersions( version, ILiferayConstants.V6130 ) >= 0 ) ||
-                ( CoreUtil.compareVersions( version, ILiferayConstants.V612 ) >= 0 && CoreUtil.compareVersions( version, ILiferayConstants.V6110 ) < 0 ) )
+                ( CoreUtil.compareVersions( version, ILiferayConstants.V612 ) >= 0 &&
+                    CoreUtil.compareVersions( version, ILiferayConstants.V6110 ) < 0 ) )
             {
                 retval = MessageFormat.format( propertyAppServerDeployDir, "." + type + "." ); //$NON-NLS-1$ //$NON-NLS-2$
             }
@@ -261,7 +264,8 @@ public class ServerUtil
         final String myKey = "category.my"; //$NON-NLS-1$
         final String categoryMy = categories.getProperty( myKey );
 
-        if( ( portalVersion == null ) || ( CoreUtil.compareVersions( new Version( portalVersion ), ILiferayConstants.V620 ) < 0 ) )
+        if( ( portalVersion == null ) ||
+            ( CoreUtil.compareVersions( new Version( portalVersion ), ILiferayConstants.V620 ) < 0 ) )
         {
             final String portalKey = "category.portal"; //$NON-NLS-1$
             final String serverKey = "category.server"; //$NON-NLS-1$
@@ -312,6 +316,27 @@ public class ServerUtil
     public static org.eclipse.wst.common.project.facet.core.runtime.IRuntime getFacetRuntime( IRuntime runtime )
     {
         return RuntimeManager.getRuntime( runtime.getName() );
+    }
+
+    public static String getFragemtHostName( final File bundleFile )
+    {
+        String fragmentHostName = null;
+
+        try(JarInputStream jarStream = new JarInputStream( new FileInputStream( bundleFile ) ))
+        {
+            fragmentHostName = jarStream.getManifest().getMainAttributes().getValue( "Fragment-Host" );
+
+            if( fragmentHostName != null )
+            {
+                fragmentHostName =
+                    fragmentHostName.trim().substring( 0, fragmentHostName.indexOf( ";bundle-version" ) );
+            }
+        }
+        catch( Exception e )
+        {
+        }
+
+        return fragmentHostName;
     }
 
     public static IProjectFacet getLiferayFacet( IFacetedProject facetedProject )
@@ -443,8 +468,7 @@ public class ServerUtil
         Properties categories = new Properties();
         Enumeration<?> names = props.propertyNames();
 
-        String[] controlPanelCategories =
-        {   "category.my", //$NON-NLS-1$
+        String[] controlPanelCategories = { "category.my", //$NON-NLS-1$
             "category.users", //$NON-NLS-1$
             "category.apps", //$NON-NLS-1$
             "category.configuration", //$NON-NLS-1$
@@ -481,16 +505,17 @@ public class ServerUtil
 
     public static IRuntime getRuntime( IProject project ) throws CoreException
     {
-        return (IRuntime) getRuntimeAdapter( ProjectFacetsManager.create( project ).getPrimaryRuntime(), IRuntime.class );
+        return (IRuntime) getRuntimeAdapter(
+            ProjectFacetsManager.create( project ).getPrimaryRuntime(), IRuntime.class );
     }
 
-    public static PortalBundle getPortalBundle(IProject project)  throws CoreException
+    public static PortalBundle getPortalBundle( IProject project ) throws CoreException
     {
         SDK sdk = SDKUtil.getSDKFromProjectDir( project.getLocation().toFile() );
 
         IStatus status = sdk.validate();
 
-        if ( !status.isOK() )
+        if( !status.isOK() )
         {
             return null;
         }
@@ -501,7 +526,7 @@ public class ServerUtil
 
         PortalBundleFactory factory = LiferayServerCore.getPortalBundleFactories( appServerType );
 
-        if ( factory != null )
+        if( factory != null )
         {
             final IPath path = factory.canCreateFromPath( appServerProperties );
 
@@ -525,7 +550,7 @@ public class ServerUtil
     {
         IRuntime retval = null;
 
-        if( ! CoreUtil.isNullOrEmpty( runtimeName ) )
+        if( !CoreUtil.isNullOrEmpty( runtimeName ) )
         {
             final IRuntime[] runtimes = ServerCore.getRuntimes();
 
@@ -648,8 +673,7 @@ public class ServerUtil
 
         properties.put( ISDKConstants.PROPERTY_APP_SERVER_TYPE, type );
 
-        final String appServerDirKey =
-            getAppServerPropertyKey( ISDKConstants.PROPERTY_APP_SERVER_DIR, appServer );
+        final String appServerDirKey = getAppServerPropertyKey( ISDKConstants.PROPERTY_APP_SERVER_DIR, appServer );
         final String appServerDeployDirKey =
             getAppServerPropertyKey( ISDKConstants.PROPERTY_APP_SERVER_DEPLOY_DIR, appServer );
         final String appServerLibGlobalDirKey =
@@ -660,7 +684,8 @@ public class ServerUtil
         properties.put( appServerDirKey, dir );
         properties.put( appServerDeployDirKey, deployDir );
         properties.put( appServerLibGlobalDirKey, libGlobalDir );
-        //IDE-1268 need to always specify app.server.parent.dir, even though it is only useful in 6.1.2/6.2.0 or greater
+        // IDE-1268 need to always specify app.server.parent.dir, even though it is only useful in 6.1.2/6.2.0 or
+        // greater
         properties.put( ISDKConstants.PROPERTY_APP_SERVER_PARENT_DIR, parentDir );
         properties.put( appServerPortalDirKey, portalDir );
 
@@ -669,7 +694,8 @@ public class ServerUtil
 
     public static IServerManagerConnection getServerManagerConnection( IServer server, IProgressMonitor monitor )
     {
-        return LiferayServerCore.getRemoteConnection( (IRemoteServer) server.loadAdapter( IRemoteServer.class, monitor ) );
+        return LiferayServerCore.getRemoteConnection(
+            (IRemoteServer) server.loadAdapter( IRemoteServer.class, monitor ) );
     }
 
     public static IServer[] getServersForRuntime( IRuntime runtime )
@@ -727,6 +753,7 @@ public class ServerUtil
 
         return retval.toArray( new String[0] );
     }
+
     public static boolean hasFacet( IProject project, IProjectFacet checkProjectFacet )
     {
         boolean retval = false;
@@ -756,6 +783,7 @@ public class ServerUtil
         }
         return retval;
     }
+
     public static boolean isExistingVMName( String name )
     {
         for( IVMInstall vm : JavaRuntime.getVMInstallType( StandardVMType.ID_STANDARD_VM_TYPE ).getVMInstalls() )
@@ -838,16 +866,16 @@ public class ServerUtil
         }
     }
 
-    public static boolean verifyPath(final String verifyPath)
+    public static boolean verifyPath( final String verifyPath )
     {
-        if ( verifyPath == null)
+        if( verifyPath == null )
         {
             return false;
         }
 
-        final IPath verifyLocation = new Path(verifyPath);
+        final IPath verifyLocation = new Path( verifyPath );
 
-        if ( verifyLocation.toFile().exists() && verifyLocation.toFile().isDirectory())
+        if( verifyLocation.toFile().exists() && verifyLocation.toFile().isDirectory() )
         {
             return true;
         }
