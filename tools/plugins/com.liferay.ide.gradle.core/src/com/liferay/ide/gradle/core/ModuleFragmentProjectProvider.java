@@ -34,10 +34,13 @@ import java.util.Arrays;
 
 import org.eclipse.buildship.core.workspace.SynchronizeGradleProjectsJob;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
@@ -45,10 +48,12 @@ import org.eclipse.wst.server.core.IRuntime;
 
 /**
  * @author Terry Jia
+ * @author Lovett Li
  */
 public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvider
     implements NewLiferayProjectProvider<NewModuleFragmentOp>
 {
+    public final static String TEMP_DIRECTORY = ".temp";
 
     public ModuleFragmentProjectProvider()
     {
@@ -72,7 +77,7 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
 
         final String hostBundleName = op.getHostOsgiBundle().content();
 
-        final IPath temp = GradleCore.getDefault().getStateLocation().append( hostBundleName );
+        final IPath temp =  createTempProject( hostBundleName );
 
         final IRuntime runtime = ServerUtil.getRuntime( op.getLiferayRuntimeName().content() );
 
@@ -253,6 +258,28 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
         }
 
         return retval;
+    }
+
+    private IPath createTempProject( String projectName )
+    {
+        final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        final IProgressMonitor progressMonitor = new NullProgressMonitor();
+        final IProject project = root.getProject( TEMP_DIRECTORY );
+        projectName = projectName.substring( 0, projectName.lastIndexOf( "." ) );
+
+        try
+        {
+            if( !project.exists() )
+            {
+                project.create( progressMonitor );
+                project.open( progressMonitor );
+            }
+        }
+        catch( CoreException e )
+        {
+            GradleCore.createErrorStatus( e );
+        }
+        return project.getLocation().append( projectName );
     }
 
 }
