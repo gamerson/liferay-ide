@@ -125,15 +125,22 @@ public class LocationValidationService extends ValidationService
                                         Status.createErrorStatus( "Cannot create project content at \"" + //$NON-NLS-1$
                                              currentPath + "\"" ); //$NON-NLS-1$
                                 }
+                                else
+                                {
+                                    final IStatus locationStatus =
+                                        op().getProjectProvider().content().validateProjectLocation(
+                                            currentProjectName, osPath );
+
+                                    if( !locationStatus.isOK() )
+                                    {
+                                        retval = Status.createErrorStatus( locationStatus.getMessage() ); // $NON-NLS-1$
+                                    }
+                                }
                             }
-
-                            final IStatus locationStatus =
-                                op().getProjectProvider().content().validateProjectLocation( currentProjectName, osPath );
-
-                            if( ! locationStatus.isOK() )
+                            else
                             {
-                                retval =
-                                    Status.createErrorStatus( locationStatus.getMessage() ); //$NON-NLS-1$
+                                retval = Status.createErrorStatus( "There is already a folder at the location \"" + //$NON-NLS-1$
+                                                currentPath + "\"" ); //$NON-NLS-1$
                             }
                         }
                     }
