@@ -16,6 +16,7 @@ package com.liferay.ide.project.core.model.internal;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
+import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
 import com.liferay.ide.project.core.model.PluginType;
 import com.liferay.ide.project.core.model.ProjectName;
 import com.liferay.ide.project.core.util.ProjectUtil;
@@ -31,6 +32,7 @@ import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.PropertyContentEvent;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.Status;
+import org.eclipse.sapphire.platform.PathBridge;
 import org.eclipse.sapphire.platform.StatusBridge;
 import org.eclipse.sapphire.services.ValidationService;
 
@@ -125,6 +127,11 @@ public class ProjectNameValidationService extends ValidationService
             {
                 retval = Status.createErrorStatus( "The project name is invalid for a maven project" );
             }
+            else if( isExistingFolder( op ) )
+            {
+                retval = Status.createErrorStatus(
+                    "There is already a folder at the location \"" + op.getLocation().content().toString() + "\"" );
+            }
             else
             {
                 final Path currentProjectLocation = op.getLocation().content( true );
@@ -167,6 +174,30 @@ public class ProjectNameValidationService extends ValidationService
     private boolean isAntProject( NewLiferayPluginProjectOp op )
     {
         return "ant".equals( op.getProjectProvider().content().getShortName() );
+    }
+
+    private boolean isExistingFolder( NewLiferayPluginProjectOp op )
+    {
+        final boolean useDefaultLocation = op.getUseDefaultLocation().content( true );
+
+        if( useDefaultLocation )
+        {
+            Path newLocationBase = null;
+
+            newLocationBase = PathBridge.create( CoreUtil.getWorkspaceRoot().getLocation() );
+
+            if( newLocationBase != null )
+            {
+                NewLiferayPluginProjectOpMethods.updateLocation( op, newLocationBase );
+            }
+
+            if ( op.getLocation().content().toFile().exists() )
+            {
+                return true ;
+            }
+        }
+
+        return false;
     }
 
     private boolean isInvalidProjectName( NewLiferayPluginProjectOp op )
