@@ -54,10 +54,20 @@ public class MigrationUtil
 
     public static IResource getIResourceFromProblem( Problem problem )
     {
+        return getIResourceFromFile( problem.file );
+    }
+
+    public static IResource getIResourceFromFileProblems( FileProblems problem )
+    {
+        return getIResourceFromFile( problem.getFile() );
+    }
+
+    public static IResource getIResourceFromFile( File f )
+    {
         IResource retval = null;
 
         final IFile[] files =
-            ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI( problem.file.toURI() );
+            ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI( f.toURI() );
 
         for( IFile file : files )
         {
@@ -209,6 +219,31 @@ public class MigrationUtil
         return null;
     }
 
+    public static List<Problem> getNotIgnoreProblemsFromTreeNode( ISelection selection )
+    {
+        if( selection instanceof IStructuredSelection )
+        {
+            final IStructuredSelection ss = (IStructuredSelection) selection;
+
+            final Object element = ss.getFirstElement();
+            if( element instanceof FileProblems )
+            {
+                FileProblems fp = (FileProblems) element;
+                List<Problem> notIgnoreProblems = new ArrayList<>();
+
+                for (Problem problem : fp.getProblems()) {
+                    if (problem.getStatus() != Problem.STATUS_IGNORE) {
+                        notIgnoreProblems.add( problem );
+                    }
+                }
+
+                return notIgnoreProblems;
+            }
+        }
+
+        return null;
+    }
+
     public static Problem markerToProblem( IMarker marker )
     {
         final String title = marker.getAttribute( IMarker.MESSAGE, "" );
@@ -250,6 +285,23 @@ public class MigrationUtil
                     textEditor.selectAndReveal( Problem.startOffset, Problem.endOffset -
                         Problem.startOffset );
                 }
+            }
+        }
+        catch( PartInitException e )
+        {
+        }
+    }
+
+    public static void openEditor( FileProblems problem )
+    {
+        try
+        {
+            final IResource resource = getIResourceFromFileProblems( problem );
+
+            if( resource instanceof IFile )
+            {
+                IDE.openEditor(
+                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) resource );
             }
         }
         catch( PartInitException e )
