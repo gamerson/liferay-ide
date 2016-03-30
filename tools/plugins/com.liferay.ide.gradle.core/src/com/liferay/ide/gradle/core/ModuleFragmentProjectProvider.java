@@ -33,11 +33,17 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.eclipse.buildship.core.workspace.SynchronizeGradleProjectsJob;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
@@ -45,6 +51,7 @@ import org.eclipse.wst.server.core.IRuntime;
 
 /**
  * @author Terry Jia
+ * @author Lovett Li
  */
 public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvider
     implements NewLiferayProjectProvider<NewModuleFragmentOp>
@@ -72,7 +79,8 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
 
         final String hostBundleName = op.getHostOsgiBundle().content();
 
-        final IPath temp = GradleCore.getDefault().getStateLocation().append( hostBundleName );
+        final IPath temp = GradleCore.getDefault().getStateLocation().append(
+            hostBundleName.substring( 0, hostBundleName.lastIndexOf( ".jar" ) ) );
 
         final IRuntime runtime = ServerUtil.getRuntime( op.getLiferayRuntimeName().content() );
 
@@ -230,6 +238,7 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
             else
             {
                 GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
+                addLinkForTemplate(projectName,temp);
             }
         }
         catch( Exception e )
@@ -253,6 +262,26 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
         }
 
         return retval;
+    }
+
+    private void addLinkForTemplate( String projectName, IPath location )
+    {
+        final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        final IProject project = root.getProject( projectName );
+
+        IFolder ifolder = project.getFolder( location.lastSegment() );
+
+        try
+        {
+            if( !ifolder.exists() )
+            {
+                ifolder.createLink( location, IResource.HIDDEN, null );
+            }
+        }
+        catch( CoreException e )
+        {
+            GradleCore.createErrorStatus( e );
+        }
     }
 
 }
