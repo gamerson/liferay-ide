@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelectionProvider;
 
-
 /**
  * @author Gregory Amerson
  * @author Terry Jia
@@ -39,6 +38,15 @@ public class IgnoreAction extends ProblemAction
     {
         super( provider, "Ignore" );
     }
+
+    public void run( final Problem problem, final ISelectionProvider provider ) {
+        super.run( problem, provider );
+
+        problem.setStatus( Problem.STATUS_IGNORE );
+
+        MigrationUtil.updateProblemToStore( problem );
+    }
+
 
     @Override
     protected IStatus runWithMarker( Problem problem, IMarker marker )

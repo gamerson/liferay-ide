@@ -40,6 +40,14 @@ public class MarkUndoneAction extends ProblemAction
         super( provider, "Mark undone" );
     }
 
+    public void run( final Problem problem, final ISelectionProvider provider ) {
+        super.run( problem, provider );
+
+        problem.setStatus( Problem.STATUS_NOT_RESOLVED );
+
+        MigrationUtil.updateProblemToStore( problem );
+    }
+
     @Override
     protected IStatus runWithMarker( Problem problem, IMarker marker )
     {
