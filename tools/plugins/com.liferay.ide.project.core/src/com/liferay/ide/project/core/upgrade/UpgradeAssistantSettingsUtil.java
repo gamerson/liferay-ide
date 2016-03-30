@@ -85,6 +85,22 @@ public class UpgradeAssistantSettingsUtil
         return null;
     }
 
+    public static <T> T getObjectFromStore( Class<T> clazz, String suffix ) throws IOException
+    {
+        final ObjectMapper mapper = new ObjectMapper();
+
+        try
+        {
+            return mapper.readValue( storageLocation.append(
+                clazz.getSimpleName() + "-" + suffix + ".json" ).toFile(), clazz );
+        }
+        catch( FileNotFoundException e )
+        {
+        }
+
+        return null;
+    }
+
     public static <T> void setObjectToStore( Class<T> clazz, String suffix, T object ) throws IOException
     {
         final ObjectMapper mapper = new ObjectMapper();

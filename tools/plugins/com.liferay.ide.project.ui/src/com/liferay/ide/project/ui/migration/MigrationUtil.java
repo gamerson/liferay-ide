@@ -18,11 +18,16 @@ import com.liferay.blade.api.MigrationConstants;
 import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.upgrade.FileProblems;
+import com.liferay.ide.project.core.upgrade.MigrationProblems;
+import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
+import com.liferay.ide.sdk.core.SDKUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -220,7 +225,7 @@ public class MigrationUtil
 
         final File file = new File( marker.getResource().getLocationURI() );
 
-        return new Problem(
+        return new Problem( UUID.randomUUID().toString(),
             title, summary, type, ticket, file, lineNumber, startOffset, endOffset, html, autoCorrectContext,
             status, markerId );
     }
@@ -248,6 +253,67 @@ public class MigrationUtil
             }
         }
         catch( PartInitException e )
+        {
+        }
+    }
+
+    public static void updateProblemToStore( Problem problem )
+    {
+        File file = problem.getFile();
+
+        String filePath = file.getPath().replaceAll( "\\\\", "/" );
+
+        IProject project = null;
+
+        try
+        {
+            for( IProject p : CoreUtil.getAllProjects() )
+            {
+                if( !p.equals( SDKUtil.getWorkspaceSDKProject() ) )
+                {
+                    if( filePath.startsWith( p.getLocation().toPortableString() ) )
+                    {
+                        project = p;
+                        break;
+                    }
+                }
+            }
+
+            MigrationProblems migrationProblems = UpgradeAssistantSettingsUtil.getObjectFromStore(
+                MigrationProblems.class, project.getName() );
+
+            boolean found = false;
+
+            for( FileProblems fileProblem : migrationProblems.getProblems() )
+            {
+                if( fileProblem.getFile().equals( file ) )
+                {
+                    for( int i = 0; i < fileProblem.getProblems().size(); i++ )
+                    {
+                        Problem p = fileProblem.getProblems().get( i );
+
+                        if( p.equals( problem ) )
+                        {
+                            fileProblem.getProblems().set( i, problem );
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if( found )
+                {
+                    break;
+                }
+            }
+
+            UpgradeAssistantSettingsUtil.setObjectToStore(
+                MigrationProblems.class, project.getName(), migrationProblems );
+        }
+        catch( IOException e )
+        {
+        }
+        catch( CoreException e )
         {
         }
     }
