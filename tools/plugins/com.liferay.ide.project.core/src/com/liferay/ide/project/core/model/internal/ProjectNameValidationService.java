@@ -125,6 +125,11 @@ public class ProjectNameValidationService extends ValidationService
             {
                 retval = Status.createErrorStatus( "The project name is invalid for a maven project" );
             }
+            else if( isExistingFolder( op ) )
+            {
+                retval = Status.createErrorStatus(
+                    "There is already a folder at the location \"" + op.getLocation().content().toString() + "\"" );
+            }
             else
             {
                 final Path currentProjectLocation = op.getLocation().content( true );
@@ -167,6 +172,18 @@ public class ProjectNameValidationService extends ValidationService
     private boolean isAntProject( NewLiferayPluginProjectOp op )
     {
         return "ant".equals( op.getProjectProvider().content().getShortName() );
+    }
+
+    private boolean isExistingFolder( NewLiferayPluginProjectOp op )
+    {
+        Path location = op.getLocation().content();
+
+        if( location != null && location.toFile().exists() )
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isInvalidProjectName( NewLiferayPluginProjectOp op )

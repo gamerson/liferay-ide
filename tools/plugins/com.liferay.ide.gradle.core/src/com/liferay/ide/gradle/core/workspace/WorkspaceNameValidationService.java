@@ -24,7 +24,6 @@ import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.PropertyContentEvent;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.platform.PathBridge;
 import org.eclipse.sapphire.platform.StatusBridge;
 import org.eclipse.sapphire.services.ValidationService;
 
@@ -143,23 +142,11 @@ public class WorkspaceNameValidationService extends ValidationService
 
     private boolean isExistingFolder( NewLiferayWorkspaceOp op )
     {
-        final boolean useDefaultLocation = op.getUseDefaultLocation().content( true );
+        Path location = op.getLocation().content();
 
-        if( useDefaultLocation )
+        if( location != null && location.toFile().exists() )
         {
-            Path newLocationBase = null;
-
-            newLocationBase = PathBridge.create( CoreUtil.getWorkspaceRoot().getLocation() );
-
-            if( newLocationBase != null )
-            {
-                NewLiferayWorkspaceOpMethods.updateLocation( op, newLocationBase );
-            }
-
-            if ( op.getLocation().content().toFile().exists() )
-            {
-                return true ;
-            }
+            return true;
         }
 
         return false;

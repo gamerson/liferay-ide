@@ -124,8 +124,7 @@ public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
 
         final ValidationService vs = op.getLocation().service( ValidationService.class );
 
-        String invalidLocation = null;
-        invalidLocation = "not-absolute-location";
+        String invalidLocation = "not-absolute-location";
         op.setLocation( invalidLocation );
 
         final String expected = "\"" + invalidLocation + "\"" + " is not an absolute path.";
@@ -158,7 +157,7 @@ public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
 
         op.setLocation( invalidLocation );
 
-        final String expected3 = "Project location is not empty or a parent pom.";
+        final String expected3 = "There is already a folder at the location \""+invalidLocation+"\"";
 
         assertEquals( expected3, vs.validation().message() );
         //assertEquals( expected3, op.getLocation().validation().message() );
@@ -167,7 +166,7 @@ public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
         invalidLocation = getLiferayRuntimeDir().removeLastSegments( 2 ).toOSString();
         op.setLocation( invalidLocation );
 
-        final String expected5 = "Project location is not empty or a parent pom.";
+        final String expected5 = "There is already a folder at the location \""+invalidLocation+"\"";
 
         assertEquals( expected5, vs.validation().message() );
 
@@ -206,7 +205,8 @@ public class NewLiferayPluginProjectMavenTests extends ProjectCoreBase
         op.setProjectProvider( "maven" );
         op.setPluginType( "portlet" );
         op.setUseDefaultLocation( false );
-        op.setLocation( parentFolder.getAbsolutePath() );
+        File location = new File( parentFolder, "test-parent-folder-location-validation-service" );
+        op.setLocation( location.getAbsolutePath() );
 
         String projectName = op.getProjectName().content();
 

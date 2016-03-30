@@ -334,11 +334,11 @@ public class NewMavenPluginProjectProvider extends LiferayMavenProjectProvider i
         if( CoreUtil.isNullOrEmpty(projectName) )
             return  retval;
 
-        final File dir = path.toFile();
+        final File dir = path.toFile().getParentFile();
 
         if( dir.exists() )
         {
-            final File pomFile = path.append( IMavenConstants.POM_FILE_NAME ).toFile();
+            final File pomFile = new File(dir,IMavenConstants.POM_FILE_NAME);
 
             if( pomFile.exists() )
             {
@@ -356,7 +356,7 @@ public class NewMavenPluginProjectProvider extends LiferayMavenProjectProvider i
                     }
                     else
                     {
-                        final String name = result.getName();
+                        final String name = result.getArtifactId();
 
                         if( projectName.equals( name ) )
                         {
@@ -364,27 +364,12 @@ public class NewMavenPluginProjectProvider extends LiferayMavenProjectProvider i
                                 LiferayMavenCore.createErrorStatus( "The project name \"" + projectName +
                                     "\" can't be the same as the parent." );
                         }
-                        else
-                        {
-                            final IPath newProjectPath = path.append( projectName );
-
-                            retval = validateProjectLocation( projectName, newProjectPath );
-                        }
                     }
                 }
                 catch( CoreException e )
                 {
                     retval = LiferayMavenCore.createErrorStatus( "Invalid project location.", e );
                     LiferayMavenCore.log( retval );
-                }
-            }
-            else
-            {
-                final File[] files = dir.listFiles();
-
-                if( files.length > 0 )
-                {
-                    retval = LiferayMavenCore.createErrorStatus( "Project location is not empty or a parent pom." );
                 }
             }
         }

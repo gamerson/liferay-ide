@@ -87,8 +87,7 @@ public class NewLiferayPluginProjectOpMethods
                 op.getProjectProvider().content( true );
 
             // IDE-1306 If the user types too quickly all the model changes may not have propagated
-            final Path projectLocation = op.getLocation().content();
-            updateLocation( op, projectLocation );
+            updateLocation( op );
 
             final IStatus status = projectProvider.createNewProject( op, monitor );
 
@@ -519,19 +518,9 @@ public class NewLiferayPluginProjectOpMethods
     {
         final String projectName = getProjectNameWithSuffix( op );
 
-        if( baseLocation == null )
+        if( baseLocation == null || projectName == null)
         {
             return;
-        }
-
-        final String lastSegment = baseLocation.lastSegment();
-
-        if( baseLocation != null && baseLocation.segmentCount() > 0 )
-        {
-            if( lastSegment.equals( projectName ) )
-            {
-                return;
-            }
         }
 
         final Path newLocation = baseLocation.append( projectName );
