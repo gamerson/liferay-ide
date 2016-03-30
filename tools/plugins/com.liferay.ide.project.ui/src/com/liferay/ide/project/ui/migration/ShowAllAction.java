@@ -41,8 +41,8 @@ public class ShowAllAction extends Action
     {
         if (cn instanceof MigrationView) {
             MigrationView.showAll = !MigrationView.showAll;
-            
-            ( (MigrationView) cn ).getProblemsViewer().refresh();
+
+            cn.getCommonViewer().collapseAll();
         }
     }
 }
