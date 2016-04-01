@@ -18,12 +18,16 @@ package com.liferay.ide.gradle.core;
 import com.liferay.blade.gradle.model.CustomModel;
 import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
+import com.liferay.ide.server.core.portal.PortalRuntime;
 
 import java.io.File;
 import java.util.Set;
 
 import org.eclipse.buildship.core.configuration.GradleProjectNature;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -37,6 +41,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -73,6 +80,43 @@ public class GradleCore extends Plugin
     public static IStatus createWarningStatus( String msg )
     {
         return new Status( IStatus.WARNING, PLUGIN_ID, msg );
+    }
+
+    private static void deleteRuntimeAndServer( File portalBundle ) throws Exception
+    {
+        IRuntime[] runtimes = ServerCore.getRuntimes();
+
+        IRuntime targetRuntime = null;
+
+        for( IRuntime runtime : runtimes )
+        {
+            if( runtime.getRuntimeType().getId().equals( PortalRuntime.ID ) )
+            {
+                File runtimeFile = runtime.getLocation().toFile();
+
+                if( runtimeFile.getCanonicalFile().equals( portalBundle ) )
+                {
+                    targetRuntime = runtime;
+                }
+            }
+        }
+
+        if( targetRuntime != null )
+        {
+            IServer[] servers = ServerCore.getServers();
+
+            for( IServer server : servers )
+            {
+                IRuntime runtime = server.getRuntime();
+
+                if( runtime != null && runtime.equals( targetRuntime ) )
+                {
+                    server.delete();
+                }
+            }
+
+            targetRuntime.delete();
+        }
     }
 
     /**
@@ -186,6 +230,32 @@ public class GradleCore extends Plugin
             {
                 try
                 {
+                    // for the event of delete project
+                    if( event.getType() == IResourceChangeEvent.PRE_DELETE )
+                    {
+                        IProject project = (IProject) event.getResource();
+
+                        try
+                        {
+                            if( LiferayWorkspaceUtil.isValidWorkspace( project ) )
+                            {
+                                IFolder bundlesFolder = project.getFolder( "bundles" );
+
+                                if( bundlesFolder.exists() )
+                                {
+                                    File portalBundle = bundlesFolder.getLocation().toFile().getCanonicalFile();
+                                    deleteRuntimeAndServer( portalBundle );
+                                }
+                            }
+                        }
+                        catch( Exception e )
+                        {
+                            GradleCore.logError( "delete related runtime and server error", e );
+                        }
+
+                        return;
+                    }
+
                     event.getDelta().accept( new IResourceDeltaVisitor()
                     {
                         @Override
@@ -212,6 +282,32 @@ public class GradleCore extends Plugin
                                 configureIfLiferayProject( project, GradleCore.this );
                             }
 
+                            // for only delete bundles dir
+                            if( delta.getKind() == IResourceDelta.REMOVED )
+                            {
+                                IResource deletedRes = delta.getResource();
+
+                                IProject project = deletedRes.getProject();
+
+                                IPath bundlesPath = project.getFullPath().append( "bundles" );
+
+                                if( LiferayWorkspaceUtil.isValidWorkspace( project ) )
+                                {
+                                    if( delta.getFullPath().equals( bundlesPath ) )
+                                    {
+                                        try
+                                        {
+                                            File portalBundle = deletedRes.getLocation().toFile().getCanonicalFile();
+                                            deleteRuntimeAndServer( portalBundle );
+                                        }
+                                        catch( Exception e )
+                                        {
+                                            GradleCore.logError( "delete related runtime and server error", e );
+                                        }
+                                    }
+                                }
+                            }
+
                             return true;
                         }
                     });
@@ -220,7 +316,7 @@ public class GradleCore extends Plugin
                 {
                 }
             }
-        }, IResourceChangeEvent.POST_CHANGE );
+        }, IResourceChangeEvent.POST_CHANGE |IResourceChangeEvent.PRE_DELETE );
     }
 
     /*
