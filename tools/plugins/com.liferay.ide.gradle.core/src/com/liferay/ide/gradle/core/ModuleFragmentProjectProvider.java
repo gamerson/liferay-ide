@@ -233,6 +233,8 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
             {
                 GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
             }
+
+            ModuleCoreUtil.addFacets( projecLocation.toFile(), monitor );
         }
         catch( Exception e )
         {
