@@ -16,9 +16,11 @@
 package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectImporter;
+import com.liferay.ide.core.util.CoreUtil;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -83,7 +85,13 @@ public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter
     @Override
     public void importProject( String location, IProgressMonitor monitor ) throws CoreException
     {
-        GradleUtil.importGradleProject( new File( location ), monitor );
+        File projectLocation = new File( location );
+
+        GradleUtil.importGradleProject( projectLocation, monitor );
+
+        IProject project = CoreUtil.getProject( projectLocation.getName() );
+
+        ModuleCoreUtil.addFacets( project, monitor );
     }
 
 }
