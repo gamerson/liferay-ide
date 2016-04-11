@@ -83,7 +83,11 @@ public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter
     @Override
     public void importProject( String location, IProgressMonitor monitor ) throws CoreException
     {
-        GradleUtil.importGradleProject( new File( location ), monitor );
+        File projectLocation = new File( location );
+
+        GradleUtil.importGradleProject( projectLocation, monitor );
+
+        ModuleCoreUtil.addFacets( projectLocation, monitor );
     }
 
 }

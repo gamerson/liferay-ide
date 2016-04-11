@@ -211,6 +211,38 @@ public class ProjectUtil
         return true;
     }
 
+    public static void collectProjectsFromDirectory( List<IProject> result, File location )
+    {
+        File[] children = location.listFiles();
+
+        if( children != null )
+        {
+            for( File child : children )
+            {
+                if( child.isFile() && child.getName().equals( IProjectDescription.DESCRIPTION_FILE_NAME ) )
+                {
+                    IWorkspace workspace = CoreUtil.getWorkspace();
+                    IProjectDescription projectDescription;
+                    try
+                    {
+                        projectDescription = workspace.loadProjectDescription( new Path( child.getAbsolutePath() ) );
+                        IProject project = workspace.getRoot().getProject( projectDescription.getName() );
+
+                        result.add( project );
+                    }
+                    catch( CoreException e )
+                    {
+                        ProjectCore.logError( "loadProjectDescription error", e );
+                    }
+                }
+                else
+                {
+                    collectProjectsFromDirectory( result, child );
+                }
+            }
+        }
+    }
+
     public static String convertToDisplayName( String name )
     {
         if( CoreUtil.isNullOrEmpty( name ) )

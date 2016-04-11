@@ -16,8 +16,11 @@
 package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -32,14 +35,26 @@ import org.eclipse.core.runtime.OperationCanceledException;
 public class ModuleCoreUtil
 {
 
-    public static void addFacets( final IProject project, IProgressMonitor monitor ) throws CoreException
+    public static void addFacets( final File projectLocation, IProgressMonitor monitor ) throws CoreException
     {
-        addNature( project, "org.eclipse.wst.common.modulecore.ModuleCoreNature", monitor );
-        addNature( project, "org.eclipse.wst.common.project.facet.core.nature", monitor );
+        List<IProject> projects = new ArrayList<IProject>();
 
-        addConfigFile( project );
+        ProjectUtil.collectProjectsFromDirectory( projects, projectLocation );
 
-        project.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+        addFacets( projects, monitor );
+    }
+
+    private static void addFacets( final List<IProject> projects, IProgressMonitor monitor ) throws CoreException
+    {
+        for( IProject project : projects )
+        {
+            addNature( project, "org.eclipse.wst.common.modulecore.ModuleCoreNature", monitor );
+            addNature( project, "org.eclipse.wst.common.project.facet.core.nature", monitor );
+
+            addConfigFile( project );
+
+            project.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+        }
     }
 
     private static void addConfigFile( final IProject project ) throws CoreException
@@ -54,7 +69,10 @@ public class ModuleCoreUtil
 
         File compoment = new File( project.getLocation().toFile(), ".settings/org.eclipse.wst.common.component" );
 
-        FileUtil.writeFile( compoment, finalContent.getBytes(), project.getName() );
+        if( !compoment.exists() )
+        {
+            FileUtil.writeFile( compoment, finalContent.getBytes(), project.getName() );
+        }
     }
 
     private static void addNature( IProject project, String natureId, IProgressMonitor monitor ) throws CoreException
