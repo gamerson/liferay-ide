@@ -12,20 +12,28 @@
  * details.
  *
  *******************************************************************************/
-
 package com.liferay.ide.project.core.modules;
 
-import org.eclipse.sapphire.DefaultValueService;
+import org.eclipse.sapphire.ConversionException;
+import org.eclipse.sapphire.ConversionService;
+
+import com.liferay.ide.project.core.ProjectCore;
+
 
 /**
  * @author Simon Jiang
  */
-public class PackageNameDefaultValueService extends DefaultValueService
+public class StringToILiferayComponentTemplateConversionService extends ConversionService<String, IComponentTemplate>
 {
-    @Override
-    protected String compute()
+
+    public StringToILiferayComponentTemplateConversionService()
     {
-        final String defaultPackageName = "com.example";
-        return defaultPackageName;
+        super( String.class, IComponentTemplate.class );
+    }
+
+    @Override
+    public IComponentTemplate convert( String object ) throws ConversionException
+    {
+        return ProjectCore.getComponentTemplate( object );
     }
 }
