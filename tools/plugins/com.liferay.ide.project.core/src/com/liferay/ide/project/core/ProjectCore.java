@@ -15,10 +15,6 @@
 
 package com.liferay.ide.project.core;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.descriptor.IDescriptorOperation;
-import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +32,12 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.descriptor.IDescriptorOperation;
+import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
+import com.liferay.ide.project.core.modules.IComponentTemplate;
+import com.liferay.ide.project.core.modules.LiferayComponentTemplateReader;
+
 /**
  * The activator class controls the plugin life cycle
  *
@@ -45,7 +47,6 @@ import org.osgi.framework.BundleContext;
  */
 public class ProjectCore extends Plugin
 {
-
     // The liferay project marker type
     public static final String LIFERAY_PROJECT_MARKER_TYPE = "com.liferay.ide.project.core.LiferayProjectMarker";
 
@@ -74,6 +75,8 @@ public class ProjectCore extends Plugin
     public static final String PREF_INCLUDE_SAMPLE_CODE = "include-sample-code";
 
     public static final String USE_PROJECT_SETTINGS = "use-project-settings"; //$NON-NLS-1$
+
+    private static LiferayComponentTemplateReader componentTemplateReader;
 
     public static IStatus createErrorStatus( Exception e )
     {
@@ -373,5 +376,28 @@ public class ProjectCore extends Plugin
         {
             ResourcesPlugin.getWorkspace().removeResourceChangeListener( sdkBuildPropertiesResourceListener );
         }
+    }
+
+    public static IComponentTemplate getComponentTemplate( final String templateName )
+    {
+        for( IComponentTemplate template : getComponentTemplates() )
+        {
+            if( templateName.equals( template.getShortName() ) )
+            {
+                return template;
+            }
+        }
+
+        return null;
+    }
+
+    public static IComponentTemplate[] getComponentTemplates()
+    {
+        if( componentTemplateReader == null )
+        {
+            componentTemplateReader = new LiferayComponentTemplateReader();
+        }
+
+        return componentTemplateReader.getComponentTemplates();
     }
 }
