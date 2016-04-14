@@ -4,6 +4,7 @@
    <extension-point id="portletFrameworks" name="%portlet.plugin.frameworks.name" schema="schema/portletFrameworks.exsd"/>
    <extension-point id="liferayDescriptorHelpers" name="%liferay.descriptor.helpers.name" schema="schema/liferayDescriptorHelpers.exsd"/>
    <extension-point id="upgradeProjectHandlers" name="%upgrade.project.handlers.name" schema="schema/upgradeProjectHandlers.exsd"/>
+   <extension-point id="liferayComponentTemplates" name="%liferay.component.template.name" schema="schema/liferayComponentTemplates.exsd"/>
 
    <extension
          point="org.eclipse.wst.common.project.facet.core.facets">
@@ -598,5 +599,104 @@
       <persistent
             value="true">
       </persistent>
+   </extension>
+   <extension
+         point="com.liferay.ide.project.core.liferayComponentTemplates">
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentAuthenticatorOperation"
+            displayName="Authenticator"
+            shortName="Authenticator"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentAuthenticatorOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentAuthFailureOperation"
+            displayName="Auth Failures"
+            shortName="AuthFailure"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentAuthFailureOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentMaxAuthFailureOperation"
+            displayName="Auth Max Failure"
+            shortName="AuthMaxFailure"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentMaxAuthFailureOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentPortletOperation"
+            displayName="Portlet"
+            shortName="Portlet"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentPortletOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentFriendUrlOperation"
+            displayName="Friendly URL Mapper"
+            shortName="FriendlyUrlMapper"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentFriendUrlOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentGogoComandOperation"
+            displayName="GOGO Command"
+            shortName="GogoCommand"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentGogoComandOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentIndexProcessorOperation"
+            displayName="Indexer Post Processor"
+            shortName="IndexerPostProcessor"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentIndexProcessorOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentLoginPreActionOperation"
+            displayName="Login Pre Action"
+            shortName="LoginPreAction"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentLoginPreActionOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentPollerProcessorOperation"
+            displayName="Poller Processor"
+            shortName="PollerProcessor"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentPollerProcessorOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentPortletActionCommandOperation"
+            displayName="Portlet Action Command"
+            shortName="PortletActionCommand"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentPortletActionCommandOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentPortletFilterOperation"
+            displayName="Portlet Filter"
+            shortName="PortletFilter"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentPortletFilterOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentRestOperation"
+            displayName="Rest"
+            shortName="RestService"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentRestOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentServiceOperation"
+            displayName="Service Wrapper"
+            shortName="ServiceHook"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentServiceOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentStrutsInActionOperation"
+            displayName="Struts In Action"
+            shortName="StrutsAction"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentStrutsInActionOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentStrutsPortletActionOperation"
+            displayName="Struts Portlet Action"
+            shortName="PortletAction"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentStrutsPortletActionOperation">
+      </liferayComponentTemplate>
+      <liferayComponentTemplate
+            class="com.liferay.ide.project.core.modules.template.NewLiferayComponentModelListenerOperation"
+            displayName="Model Listener"
+            shortName="ModelListener"
+            id="com.liferay.ide.project.core.modules.template.NewLiferayComponentModelListenerOperation">
+      </liferayComponentTemplate>    
    </extension>
 </plugin>

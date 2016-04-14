@@ -12,14 +12,12 @@
  * details.
  *
  *******************************************************************************/
-
 package com.liferay.ide.project.core.modules;
-
-import com.liferay.ide.core.util.CoreUtil;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.eclipse.sapphire.java.JavaPackageName;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.services.ValidationService;
 
@@ -27,21 +25,20 @@ import org.eclipse.sapphire.services.ValidationService;
  * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
-public class PackageNameValidationService extends ValidationService
+public class JavaPackageNameValidationService extends ValidationService
 {
 
     @Override
     protected Status compute()
     {
-        final String packageName = op().getPackageName().content( true );
         Status retval = Status.createOkStatus();
 
-        int packageNameStatus = IStatus.OK;
+        final JavaPackageName packageName = op().getPackageName().content( true );
 
-        if( !CoreUtil.isNullOrEmpty( packageName ) )
+        if( packageName != null )
         {
-            packageNameStatus = JavaConventions.validatePackageName(
-                packageName, CompilerOptions.VERSION_1_7, CompilerOptions.VERSION_1_7 ).getSeverity();
+            int packageNameStatus = JavaConventions.validatePackageName(
+                packageName.toString(), CompilerOptions.VERSION_1_7, CompilerOptions.VERSION_1_7 ).getSeverity();
 
             if( packageNameStatus == IStatus.ERROR )
             {
@@ -52,8 +49,8 @@ public class PackageNameValidationService extends ValidationService
         return retval;
     }
 
-    private NewLiferayModuleProjectOp op()
+    private NewLiferayComponentOp op()
     {
-        return context( NewLiferayModuleProjectOp.class );
+        return context( NewLiferayComponentOp.class );
     }
 }
