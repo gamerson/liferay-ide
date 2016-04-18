@@ -23,6 +23,8 @@ import com.liferay.ide.ui.util.UIUtil;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -286,6 +288,8 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
         //}
 
         detailParent.setWeights( new int[] { 2, 3 } );
+
+        addWorkspaceResourceListener();
 
         getCommonViewer().addSelectionChangedListener( new ISelectionChangedListener()
         {
@@ -605,6 +609,21 @@ public class MigrationView extends CommonNavigator implements IDoubleClickListen
             //}
         }
     };
+
+    private void addWorkspaceResourceListener()
+    {
+        ResourcesPlugin.getWorkspace().addResourceChangeListener( events -> {
+            boolean isRemoved = MigrationUtil.removeMigrationProblemsFromResource( events.getResource() );
+
+            if( isRemoved )
+            {
+                UIUtil.async( () -> {
+                    getCommonViewer().setInput( CoreUtil.getWorkspaceRoot() );
+                });
+            }
+        } , IResourceChangeEvent.PRE_DELETE );
+
+    }
 
     public TableViewer getProblemsViewer()
     {
