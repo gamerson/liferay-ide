@@ -22,7 +22,6 @@ import org.eclipse.wst.server.core.IServer;
 
 import com.liferay.ide.core.util.FileListing;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.core.portal.PortalRuntime;
 
 /**
