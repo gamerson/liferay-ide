@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -266,4 +267,21 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IWebProj
         return this.getProject().getLocation().lastSegment();
     }
 
+    @Override
+    public IFolder getSourceFolder( String classification )
+    {
+        IFolder retval = null;
+
+        if( classification.equals( "java" ) )
+        {
+            retval = super.getSourceFolder( classification );
+
+        }
+        else if( classification.equals( "resources" ) )
+        {
+            retval = getDefaultDocrootFolder();
+        }
+
+        return retval;
+    }
 }
