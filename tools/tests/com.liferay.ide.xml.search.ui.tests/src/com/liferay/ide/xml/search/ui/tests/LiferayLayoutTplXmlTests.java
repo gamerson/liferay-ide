@@ -15,7 +15,7 @@
 
 package com.liferay.ide.xml.search.ui.tests;
 
-import static com.liferay.ide.ui.tests.UITestsUtils.containsProposal;
+import static com.liferay.ide.core.tests.UITestsUtils.containsProposal;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.buildAndValidate;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.containHyperlink;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.getHyperLinksForElement;

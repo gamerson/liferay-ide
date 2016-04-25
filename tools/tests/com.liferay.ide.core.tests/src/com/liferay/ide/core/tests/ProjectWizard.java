@@ -13,9 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.ui.tests;
-
-import com.liferay.ide.ui.tests.UIBase;
+package com.liferay.ide.core.tests;
 
 /**
  * @author Terry Jia
