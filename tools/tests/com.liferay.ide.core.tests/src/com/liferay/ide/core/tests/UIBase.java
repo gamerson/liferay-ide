@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.ui.tests;
+package com.liferay.ide.core.tests;
 
 /**
  * @author Terry Jia

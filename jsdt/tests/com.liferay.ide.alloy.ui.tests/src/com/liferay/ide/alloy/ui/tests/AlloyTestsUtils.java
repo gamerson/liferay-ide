@@ -15,9 +15,9 @@
 
 package com.liferay.ide.alloy.ui.tests;
 
-import static com.liferay.ide.ui.tests.UITestsUtils.getEditor;
-import static com.liferay.ide.ui.tests.UITestsUtils.getElementContentEndOffset;
-import static com.liferay.ide.ui.tests.UITestsUtils.getSourceViewerConfiguraionFromOpenedEditor;
+import static com.liferay.ide.core.tests.UITestsUtils.getEditor;
+import static com.liferay.ide.core.tests.UITestsUtils.getElementContentEndOffset;
+import static com.liferay.ide.core.tests.UITestsUtils.getSourceViewerConfiguraionFromOpenedEditor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.contentassist.ContentAssistant;

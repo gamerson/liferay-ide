@@ -14,7 +14,7 @@
  *******************************************************************************/
 package com.liferay.ide.xml.search.ui.tests;
 
-import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
+import static com.liferay.ide.core.tests.UITestsUtils.deleteOtherProjects;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.buildAndValidate;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkMarkerByMessage;
 import static com.liferay.ide.xml.search.ui.tests.XmlSearchTestsUtils.checkNoMarker;
@@ -129,7 +129,6 @@ public class PortletXmlValidationTests extends XmlSearchTestsBase
     {
         setElementContent( descriptorFile, elementName, elementValue );
         buildAndValidate( descriptorFile );
-
         assertTrue( checkNoMarker( descriptorFile, MARKER_TYPE ) );
     }
 

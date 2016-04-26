@@ -16,8 +16,8 @@
 package com.liferay.ide.alloy.ui.tests;
 
 import static com.liferay.ide.alloy.ui.tests.AlloyTestsUtils.getWebSevicesProposals;
-import static com.liferay.ide.ui.tests.UITestsUtils.containsProposal;
-import static com.liferay.ide.ui.tests.UITestsUtils.deleteOtherProjects;
+import static com.liferay.ide.core.tests.UITestsUtils.containsProposal;
+import static com.liferay.ide.core.tests.UITestsUtils.deleteOtherProjects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 import com.liferay.ide.alloy.ui.editor.PortletJSPSourceViewerConfiguration;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.tests.ProjectCoreBase;
-import com.liferay.ide.ui.tests.UITestsUtils;
+import com.liferay.ide.core.tests.UITestsUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;

@@ -15,7 +15,7 @@
 
 package com.liferay.ide.portlet.ui.tests;
 
-import static com.liferay.ide.ui.tests.UITestsUtils.getDOMModel;
+import static com.liferay.ide.core.tests.UITestsUtils.getDOMModel;
 import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.util.CoreUtil;

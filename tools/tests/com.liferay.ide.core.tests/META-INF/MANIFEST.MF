@@ -8,7 +8,18 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.junit;bundle-version="4.0.0";visibility:=reexport,
  org.eclipse.sapphire.modeling;bundle-version="0.7.0",
- com.liferay.ide.core;bundle-version="2.0.0";visibility:=reexport
+ com.liferay.ide.core;bundle-version="2.0.0";visibility:=reexport,
+ org.eclipse.jface.text,
+ org.eclipse.sapphire.ui.swt.xml.editor,
+ org.eclipse.ui,
+ org.eclipse.ui.console,
+ org.eclipse.ui.ide,
+ org.eclipse.wst.sse.core,
+ org.eclipse.wst.sse.ui,
+ org.eclipse.wst.xml.core,
+ org.eclipse.wst.xml.ui,
+ com.liferay.ide.sdk.core,
+ org.eclipse.sapphire.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.core.tests

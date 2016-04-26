@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import com.liferay.ide.core.util.ReflectionUtil;
-import com.liferay.ide.ui.tests.UITestsUtils;
+import com.liferay.ide.core.tests.UITestsUtils;
 import com.liferay.ide.xml.search.ui.editor.CompoundRegion;
 import com.liferay.ide.xml.search.ui.editor.InfoRegion;
 import com.liferay.ide.xml.search.ui.editor.MarkerRegion;
