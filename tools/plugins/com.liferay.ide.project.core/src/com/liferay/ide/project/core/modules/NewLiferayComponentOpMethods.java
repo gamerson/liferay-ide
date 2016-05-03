@@ -16,10 +16,12 @@
 package com.liferay.ide.project.core.modules;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
@@ -72,5 +74,22 @@ public class NewLiferayComponentOpMethods
         }
 
         return retval;
+    }
+
+    public static boolean isModuleFragementProject( IProject project )
+    {
+        IPath bndFile = project.getLocation().append( "bnd.bnd" );
+
+        if( bndFile.toFile().exists() )
+        {
+            String bndContent = FileUtil.readContents( bndFile.toFile(), true );
+
+            if( bndContent.contains( "Fragment-Host" ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
