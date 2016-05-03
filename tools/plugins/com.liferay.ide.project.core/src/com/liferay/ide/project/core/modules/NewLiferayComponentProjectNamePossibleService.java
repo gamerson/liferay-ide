@@ -51,8 +51,9 @@ public class NewLiferayComponentProjectNamePossibleService extends PossibleValue
             for( IProject project : allProjects )
             {
                 final IBundleProject bundleProject = LiferayCore.create( IBundleProject.class, project );
+                boolean isFragementProject = NewLiferayComponentOpMethods.isModuleFragementProject( project );
 
-                if( bundleProject != null && "jar".equals( bundleProject.getBundleShape() ) )
+                if( bundleProject != null && "jar".equals( bundleProject.getBundleShape() ) && !isFragementProject )
                 {
                     values.add( project.getName() );
                 }
