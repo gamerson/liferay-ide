@@ -123,5 +123,10 @@ public class BndtoolsProject extends BaseLiferayProject implements IBundleProjec
         return false;
     }
 
+    @Override
+    public boolean isFragmentProject()
+    {
+        return false;
+    }
 
 }

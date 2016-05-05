@@ -12,25 +12,27 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.core;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
+package com.liferay.ide.gradle.core.modules;
+
+import org.eclipse.sapphire.FilteredListener;
+import org.eclipse.sapphire.PropertyContentEvent;
 
 /**
- * @author Gregory Amerson
+ * @author Terry Jia
  */
-public interface IBundleProject extends ILiferayProject
+public class FragmentProjectNameListener extends FilteredListener<PropertyContentEvent>
 {
 
-    boolean filterResource( IPath resourcePath );
+    @Override
+    protected void handleTypedEvent( PropertyContentEvent event )
+    {
+        NewModuleFragmentFilesOpMethods.updateHost( op( event ) );
+    }
 
-    String getBundleShape();
+    protected NewModuleFragmentFilesOp op( PropertyContentEvent event )
+    {
+        return event.property().element().nearest( NewModuleFragmentFilesOp.class );
+    }
 
-    IPath getOutputBundle( boolean buildIfNeeded, IProgressMonitor monitor ) throws CoreException;
-
-    String getSymbolicName() throws CoreException;
-
-    boolean isFragmentProject();
 }

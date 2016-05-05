@@ -98,4 +98,10 @@ public class FacetedMavenBundleProject extends FacetedMavenProject implements IB
         return this.bundleProject.getSymbolicName();
     }
 
+    @Override
+    public boolean isFragmentProject()
+    {
+        return false;
+    }
+
 }
