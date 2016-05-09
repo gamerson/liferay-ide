@@ -14,6 +14,15 @@
  *******************************************************************************/
 package com.liferay.ide.gradle.action;
 
+import com.liferay.ide.gradle.core.GradleUtil;
+import com.liferay.ide.project.ui.ProjectUI;
+import com.liferay.ide.ui.action.AbstractObjectAction;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.buildship.core.CorePlugin;
+import org.eclipse.buildship.core.workspace.NewProjectHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -24,10 +33,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
-
-import com.liferay.ide.gradle.core.GradleUtil;
-import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.ui.action.AbstractObjectAction;
 
 /**
  * @author Lovett Li
@@ -109,6 +114,12 @@ public abstract class GradleTaskAction extends AbstractObjectAction
         try
         {
             p.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+
+            Set<IProject> projects = new HashSet<IProject>();
+            projects.add( p );
+
+            CorePlugin.gradleWorkspaceManager().getCompositeBuild( projects ).synchronize(
+                NewProjectHandler.IMPORT_AND_MERGE );
         }
         catch( CoreException e )
         {
