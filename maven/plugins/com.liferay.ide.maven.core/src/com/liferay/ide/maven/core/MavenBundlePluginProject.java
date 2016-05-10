@@ -175,4 +175,10 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
         return false;
     }
 
+    @Override
+    public boolean isFragmentProject()
+    {
+        return false;
+    }
+
 }
