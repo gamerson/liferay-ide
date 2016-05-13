@@ -68,7 +68,7 @@ public interface NewLiferayWorkspaceOp extends BaseLiferayWorkspaceOp
     @AbsolutePath
     @Enablement( expr = "${ UseDefaultLocation == 'false' }" )
     @ValidFileSystemResourceType( FileSystemResourceType.FOLDER )
-    @Label( standard = "location" )
+    @Label( standard = "Liferay Workspace location" )
     @Service( impl = WorkspaceLocationValidationService.class )
     ValueProperty PROP_LOCATION = new ValueProperty( TYPE, "Location" );
 
