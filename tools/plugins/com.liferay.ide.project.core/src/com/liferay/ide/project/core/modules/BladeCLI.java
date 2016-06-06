@@ -23,8 +23,8 @@ import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.project.core.ProjectCore;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +42,8 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.Bundle;
 
 /**
@@ -56,7 +58,6 @@ public class BladeCLI
     static String[] projectTemplateNames;
     static final File repoCache = new File( _settingsDir, "repoCache" );
     static final String repoUrl = "http://releases.liferay.com/tools/blade-cli/1.0.0.201604152315/index.xml.gz";
-    static final File repoUrlCacheDir = new File(repoCache,"http%3A%2F%2Freleases.liferay.com%2Ftools%2Fblade-cli%2F1.0.0.201604152315%2Fplugins");
     static final String timeStampKey = "up2date.check";
 
     static IPath cachedBladeCLIPath;
@@ -153,7 +154,7 @@ public class BladeCLI
             }
         }
 
-        final SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMddHHmm" );
+        final SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMddHHmmss" );
 
         if( !bladeCacheSettings.exists() )
         {
@@ -194,9 +195,40 @@ public class BladeCLI
 
             long distance = currentTime.getTime() - lastTime.getTime();
 
-            long hours = distance / 1000 / 3600;
+            String validTime = getValidTime();
 
-            if( hours >= 24 )
+            String scope = validTime.substring( validTime.length()-1, validTime.length() );
+            String countStr = validTime.substring( 0 ,validTime.length()-1 );
+            int count = Integer.parseInt( countStr );
+
+            boolean shouldUpdate = false;
+
+            if( scope.equals( "h" ) )
+            {
+                long hours = distance / 1000 / 3600;
+                if( hours > count )
+                {
+                    shouldUpdate = true;
+                }
+            }
+            else if( scope.equals( "m" ) )
+            {
+                long minutes = distance / 1000 / 60;
+                if( minutes > count )
+                {
+                    shouldUpdate = true;
+                }
+            }
+            else if( scope.equals( "s" ) )
+            {
+                long seconds = distance / 1000;
+                if( seconds > count )
+                {
+                    shouldUpdate = true;
+                }
+            }
+
+            if( shouldUpdate )
             {
                 String localJar = getLatestRemoteBladeCLIJar();
 
@@ -209,11 +241,11 @@ public class BladeCLI
             {
                 try
                 {
-                    File locaJarFile = new File( repoUrlCacheDir, props.getProperty( localJarKey ) );
+                    File locaJarFile = new File( getRepoCacheDir(), props.getProperty( localJarKey ) );
 
                     cachedBladeCLIPath = new Path( locaJarFile.getCanonicalPath() );
                 }
-                catch( IOException e )
+                catch( Exception e )
                 {
                     throw new BladeCLIException( "Could not get blade cli jar from local cache dir." );
                 }
@@ -232,7 +264,7 @@ public class BladeCLI
         FixedIndexedRepo repo = new FixedIndexedRepo();
         Map<String, String> props = new HashMap<String, String>();
         props.put( "name", "index1" );
-        props.put( "locations", repoUrl );
+        props.put( "locations", getRepoURL()+"index.xml.gz" );
         props.put( FixedIndexedRepo.PROP_CACHE, repoCache.getAbsolutePath() );
 
         repo.setProperties( props );
@@ -268,6 +300,28 @@ public class BladeCLI
         }
 
         return projectTemplateNames;
+    }
+
+    public static String getRepoCacheDir() throws Exception
+    {
+        String repoURL = getRepoURL();
+        String retVal = URLEncoder.encode( repoURL, "UTF-8" );
+
+        return retVal + "plugins";
+    }
+
+    public static String getRepoURL()
+    {
+        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+
+        return prefs.get( "repoUrl", repoUrl );
+    }
+
+    public static String getValidTime()
+    {
+        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+
+        return prefs.get( "validTime", "24h" );
     }
 
     public static void main(String[] args) throws Exception
