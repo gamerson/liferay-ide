@@ -12,4 +12,6 @@ Require-Bundle: org.eclipse.core.runtime,
  com.liferay.ide.gradle.core;bundle-version="3.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: com.liferay.blade.gradle.model
+Bundle-ClassPath: lib/groovy-all-2.4.6.jar,
+ .
+Import-Package: org.apache.commons.io
