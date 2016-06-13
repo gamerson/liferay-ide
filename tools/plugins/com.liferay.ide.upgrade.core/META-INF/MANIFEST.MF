@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundle.name
+Bundle-SymbolicName: com.liferay.ide.upgrade.core;singleton:=true
+Bundle-Version: 3.0.1.qualifier
+Bundle-Activator: com.liferay.ide.upgrade.core.UpgradeCore
+Bundle-Vendor: %bundle.vendor
+Require-Bundle: com.liferay.ide.core,
+ com.liferay.ide.sdk.core,
+ com.liferay.ide.server.core,
+ org.eclipse.sapphire.modeling,
+ org.eclipse.sapphire.modeling.xml
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Export-Package: com.liferay.ide.upgrade.core
