@@ -32,8 +32,7 @@ public class SuperClassNameResolver extends TemplateVariableResolver
 
     public SuperClassNameResolver()
     {
-        super(
-            "super_class_name", "get superclass name" );
+        super( "super_class_name", "get superclass name" );
     }
 
     @Override
