@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +65,60 @@ public class ServiceCommand
         _server = server;
     }
 
+    public String[] execute() throws Exception
+    {
+        BundleSupervisor supervisor = null;
+        String[] result = null;
+
+        if( _server == null )
+        {
+            return getServiceListFromFile();
+        }
+
+        try
+        {
+            PortalServerBehavior serverBehavior =
+                (PortalServerBehavior) _server.loadAdapter( PortalServerBehavior.class, null );
+            supervisor = serverBehavior.getBundleSupervisor();
+
+            if( supervisor == null )
+            {
+                return getServiceListFromFile();
+            }
+
+            if( !supervisor.getAgent().redirect( Agent.COMMAND_SESSION ) )
+            {
+                return getServiceListFromFile();
+            }
+
+            if( _serviceName == null )
+            {
+                result = getServices( supervisor );
+                updateServicesDynamicFile( result );
+            }
+            else
+            {
+                result = getServiceBundle( _serviceName, supervisor );
+            }
+        }
+        finally
+        {
+            if( supervisor != null )
+            {
+                try
+                {
+                    supervisor.getAgent().redirect( Agent.NONE );
+                }
+                catch( Exception e )
+                {
+                    // ignore error
+                }
+            }
+        }
+
+        return result;
+    }
+
     private File checkStaticServicesFile() throws IOException
     {
         final URL url =
@@ -80,62 +133,51 @@ public class ServiceCommand
         throw new FileNotFoundException( "can't find static services file services-static.json" );
     }
 
-    public String[] execute() throws Exception
+    private File checkDynamicServicesFile() throws IOException
     {
-        BundleSupervisor supervisor = null;
-        String[] result = null;
+        File file = ProjectCore.getDefault().getStateLocation().append( "dynamic-services.json" ).toFile();
 
-            if( _server == null )
-            {
-                if( _serviceName == null )
-                {
-                    result = getStaticServices();
-                }
-                else
-                {
-                    result = getStaticServiceBundle( _serviceName );
-                }
+        if( !file.exists() )
+        {
+            file.createNewFile();;
+        }
 
-                return result;
-            }
+        return file;
+    }
 
-            PortalServerBehavior serverBehavior =
-                (PortalServerBehavior) _server.loadAdapter( PortalServerBehavior.class, null );
-            supervisor = serverBehavior.getBundleSupervisor();
+    private String[] getServiceListFromFile() throws Exception
+    {
+        String[] result = getStaticServices();
 
-            if( supervisor == null )
-            {
-                if( _server == null )
-                {
-                    if( _serviceName == null )
-                    {
-                        result = getStaticServices();
-                    }
-                    else
-                    {
-                        result = getStaticServiceBundle( _serviceName );
-                    }
+        String[] services = getDynamicFileServices();
 
-                    return result;
-                }
-            }
+        if( services != null )
+        {
+            result = services;
+        }
 
-            if( !supervisor.getAgent().redirect( Agent.COMMAND_SESSION ) )
-            {
-                return null;
-            }
+        return result;
 
-            if( _serviceName == null )
-            {
-                result = getServices( supervisor );
-                updateServicesStaticFile( result, supervisor );
-            }
-            else
-            {
-                result = getServiceBundle( _serviceName, supervisor );
-            }
+    }
 
-            return result;
+    @SuppressWarnings( "unchecked" )
+    private String[] getDynamicFileServices()
+    {
+        try
+        {
+            File servicesFile = checkDynamicServicesFile();
+            final ObjectMapper mapper = new ObjectMapper();
+
+            List<String> map = mapper.readValue( servicesFile, List.class );
+            String[] services = map.toArray( new String[0] );
+
+            return services;
+        }
+        catch( IOException e )
+        {
+            return null;
+        }
+
     }
 
     private String[] getServiceBundle( String serviceName, BundleSupervisor supervisor ) throws Exception
@@ -194,13 +236,12 @@ public class ServiceCommand
         return services;
     }
 
-    private void updateServicesStaticFile( final String[] servicesList, final BundleSupervisor supervisor ) throws Exception
+    private void updateServicesDynamicFile( final String[] servicesList ) throws Exception
     {
-        final File servicesFile = checkStaticServicesFile();
+        final File servicesFile = checkDynamicServicesFile();
         final ObjectMapper mapper = new ObjectMapper();
-        final Map<String, String[]> map = new LinkedHashMap<>();
 
-        final Job job = new WorkspaceJob( "Update services static file...")
+        final Job job = new WorkspaceJob( "Update services file...")
         {
 
             @Override
@@ -208,39 +249,16 @@ public class ServiceCommand
             {
                 try
                 {
-                    for( String serviceName : servicesList )
+                    if( monitor.isCanceled() )
                     {
-                        if( monitor.isCanceled() )
-                        {
-                            return Status.CANCEL_STATUS;
-                        }
-                        String[] serviceBundle = getServiceBundle( serviceName, supervisor );
-
-                        if( serviceBundle != null )
-                        {
-                            map.put( serviceName, serviceBundle );
-                        }
+                        return Status.CANCEL_STATUS;
                     }
 
-                    mapper.writeValue( servicesFile, map );
+                    mapper.writeValue( servicesFile, servicesList );
                 }
                 catch( Exception e )
                 {
                     return Status.CANCEL_STATUS;
-                }
-                finally
-                {
-                    if( supervisor != null )
-                    {
-                        try
-                        {
-                            supervisor.getAgent().redirect( Agent.NONE );
-                        }
-                        catch( Exception e )
-                        {
-                            // ignore error
-                        }
-                    }
                 }
 
                 return Status.OK_STATUS;
