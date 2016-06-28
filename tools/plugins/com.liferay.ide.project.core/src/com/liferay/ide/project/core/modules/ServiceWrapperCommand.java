@@ -44,29 +44,15 @@ public class ServiceWrapperCommand
 
         if( _server == null )
         {
-            return getStaticServiceWrapper();
+            return getServiceWrapperListFromFile();
         }
         else
         {
             String[] wrappers = getDynamicServiceWrapper();
-            updateServiceWrapperStaticFile( wrappers );
+            updateServiceWrapperDynamicFile( wrappers );
 
             return wrappers;
         }
-    }
-
-    private File checkStaticWrapperFile() throws IOException
-    {
-        final URL url =
-            FileLocator.toFileURL( ProjectCore.getDefault().getBundle().getEntry( "OSGI-INF/wrappers-static.json" ) );
-        final File servicesFile = new File( url.getFile() );
-
-        if( servicesFile.exists() )
-        {
-            return servicesFile;
-        }
-
-        throw new FileNotFoundException( "can't find static services file wrappers-static.json" );
     }
 
     private String[] getDynamicServiceWrapper()
@@ -187,7 +173,7 @@ public class ServiceWrapperCommand
     }
 
     @SuppressWarnings( "unchecked" )
-    private String[] getStaticServiceWrapper() throws Exception
+    private String[] getServiceWrapperFromStaticFile() throws Exception
     {
         final URL url =
             FileLocator.toFileURL( ProjectCore.getDefault().getBundle().getEntry( "OSGI-INF/wrappers-static.json" ) );
@@ -206,9 +192,56 @@ public class ServiceWrapperCommand
         throw new FileNotFoundException( "can't find static services file wrapper-static.json" );
     }
 
-    private void updateServiceWrapperStaticFile( final String[] wrapperList ) throws Exception
+    private File checkDynamicServiceWrapperFile() throws IOException
     {
-        final File wrappersFile = checkStaticWrapperFile();
+        File file = ProjectCore.getDefault().getStateLocation().append( "dynamic-servicewrapper.json" ).toFile();
+
+        if( !file.exists() )
+        {
+            file.createNewFile();;
+        }
+
+        return file;
+    }
+
+    @SuppressWarnings( "unchecked" )
+    private String[] getServiceWrapperFromDynamicFile()
+    {
+        try
+        {
+            File servicewrapperFile = checkDynamicServiceWrapperFile();
+            final ObjectMapper mapper = new ObjectMapper();
+
+            List<String> map = mapper.readValue( servicewrapperFile, List.class );
+            String[] servicewrapper = map.toArray( new String[0] );
+
+            return servicewrapper;
+        }
+        catch( IOException e )
+        {
+            return null;
+        }
+
+    }
+
+    private String[] getServiceWrapperListFromFile() throws Exception
+    {
+        String[] result = getServiceWrapperFromStaticFile();
+
+        String[] servicewrapper = getServiceWrapperFromDynamicFile();
+
+        if( servicewrapper != null )
+        {
+            result = servicewrapper;
+        }
+
+        return result;
+
+    }
+
+    private void updateServiceWrapperDynamicFile( final String[] wrapperList ) throws Exception
+    {
+        final File wrappersFile = checkDynamicServiceWrapperFile();
         final ObjectMapper mapper = new ObjectMapper();
 
         final Job job = new WorkspaceJob( "Update ServiceWrapper static file...")
