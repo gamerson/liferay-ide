@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+
+<template name="component" description="Get property for the current component class" id="org.eclipse.jdt.ui.templates.component" context="java" enabled="true" autoinsert="false">
+@Component(
+    immediate = true,
+    property = {
+        "com.liferay.portlet.display-category=category.sample",
+        "com.liferay.portlet.instanceable=true",
+        "javax.portlet.display-name=${primary_type_name} Portlet",
+        "javax.portlet.init-param.template-path=/",
+        "javax.portlet.init-param.view-template=/view.jsp",
+        "javax.portlet.resource-bundle=content.Language",
+        "javax.portlet.security-role-ref=power-user,user"
+    },
+    service = ${service_class_name}.class
+)
+</template>
+
+</templates>
