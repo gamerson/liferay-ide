@@ -70,28 +70,29 @@ public class OSGiBundleListener extends FilteredListener<PropertyContentEvent>
             InputStream in = null;
             FileOutputStream out = null;
 
+            JarFile jar = null;
+
             try
             {
                 boolean found = false;
 
                 for( File file : files )
                 {
-                    try( JarFile jar = new JarFile( file ) ) {
-                        Enumeration<JarEntry> enu = jar.entries();
+                    jar = new JarFile( file );
+                    Enumeration<JarEntry> enu = jar.entries();
 
-                        while( enu.hasMoreElements() )
+                    while( enu.hasMoreElements() )
+                    {
+                        JarEntry entry = enu.nextElement();
+
+                        String name = entry.getName();
+
+                        if( name.contains( hostOsgiBundle ) )
                         {
-                            JarEntry entry = enu.nextElement();
+                            in = jar.getInputStream( entry );
+                            found = true;
 
-                            String name = entry.getName();
-
-                            if( name.contains( hostOsgiBundle ) )
-                            {
-                                in = jar.getInputStream( entry );
-                                found = true;
-
-                                break;
-                            }
+                            break;
                         }
                     }
 
@@ -127,6 +128,17 @@ public class OSGiBundleListener extends FilteredListener<PropertyContentEvent>
                     try
                     {
                         out.close();
+                    }
+                    catch( IOException e )
+                    {
+                    }
+                }
+
+                if( jar != null )
+                {
+                    try
+                    {
+                        jar.close();
                     }
                     catch( IOException e )
                     {
