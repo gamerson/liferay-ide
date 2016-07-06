@@ -76,22 +76,21 @@ public class OSGiBundleListener extends FilteredListener<PropertyContentEvent>
 
                 for( File file : files )
                 {
-                    try( JarFile jar = new JarFile( file ) ) {
-                        Enumeration<JarEntry> enu = jar.entries();
+                    JarFile jar = new JarFile( file );
+                    Enumeration<JarEntry> enu = jar.entries();
 
-                        while( enu.hasMoreElements() )
+                    while( enu.hasMoreElements() )
+                    {
+                        JarEntry entry = enu.nextElement();
+
+                        String name = entry.getName();
+
+                        if( name.contains( hostOsgiBundle ) )
                         {
-                            JarEntry entry = enu.nextElement();
+                            in = jar.getInputStream( entry );
+                            found = true;
 
-                            String name = entry.getName();
-
-                            if( name.contains( hostOsgiBundle ) )
-                            {
-                                in = jar.getInputStream( entry );
-                                found = true;
-
-                                break;
-                            }
+                            break;
                         }
                     }
 
