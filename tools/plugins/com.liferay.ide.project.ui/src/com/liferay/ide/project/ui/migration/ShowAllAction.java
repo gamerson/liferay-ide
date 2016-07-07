@@ -33,7 +33,7 @@ public class ShowAllAction extends Action
     {
         super( text, IAction.AS_CHECK_BOX );
         this.cn = cn;
-        setImageDescriptor( ProjectUI.getDefault().getImageRegistry().getDescriptor( ProjectUI.WAR_IMAGE_ID ) );
+        setImageDescriptor( ProjectUI.getDefault().getImageRegistry().getDescriptor( ProjectUI.IMAGE_WAR ) );
     }
 
     @Override
