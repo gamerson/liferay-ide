@@ -61,6 +61,7 @@ public class BladeCLI
     static final String timeStampKey = "up2date.check";
     public static final String BLADE_CLI_REPO_URL = "BLADE_CLI_REPO_URL";
     public static final String BLADE_CLI_REPO_UP2DATE_CHECK = "BLADE_CLI_REPO_UP2DATE_CHECK";
+    public static final String BLADE_CLI_REFRESH = "BLADE_CLI_REFRESH";
 
     static IPath cachedBladeCLIPath;
 
@@ -203,7 +204,14 @@ public class BladeCLI
         {
             List<String> templateNames = new ArrayList<>();
 
-            String[] retval = execute( "create -l" );
+            String listCommand = "create -l";
+
+            if( getRefresh() )
+            {
+                listCommand += " -r";
+            }
+
+            String[] retval = execute( listCommand );
 
             Collections.addAll( templateNames, retval );
 
@@ -211,6 +219,13 @@ public class BladeCLI
         }
 
         return projectTemplateNames;
+    }
+
+    public static boolean getRefresh()
+    {
+        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+
+        return prefs.getBoolean( BLADE_CLI_REFRESH, false );
     }
 
     private static File getRepoCacheDir() throws Exception
@@ -242,6 +257,8 @@ public class BladeCLI
 
         return prefs.get( BLADE_CLI_REPO_UP2DATE_CHECK, "24h" );
     }
+
+
 
     private static boolean shouldUpdate( SimpleDateFormat sdf, File bladeCacheSettingsFile )
                     throws BladeCLIException
