@@ -48,6 +48,11 @@ public class CreateLiferay7WorkspaceTransfer extends WorkbenchSettingsTransfer
         sb.append( "init " );
         sb.append( "-f" );
 
+        if( BladeCLI.getRefresh() )
+        {
+            sb.append( " -r" );
+        }
+
         try
         {
             BladeCLI.execute( sb.toString() );
