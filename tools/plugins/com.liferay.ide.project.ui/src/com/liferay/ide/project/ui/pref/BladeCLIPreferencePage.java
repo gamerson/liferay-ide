@@ -20,6 +20,7 @@ import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.ui.util.SWTUtil;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -66,6 +67,10 @@ public class BladeCLIPreferencePage extends FieldEditorPreferencePage implements
         addField(
             new RadioGroupFieldEditor( BladeCLI.BLADE_CLI_REPO_UP2DATE_CHECK, "Blade CLI Update Timeout", 3,
                 lableAndValues, composite, true ) );
+
+        addField(
+            new BooleanFieldEditor( BladeCLI.BLADE_CLI_REFRESH,
+                "always get the latest project templates and lieray worksapce", composite ) );
     }
 
     @Override

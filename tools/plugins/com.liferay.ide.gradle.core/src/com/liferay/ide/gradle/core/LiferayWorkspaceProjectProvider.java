@@ -72,6 +72,11 @@ public class LiferayWorkspaceProjectProvider extends AbstractLiferayProjectProvi
 
         sb.append( "init" );
 
+        if( BladeCLI.getRefresh() )
+        {
+            sb.append( " -r" );
+        }
+
         try
         {
             BladeCLI.execute( sb.toString() );
