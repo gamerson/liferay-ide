@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+
+<template name="component" description="Get annotation for component class" id="templates.component" context="java" enabled="true" autoinsert="false">
+@Component(immediate = true, service = ${service_class_name}.class)
+</template>
+
+<template name="property_controlmenuentry" description="Get property for controlmenuentry" id="component.controlmenuentry" context="java" enabled="true" autoinsert="false">
+property = {
+        "product.navigation.control.menu.category.key=" + ProductNavigationControlMenuCategoryKeys.USER,
+        "product.navigation.control.menu.entry.order:Integer=1"
+    },
+</template>
+
+<template name="property_mvcportlet" description="Get property for mvcportlet" id="component.mvcportlet" context="java" enabled="true" autoinsert="false">
+property = {
+        "com.liferay.portlet.display-category=category.sample",
+        "com.liferay.portlet.instanceable=true",
+        "javax.portlet.display-name=${primary_type_name} Portlet",
+        "javax.portlet.init-param.template-path=/",
+        "javax.portlet.init-param.view-template=/view.jsp",
+        "javax.portlet.resource-bundle=content.Language",
+        "javax.portlet.security-role-ref=power-user,user"
+    },
+</template>
+
+<template name="property_portlet" description="Get property for portlet" id="component.portlet" context="java" enabled="true" autoinsert="false">
+property = {
+        "com.liferay.portlet.display-category=category.sample",
+        "com.liferay.portlet.instanceable=true",
+        "javax.portlet.security-role-ref=power-user,user"
+    },
+</template>
+
+</templates>
