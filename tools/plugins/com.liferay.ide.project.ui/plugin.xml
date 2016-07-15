@@ -1551,4 +1551,21 @@
             </class>
         </editor>
     </extension>
+
+   <extension
+         id="component.properties.proposal"
+         name="OSGI Component Properties Proposal Computer"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+         <proposalCategory icon="icons/e16/liferay.png"/>
+   </extension>
+   <extension
+         id="component.properties.proposal.computer"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+         <javaCompletionProposalComputer
+			needsSortingAfterFiltering="false"
+			categoryId="component.properties.proposal"
+			class="com.liferay.ide.project.ui.jdt.ComponentPropertiesCompletionProposalComputer"
+			activate="true">
+		</javaCompletionProposalComputer>
+   </extension>
 </plugin>
