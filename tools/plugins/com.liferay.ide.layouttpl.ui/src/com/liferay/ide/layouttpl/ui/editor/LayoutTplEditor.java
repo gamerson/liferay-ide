@@ -22,10 +22,12 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.layouttpl.core.model.LayoutTplElement;
 import com.liferay.ide.layouttpl.core.model.LayoutTplElementsFactory;
 import com.liferay.ide.layouttpl.core.util.LayoutTplUtil;
+import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
 
 import java.lang.reflect.Method;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IDocument;
@@ -47,10 +49,9 @@ import org.eclipse.wst.sse.ui.StructuredTextEditor;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.osgi.framework.Version;
 
-
 /**
  * @author Kuo Zhang
- *
+ * @author Joye Luo
  */
 @SuppressWarnings( "restriction" )
 public class LayoutTplEditor extends SapphireEditor implements IExecutableExtension
@@ -138,6 +139,7 @@ public class LayoutTplEditor extends SapphireEditor implements IExecutableExtens
         LayoutTplElement layoutTpl = LayoutTplElement.TYPE.instantiate();
         layoutTpl.setBootstrapStyle( isBootstrapStyle() );
         layoutTpl.setClassName( getEditorInput().getName().replaceAll( "\\..*$", "" ) );
+        layoutTpl.setIs62( is62() );
 
         return layoutTpl;
     }
@@ -287,6 +289,19 @@ public class LayoutTplEditor extends SapphireEditor implements IExecutableExtens
         }
 
         return retval;
+    }
+
+    private boolean is62()
+    {
+        final IProject project = getFile().getProject();
+        final Version version = new Version( LiferayDescriptorHelper.getDescriptorVersion( project ) );
+
+        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) == 0 )
+        {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
