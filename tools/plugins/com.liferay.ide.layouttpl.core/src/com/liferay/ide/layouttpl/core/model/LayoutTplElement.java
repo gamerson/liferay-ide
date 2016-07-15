@@ -21,9 +21,12 @@ import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.annotations.DefaultValue;
 import org.eclipse.sapphire.modeling.annotations.Required;
+import org.eclipse.sapphire.modeling.annotations.Service;
 
+import com.liferay.ide.layouttpl.core.model.internal.IsSDK62DefaultValueService;
 /**
  * @author Kuo Zhang
+ * @author Joye Luo
  */
 public interface LayoutTplElement extends CanAddPortletLayouts
 {
@@ -65,5 +68,16 @@ public interface LayoutTplElement extends CanAddPortletLayouts
     Value<Boolean> getBootstrapStyle();
     void setBootstrapStyle( String value );
     void setBootstrapStyle( Boolean value );
+
+ // *** SDK Version ***
+
+    @Required
+    @Type( base = Boolean.class )
+    @Service( impl = IsSDK62DefaultValueService.class )
+    ValueProperty PROP_IS_SDK_62 = new ValueProperty( TYPE, "IsSDK62" );
+
+    Value<Boolean> getIsSDK62();
+    void setIsSDK62( String value );
+    void IsSDK60( Boolean value );
 
 }
