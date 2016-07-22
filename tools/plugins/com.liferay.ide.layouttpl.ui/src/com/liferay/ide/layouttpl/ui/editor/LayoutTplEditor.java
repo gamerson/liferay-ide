@@ -299,12 +299,13 @@ public class LayoutTplEditor extends SapphireEditor implements IExecutableExtens
         try
         {
             final IProject project = getFile().getProject();
-            final SDK sdk = SDKUtil.getWorkspaceSDK();
 
             if( ProjectUtil.isMavenProject( project ) )
             {
                 return true;
             }
+
+            final SDK sdk = SDKUtil.getWorkspaceSDK();
 
             if( sdk != null )
             {
