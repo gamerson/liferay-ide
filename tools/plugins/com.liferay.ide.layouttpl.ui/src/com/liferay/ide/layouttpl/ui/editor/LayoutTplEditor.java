@@ -296,12 +296,7 @@ public class LayoutTplEditor extends SapphireEditor implements IExecutableExtens
         final IProject project = getFile().getProject();
         final Version version = new Version( LiferayDescriptorHelper.getDescriptorVersion( project ) );
 
-        if( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) == 0 )
-        {
-            return true;
-        }
-
-        return false;
+        return ( CoreUtil.compareVersions( version, ILiferayConstants.V620 ) == 0 ); 
     }
 
     @Override
