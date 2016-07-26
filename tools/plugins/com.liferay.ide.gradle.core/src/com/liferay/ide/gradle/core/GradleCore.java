@@ -204,7 +204,7 @@ public class GradleCore extends Plugin
     {
         super.start( context );
         plugin = this;
-
+System.out.println( "test build" );
         CoreUtil.getWorkspace().addResourceChangeListener( new IResourceChangeListener()
         {
             @Override
