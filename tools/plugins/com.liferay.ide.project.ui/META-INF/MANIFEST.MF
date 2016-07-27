@@ -53,7 +53,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.sapphire.ui.swt.xml.editor,
  org.eclipse.sapphire.osgi,
  org.eclipse.sapphire.modeling.xml,
- org.eclipse.core.filesystem
+ org.eclipse.core.filesystem,
+ org.eclipse.compare,
+ org.jdom,
+ com.liferay.ide.core,
+ org.apache.commons.lang;bundle-version="2.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.project.ui,
@@ -66,3 +70,4 @@ Export-Package: com.liferay.ide.project.ui,
  com.liferay.ide.project.ui.wizard
 Service-Component: OSGI-INF/com.liferay.ide.project.ui.migration.IDEReporter.xml,
  OSGI-INF/com.liferay.ide.project.ui.migration.WorkspaceMigrationImpl.xml
+Import-Package: org.apache.commons.io
