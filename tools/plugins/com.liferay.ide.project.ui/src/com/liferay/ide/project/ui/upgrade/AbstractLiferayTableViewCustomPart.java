@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.ui.upgrade;
 
 import com.liferay.ide.project.ui.wizard.ElementLabelProvider;
@@ -48,13 +49,119 @@ import org.eclipse.swt.widgets.Table;
  */
 public abstract class AbstractLiferayTableViewCustomPart extends FormComponentPart
 {
-    class TableViewContentProvider implements IStructuredContentProvider
+
+    protected Status retval = Status.createOkStatus();
+
+    protected TableViewer tableViewer;
+
+    protected abstract void compare( IStructuredSelection selection );
+
+    @Override
+    protected Status computeValidation()
+    {
+        return retval;
+    }
+
+    @Override
+    public FormComponentPresentation createPresentation( SwtPresentation parent, Composite composite )
+    {
+        return new FormComponentPresentation( this, parent, composite )
+        {
+
+            @Override
+            public void render()
+            {
+                final Composite parent = SWTUtil.createComposite( composite(), 2, 2, GridData.FILL_BOTH );
+
+                tableViewer = new TableViewer( parent );
+
+                tableViewer.setContentProvider( new TableViewContentProvider() );
+
+                tableViewer.setLabelProvider( new DelegatingStyledCellLabelProvider( getLableProvider() ) );
+
+                tableViewer.addDoubleClickListener( new IDoubleClickListener()
+                {
+
+                    @Override
+                    public void doubleClick( DoubleClickEvent event )
+                    {
+                        compare( (IStructuredSelection) event.getSelection() );
+                    }
+                } );
+
+                final Table table = tableViewer.getTable();
+                final GridData tableData = new GridData( SWT.FILL, SWT.FILL, true, true, 1, 4 );
+
+                tableData.heightHint = 225;
+                tableData.widthHint = 400;
+                table.setLayoutData( tableData );
+
+                final Button selectAllButton = new Button( parent, SWT.NONE );
+
+                selectAllButton.setText( "Find..." );
+                selectAllButton.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false ) );
+                selectAllButton.addListener( SWT.Selection, new Listener()
+                {
+
+                    @Override
+                    public void handleEvent( Event event )
+                    {
+                        handleFindEvent();
+                    }
+                } );
+
+                final Button upgradeButton = new Button( parent, SWT.NONE );
+
+                upgradeButton.setText( "Upgrade..." );
+                upgradeButton.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false ) );
+                upgradeButton.addListener( SWT.Selection, new Listener()
+                {
+
+                    @Override
+                    public void handleEvent( Event event )
+                    {
+                        handleUpgradeEvent();
+                    }
+                } );
+            }
+        };
+    }
+
+    protected abstract IStyledLabelProvider getLableProvider();
+
+    protected abstract void handleUpgradeEvent();
+
+    protected abstract void handleFindEvent();
+
+    protected abstract void updateValidation();
+
+    protected abstract class LiferayUpgradeTabeViewLabelProvider extends ElementLabelProvider
+        implements IColorProvider, IStyledLabelProvider
+    {
+
+        private String GREY_COLOR;
+
+        public LiferayUpgradeTabeViewLabelProvider( final String greyColorName )
+        {
+            this.GREY_COLOR = greyColorName;
+        }
+
+        private final ColorRegistry COLOR_REGISTRY = JFaceResources.getColorRegistry();
+        protected Styler GREYED_STYLER;
+
+        public LiferayUpgradeTabeViewLabelProvider()
+        {
+            COLOR_REGISTRY.put( GREY_COLOR, new RGB( 128, 128, 128 ) );
+            GREYED_STYLER = StyledString.createColorRegistryStyler( GREY_COLOR, null );
+        }
+    }
+
+    protected class TableViewContentProvider implements IStructuredContentProvider
     {
 
         @Override
         public void dispose()
         {
-
         }
 
         @Override
@@ -71,13 +178,13 @@ public abstract class AbstractLiferayTableViewCustomPart extends FormComponentPa
         @Override
         public void inputChanged( Viewer viewer, Object oldInput, Object newInput )
         {
-
         }
 
     }
 
     protected class TableViewerElement
     {
+
         public String name;
         public String context;
 
@@ -87,107 +194,5 @@ public abstract class AbstractLiferayTableViewCustomPart extends FormComponentPa
             this.name = name;
         }
     }
-    protected Status retval = Status.createOkStatus();
 
-    protected TableViewer tableViewer;
-
-    @Override
-    protected Status computeValidation()
-    {
-        return retval;
-    }
-
-    protected abstract void compare(IStructuredSelection selection);
-
-    @Override
-    public FormComponentPresentation createPresentation( SwtPresentation parent, Composite composite )
-    {
-        return new FormComponentPresentation( this, parent, composite )
-        {
-            @Override
-            public void render()
-            {
-                final Composite parent = SWTUtil.createComposite( composite(), 2, 2, GridData.FILL_BOTH );
-
-                tableViewer = new TableViewer(parent);
-
-                tableViewer.setContentProvider( new TableViewContentProvider() );
-
-                tableViewer.setLabelProvider( new DelegatingStyledCellLabelProvider( getLableProvider() ) );
-
-                tableViewer.addDoubleClickListener( new IDoubleClickListener() 
-                {
-                    @Override
-                    public void doubleClick( DoubleClickEvent event) 
-                    {
-                        compare( ( IStructuredSelection)event.getSelection() );
-                    }
-                });
-
-                final Table table = tableViewer.getTable();
-                final GridData tableData = new GridData( SWT.FILL, SWT.FILL, true,  true, 1, 4 );
-                tableData.heightHint = 225;
-                tableData.widthHint = 400;
-                table.setLayoutData( tableData );
-
-                final Button selectAllButton = new Button( parent, SWT.NONE );
-                selectAllButton.setText( "Find..." );
-                selectAllButton.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false ) );
-                selectAllButton.addListener
-                (
-                    SWT.Selection,
-                    new Listener()
-                    {
-                        @Override
-                        public void handleEvent( Event event )
-                        {
-                            handleFindEvent();
-                        }
-                    }
-                );
-
-                final Button upgradeButton = new Button( parent, SWT.NONE );
-                upgradeButton.setText( "Upgrade..." );
-                upgradeButton.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false ) );
-                upgradeButton.addListener
-                (
-                    SWT.Selection,
-                    new Listener()
-                    {
-                        @Override
-                        public void handleEvent( Event event )
-                        {
-                            handleUpgradeEvent();
-                        }
-                    }
-                );
-            }
-        };
-    }
-
-    protected abstract IStyledLabelProvider getLableProvider();
-
-    protected abstract void handleUpgradeEvent();
-
-    protected abstract void handleFindEvent();
-
-    protected abstract void updateValidation();
-
-    protected abstract class LiferayUpgradeTabeViewLabelProvider extends ElementLabelProvider implements IColorProvider, IStyledLabelProvider
-    {
-        private String GREY_COLOR;
-        public LiferayUpgradeTabeViewLabelProvider(final String greyColorName )
-        {
-            this.GREY_COLOR = greyColorName;
-        }
-        
-        private final ColorRegistry COLOR_REGISTRY = JFaceResources.getColorRegistry();
-        protected Styler GREYED_STYLER;
-
-        public LiferayUpgradeTabeViewLabelProvider()
-        {
-            COLOR_REGISTRY.put( GREY_COLOR, new RGB( 128, 128, 128 ) );
-            GREYED_STYLER = StyledString.createColorRegistryStyler( GREY_COLOR, null );
-        }
-    }
 }
