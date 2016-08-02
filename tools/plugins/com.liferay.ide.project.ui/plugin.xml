@@ -421,6 +421,26 @@
             </adapt>
          </enablement>
       </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="com.liferay.ide.project.ui.convertJspHook"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="com.liferay.ide.project.ui.upgrade.action.ConvertJspHookCommand"
+               icon="icons/e16/migration-tasks.png"
+               id="com.liferay.ide.project.ui.convertJsp"
+               label="Convert Jsp Hook"
+               menubarPath="liferayPopupMenuCategory/slot1">
+         </action>
+         <enablement>
+            <adapt type="org.eclipse.core.resources.IProject">
+            <test forcePluginActivation="true"
+                property="org.eclipse.wst.common.project.facet.core.projectFacet"
+                value="liferay.hook"
+            />
+            </adapt>
+         </enablement>
+      </objectContribution>
    </extension>
 
    <extension
@@ -1267,11 +1287,6 @@
             id="com.liferay.ide.project.ui.upgrade.findJavaProblems"
             name="Liferay 7 Find Java Problems">
       </command>
-      <command
-            description="Convert JSP Hook into fragments"
-            id="com.liferay.ide.project.ui.upgrade.convertJspHookFragments"
-            name="Liferay 7 Convert JSP Hooks">
-      </command>
    </extension>
    <extension point="org.eclipse.ui.commandImages">
       <image
@@ -1323,10 +1338,6 @@
        <handler
          commandId="com.liferay.ide.project.ui.upgrade.findJavaProblems"
          class="com.liferay.ide.project.ui.upgrade.FindJavaProblemsHandler">
-       </handler>
-       <handler
-         commandId="com.liferay.ide.project.ui.upgrade.convertJspHookFragments"
-         class="com.liferay.ide.project.ui.upgrade.ConvertJspHookFragmentsHandler">
        </handler>
    </extension>
 
@@ -1562,5 +1573,15 @@
                 <parameter name="pageName" value="Overview"/>
             </class>
         </editor>
-    </extension>
+   </extension>
+   <extension point="org.eclipse.ui.views">
+		<view
+        allowMultiple="false"
+        category="com.liferay.ide.project.ui.liferay"
+        class="com.liferay.ide.project.ui.upgrade.JspCompareView"
+        icon="icons/e16/liferay_logo_16.png"
+        id="com.liferay.ide.project.ui.upgrade.jspCompareView"
+        name="Jsp Compare View">
+		</view>
+   </extension>
 </plugin>

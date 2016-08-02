@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition>
+    <import>
+        <package>com.liferay.ide.project.ui.wizard</package>
+    </import>
+    <dialog>
+        <id>SelectRuntime</id>
+        <label>Select Runtime</label>
+        <content>
+            <label>select the 7.x runtime and 6.2.x runtime for converting</label>
+            <spacer></spacer>
+            <property-editor>
+                <property>7xRuntime</property>
+                <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
+                <action>
+                    <id>NewLiferay7xRuntime</id>
+                    <label>New Liferay 7.x Runtime</label>
+                    <image>server_new.png</image>
+                </action>
+                <action-handler>
+                    <action>NewLiferay7xRuntime</action>
+                    <id>NewLiferay7xRuntimeHanlder</id>
+                    <impl>com.liferay.ide.project.ui.dialog.NewLiferay7xRuntimeHanlder</impl>
+                </action-handler>
+            </property-editor>
+            <property-editor>
+                <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
+                <property>62xRuntime</property>
+                <action-handler>
+                    <action>NewLiferay62xRuntime</action>
+                    <id>NewLiferay62xRuntimeHanlder</id>
+                    <impl>com.liferay.ide.project.ui.dialog.NewLiferay62xRuntimeHanlder</impl>
+                </action-handler>
+                <action>
+                    <id>NewLiferay62xRuntime</id>
+                    <label>New Liferay 6.2.x Runtime</label>
+                    <image>server_new.png</image>
+                </action>
+            </property-editor>
+         </content>
+        <width>500</width>
+    </dialog>
+</definition>
