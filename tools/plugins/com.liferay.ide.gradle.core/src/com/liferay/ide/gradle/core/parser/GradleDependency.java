@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ *******************************************************************************/
 
 package com.liferay.ide.gradle.core.parser;
 
@@ -57,4 +71,27 @@ public class GradleDependency
         this.version = version;
     }
 
+    @Override
+    public boolean equals( Object obj )
+    {
+        if( obj == null )
+        {
+            return false;
+        }
+
+        GradleDependency gd = (GradleDependency) obj;
+
+        if( gd.getGroup() == null || gd.getName() == null || gd.getVersion() == null )
+        {
+            return false;
+        }
+        if( gd.getGroup().equals( group ) && gd.getName().equals( name ) && gd.getVersion().equals( version ) )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
