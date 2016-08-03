@@ -23,7 +23,10 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -58,7 +61,21 @@ public class CodeUpgradeHandler extends AbstractHandler
 
             IFileStore fileStore = EFS.getLocalFileSystem().getStore( new Path( codeUpgradeFile.getPath() ) );
 
-            IDE.openEditorOnFileStore( page, fileStore );
+            IEditorPart openEditorOnFileStore = IDE.openEditorOnFileStore( page, fileStore );
+
+            openEditorOnFileStore.addPropertyListener( new IPropertyListener()
+            {
+
+                @Override
+                public void propertyChanged( Object obj, int arg )
+                {
+                    if( obj instanceof CodeUpgradeToolEditor )
+                    {
+                        CodeUpgradeToolEditor cu = (CodeUpgradeToolEditor) obj;
+                        cu.doSave( new NullProgressMonitor() );
+                    }
+                }
+            } );
         }
         catch( Exception e )
         {
