@@ -15,8 +15,12 @@
 
 package com.liferay.ide.project.ui.dialog;
 
+import com.liferay.ide.core.util.CoreUtil;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.swt.widgets.Shell;
@@ -27,8 +31,6 @@ import org.eclipse.swt.widgets.Shell;
 public class LiferayServiceProjectSelectionDialog extends JavaProjectSelectionDialog
 {
 
-    private List<IProject> projects;
-
     public LiferayServiceProjectSelectionDialog( Shell shell )
     {
         super( shell );
@@ -37,10 +39,7 @@ public class LiferayServiceProjectSelectionDialog extends JavaProjectSelectionDi
     @Override
     protected boolean checkProject( IJavaProject javaProject )
     {
-        if( projects == null )
-        {
-            return false;
-        }
+        List<IProject> projects = getServiceBuilderProjects();
 
         IProject project = javaProject.getProject();
 
@@ -54,8 +53,22 @@ public class LiferayServiceProjectSelectionDialog extends JavaProjectSelectionDi
         }
     }
 
-    public void setProjects( List<IProject> projects )
+    private List<IProject> getServiceBuilderProjects()
     {
-        this.projects = projects;
+        List<IProject> results = new ArrayList<IProject>();
+
+        IProject[] projects = CoreUtil.getAllProjects();
+
+        for( IProject project : projects )
+        {
+            IFile serviceFile = project.getFile( "/docroot/WEB-INF/service.xml" );
+
+            if( serviceFile.exists() )
+            {
+                results.add( project );
+            }
+        }
+
+        return results;
     }
 }
