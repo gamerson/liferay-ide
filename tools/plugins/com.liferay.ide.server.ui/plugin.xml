@@ -582,5 +582,14 @@
         state="true">
         <description>%moduleProjectDecoratorDescription</description>
      </decorator>
+     <decorator
+        adaptable="true"
+        class="com.liferay.ide.server.ui.LiferayServerModuleStatusLabelDecorator"
+        id="com.liferay.ide.server.ui.statusDecorator"
+        label="Module Status Label"
+        lightweight="false"
+        state="true">
+        <description>%moduleProjectDecoratorDescription</description>
+     </decorator>
    </extension>
 </plugin>

@@ -77,6 +77,8 @@ import org.osgi.service.prefs.BackingStoreException;
 public class LiferayServerCore extends Plugin
 {
 
+    public static final String BUNDLE_COMPILE_MARKER_TYPE = "com.liferay.ide.server.core.BundleCompileProblemMarker";
+
     private static Map<String, BundleDeployer> bundleDeployers;
 
     private static Map<String, IServerManagerConnection> connections = null;
