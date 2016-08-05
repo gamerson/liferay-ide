@@ -15,7 +15,11 @@
 
 package com.liferay.ide.server.ui;
 
+import com.liferay.ide.server.core.LiferayServerCore;
+
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IModule;
@@ -76,6 +80,19 @@ public class LiferayServerModuleLabelDecorator extends ModuleLabelDecorator
                 return null;
             }
 
+            try
+            {
+                IMarker[] markers = project.findMarkers( LiferayServerCore.BUNDLE_OUTPUT_ERROR_MARKER_TYPE, false, 0 );
+
+                if( markers != null && markers.length > 0 )
+                {
+                    bundleImage = getErrorImage();
+                }
+            }
+            catch( CoreException e )
+            {
+            }
+
             return PlatformUI.getWorkbench().getDecoratorManager().decorateImage( bundleImage, project );
         }
         catch( Exception e )
@@ -98,4 +115,10 @@ public class LiferayServerModuleLabelDecorator extends ModuleLabelDecorator
 
         return image;
     }
+
+    private Image getErrorImage()
+    {
+        return ImageResource.getImage( ImageResource.IMG_PROJECT_MISSING );
+    }
+
 }
