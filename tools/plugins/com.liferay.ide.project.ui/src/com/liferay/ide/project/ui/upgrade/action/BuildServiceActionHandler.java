@@ -15,7 +15,6 @@
 
 package com.liferay.ide.project.ui.upgrade.action;
 
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.ui.dialog.LiferayServiceProjectSelectionDialog;
 import com.liferay.ide.sdk.core.ISDKConstants;
 import com.liferay.ide.sdk.core.SDK;
@@ -64,34 +63,11 @@ public class BuildServiceActionHandler extends BaseActionHandler
         }
     }
 
-    private List<IProject> getServiceBuilderProjects()
-    {
-        List<IProject> results = new ArrayList<IProject>();
-
-        IProject[] projects = CoreUtil.getAllProjects();
-
-        for( IProject project : projects )
-        {
-            IFile serviceFile = project.getFile( "/docroot/WEB-INF/service.xml" );
-
-            if( serviceFile.exists() )
-            {
-                results.add( project );
-            }
-        }
-
-        return results;
-    }
-
     @Override
     protected Object run( Presentation context )
     {
-        List<IProject> projects = getServiceBuilderProjects();
-
         LiferayServiceProjectSelectionDialog dialog =
             new LiferayServiceProjectSelectionDialog( UIUtil.getActiveShell() );
-
-        dialog.setProjects( projects );
 
         List<IProject> liferayServiceProjects = new ArrayList<>();
 
