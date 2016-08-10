@@ -1562,5 +1562,11 @@
                 <parameter name="pageName" value="Overview"/>
             </class>
         </editor>
-    </extension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <include
+            file="templates/java-templates-components.xml">
+      </include>
+   </extension>
 </plugin>
