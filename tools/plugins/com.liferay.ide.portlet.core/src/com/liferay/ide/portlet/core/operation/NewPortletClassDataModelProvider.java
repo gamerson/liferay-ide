@@ -1024,7 +1024,7 @@ public class NewPortletClassDataModelProvider extends NewWebClassDataModelProvid
             }
             else
             {
-                return PortletCore.createWarningStatus( Msgs.resourceBundleFilePathEndWithProperties );
+                return PortletCore.createErrorStatus( Msgs.resourceBundleFilePathEndWithProperties );
             }
         }
         else if( CREATE_JSPS_FOLDER.equals( propertyName ) )
