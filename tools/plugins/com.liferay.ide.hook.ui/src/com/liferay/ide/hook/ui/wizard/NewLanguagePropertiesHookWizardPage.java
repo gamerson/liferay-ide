@@ -19,11 +19,10 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.hook.core.operation.INewHookDataModelProperties;
 import com.liferay.ide.hook.ui.HookUI;
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.ui.wizard.LanguageStringArrayTableWizardSection;
 import com.liferay.ide.project.ui.wizard.StringArrayTableWizardSection;
 import com.liferay.ide.project.ui.wizard.StringArrayTableWizardSectionCallback;
 import com.liferay.ide.ui.util.SWTUtil;
-
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -31,35 +30,23 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jface.viewers.DecoratingLabelProvider;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
 import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
-import org.eclipse.ui.model.WorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.wst.common.componentcore.internal.operation.IArtifactEditOperationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
 
 /**
  * @author Greg Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
 public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage implements INewHookDataModelProperties
@@ -92,16 +79,7 @@ public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage imp
         contentFolder = SWTUtil.createText( composite, 1 );
         this.synchHelper.synchText( contentFolder, CONTENT_FOLDER, null );
 
-        Button iconFileBrowse = SWTUtil.createPushButton( composite, Msgs.browse, null );
-        iconFileBrowse.addSelectionListener( new SelectionAdapter()
-        {
-
-            @Override
-            public void widgetSelected( SelectionEvent e )
-            {
-                handleFileBrowseButton( NewLanguagePropertiesHookWizardPage.this.contentFolder );
-            }
-        } );
+        contentFolder.setEditable( false );
     }
 
     protected void createLanguagePropertiesGroup( Composite parent )
@@ -110,8 +88,8 @@ public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage imp
         composite.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 3, 1 ) );
 
         languagePropertiesSection =
-            new StringArrayTableWizardSection(
-                composite, Msgs.languagePropertyFiles, Msgs.languagePropertyFileTitle, Msgs.add, Msgs.edit, Msgs.remove,
+            new LanguageStringArrayTableWizardSection(
+                composite, Msgs.languagePropertyFiles, Msgs.languagePropertyFileTitle, Msgs.add, null, Msgs.remove,
                 new String[] { Msgs.add }, new String[] { Msgs.languagePropertyFileLabel }, null, getDataModel(),
                 LANGUAGE_PROPERTIES_ITEMS );
 
@@ -208,64 +186,13 @@ public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage imp
         return new String[] { CONTENT_FOLDER, LANGUAGE_PROPERTIES_ITEMS };
     }
 
-    protected void handleFileBrowseButton( final Text text )
-    {
-        ISelectionStatusValidator validator = getContainerDialogSelectionValidator();
-
-        ViewerFilter filter = getContainerDialogViewerFilter();
-
-        ITreeContentProvider contentProvider = new WorkbenchContentProvider();
-
-        ILabelProvider labelProvider =
-            new DecoratingLabelProvider(
-                new WorkbenchLabelProvider(), PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator() );
-
-        ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog( getShell(), labelProvider, contentProvider );
-        dialog.setValidator( validator );
-        dialog.setTitle( J2EEUIMessages.CONTAINER_SELECTION_DIALOG_TITLE );
-        dialog.setMessage( J2EEUIMessages.CONTAINER_SELECTION_DIALOG_DESC );
-        dialog.addFilter( filter );
-        dialog.setInput( CoreUtil.getWorkspaceRoot() );
-
-        if( dialog.open() == Window.OK )
-        {
-            Object element = dialog.getFirstResult();
-
-            try
-            {
-                if( element instanceof IFolder )
-                {
-                    IFolder folder = (IFolder) element;
-
-                    IProject project = CoreUtil.getProject( getDataModel().getStringProperty( PROJECT_NAME ) );
-
-                    List<IFolder> sources = CoreUtil.getSourceFolders( JavaCore.create( project ) );
-
-                    if( sources.size() > 0 && folder.equals( sources.get( 0 ) ) )
-                    {
-                        folder = folder.getFolder( "content" ); //$NON-NLS-1$
-                    }
-
-                    text.setText( folder.getFullPath().toPortableString() );
-                }
-            }
-            catch( Exception ex )
-            {
-                // Do nothing
-            }
-
-        }
-    }
-
     private static class Msgs extends NLS
     {
         public static String add;
-        public static String browse;
         public static String chooseValidFolder;
         public static String contentFolder;
         public static String createLanguageProperties;
         public static String createNewLanguagePropertiesFiles;
-        public static String edit;
         public static String languagePropertyFileLabel;
         public static String languagePropertyFiles;
         public static String languagePropertyFileTitle;
