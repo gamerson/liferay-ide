@@ -1471,6 +1471,13 @@
             </enablement>
          </commonWizard>
       </navigatorContent>
+      <commonFilter
+        description="Hides copy-request-parameters problem"
+        id="com.liferay.commonFilter.hidecp"
+        name="LPS-54798 copy-request-parameters problem"
+        class="com.liferay.ide.project.ui.migration.MigrationProblemFilter"
+        activeByDefault="false">
+    </commonFilter>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.viewer">
@@ -1481,6 +1488,7 @@
                   isRoot="true"
                   pattern="com.liferay.ide.project.ui.migration.content">
             </contentExtension>
+            <contentExtension pattern="com.liferay.commonFilter.hidecp"/>
          </includes>
       </viewerContentBinding>
       <viewerContentBinding
