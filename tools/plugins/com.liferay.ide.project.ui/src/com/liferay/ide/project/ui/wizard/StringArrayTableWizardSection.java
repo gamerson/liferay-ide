@@ -191,7 +191,7 @@ public class StringArrayTableWizardSection extends Composite {
 			updateOKButton();
 		}
 		
-		private void updateOKButton() {
+		protected void updateOKButton() {
 			getButton(IDialogConstants.OK_ID).setEnabled(callback.validate(texts));
 		}
 		
