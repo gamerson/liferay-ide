@@ -57,6 +57,7 @@ import org.xml.sax.ErrorHandler;
  * @author Greg Amerson
  * @author Cindy Li
  * @author Simon Jiang
+ * @author Lovett Li
  */
 public class FileUtil
 {
@@ -704,6 +705,15 @@ public class FileUtil
         }
 
         return bytesTotal;
+    }
+
+    public static IFile convertFileToIFile( File file )
+    {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IPath location = Path.fromOSString( file.getAbsolutePath() );
+        IFile ifile = workspace.getRoot().getFileForLocation( location );
+
+        return ifile;
     }
 
     private static class Msgs extends NLS
