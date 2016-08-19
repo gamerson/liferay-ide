@@ -20,6 +20,8 @@ import com.liferay.ide.project.core.upgrade.service.LayoutPossibleValuesService;
 import com.liferay.ide.project.core.upgrade.service.LiferayServerNameDefaultValueService;
 import com.liferay.ide.project.core.upgrade.service.LiferayServerNamePossibleValuesService;
 import com.liferay.ide.project.core.upgrade.service.LiferayServerNameValidationService;
+import com.liferay.ide.project.core.upgrade.service.ProjectNameDefaultValueListener;
+import com.liferay.ide.project.core.upgrade.service.ProjectNameDefaultValueService;
 import com.liferay.ide.project.core.upgrade.service.SdkLocationDefaultValueService;
 import com.liferay.ide.project.core.upgrade.service.SdkLocationValidationService;
 
@@ -34,6 +36,7 @@ import org.eclipse.sapphire.modeling.annotations.DefaultValue;
 import org.eclipse.sapphire.modeling.annotations.Derived;
 import org.eclipse.sapphire.modeling.annotations.FileSystemResourceType;
 import org.eclipse.sapphire.modeling.annotations.Label;
+import org.eclipse.sapphire.modeling.annotations.Listeners;
 import org.eclipse.sapphire.modeling.annotations.Required;
 import org.eclipse.sapphire.modeling.annotations.Service;
 import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
@@ -70,6 +73,7 @@ public interface CodeUpgradeOp extends Element
     void setNewLocation( Path newLocation );
 
     @XmlBinding( path = "ProjectName" )
+    @Service(impl = ProjectNameDefaultValueService.class)
     @Required
     ValueProperty PROP_PROJECT_NAME = new ValueProperty( TYPE, "ProjectName" );
 
@@ -78,6 +82,7 @@ public interface CodeUpgradeOp extends Element
 
     @DefaultValue( text = "Use plugin sdk in liferay workspace" )
     @Service( impl = LayoutPossibleValuesService.class )
+    @Listeners( ProjectNameDefaultValueListener.class )
     ValueProperty PROP_LAYOUT = new ValueProperty( TYPE, "Layout" );
 
     Value<String> getLayout();
