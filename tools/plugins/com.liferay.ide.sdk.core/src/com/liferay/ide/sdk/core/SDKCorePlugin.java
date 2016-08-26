@@ -25,6 +25,10 @@ import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -38,6 +42,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plugin life cycle
  *
  * @author Greg Amerson
+ * @author Joye Luo
  */
 @SuppressWarnings( "restriction" )
 public class SDKCorePlugin extends Plugin
@@ -221,6 +226,39 @@ public class SDKCorePlugin extends Plugin
         };
 
         SDKManager.getInstance().addSDKListener( this.sdkListener );
+
+        CoreUtil.getWorkspace().addResourceChangeListener( new IResourceChangeListener()
+        {
+
+            @Override
+            public void resourceChanged( IResourceChangeEvent event )
+            {
+                try
+                {
+                    if( event.getType() == IResourceChangeEvent.PRE_DELETE )
+                    {
+                        IProject project = (IProject) event.getResource();
+
+                        if( SDKUtil.isSDKProject( project ) )
+                        {
+                            String parentName = project.getLocation().toFile().getParentFile().getName();
+                            IProject sdkProject = SDKUtil.getWorkspaceSDKProject();
+                            IFolder parentFolder = sdkProject.getFolder( parentName );
+
+                            CoreUtil.deleteProjectResourceFilter( parentFolder, project );
+                        }
+                        return;
+                    }
+                }
+                catch( Exception e )
+                {
+                    SDKCorePlugin.logError( "delete project resource filter error", e );
+                }
+
+                return;
+            }
+        }, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE );
+
     }
 
     /*

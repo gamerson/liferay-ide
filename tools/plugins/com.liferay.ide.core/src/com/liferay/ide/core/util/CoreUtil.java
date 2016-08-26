@@ -44,9 +44,11 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceFilterDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -54,6 +56,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -68,6 +71,7 @@ import org.w3c.dom.Node;
  * @author Kuo Zhang
  * @author Simon Jiang
  * @author Terry Jia
+ * @author Joye Luo
  */
 public class CoreUtil
 {
@@ -201,6 +205,34 @@ public class CoreUtil
         }
 
         resource.delete( true, null );
+    }
+
+    public static void deleteProjectResourceFilter( IFolder parentFolder, IProject project ) throws Exception
+    {
+        IResourceFilterDescription[] resourceFilterDescriptions =parentFolder.getFilters();
+
+        for( IResourceFilterDescription resourceFilterDescription : resourceFilterDescriptions )
+        {
+            Object argument =
+                resourceFilterDescription.getFileInfoMatcherDescription().getArguments();
+
+            if( argument.toString().contains( project.getName() ) )
+            {
+                Job job = new WorkspaceJob( "delete project resource filter" )
+                {
+
+                    @Override
+                    public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
+                    {
+                        resourceFilterDescription.delete( IResource.BACKGROUND_REFRESH, monitor );
+                        return Status.OK_STATUS;
+                    }
+                };
+
+                job.schedule();
+            }
+        }
+
     }
 
     public static boolean empty( Object[] array )
