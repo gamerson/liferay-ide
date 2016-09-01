@@ -19,12 +19,15 @@ import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.Reporter;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.ui.upgrade.animated.FindBreakingChangesPage;
+import com.liferay.ide.project.ui.upgrade.animated.UpgradeView;
 import com.liferay.ide.ui.util.UIUtil;
 
 import java.io.OutputStream;
 
 /**
  * @author Gregory Amerson
+ * @author Lovett Li
  */
 public class IDEReporter implements Reporter
 {
@@ -42,9 +45,13 @@ public class IDEReporter implements Reporter
             @Override
             public void run()
             {
-                MigrationView view = (MigrationView) UIUtil.showView( MigrationView.ID );
+//                MigrationView view = (MigrationView) UIUtil.showView( MigrationView.ID );
+//
+//                view.getCommonViewer().setInput( CoreUtil.getWorkspaceRoot() );
+                final UpgradeView mv = (UpgradeView) UIUtil.findView( UpgradeView.ID );
+                FindBreakingChangesPage page = (FindBreakingChangesPage) mv.getPage( 3 );
 
-                view.getCommonViewer().setInput( CoreUtil.getWorkspaceRoot() );
+                page.getTreeViewer().setInput( CoreUtil.getWorkspaceRoot() );
             }
         });
     }

@@ -12,28 +12,21 @@
  * details.
  *
  *******************************************************************************/
-
-package com.liferay.ide.project.ui.upgrade.action;
-
-import org.eclipse.sapphire.ui.Presentation;
-
-import com.liferay.ide.project.ui.migration.MigrationView;
-import com.liferay.ide.project.ui.migration.RunMigrationToolAction;
-import com.liferay.ide.ui.util.UIUtil;
+package com.liferay.ide.project.ui.upgrade.animated;
 
 /**
- * @author Terry Jia
- * @author Lovett Li
+ * @author Simon Jiang
  */
-public class FindBreakingChangesActionHandler extends BaseActionHandler
+public class PageSkipAction extends PageAction
 {
-
-    @Override
-    protected Object run( Presentation context )
+    protected PageSkipAction( )
     {
-        MigrationView view = (MigrationView) UIUtil.showView( MigrationView.ID );
-        new RunMigrationToolAction( "Run Migration Tool", view.getViewSite().getShell() ).run();
-        return null;
-    }
+        super();
 
+        images[0] = loadImage("no.png");
+        images[1] = loadImage("no_select.png");
+        images[2] = loadImage("no_hover.png");
+        images[3] = loadImage("no_big.png");
+        images[4] = loadImage("no_badge.png");
+    }
 }

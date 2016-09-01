@@ -12,28 +12,12 @@
  * details.
  *
  *******************************************************************************/
-
-package com.liferay.ide.project.ui.upgrade.action;
-
-import org.eclipse.sapphire.ui.Presentation;
-
-import com.liferay.ide.project.ui.migration.MigrationView;
-import com.liferay.ide.project.ui.migration.RunMigrationToolAction;
-import com.liferay.ide.ui.util.UIUtil;
+package com.liferay.ide.project.ui.upgrade.animated;
 
 /**
- * @author Terry Jia
- * @author Lovett Li
+ * @author Simon Jiang
  */
-public class FindBreakingChangesActionHandler extends BaseActionHandler
+public interface SelectionChangedListener
 {
-
-    @Override
-    protected Object run( Presentation context )
-    {
-        MigrationView view = (MigrationView) UIUtil.showView( MigrationView.ID );
-        new RunMigrationToolAction( "Run Migration Tool", view.getViewSite().getShell() ).run();
-        return null;
-    }
-
+    public void onSelectionChanged( int targetSelection);
 }

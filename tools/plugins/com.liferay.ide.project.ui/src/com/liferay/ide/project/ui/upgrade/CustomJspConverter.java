@@ -25,7 +25,7 @@ import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.ImportLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.ImportLiferayModuleProjectOpMethods;
 import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.project.ui.upgrade.ConvertedProjectTreesPart.ConvertedProjectTreesPresentation;
+import com.liferay.ide.project.ui.upgrade.animated.CustomJspPage;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.util.ServerUtil;
@@ -144,7 +144,7 @@ public class CustomJspConverter
 
 
 
-    private ConvertedProjectTreesPresentation ui;
+    private CustomJspPage ui;
 
     static
     {
@@ -861,7 +861,7 @@ public class CustomJspConverter
         this.liferay70Runtime = liferay70Runtime;
     }
 
-    public void setUi( ConvertedProjectTreesPresentation ui )
+    public void setUi( CustomJspPage ui )
     {
         this.ui = ui;
     }

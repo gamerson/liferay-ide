@@ -19,14 +19,16 @@ import com.liferay.blade.api.MigrationConstants;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.MarkerUtil;
 import com.liferay.ide.project.core.upgrade.MigrationProblems;
+import com.liferay.ide.project.ui.upgrade.animated.FindBreakingChangesPage;
+import com.liferay.ide.project.ui.upgrade.animated.UpgradeView;
 import com.liferay.ide.ui.util.UIUtil;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.actions.SelectionProviderAction;
-import org.eclipse.ui.navigator.CommonViewer;
 
 /**
  * @author Lovett Li
@@ -42,10 +44,13 @@ public class RemoveAction extends SelectionProviderAction implements IAction
     @Override
     public void run()
     {
-        final MigrationView mv = (MigrationView) UIUtil.showView( MigrationView.ID );
-        final CommonViewer commonViewer = mv.getCommonViewer();
+//        final MigrationView mv = (MigrationView) UIUtil.showView( MigrationView.ID );
+//        final CommonViewer commonViewer = mv.getCommonViewer();
+        final UpgradeView mv = (UpgradeView) UIUtil.findView( UpgradeView.ID );
+        final FindBreakingChangesPage page = (FindBreakingChangesPage) mv.getPage( 3 );
+        final TreeViewer treeViewer = page.getTreeViewer();
 
-        Object selection = commonViewer.getStructuredSelection().getFirstElement();
+        Object selection = treeViewer.getStructuredSelection().getFirstElement();
 
         if( selection instanceof MigrationProblems )
         {
@@ -60,14 +65,23 @@ public class RemoveAction extends SelectionProviderAction implements IAction
             }
         }
 
-        commonViewer.setInput( CoreUtil.getWorkspaceRoot() );
+        treeViewer.setInput( CoreUtil.getWorkspaceRoot() );
 
     }
 
     @Override
     public void selectionChanged( IStructuredSelection selection )
     {
-        setEnabled( true );
+        Object element = selection.getFirstElement();
+
+        if( element instanceof MigrationProblems )
+        {
+            setEnabled( true );
+
+            return;
+        }
+
+        setEnabled( false );
     }
 
 }

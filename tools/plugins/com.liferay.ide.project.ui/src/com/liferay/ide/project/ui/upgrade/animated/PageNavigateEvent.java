@@ -12,28 +12,23 @@
  * details.
  *
  *******************************************************************************/
-
-package com.liferay.ide.project.ui.upgrade.action;
-
-import org.eclipse.sapphire.ui.Presentation;
-
-import com.liferay.ide.project.ui.migration.MigrationView;
-import com.liferay.ide.project.ui.migration.RunMigrationToolAction;
-import com.liferay.ide.ui.util.UIUtil;
+package com.liferay.ide.project.ui.upgrade.animated;
 
 /**
- * @author Terry Jia
- * @author Lovett Li
+ * @author Simon Jiang
+ * @author Andy Wu
  */
-public class FindBreakingChangesActionHandler extends BaseActionHandler
+public class PageNavigateEvent
 {
-
-    @Override
-    protected Object run( Presentation context )
+    private int targetPageIndex;
+    
+    public int getTargetPage()
     {
-        MigrationView view = (MigrationView) UIUtil.showView( MigrationView.ID );
-        new RunMigrationToolAction( "Run Migration Tool", view.getViewSite().getShell() ).run();
-        return null;
+        return this.targetPageIndex;
     }
-
+   
+    public void setTargetPage( int targetPage )
+    {
+        this.targetPageIndex = targetPage;
+    }
 }
