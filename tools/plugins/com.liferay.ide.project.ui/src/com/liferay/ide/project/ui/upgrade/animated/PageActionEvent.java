@@ -12,26 +12,37 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-
+package com.liferay.ide.project.ui.upgrade.animated;
 
 /**
- * @author Gregory Amerson
+ * @author Simon Jiang
+ * @author Andy Wu
  */
-public interface IProjectBuilder
+public class PageActionEvent
 {
 
-    IStatus buildLang( IFile langFile, IProgressMonitor monitor ) throws CoreException;
+    private int targetPageIndex;
 
-    IStatus buildService( IProgressMonitor monitor ) throws CoreException;
+    private PageAction action;
 
-    IStatus buildWSDD( IProgressMonitor monitor ) throws CoreException;
+    public int getTargetPageIndex()
+    {
+        return targetPageIndex;
+    }
 
-    IStatus creatInitBundle( IProject project, String taskName, String bundleUrl, IProgressMonitor monitor ) throws CoreException;
+    public void setTargetPageIndex( int targetPageIndex )
+    {
+        this.targetPageIndex = targetPageIndex;
+    }
+
+    public void setAction( PageAction action )
+    {
+        this.action = action;
+    }
+
+    public PageAction getAction()
+    {
+        return this.action;
+    }
 }

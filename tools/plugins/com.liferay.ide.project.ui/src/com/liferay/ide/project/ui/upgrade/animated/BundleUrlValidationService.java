@@ -13,27 +13,40 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.ui.upgrade.action;
+package com.liferay.ide.project.ui.upgrade.animated;
 
-import org.eclipse.sapphire.ui.Presentation;
-
-import com.liferay.ide.project.ui.migration.MigrationView;
-import com.liferay.ide.project.ui.migration.RunMigrationToolAction;
-import com.liferay.ide.ui.util.UIUtil;
+import org.apache.xerces.util.URI;
+import org.eclipse.sapphire.modeling.Status;
+import org.eclipse.sapphire.services.ValidationService;
 
 /**
  * @author Terry Jia
- * @author Lovett Li
  */
-public class FindBreakingChangesActionHandler extends BaseActionHandler
+public class BundleUrlValidationService extends ValidationService
 {
 
     @Override
-    protected Object run( Presentation context )
+    protected Status compute()
     {
-        MigrationView view = (MigrationView) UIUtil.showView( MigrationView.ID );
-        new RunMigrationToolAction( "Run Migration Tool", view.getViewSite().getShell() ).run();
-        return null;
+        Status retval = Status.createOkStatus();
+
+        String bundleUrl = op().getBundleUrl().content();
+
+        try
+        {
+            new URI( bundleUrl );
+        }
+        catch( Exception e )
+        {
+            retval = Status.createErrorStatus( "The bundle URL should be a vaild URL." );
+        }
+
+        return retval;
+    }
+
+    private LiferayUpgradeDataModel op()
+    {
+        return context( LiferayUpgradeDataModel.class );
     }
 
 }

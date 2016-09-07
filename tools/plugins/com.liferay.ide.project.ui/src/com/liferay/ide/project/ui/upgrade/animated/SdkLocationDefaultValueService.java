@@ -12,26 +12,40 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core;
 
-import org.eclipse.core.resources.IFile;
+package com.liferay.ide.project.ui.upgrade.animated;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.sapphire.DefaultValueService;
 
+import com.liferay.ide.sdk.core.SDKUtil;
 
 /**
- * @author Gregory Amerson
+ * @author Terry Jia
  */
-public interface IProjectBuilder
+public class SdkLocationDefaultValueService extends DefaultValueService
 {
 
-    IStatus buildLang( IFile langFile, IProgressMonitor monitor ) throws CoreException;
+    @Override
+    protected String compute()
+    {
+        String retVal = "";
 
-    IStatus buildService( IProgressMonitor monitor ) throws CoreException;
+        try
+        {
+            IProject sdk = SDKUtil.getWorkspaceSDKProject();
 
-    IStatus buildWSDD( IProgressMonitor monitor ) throws CoreException;
+            if( sdk != null )
+            {
+                retVal = sdk.getLocation().toString();
+            }
+        }
+        catch( CoreException e )
+        {
+        }
 
-    IStatus creatInitBundle( IProject project, String taskName, String bundleUrl, IProgressMonitor monitor ) throws CoreException;
+        return retVal;
+    }
+
 }

@@ -12,26 +12,15 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-
+package com.liferay.ide.project.ui.upgrade.animated;
 
 /**
- * @author Gregory Amerson
+ * @author Simon Jiang
  */
-public interface IProjectBuilder
+public interface SelectionChangedListener
 {
 
-    IStatus buildLang( IFile langFile, IProgressMonitor monitor ) throws CoreException;
+    public void onSelectionChanged( int targetSelection );
 
-    IStatus buildService( IProgressMonitor monitor ) throws CoreException;
-
-    IStatus buildWSDD( IProgressMonitor monitor ) throws CoreException;
-
-    IStatus creatInitBundle( IProject project, String taskName, String bundleUrl, IProgressMonitor monitor ) throws CoreException;
 }
