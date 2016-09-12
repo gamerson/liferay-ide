@@ -17,6 +17,7 @@ package com.liferay.ide.sdk.core;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.PropertiesUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -320,10 +321,9 @@ public class SDKUtil
 
     static String readSDKVersion( String path ) throws FileNotFoundException, IOException
     {
-        Properties properties = new Properties();
-        properties.load( new FileInputStream( new Path( path ).append( "build.properties" ).toFile() ) ); //$NON-NLS-1$
+        Properties properties = PropertiesUtil.loadProperties( new Path( path ).append( "build.properties" ).toFile() );
 
-        return properties.getProperty( "lp.version" ); //$NON-NLS-1$
+        return properties.getProperty( "lp.version" );
     }
 
     public static void saveSDKNameSetting( IProject project, String sdkName)
