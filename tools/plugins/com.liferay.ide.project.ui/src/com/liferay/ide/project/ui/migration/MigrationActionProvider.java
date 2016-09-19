@@ -49,6 +49,7 @@ public class MigrationActionProvider extends CommonActionProvider
     private SelectionProviderAction _markUndoneAction;
     private SelectionProviderAction _openAction;
     private SelectionProviderAction _removeAction;
+    private SelectionProviderAction _ignoreAlwaysAction;
 
     public MigrationActionProvider()
     {
@@ -91,7 +92,7 @@ public class MigrationActionProvider extends CommonActionProvider
             menu.add( _markDoneAction );
             menu.add( _markUndoneAction );
             menu.add( _ignoreAction );
-
+            menu.add( _ignoreAlwaysAction );
             menu.add( _autoCorrectAction );
 
             menu.add( new Separator() );
@@ -152,6 +153,7 @@ public class MigrationActionProvider extends CommonActionProvider
         _ignoreAction = new IgnoreAction( provider );
         _autoCorrectAction = new AutoCorrectAction( provider );
         _removeAction = new RemoveAction( provider );
+        _ignoreAlwaysAction = new IgnoreAlways( provider );
 
         return this;
     }
@@ -164,5 +166,6 @@ public class MigrationActionProvider extends CommonActionProvider
         provider.addSelectionChangedListener( _ignoreAction );
         provider.addSelectionChangedListener( _autoCorrectAction );
         provider.addSelectionChangedListener( _removeAction );
+        provider.addSelectionChangedListener( _ignoreAlwaysAction );
     }
 }
