@@ -19,6 +19,8 @@ import com.liferay.blade.api.Migration;
 import com.liferay.blade.api.MigrationConstants;
 import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.ProgressMonitor;
+import com.liferay.ide.core.util.CUCache;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.MarkerUtil;
 import com.liferay.ide.project.core.upgrade.FileProblems;
 import com.liferay.ide.project.core.upgrade.FileProblemsUtil;
@@ -44,6 +46,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -63,6 +70,11 @@ import org.osgi.framework.ServiceReference;
  */
 public class MigrateProjectHandler extends AbstractHandler
 {
+
+    private String[] ignoreSuperClasses =
+        { "com.liferay.portal.service.BaseLocalServiceImpl", "com.liferay.portal.model.CacheModel",
+            "com.liferay.portal.model.impl.BaseModelImpl", "com.liferay.portal.service.BaseServiceImpl",
+            "com.liferay.portal.service.persistence.impl.BasePersistenceImpl" };
 
     @Override
     public Object execute( ExecutionEvent event ) throws ExecutionException
@@ -154,7 +166,7 @@ public class MigrateProjectHandler extends AbstractHandler
 
     public void findMigrationProblems( final IPath[] locations )
     {
-        findMigrationProblems( locations, new String[]{""} );
+        findMigrationProblems( locations, new String[] { "" } );
     }
 
     public void findMigrationProblems( final IPath[] locations, final String[] projectName )
@@ -293,7 +305,8 @@ public class MigrateProjectHandler extends AbstractHandler
 
                             container.setProblemsArray( migrationProblemsList.toArray( new MigrationProblems[0] ) );
 
-                            UpgradeAssistantSettingsUtil.setObjectToStore( MigrationProblemsContainer.class, container );
+                            UpgradeAssistantSettingsUtil.setObjectToStore(
+                                MigrationProblemsContainer.class, container );
                         }
 
                         m.reportProblems( allProblems, Migration.DETAIL_LONG, "ide" );
@@ -326,8 +339,8 @@ public class MigrateProjectHandler extends AbstractHandler
 
         return MessageDialog.openConfirm(
             shell, "Migrate Liferay Plugin",
-            "This project already contains migration problem markers.  All existing markers will be deleted.  "
-                + "Do you want to continue to run migration tool?" );
+            "This project already contains migration problem markers.  All existing markers will be deleted.  " +
+                "Do you want to continue to run migration tool?" );
     }
 
     private boolean shouldShowMessageDialog( IProject project )
@@ -341,9 +354,71 @@ public class MigrateProjectHandler extends AbstractHandler
     {
         String path = problem.getFile().getAbsolutePath().replaceAll( "\\\\", "/" );
 
-        if( path.contains( "WEB-INF/classes" ) )
+        if( path.contains( "WEB-INF/classes" ) || path.contains( "WEB-INF/service" ) )
         {
             return false;
+        }
+
+        if( path.endsWith( "java" ) )
+        {
+            CompilationUnit ast =
+                CUCache.getCU( problem.getFile(), FileUtil.readContents( problem.getFile() ).toCharArray() );
+
+            Name superClass = ( (TypeDeclaration) ast.types().get( 0 ) ).getSuperclass();
+
+            if( superClass != null )
+            {
+                String interfaceOrSuperClass = "";
+
+                for( Object classImport : ast.imports() )
+                {
+                    ImportDeclaration id = (ImportDeclaration) classImport;
+
+                    if( id.getName().toString().endsWith( superClass.toString() ) )
+                    {
+                        interfaceOrSuperClass = id.getName().toString();
+
+                        break;
+                    }
+                }
+
+                for( String ignoreSuperClass : ignoreSuperClasses )
+                {
+                    if( ignoreSuperClass.equals( interfaceOrSuperClass ) )
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            List<ASTNode> interfaces = ( (TypeDeclaration) ast.types().get( 0 ) ).superInterfaces();
+
+            for( ASTNode n : interfaces )
+            {
+                String name = n.toString();
+
+                String interfaceOrSuperClass = "";
+
+                for( Object classImport : ast.imports() )
+                {
+                    ImportDeclaration id = (ImportDeclaration) classImport;
+
+                    if( id.getName().toString().endsWith( name ) )
+                    {
+                        interfaceOrSuperClass = id.getName().toString();
+
+                        break;
+                    }
+                }
+
+                for( String ignoreSuperClass : ignoreSuperClasses )
+                {
+                    if( ignoreSuperClass.equals( interfaceOrSuperClass ) )
+                    {
+                        return false;
+                    }
+                }
+            }
         }
 
         return true;
