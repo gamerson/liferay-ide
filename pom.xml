@@ -37,6 +37,10 @@
             <name>Kamesh Sampath</name>
             <email>kamesh.sampath@liferay.com</email>
         </developer>
+		<developer>
+            <name>Test</name>
+            <email>Test.test@liferay.com</email>
+        </developer>
     </developers>
 
     <licenses>
