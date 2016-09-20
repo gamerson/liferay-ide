@@ -106,4 +106,8 @@ public class AlloyCore extends Plugin
         plugin = null;
         super.stop( context );
     }
+    
+    public void test(){
+        System.out.println( "Test!!!" );
+    }
 }
