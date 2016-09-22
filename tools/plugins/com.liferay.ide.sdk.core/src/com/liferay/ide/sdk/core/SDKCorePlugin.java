@@ -247,6 +247,7 @@ public class SDKCorePlugin extends Plugin
 
                             CoreUtil.deleteProjectResourceFilter( parentFolder, project );
                         }
+
                         return;
                     }
                 }
@@ -257,7 +258,8 @@ public class SDKCorePlugin extends Plugin
 
                 return;
             }
-        }, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE );
+
+        }, IResourceChangeEvent.PRE_DELETE );
 
     }
 

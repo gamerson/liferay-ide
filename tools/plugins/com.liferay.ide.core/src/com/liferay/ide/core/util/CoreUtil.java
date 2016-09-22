@@ -209,12 +209,11 @@ public class CoreUtil
 
     public static void deleteProjectResourceFilter( IFolder parentFolder, IProject project ) throws Exception
     {
-        IResourceFilterDescription[] resourceFilterDescriptions =parentFolder.getFilters();
+        IResourceFilterDescription[] resourceFilterDescriptions = parentFolder.getFilters();
 
         for( IResourceFilterDescription resourceFilterDescription : resourceFilterDescriptions )
         {
-            Object argument =
-                resourceFilterDescription.getFileInfoMatcherDescription().getArguments();
+            Object argument = resourceFilterDescription.getFileInfoMatcherDescription().getArguments();
 
             if( argument.toString().contains( project.getName() ) )
             {
@@ -225,6 +224,7 @@ public class CoreUtil
                     public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
                     {
                         resourceFilterDescription.delete( IResource.BACKGROUND_REFRESH, monitor );
+
                         return Status.OK_STATUS;
                     }
                 };
@@ -232,7 +232,6 @@ public class CoreUtil
                 job.schedule();
             }
         }
-
     }
 
     public static boolean empty( Object[] array )
