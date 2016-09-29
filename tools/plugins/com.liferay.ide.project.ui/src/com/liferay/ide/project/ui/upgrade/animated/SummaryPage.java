@@ -56,7 +56,7 @@ public class SummaryPage extends Page implements SelectionChangedListener
 
         final Table table = tableViewer.getTable();
         final GridData tableData = new GridData( SWT.FILL, SWT.FILL, true, false, 1, 1 );
-        tableData.heightHint = 150;
+        tableData.heightHint = 125;
         table.setLayoutData( tableData );
         table.setLinesVisible( false );
 
@@ -179,6 +179,11 @@ public class SummaryPage extends Page implements SelectionChangedListener
             String pageTitle = page.getPageTitle();
             PageAction pageAction = page.getSelectedAction();
             Image statusImage;
+
+            if (pageTitle == "Ext and Theme Project")
+            {
+                continue;
+            }
 
             if( pageAction == null )
             {
