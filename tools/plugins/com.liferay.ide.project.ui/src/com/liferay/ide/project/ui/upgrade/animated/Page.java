@@ -90,6 +90,10 @@ public abstract class Page extends Composite
 
     private PageAction selectedAction;
 
+    private PageAction pageFinishAction = new PageFinishAction();
+
+    private PageAction pageSkipAction = new PageSkipAction();
+
     protected final List<PageValidationListener> pageValidationListeners =
         Collections.synchronizedList( new ArrayList<PageValidationListener>() );
 
@@ -113,7 +117,7 @@ public abstract class Page extends Composite
 
         if( hasFinishAndSkipAction )
         {
-            setActions( new PageAction[] { new PageFinishAction(), new PageSkipAction() } );
+            setActions( new PageAction[] { pageFinishAction,pageSkipAction } );
         }
     }
 
@@ -204,6 +208,19 @@ public abstract class Page extends Composite
 
     public PageAction getSelectedAction()
     {
+        return selectedAction;
+    }
+
+    public PageAction getSelectedAction( String actionName)
+    {
+        if( actionName.equals( "PageFinishAction" ))
+        {
+            return pageFinishAction;
+        }
+        if( actionName.equals( "PageSkipAction" ))
+        {
+            return pageSkipAction;
+        }
         return selectedAction;
     }
 
