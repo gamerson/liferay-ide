@@ -15,9 +15,7 @@
 
 package com.liferay.ide.project.core;
 
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -37,6 +35,10 @@ import org.eclipse.jdt.internal.core.ClasspathEntry;
 import org.eclipse.jst.common.jdt.internal.classpath.FlexibleProjectContainer;
 import org.eclipse.jst.j2ee.internal.common.classpath.J2EEComponentClasspathContainerUtils;
 import org.eclipse.osgi.util.NLS;
+
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.sdk.core.ISDKConstants;
+import com.liferay.ide.sdk.core.SDK;
 
 /**
  * @author Gregory Amerson
@@ -222,5 +224,11 @@ public class SDKProjectBuilder extends AbstractProjectBuilder
         throws CoreException
     {
         return Status.OK_STATUS;
+    }
+
+    @Override
+    public void updateProjectDependency( IProject project, List<String[]> dependency )
+        throws CoreException
+    {
     }
 }
