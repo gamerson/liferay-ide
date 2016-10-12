@@ -34,4 +34,6 @@ public interface IProjectBuilder
     IStatus buildWSDD( IProgressMonitor monitor ) throws CoreException;
 
     IStatus creatInitBundle( IProject project, String taskName, String bundleUrl, IProgressMonitor monitor ) throws CoreException;
+
+    public void updateProjectDependency( IProject project, String group, String name, String version ) throws CoreException;
 }

@@ -223,4 +223,10 @@ public class SDKProjectBuilder extends AbstractProjectBuilder
     {
         return Status.OK_STATUS;
     }
+
+    @Override
+    public void updateProjectDependency( IProject project, String group, String name, String version )
+        throws CoreException
+    {
+    }
 }
