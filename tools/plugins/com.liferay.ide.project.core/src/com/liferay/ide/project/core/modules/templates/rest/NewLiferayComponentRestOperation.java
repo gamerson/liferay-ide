@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+
 /**
  * @author Simon Jiang
  */
@@ -87,5 +89,13 @@ public class NewLiferayComponentRestOperation extends AbstractLiferayComponentTe
     protected String getTemplateFile()
     {
         return TEMPLATE_FILE;
+    }
+
+    @Override
+    protected List<String[]> getComponentDependency() throws CoreException
+    {
+        List<String[]> componentDependency = super.getComponentDependency();
+        componentDependency.add( new String[]{ "javax.ws.rs", "javax.ws.rs-api", "2.0.1"} );
+        return componentDependency;
     }
 }

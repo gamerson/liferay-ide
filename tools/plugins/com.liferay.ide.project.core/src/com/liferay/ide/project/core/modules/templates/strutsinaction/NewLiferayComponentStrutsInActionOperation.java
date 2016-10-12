@@ -127,4 +127,12 @@ public class NewLiferayComponentStrutsInActionOperation extends AbstractLiferayC
             throw new CoreException( ProjectCore.createErrorStatus( e ) );
         }
     }
+
+    @Override
+    protected List<String[]> getComponentDependency() throws CoreException
+    {
+        List<String[]> componentDependency = super.getComponentDependency();
+        componentDependency.add( new String[]{ "javax.servlet", "javax.servlet-api", "3.0.1"} );
+        return componentDependency;
+    }
 }

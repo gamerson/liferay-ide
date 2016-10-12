@@ -15,8 +15,19 @@
 
 package com.liferay.ide.gradle.core;
 
+import com.liferay.ide.gradle.core.parser.GradleDependency;
+import com.liferay.ide.gradle.core.parser.GradleDependencyUpdater;
 import com.liferay.ide.project.core.AbstractProjectBuilder;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.buildship.core.CorePlugin;
+import org.eclipse.buildship.core.workspace.NewProjectHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -88,6 +99,37 @@ public class GradleProjectBuilder extends AbstractProjectBuilder
         }
 
         return status;
+    }
+
+    @Override
+    public void updateProjectDependency( IProject project, String group, String name, String version )
+        throws CoreException
+    {
+        try
+        {
+            if( gradleBuildFile.exists() )
+            {
+                GradleDependencyUpdater updater = new GradleDependencyUpdater( gradleBuildFile.getLocation().toFile() );
+                List<GradleDependency> existDependencies = updater.getAllDependencies();
+                GradleDependency gd = new GradleDependency( group, name, version );
+
+                if( !existDependencies.contains( gd ) )
+                {
+                    updater.insertDependency( gd );
+                    Files.write(
+                        gradleBuildFile.getLocation().toFile().toPath(), updater.getGradleFileContents(),
+                        StandardCharsets.UTF_8 );
+                    Set<IProject> set = new HashSet<>();
+                    set.add( project );
+                    CorePlugin.gradleWorkspaceManager().getCompositeBuild( set ).synchronize(
+                        NewProjectHandler.IMPORT_AND_MERGE );
+                }
+            }
+        }
+        catch( IOException ie)
+        {
+           GradleCore.logError( "failed update dependency for project "  + project.getName(), ie );
+        }   
     }
 
 }

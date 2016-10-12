@@ -364,4 +364,10 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
             initializeMessages( MavenProjectBuilder.class.getName(), Msgs.class );
         }
     }
+
+    @Override
+    public void updateProjectDependency( IProject project, String group, String name, String version )
+        throws CoreException
+    {
+    }
 }
