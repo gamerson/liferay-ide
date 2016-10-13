@@ -15,6 +15,7 @@
 package com.liferay.ide.project.core;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -32,5 +33,5 @@ public interface IProjectBuilder
 
     IStatus buildWSDD( IProgressMonitor monitor ) throws CoreException;
 
-
+    void updateProjectDependency( IProject project, String group, String name, String version ) throws CoreException;
 }

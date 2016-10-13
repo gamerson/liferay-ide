@@ -19,6 +19,7 @@ import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.project.core.IProjectBuilder;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.IComponentTemplate;
 import com.liferay.ide.project.core.modules.NewLiferayComponentOp;
@@ -26,8 +27,10 @@ import com.liferay.ide.project.core.modules.PropertyKey;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -61,7 +64,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-
 /**
  * @author Simon Jiang
  */
@@ -72,7 +74,7 @@ public abstract class AbstractLiferayComponentTemplate implements IComponentTemp
     protected String displayName;
     protected String shortName;
 
-    protected static final String TEMPLATE_DIR = "com/liferay/ide/project/core/modules/templates";
+    protected final static String TEMPLATE_DIR = "com/liferay/ide/project/core/modules/templates";
 
     protected File[] bndTemplateFiles;
 
@@ -93,6 +95,12 @@ public abstract class AbstractLiferayComponentTemplate implements IComponentTemp
     protected String componentNameWithoutTemplateName;
     protected String modelClass;
     protected String simpleModelClass;
+
+    private final static String[][] DEPENDENCY=
+    {
+        { "com.liferay.portal", "com.liferay.portal.kernel", "2.0.0"},
+        { "org.osgi", "org.osgi.service.component.annotations", "1.3.0"}
+    };
 
     public AbstractLiferayComponentTemplate()
     {
@@ -315,6 +323,8 @@ public abstract class AbstractLiferayComponentTemplate implements IComponentTemp
 
                     doMergeBndOperation();
 
+                    doMergeBuildGradeOperation();
+
                     project.refreshLocal( IResource.DEPTH_INFINITE, new NullProgressMonitor() );
                 }
             }
@@ -325,8 +335,42 @@ public abstract class AbstractLiferayComponentTemplate implements IComponentTemp
         }
     }
 
+    protected void initBndProperties( File bndFile, BndProperties bndProperty)
+    {
+        try(InputStream in = new FileInputStream(bndFile);)
+        {
+            bndProperty.load( in );
+        }
+        catch( Exception e)
+        {
+        }
+    }
+
+    protected void setBndProperties( BndProperties bndProperty )
+    {
+    }
+
     protected void doMergeBndOperation() throws CoreException
     {
+        BndProperties bndProperty = new BndProperties();
+        IFile iBndFile = project.getFile( "bnd.bnd" );
+
+        if ( iBndFile.exists() )
+        {
+            File bndFile = iBndFile.getLocation().toFile();
+
+            initBndProperties( bndFile, bndProperty );
+
+            try( OutputStream out = new FileOutputStream( bndFile ) )
+            {
+                setBndProperties( bndProperty );
+                bndProperty.store( out, null );
+            }
+            catch( Exception e )
+            {
+                ProjectCore.logError( e );
+            }
+        }
     }
 
     protected void doMergeResourcesOperation() throws CoreException
@@ -335,6 +379,28 @@ public abstract class AbstractLiferayComponentTemplate implements IComponentTemp
 
     protected void doNewPropertiesOperation() throws CoreException
     {
+    }
+
+    protected List<String[]> getComponentDependency() throws CoreException
+    {
+        List<String[]> dependencyList = new ArrayList<String[]>();
+
+        for( String[] dependency : DEPENDENCY)
+        {
+            dependencyList.add( dependency );
+        }
+
+        return dependencyList;
+    }
+
+    private void doMergeBuildGradeOperation() throws CoreException
+    {
+        final IProjectBuilder builder = liferayProject.adapt( IProjectBuilder.class );
+
+        for( String[] dependency : getComponentDependency() )
+        {
+            builder.updateProjectDependency( project, dependency[0], dependency[1], dependency[2] );
+        }
     }
 
     protected void doSourceCodeOperation( IFile srcFile ) throws CoreException

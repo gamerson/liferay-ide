@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+
 /**
  * @author Simon Jiang
  */
@@ -92,5 +94,18 @@ public class NewLiferayComponentPortletOperation extends AbstractLiferayComponen
     protected String getSuperClass()
     {
         return SUPER_CLASS;
+    }
+
+    @Override
+    protected List<String[]> getComponentDependency() throws CoreException
+    {
+        List<String[]> componentDependency = super.getComponentDependency();
+        componentDependency.add( new String[]{ "com.liferay.faces", "liferay-faces-bridge-api", "4.2.0-beta"} );
+        componentDependency.add( new String[]{ "com.liferay.faces", "liferay-faces-bridge-impl", "4.2.0-beta"} );
+        componentDependency.add( new String[]{ "com.liferay.faces", "liferay-faces-util", "4.2.0-beta"} );
+        componentDependency.add( new String[]{ "com.sun.faces", "jsf-api", "2.2.6"} );
+        componentDependency.add( new String[]{ "com.sun.faces", "jsf-impl", "2.2.6"} );
+        componentDependency.add( new String[]{ "javax.servlet", "javax.servlet-api", "3.0.1"} );
+        return componentDependency;
     }
 }
