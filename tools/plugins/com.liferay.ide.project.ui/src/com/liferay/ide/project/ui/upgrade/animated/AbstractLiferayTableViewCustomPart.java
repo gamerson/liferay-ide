@@ -78,7 +78,7 @@ import org.eclipse.swt.widgets.Table;
  */
 public abstract class AbstractLiferayTableViewCustomPart extends Composite
 {
-
+    protected Page page;
     private class LiferayUpgradeValidationListener extends org.eclipse.sapphire.Listener
     {
 
@@ -146,6 +146,7 @@ public abstract class AbstractLiferayTableViewCustomPart extends Composite
     public AbstractLiferayTableViewCustomPart( Composite parent, int style, LiferayUpgradeDataModel dataModel )
     {
         super( parent, style );
+        page = (Page)parent;
 
         GridLayout layout = new GridLayout( 2, false );
         layout.marginHeight = 0;
@@ -392,6 +393,12 @@ public abstract class AbstractLiferayTableViewCustomPart extends Composite
 
                     tableViewElementList.add( tableViewElement );
                 }
+            }
+            
+            if ( tableViewElementList.size() == 0 )
+            {
+                final String validationMessage = "No any file need to upgrade.";
+                page.triggerValidationEvent( validationMessage );
             }
         }
 
