@@ -49,6 +49,7 @@ import org.jdom.output.XMLOutputter;
 public class LiferayDescriptorUpgradeTableViewCustomPart extends AbstractLiferayTableViewCustomPart
 {
 
+    
     private final static String[][] DESCRIPTORS_AND_IMAGES = 
     { 
         { "liferay-portlet.xml", "/icons/e16/portlet.png" },

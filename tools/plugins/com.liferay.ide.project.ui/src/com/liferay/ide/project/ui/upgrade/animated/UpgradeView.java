@@ -327,6 +327,7 @@ public class UpgradeView extends ViewPart implements SelectionChangedListener
         Page descriptorsPage = new DescriptorsPage( pagesSwitchControler, SWT.NONE, dataModel );
         descriptorsPage.setIndex( 2 );
         descriptorsPage.setTitle( "Update Descriptor Files" );
+        descriptorsPage.addPageValidationListener( gear );
 
         Page findBreakingChangesPage = new FindBreakingChangesPage( pagesSwitchControler, SWT.NONE, dataModel );
         findBreakingChangesPage.setIndex( 3 );
