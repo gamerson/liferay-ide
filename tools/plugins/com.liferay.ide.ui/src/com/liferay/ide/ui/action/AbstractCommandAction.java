@@ -52,7 +52,6 @@ public abstract class AbstractCommandAction extends AbstractObjectAction
             else if( elem instanceof IProject )
             {
                 project = (IProject) elem;
-
             }
 
             if( project != null )
