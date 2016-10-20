@@ -1526,7 +1526,8 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
                 if( dataModel.getImportFinished().content() )
                 {
-                    message = "import finished, please go to first page and click \"Restart...\"";
+                    message =
+                        "Import has finished. If you want to reimport, please go to the first page and click \"Restart...\"";
 
                     inputValidation = false;
                 }
