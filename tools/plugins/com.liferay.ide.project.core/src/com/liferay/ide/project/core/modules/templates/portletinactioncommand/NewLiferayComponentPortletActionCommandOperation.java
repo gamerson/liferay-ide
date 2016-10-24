@@ -20,6 +20,8 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.NewLiferayComponentOp;
 import com.liferay.ide.project.core.modules.templates.AbstractLiferayComponentTemplate;
+import com.liferay.ide.project.core.modules.templates.BndProperties;
+import com.liferay.ide.project.core.modules.templates.BndPropertiesValue;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -171,6 +173,10 @@ public class NewLiferayComponentPortletActionCommandOperation extends AbstractLi
                     op.setComponentClassName( componentNameWithoutTemplateName + "ActionCommand" );
 
                     doMergeResourcesOperation();
+                    
+                    doMergeBndOperation();
+
+                    doMergeBuildGradeOperation();
 
                     project.refreshLocal( IResource.DEPTH_INFINITE, new NullProgressMonitor() );
                 }
@@ -263,6 +269,33 @@ public class NewLiferayComponentPortletActionCommandOperation extends AbstractLi
         {
             throw new CoreException( ProjectCore.createErrorStatus( e ) );
         }
+    }
+
+    @Override
+    protected List<String[]> getComponentDependency() throws CoreException
+    {
+        List<String[]> componentDependency = super.getComponentDependency();
+        componentDependency.add( new String[]{ "com.liferay.portal", "com.liferay.util.bridges", "2.0.0"} );
+        componentDependency.add( new String[]{ "com.liferay.portal", "com.liferay.util.taglib", "2.0.0"} );
+        componentDependency.add( new String[]{ "javax.portlet", "portlet-api", "2.0"} );
+        componentDependency.add( new String[]{ "javax.servlet", "javax.servlet-api", "3.0.1"} );
+        return componentDependency;
+    }
+
+    @Override
+    protected void setBndProperties( BndProperties bndProperty )
+    {
+        BndPropertiesValue inputValue = new BndPropertiesValue();
+        inputValue.setFormatedValue( "\\" + System.getProperty( "line.separator" ) +
+            "\t" + "@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class," + "\\" +  System.getProperty( "line.separator" ) +
+            "\t" + "@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld" );
+        inputValue.setOriginalValue( "@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class," + 
+            "@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld");
+
+        bndProperty.put( "-includeresource", inputValue);
+        bndProperty.addKeyList( "-includeresource" );
+        bndProperty.put( "-sources", "true");
+        bndProperty.addKeyList( "-sources" );
     }
 
 }
