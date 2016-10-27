@@ -90,9 +90,11 @@ public class LiferayWorkspaceProjectProvider extends AbstractLiferayProjectProvi
         {
             retval = ProjectCore.createErrorStatus( e );
         }
+        
 
         return retval;
     }
+    
 
     public IStatus importProject( String location, IProgressMonitor monitor, String extraOperation, String bundleUrl )
     {
@@ -113,7 +115,7 @@ public class LiferayWorkspaceProjectProvider extends AbstractLiferayProjectProvi
 
                 IProject project = CoreUtil.getProject( path.lastSegment() );
 
-                if( !bundleUrl.equals( defaultBundleUrl ) )
+                if( bundleUrl.equals( defaultBundleUrl ) )
                 {
                     final File gradlePropertiesFile = project.getFile( "gradle.properties" ).getLocation().toFile();
 
