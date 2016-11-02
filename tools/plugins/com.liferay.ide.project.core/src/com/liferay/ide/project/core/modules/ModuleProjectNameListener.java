@@ -15,6 +15,7 @@
 
 package com.liferay.ide.project.core.modules;
 
+import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
@@ -28,6 +29,7 @@ import org.eclipse.sapphire.platform.PathBridge;
 
 /**
  * @author Simon Jiang
+ * @author Andy Wu
  */
 public class ModuleProjectNameListener extends FilteredListener<PropertyContentEvent>
 {
@@ -68,7 +70,21 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
                 ProjectCore.logError( "Failed to check LiferayWorkspace project. " );
             }
 
-            if( hasLiferayWorkspace )
+            boolean isGradleModule = false;
+
+            ILiferayProjectProvider iProvider = op.getProjectProvider().content();
+
+            if( iProvider != null )
+            {
+                String shortName = iProvider.getShortName();
+
+                if( !CoreUtil.empty( shortName ) && shortName.startsWith( "gradle" ) )
+                {
+                    isGradleModule = true;
+                }
+            }
+
+            if( hasLiferayWorkspace && isGradleModule )
             {
                 IProject liferayWorkspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
 
