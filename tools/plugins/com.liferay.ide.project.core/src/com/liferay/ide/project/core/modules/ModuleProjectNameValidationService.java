@@ -34,6 +34,7 @@ import org.eclipse.sapphire.services.ValidationService;
 public class ModuleProjectNameValidationService extends ValidationService
 {
     private static final String PROJECT_NAME_REGEX = "[A-Za-z0-9_\\-.]+";
+    private static final String INVALID_PROJECT_NAME = "Portlet|portlet";
 
     private FilteredListener<PropertyContentEvent> listener;
 
@@ -129,6 +130,11 @@ public class ModuleProjectNameValidationService extends ValidationService
 
     private boolean isValidProjectName( String currentProjectName )
     {
+        if( currentProjectName.matches( INVALID_PROJECT_NAME ) )
+        {
+            return false;
+        }
+
         return currentProjectName.matches( PROJECT_NAME_REGEX );
     }
 
