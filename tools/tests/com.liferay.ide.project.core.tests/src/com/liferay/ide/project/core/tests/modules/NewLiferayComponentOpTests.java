@@ -15,9 +15,20 @@
 package com.liferay.ide.project.core.tests.modules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.modules.NewLiferayComponentOp;
+import com.liferay.ide.project.core.modules.NewLiferayComponentOpMethods;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.sapphire.platform.ProgressMonitorBridge;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -92,5 +103,76 @@ public class NewLiferayComponentOpTests
         op.setComponentClassTemplateName( "FriendlyUrlMapper" );
 
         assertEquals( "MyTestProjectFriendlyUrlMapper", op.getComponentClassName().content( true ) );
+    }
+
+    @Test
+    public void testNewLiferayComponentBndAndGradleForPortleActionCommandAndRest() throws Exception
+    {
+        NewLiferayModuleProjectOp pop = NewLiferayModuleProjectOp.TYPE.instantiate();
+
+        pop.setProjectName( "testModuleComponentBnd" );
+        pop.setProjectTemplateName( "portlet" );
+
+        NewLiferayModuleProjectOpMethods.execute( pop, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+
+        IProject modPorject = CoreUtil.getProject( pop.getProjectName().content() );
+        modPorject.open( new NullProgressMonitor() );
+
+        NewLiferayComponentOp cop = NewLiferayComponentOp.TYPE.instantiate();
+        cop.setProjectName( pop.getProjectName().content() );
+        cop.setComponentClassTemplateName( "PortletActionCommand" );
+
+        NewLiferayComponentOpMethods.execute( cop, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+
+        IFile bgd = modPorject.getFile( "bnd.bnd" );
+        String bndcontent = FileUtil.readContents( bgd.getLocation().toFile(), true );
+
+        String bndConfig = "-includeresource: \\" + System.getProperty( "line.separator" ) +
+                        "\t" + "@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" + System.getProperty( "line.separator" ) +
+                        "\t" + "@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld" + System.getProperty( "line.separator" );
+
+        assertTrue( bndcontent.contains( bndConfig ) );
+
+        IFile buildgrade = modPorject.getFile( "build.gradle" );
+        String buildgradeContent = FileUtil.readContents( buildgrade.getLocation().toFile(),true );
+        assertTrue( buildgradeContent.contains( "compile group: \"com.liferay.portal\", name:\"com.liferay.util.bridges\", version:\"2.0.0\"" ) );
+        assertTrue( buildgradeContent.contains( "compile group: \"org.osgi\", name:\"org.osgi.service.component.annotations\", version:\"1.3.0\"" ) );
+
+        NewLiferayComponentOp copRest = NewLiferayComponentOp.TYPE.instantiate();
+        copRest.setProjectName( pop.getProjectName().content() );
+        copRest.setComponentClassTemplateName( "RestService" );
+
+        NewLiferayComponentOpMethods.execute( copRest, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+
+        bgd = modPorject.getFile( "bnd.bnd" );
+        bndcontent = FileUtil.readContents( bgd.getLocation().toFile(), true );
+        assertTrue( bndcontent.contains( bndConfig ) );
+
+        final String restConfig = "Require-Capability: osgi.contract; filter:=\"(&(osgi.contract=JavaJAXRS)(version=2))\"";
+        assertTrue( bndcontent.contains( restConfig ) );
+
+        buildgrade = modPorject.getFile( "build.gradle" );
+        buildgradeContent = FileUtil.readContents( buildgrade.getLocation().toFile(),true );
+        assertTrue( buildgradeContent.contains( "compile group: \"javax.ws.rs\", name:\"javax.ws.rs-api\", version:\"2.0.1\"" ) );
+
+        NewLiferayComponentOp copAuth = NewLiferayComponentOp.TYPE.instantiate();
+        copAuth.setProjectName( pop.getProjectName().content() );
+        copAuth.setComponentClassTemplateName( "Authenticator" );
+
+        NewLiferayComponentOpMethods.execute( copAuth, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+
+        bgd = modPorject.getFile( "bnd.bnd" );
+        bndcontent = FileUtil.readContents( bgd.getLocation().toFile(), true );
+
+        bndConfig = "-includeresource: \\" + System.getProperty( "line.separator" ) +
+                        "\t" + "@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" + System.getProperty( "line.separator" ) +
+                        "\t" + "@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld,\\" + System.getProperty( "line.separator" ) +
+                        "\t" + "@shiro-core-1.1.0.jar";
+
+        assertTrue( bndcontent.contains( bndConfig ) );
+
+        buildgrade = modPorject.getFile( "build.gradle" );
+        buildgradeContent = FileUtil.readContents( buildgrade.getLocation().toFile() ,true);
+        assertTrue( buildgradeContent.contains( "compile group: \"org.apache.shiro\", name:\"shiro-core\", version:\"1.1.0\"" ) );
     }
 }

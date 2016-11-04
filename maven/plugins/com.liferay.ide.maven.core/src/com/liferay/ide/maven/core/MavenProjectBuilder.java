@@ -14,21 +14,23 @@
  *******************************************************************************/
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.LaunchHelper;
-import com.liferay.ide.project.core.AbstractProjectBuilder;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,6 +52,11 @@ import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.osgi.util.NLS;
+
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.LaunchHelper;
+import com.liferay.ide.project.core.AbstractProjectBuilder;
 
 
 /**
@@ -377,5 +384,75 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
         throws CoreException
     {
         return Status.OK_STATUS;
+    }
+
+    @Override
+    public void updateProjectDependency( IProject project, List<String[]> dependencies ) throws CoreException
+    {
+        IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( project );
+
+        if( projectFacade != null )
+        {
+            MavenProject mavenProject = projectFacade.getMavenProject();
+            List<Dependency> existedDependencies = mavenProject.getDependencies();
+
+            final IMaven maven = MavenPlugin.getMaven();
+            File pomFile = new File( project.getLocation().toOSString(), IMavenConstants.POM_FILE_NAME );
+            Model model = maven.readModel( pomFile );
+
+            for( String[] dependency : dependencies )
+            {
+                Dependency de = new Dependency();
+                de.setGroupId( dependency[0] );
+                de.setArtifactId( dependency[1] );
+                de.setVersion( dependency[2] );
+                String newKey = de.getManagementKey();
+
+                boolean existed = false;
+
+                for( Dependency existedDependency : existedDependencies )
+                {
+                    String existedKey = existedDependency.getManagementKey();
+                    if( existedKey.equals( newKey ) )
+                    {
+                        existed = true;
+                        break;
+                    }
+                }
+
+                if( existed == false && model != null )
+                {
+                    model.addDependency( de );
+                }
+            }
+
+            try(OutputStream out = new FileOutputStream( pomFile ))
+            {
+                maven.writeModel( model, out );
+
+                final WorkspaceJob job = new WorkspaceJob( "Updating project " + project.getName())
+                {
+
+                    public IStatus runInWorkspace( IProgressMonitor monitor )
+                    {
+                        try
+                        {
+                            MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration( project, monitor );
+                        }
+                        catch( CoreException ex )
+                        {
+                            return ex.getStatus( );
+                        }
+
+                        return Status.OK_STATUS;
+                    }
+                };
+                job.schedule();
+            }
+            catch( Exception e )
+            {
+                LiferayMavenCore.logError( e );
+            }
+        }
     }
 }
