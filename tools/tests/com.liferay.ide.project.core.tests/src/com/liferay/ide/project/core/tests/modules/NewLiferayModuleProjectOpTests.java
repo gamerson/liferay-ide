@@ -15,11 +15,21 @@
 package com.liferay.ide.project.core.tests.modules;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 
+import java.io.File;
+import java.net.URL;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -52,6 +62,58 @@ public class NewLiferayModuleProjectOpTests
         final String defaultValue = defaults.get( BladeCLI.BLADE_CLI_REPO_URL, "" );
 
         prefs.put( BladeCLI.BLADE_CLI_REPO_URL, defaultValue );
+    }
+
+    @Test
+    public void testNewLiferayModuleProjectDefaultLocation() throws Exception
+    {
+        final URL wsZipUrl =
+            Platform.getBundle( "com.liferay.ide.project.core.tests" ).getEntry( "projects/emptyLiferayWorkspace.zip" );
+
+        final File wsZipFile = new File( FileLocator.toFileURL( wsZipUrl ).getFile() );
+
+        File eclipseWorkspaceLocation = CoreUtil.getWorkspaceRoot().getLocation().toFile();
+
+        ZipUtil.unzip( wsZipFile, eclipseWorkspaceLocation );
+
+        File wsFolder = new File( eclipseWorkspaceLocation, "emptyLiferayWorkspace" );
+
+        ProjectImportTestUtil.importExistingProject( wsFolder, new NullProgressMonitor() );
+
+        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+
+        op.setProjectName( "my-test-project" );
+
+        op.setProjectTemplateName( "mvc-portlet" );
+
+        op.setProjectProvider( "maven-module" );
+
+        //don't put maven type project inside liferay-workspace
+        assertTrue( op.getLocation().content().toFile().equals( eclipseWorkspaceLocation ) );
+
+        op.setProjectProvider( "gradle-module" );
+
+        op.setProjectTemplateName( "theme" );
+
+        //don't put gradle type theme project inside liferay-workspace
+        assertTrue( op.getLocation().content().toFile().equals( eclipseWorkspaceLocation ) );
+
+        op.setProjectTemplateName( "mvc-portlet" );
+
+        //put gradle type project inside liferay-workspace
+        assertTrue( op.getLocation().content().toPortableString().contains( "emptyLiferayWorkspace/modules" ) );
+
+        IProject project = CoreUtil.getProject( "emptyLiferayWorkspace" );
+
+        if( project != null && project.isAccessible() && project.exists() )
+        {
+            project.delete( true, true, new NullProgressMonitor() );
+        }
+
+        op.setProjectTemplateName( "service-builder" );
+
+        //no liferay-workspace
+        assertTrue( op.getLocation().content().toFile().equals( eclipseWorkspaceLocation ) );
     }
 
     @Test
