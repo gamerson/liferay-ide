@@ -24,6 +24,7 @@ import com.liferay.ide.core.IResourceBundleProject;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.project.core.IProjectBuilder;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -343,6 +344,23 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
             }
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean isThemeBundle()
+    {
+        IProject project = getProject();
+        final CustomModel model = GradleCore.getToolingModel( GradleCore.getDefault(), CustomModel.class, project );
+        Set<String> pluginClassNames = model.getPluginClassNames();
+
+        for( String plugin : pluginClassNames )
+        {
+            if( plugin.equals( "com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin" ) )
+            {
+                return true;
+            }
+        }
         return false;
     }
 
