@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -193,6 +194,39 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
             catch( Exception e )
             {
             }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean isThemeBundle()
+    {
+        IProject project = getProject();
+        try
+        {
+            IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( project, new NullProgressMonitor() );
+
+            if( projectFacade != null )
+            {
+                MavenProject mavenProject = projectFacade.getMavenProject( new NullProgressMonitor() );
+
+                List<Plugin> buildPlugins = mavenProject.getBuildPlugins();
+
+                for( Plugin plugin : buildPlugins )
+                {
+                    String themeBuilderId = plugin.getArtifactId();
+
+                    if( themeBuilderId.equals( "com.liferay.portal.tools.theme.builder" ) )
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+            LiferayMavenCore.logError( e );
         }
 
         return false;

@@ -278,4 +278,10 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IWebProj
         return false;
     }
 
+    @Override
+    public boolean isThemeBundle()
+    {
+        return false;
+    }
+
 }
