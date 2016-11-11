@@ -198,4 +198,10 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
         return false;
     }
 
+    @Override
+    public boolean isThemeBundle()
+    {
+        return checkMavePlugin( "com.liferay.portal.tools.theme.builder" );
+    }
+
 }

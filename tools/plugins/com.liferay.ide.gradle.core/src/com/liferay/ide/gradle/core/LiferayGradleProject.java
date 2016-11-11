@@ -24,11 +24,13 @@ import com.liferay.ide.core.IResourceBundleProject;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.project.core.IProjectBuilder;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -344,6 +346,24 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
         }
 
         return false;
+    }
+
+    private final static Pattern PATTERN_THEME_PLUGIN = Pattern.compile( ".*apply.*plugin.*:.*[\'\"]com\\.liferay\\.portal\\.tools\\.theme\\.builder[\'\"].*",
+        Pattern.MULTILINE | Pattern.DOTALL );
+
+    @Override
+    public boolean isThemeBundle()
+    {
+        IProject project = getProject();
+        IFile buildGradle = project.getFile( "build.gradle" );
+
+        if( !( buildGradle.exists() ) )
+        {
+            return false;
+        }
+
+        final String buildGradleContent = FileUtil.readContents( buildGradle.getLocation().toFile(), true );
+        return PATTERN_THEME_PLUGIN.matcher( buildGradleContent ).matches();
     }
 
 }

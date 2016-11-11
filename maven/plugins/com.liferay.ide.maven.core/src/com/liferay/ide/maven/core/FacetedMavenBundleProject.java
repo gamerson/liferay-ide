@@ -109,4 +109,10 @@ public class FacetedMavenBundleProject extends FacetedMavenProject implements IB
         return false;
     }
 
+    @Override
+    public boolean isThemeBundle()
+    {
+        return checkMavePlugin( "com.liferay.portal.tools.theme.builder" );
+    }
+
 }
