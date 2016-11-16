@@ -119,9 +119,8 @@ public class AutoCorrectAction extends ProblemAction
 
                     if( !projectName.equals( "" ) )
                     {
-                            migrateHandler.findMigrationProblems( new Path[] { path }, new String[] { projectName } );
+                        migrateHandler.findMigrationProblems( new Path[] { path }, new String[] { projectName } );
                     }
-
                 }
                 catch( InvalidSyntaxException e )
                 {

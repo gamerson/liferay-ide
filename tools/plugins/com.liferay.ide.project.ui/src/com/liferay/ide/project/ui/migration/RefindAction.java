@@ -16,57 +16,70 @@
 package com.liferay.ide.project.ui.migration;
 
 import com.liferay.blade.api.MigrationConstants;
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.MarkerUtil;
-import com.liferay.ide.project.core.upgrade.MigrationProblems;
+import com.liferay.ide.project.core.upgrade.FileProblems;
 import com.liferay.ide.project.ui.upgrade.animated.FindBreakingChangesPage;
 import com.liferay.ide.project.ui.upgrade.animated.Page;
 import com.liferay.ide.project.ui.upgrade.animated.UpgradeView;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.action.IAction;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.actions.SelectionProviderAction;
 
 /**
- * @author Lovett Li
+ * @author Terry Jia
  */
-public class RemoveAction extends SelectionProviderAction implements IAction
+public class RefindAction extends SelectionProviderAction
 {
 
-    public RemoveAction( ISelectionProvider provider )
+    public RefindAction( ISelectionProvider provider )
     {
-        super( provider, "Remove" );
+        super( provider, "Refind breaking changesfor this file" );
     }
 
-    @Override
     public void run()
     {
-//        final MigrationView mv = (MigrationView) UIUtil.showView( MigrationView.ID );
-//        final CommonViewer commonViewer = mv.getCommonViewer();
         final FindBreakingChangesPage page =
             UpgradeView.getPage( Page.FINDBREACKINGCHANGES_PAGE_ID, FindBreakingChangesPage.class );
         final TreeViewer treeViewer = page.getTreeViewer();
 
         Object selection = treeViewer.getStructuredSelection().getFirstElement();
 
-        if( selection instanceof MigrationProblems )
+        if( selection instanceof FileProblems )
         {
-            MigrationProblems migrationProblem = (MigrationProblems) selection;
+            FileProblems fileProblems = (FileProblems) selection;
 
-            MigrationUtil.removeMigrationProblems( migrationProblem );
-            IResource project = MigrationUtil.getResourceFromMigrationProblems( migrationProblem );
+            IResource file = MigrationUtil.getIResourceFromFile( fileProblems.getFile() );
 
-            if( project != null )
+            if( file != null )
             {
-                MarkerUtil.clearMarkers( project, MigrationConstants.MARKER_TYPE, null );
+                MarkerUtil.clearMarkers( file, MigrationConstants.MARKER_TYPE, null );
             }
-        }
 
-        treeViewer.setInput( CoreUtil.getWorkspaceRoot() );
-        treeViewer.expandToLevel( 2 );
+            new WorkspaceJob( "Auto correcting all of migration problem for this file." )
+            {
+
+                @Override
+                public IStatus runInWorkspace( IProgressMonitor monitor )
+                {
+                    MigrateProjectHandler migrateHandler = new MigrateProjectHandler();
+
+                    Path path = (Path) file.getLocation();
+
+                    migrateHandler.findMigrationProblems(
+                        new Path[] { path }, new String[] { file.getProject().getName() } );
+
+                    return Status.OK_STATUS;
+                }
+            }.schedule();;
+        }
     }
 
     @Override
@@ -74,7 +87,7 @@ public class RemoveAction extends SelectionProviderAction implements IAction
     {
         Object element = selection.getFirstElement();
 
-        if( element instanceof MigrationProblems )
+        if( element instanceof FileProblems )
         {
             setEnabled( true );
 
@@ -83,5 +96,4 @@ public class RemoveAction extends SelectionProviderAction implements IAction
 
         setEnabled( false );
     }
-
 }
