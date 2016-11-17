@@ -240,6 +240,7 @@ public class MavenModuleProjectTests extends AbstractMavenProjectTestCase
         op.setProjectTemplateName( "service" );
         op.setServiceName( "com.liferay.portal.kernel.events.LifecycleAction" );
         op.setComponentName( "MyService" );
+        op.setPackageName( "service.test" );
 
         IProject project = create( op );
 
@@ -444,7 +445,8 @@ public class MavenModuleProjectTests extends AbstractMavenProjectTestCase
 
         op.setProjectName( "foo" );
         op.setProjectProvider( "maven-module" );
-
+        op.setComponentName( "Foo" );
+        op.setPackageName( "foo" );
         IProject project = create( op );
 
         verifyProject(project);
@@ -459,7 +461,8 @@ public class MavenModuleProjectTests extends AbstractMavenProjectTestCase
 
         op.setProjectName( "foo-bar" );
         op.setProjectProvider( "maven-module" );
-
+        op.setComponentName( "FooBar" );
+        op.setPackageName( "foo.bar" );
         IProject project = create( op );
 
         verifyProject(project);
