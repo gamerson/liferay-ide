@@ -249,6 +249,20 @@ public class CoreUtil
         {
             retval = webproject.getDefaultDocrootFolder();
         }
+        else
+        {
+            final IBundleProject bundleProject = LiferayCore.create( IBundleProject.class, project );
+            
+            if( bundleProject != null )
+            {
+                IFolder webAppDir = project.getFolder( "src/main/webapp" );
+                
+                if( webAppDir.exists() )
+                {
+                    retval =webAppDir;
+                }
+            }
+        }
 
         return retval;
     }
