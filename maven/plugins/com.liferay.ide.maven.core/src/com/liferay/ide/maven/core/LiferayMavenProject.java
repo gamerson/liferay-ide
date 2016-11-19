@@ -204,4 +204,35 @@ public abstract class LiferayMavenProject extends BaseLiferayProject  implements
         return libs.toArray( new IPath[0] );
     }
 
+    protected boolean checkMavePlugin( final String pluginArtifactId )
+    {
+        IProject project = getProject();
+        try
+        {
+            IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( project, new NullProgressMonitor() );
+
+            if( projectFacade != null )
+            {
+                MavenProject mavenProject = projectFacade.getMavenProject( new NullProgressMonitor() );
+
+                List<Plugin> buildPlugins = mavenProject.getBuildPlugins();
+
+                for( Plugin plugin : buildPlugins )
+                {
+                    String themeBuilderId = plugin.getArtifactId();
+
+                    if( themeBuilderId.equals( pluginArtifactId ) )
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+            LiferayMavenCore.logError( e );
+        }
+
+        return false;
+    }
 }
