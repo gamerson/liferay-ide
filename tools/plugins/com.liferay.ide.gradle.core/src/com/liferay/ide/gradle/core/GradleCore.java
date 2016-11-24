@@ -115,8 +115,7 @@ public class GradleCore extends Plugin
 
         try
         {
-            retval =
-                GradleTooling.getModel( modelClass, customModelCache, projectDir );
+            retval = GradleTooling.getModel( modelClass, customModelCache, projectDir );
         }
         catch( Exception e )
         {
@@ -153,7 +152,8 @@ public class GradleCore extends Plugin
     {
     }
 
-    private static void configureIfLiferayProject( final IProject project, final GradleCore gradleCore ) throws CoreException
+    private static void configureIfLiferayProject( final IProject project, final GradleCore gradleCore )
+        throws CoreException
     {
         if( project.hasNature( GradleProjectNature.ID ) && !LiferayNature.hasNature( project ) )
         {
@@ -198,8 +198,9 @@ public class GradleCore extends Plugin
                 }
             }
 
-            Job job = new WorkspaceJob( "Checking gradle configuration" )
+            Job job = new WorkspaceJob( "Checking gradle configuration")
             {
+
                 @Override
                 public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
                 {
@@ -221,11 +222,15 @@ public class GradleCore extends Plugin
                                 GradleCore.createErrorStatus( "Unable to get read gradle configuration" ) );
                         }
 
-                        if( customModel.isLiferayModule() ||
-                                customModel.hasPlugin( "org.gradle.api.plugins.WarPlugin" ) ||
-                                customModel.hasPlugin( "com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin" ) )
+                        if( customModel.isLiferayModule() )
                         {
                             LiferayNature.addLiferayNature( project, monitor );
+                        }
+
+                        if( customModel.hasPlugin( "org.gradle.api.plugins.WarPlugin" ) ||
+                            customModel.hasPlugin( "com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin" ) )
+                        {
+                            LiferayNature.addLiferayGradleWebNature( project, monitor );
                         }
                     }
                     catch( Exception e )
@@ -319,6 +324,7 @@ public class GradleCore extends Plugin
 
         CoreUtil.getWorkspace().addResourceChangeListener( new IResourceChangeListener()
         {
+
             @Override
             public void resourceChanged( IResourceChangeEvent event )
             {
@@ -346,8 +352,8 @@ public class GradleCore extends Plugin
 
                                     if( project != null && project.isAccessible() )
                                     {
-                                        configureIfLiferayProject( CoreUtil.getProject( projectName ),
-                                            GradleCore.this );
+                                        configureIfLiferayProject(
+                                            CoreUtil.getProject( projectName ), GradleCore.this );
                                     }
                                 }
                             }
@@ -389,7 +395,7 @@ public class GradleCore extends Plugin
                             {
                                 File portalBundle = bundlesFolder.getLocation().toFile().getCanonicalFile();
 
-                                ServerUtil.deleteRuntimeAndServer( PortalRuntime.ID , portalBundle );
+                                ServerUtil.deleteRuntimeAndServer( PortalRuntime.ID, portalBundle );
                             }
                         }
 

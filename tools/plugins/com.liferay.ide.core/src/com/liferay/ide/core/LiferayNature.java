@@ -32,6 +32,7 @@ public class LiferayNature implements IProjectNature
 {
 
     public static final String NATURE_ID = LiferayCore.PLUGIN_ID + ".liferayNature";
+    public static final String GRADLE_WEB_NATURE_ID = LiferayCore.PLUGIN_ID + ".liferayGradleWebNature";
 
     private IProject currentProject;
     private IProgressMonitor monitor;
@@ -55,7 +56,7 @@ public class LiferayNature implements IProjectNature
         }
     }
 
-    public static void addLiferayNature( IProject project, IProgressMonitor monitor ) throws CoreException
+    public static void addLiferayNature( IProject project, final String natureId, IProgressMonitor monitor ) throws CoreException
     {
         if( monitor != null && monitor.isCanceled() )
         {
@@ -71,7 +72,7 @@ public class LiferayNature implements IProjectNature
 
             System.arraycopy( prevNatures, 0, newNatures, 0, prevNatures.length );
 
-            newNatures[prevNatures.length] = NATURE_ID;
+            newNatures[prevNatures.length] = natureId;
 
             description.setNatureIds( newNatures );
             project.setDescription( description, monitor );
@@ -84,6 +85,16 @@ public class LiferayNature implements IProjectNature
                 monitor.worked( 1 );
             }
         }
+    }
+
+    public static void addLiferayNature( IProject project, IProgressMonitor monitor ) throws CoreException
+    {
+        addLiferayNature( project, NATURE_ID, monitor );
+    }
+
+    public static void addLiferayGradleWebNature( IProject project, IProgressMonitor monitor ) throws CoreException
+    {
+        addLiferayNature( project, GRADLE_WEB_NATURE_ID, monitor );
     }
 
     @Override
@@ -107,11 +118,11 @@ public class LiferayNature implements IProjectNature
         return this.currentProject;
     }
 
-    public static boolean hasNature( IProject project )
+    public static boolean checkNature( IProject project, String natureId )
     {
         try
         {
-            if( !project.hasNature( NATURE_ID ) )
+            if( !project.hasNature( natureId ) )
             {
                 return false;
             }
@@ -122,6 +133,16 @@ public class LiferayNature implements IProjectNature
         }
 
         return true;
+    }
+
+    public static boolean hasNature( IProject project )
+    {
+        return checkNature( project, NATURE_ID );
+    }
+
+    public static boolean hasLiferayGradleWebNature( IProject project )
+    {
+        return checkNature( project, GRADLE_WEB_NATURE_ID );
     }
 
     public static void removeLiferayNature( IProject project, IProgressMonitor monitor ) throws CoreException
