@@ -112,6 +112,17 @@ public class AutoCorrectAction extends ProblemAction
                         }
                     }
 
+                    if( file.getFileExtension().equals( "jsp" ) || file.getFileExtension().equals( "jspf" ) )
+                    {
+                        try
+                        {
+                            Thread.sleep( 2000 );
+                        }
+                        catch( InterruptedException e )
+                        {
+                        }
+                    }
+
                     for(Problem p : problems)
                     {
                         new MarkDoneAction().run( p, _provider );
@@ -121,7 +132,6 @@ public class AutoCorrectAction extends ProblemAction
                     {
                             migrateHandler.findMigrationProblems( new Path[] { path }, new String[] { projectName } );
                     }
-
                 }
                 catch( InvalidSyntaxException e )
                 {
