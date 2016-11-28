@@ -438,6 +438,7 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
                     {
                         try
                         {
+                            project.refreshLocal( IResource.DEPTH_INFINITE, monitor );
                             MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration( project, monitor );
                         }
                         catch( CoreException ex )
