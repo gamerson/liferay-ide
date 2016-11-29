@@ -598,7 +598,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
     private void createBundleElement()
     {
-        String optimizeName = "Optimize plugins by moving them into workspace wars folder.";
+/*      String optimizeName = "Optimize plugins by moving them into workspace wars folder.";
         optimize = SWTUtil.createCheckButton( composite, optimizeName, null, false, 2 );
         optimize.addSelectionListener( new SelectionAdapter()
         {
@@ -607,7 +607,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
             {
                 dataModel.setOptimize( optimize.getSelection() );
             }
-        });
+        });*/
 
         bundleNameLabel = createLabel( composite, "Server Name:" );
         bundleNameField = createTextField( composite, SWT.NONE );
@@ -807,10 +807,10 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
             sb.append( "\"" + targetSDKLocation.toFile().getAbsolutePath() + "\" " );
             sb.append( "init -u" );
 
-            if( optimize )
+/*            if( optimize )
             {
                 sb.append( " -o" );
-            }
+            }*/
 
             progress.worked( 30 );
             BladeCLI.execute( sb.toString() );
@@ -933,7 +933,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
     {
         if( bundleNameField != null && bundleUrlField != null )
         {
-            optimize.dispose();
+//          optimize.dispose();
             bundleNameField.dispose();
             bundleUrlField.dispose();
             bundleNameLabel.dispose();
@@ -1544,7 +1544,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
                 if( dataModel.getImportFinished().content() )
                 {
                     message =
-                        "Import has finished. If you want to reimport, please go to the first page and click \"Restart...\"";
+                        "Import has finished. If you want to reimport, please click Restart Upgrade icon in the toolbar.";
 
                     pe.setType( PageValidateEvent.WARNING );
 

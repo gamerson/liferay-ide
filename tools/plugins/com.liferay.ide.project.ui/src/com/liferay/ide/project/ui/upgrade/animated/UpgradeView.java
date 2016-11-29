@@ -149,39 +149,39 @@ public class UpgradeView extends ViewPart implements SelectionChangedListener
         boolean hasLayout = dataModel.getHasLayout().content();
         boolean hasTheme = dataModel.getHasTheme().content();
         boolean hasExt = dataModel.getHasExt().content();
-        boolean hasWorkspace = dataModel.getConvertLiferayWorkspace().content();
+        /*boolean hasWorkspace = dataModel.getConvertLiferayWorkspace().content();*/
 
-        if( hasPortlet || hasHook || hasServiceBuilder || hasLayout || hasWorkspace )
+        if( hasPortlet || hasHook || hasServiceBuilder || hasLayout )
         {
             addPage( Page.DESCRIPTORS_PAGE_ID );
         }
 
-        if( hasPortlet || hasHook || hasServiceBuilder || hasWorkspace )
+        if( hasPortlet || hasHook || hasServiceBuilder )
         {
             addPage( Page.FINDBREACKINGCHANGES_PAGE_ID );
         }
 
-        if( hasServiceBuilder || hasWorkspace )
+        if( hasServiceBuilder )
         {
             addPage( Page.BUILDSERVICE_PAGE_ID );
         }
 
-        if( hasLayout || hasWorkspace )
+        if( hasLayout )
         {
             addPage( Page.LAYOUTTEMPLATE_PAGE_ID );
         }
 
-        if( hasHook || hasWorkspace )
+        if( hasHook )
         {
             addPage( Page.CUSTOMJSP_PAGE_ID );
         }
 
-        if( hasExt || hasTheme || hasWorkspace )
+        if( hasExt || hasTheme )
         {
             addPage( Page.EXTANDTHEME_PAGE_ID );
         }
 
-        if( hasPortlet || hasHook || hasServiceBuilder || hasLayout || hasWorkspace )
+        if( hasPortlet || hasHook || hasServiceBuilder || hasLayout )
         {
             addPage( Page.BUILD_PAGE_ID );
             addPage( Page.SUMMARY_PAGE_ID );
