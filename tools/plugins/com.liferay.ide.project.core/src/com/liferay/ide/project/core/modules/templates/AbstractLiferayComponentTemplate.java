@@ -96,7 +96,7 @@ public abstract class AbstractLiferayComponentTemplate implements IComponentTemp
 
     private final static String[][] DEPENDENCY=
     {
-        { "com.liferay.portal", "com.liferay.portal.kernel", "2.0.0"},
+        { "com.liferay.portal", "com.liferay.portal.kernel", "2.6.0"},
         { "org.osgi", "org.osgi.service.component.annotations", "1.3.0"}
     };
 

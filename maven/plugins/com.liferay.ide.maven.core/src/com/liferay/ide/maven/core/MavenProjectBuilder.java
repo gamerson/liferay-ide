@@ -431,24 +431,9 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
             {
                 maven.writeModel( model, out );
 
-                final WorkspaceJob job = new WorkspaceJob( "Updating project " + project.getName())
-                {
+                project.refreshLocal( IResource.DEPTH_INFINITE, new NullProgressMonitor() );
+                MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration( project, new NullProgressMonitor() );
 
-                    public IStatus runInWorkspace( IProgressMonitor monitor )
-                    {
-                        try
-                        {
-                            MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration( project, monitor );
-                        }
-                        catch( CoreException ex )
-                        {
-                            return ex.getStatus( );
-                        }
-
-                        return Status.OK_STATUS;
-                    }
-                };
-                job.schedule();
             }
             catch( Exception e )
             {
