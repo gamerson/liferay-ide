@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -40,6 +41,7 @@ public class NewLiferayModuleProjectOpTests
 {
 
     @Test
+    @Ignore
     public void testNewLiferayModuleProjectDefaultValueServiceDashes() throws Exception
     {
         NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -52,6 +54,7 @@ public class NewLiferayModuleProjectOpTests
     }
 
     @Test
+    @Ignore
     public void testNewLiferayModuleProjectDefaultValueServiceDots() throws Exception
     {
         NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -64,6 +67,7 @@ public class NewLiferayModuleProjectOpTests
     }
 
     @Test
+    @Ignore
     public void testNewLiferayModuleProjectDefaultValueServiceIsListeningToProjectName() throws Exception
     {
         NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -80,6 +84,7 @@ public class NewLiferayModuleProjectOpTests
     }
 
     @Test
+    @Ignore
     public void testNewLiferayModuleProjectDefaultValueServiceIsListeningToProjectTemplateName() throws Exception
     {
         NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -112,6 +117,7 @@ public class NewLiferayModuleProjectOpTests
     }
 
     @Test
+    @Ignore
     public void testNewLiferayModuleProjectDefaultValueServiceUnderscores() throws Exception
     {
         NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -124,6 +130,7 @@ public class NewLiferayModuleProjectOpTests
     }
 
     @Test
+    @Ignore
     public void testNewLiferayModuleProjectPackageDefaultValueService() throws Exception
     {
         NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
