@@ -27,7 +27,6 @@ import com.liferay.ide.project.core.upgrade.IgnoredProblemsContainer;
 import com.liferay.ide.project.core.upgrade.MigrationProblems;
 import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
 import com.liferay.ide.project.core.upgrade.UpgradeProblems;
-import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.upgrade.animated.FindBreakingChangesPage;
 import com.liferay.ide.project.ui.upgrade.animated.Page;
@@ -46,7 +45,6 @@ import java.util.Set;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -389,7 +387,7 @@ public class MigrateProjectHandler extends AbstractHandler
 
                     if( isSingleFile )
                     {
-                       refreshViewer(allProblems);
+                        refreshViewer( allProblems );
                     }
                     else
                     {
@@ -559,24 +557,9 @@ public class MigrateProjectHandler extends AbstractHandler
 
     private void clearFileMarkers( File file )
     {
-        IProject[] projects = ProjectUtil.getAllPluginsSDKProjects();
+        IResource resource = MigrationUtil.getIResourceFromFile( file );
 
-        for( IProject project : projects )
-        {
-            String filePath = file.getPath().replaceAll( "\\\\", "/" );
-            String projectPath = project.getLocation().toString();
-            if( filePath.startsWith( projectPath ) )
-            {
-                int i = filePath.indexOf( projectPath ) + projectPath.length();
-                String projectFilePath = filePath.substring( i, filePath.length() );
-                IFile projectFile = project.getFile( projectFilePath );
-                if( projectFile.exists() )
-                {
-                    MarkerUtil.clearMarkers( projectFile, MigrationConstants.MARKER_TYPE, null );
-                }
-                break;
-            }
-        }
+        MarkerUtil.clearMarkers( resource, MigrationConstants.MARKER_TYPE, null );
     }
 
     protected void refreshViewer(List<Problem> allProblems)

@@ -147,7 +147,6 @@ public class AutoCorrectAction extends ProblemAction
                     {
                         migrateHandler.findMigrationProblems( new Path[] { path }, new String[] { projectName } );
                     }
-
                 }
                 catch( InvalidSyntaxException e )
                 {

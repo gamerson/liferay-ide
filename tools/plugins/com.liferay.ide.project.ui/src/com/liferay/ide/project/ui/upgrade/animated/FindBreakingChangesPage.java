@@ -20,8 +20,8 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.upgrade.FileProblems;
 import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
 import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.project.ui.migration.AutoCorrectAction;
 import com.liferay.ide.project.ui.migration.AutoCorrectAllAction;
+import com.liferay.ide.project.ui.migration.AutoCorrectSingleFileAction;
 import com.liferay.ide.project.ui.migration.IgnoreAction;
 import com.liferay.ide.project.ui.migration.IgnoreAlwaysAction;
 import com.liferay.ide.project.ui.migration.MarkDoneAction;
@@ -32,6 +32,7 @@ import com.liferay.ide.project.ui.migration.MigrationProblemsContainer;
 import com.liferay.ide.project.ui.migration.MigrationUtil;
 import com.liferay.ide.project.ui.migration.MigratorComparator;
 import com.liferay.ide.project.ui.migration.ProblemsContainer;
+import com.liferay.ide.project.ui.migration.RefindAction;
 import com.liferay.ide.project.ui.migration.RemoveAction;
 import com.liferay.ide.project.ui.migration.RunMigrationToolAction;
 import com.liferay.ide.project.ui.pref.MigrationProblemPreferencePage;
@@ -142,8 +143,15 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
         _treeViewer.setInput( getInitialInput() );
 
         MenuManager menuMgr = new MenuManager();
+
         IAction removeAction = new RemoveAction( _treeViewer );
+        IAction autoCorrectFileAction = new AutoCorrectSingleFileAction(_treeViewer);
+        IAction refindAction = new RefindAction(_treeViewer);
+
         menuMgr.add( removeAction );
+        menuMgr.add( autoCorrectFileAction );
+        menuMgr.add( refindAction );
+
         Menu menu = menuMgr.createContextMenu( _treeViewer.getTree() );
 
         _treeViewer.getTree().setMenu( menu );
@@ -458,12 +466,12 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
         IAction markUndoneAction = new MarkUndoneAction( _problemsViewer );
         IAction ignoreAction = new IgnoreAction( _problemsViewer );
         IAction ignoreAlways = new IgnoreAlwaysAction( _problemsViewer );
-        IAction autoCorrectAction = new AutoCorrectAction( _problemsViewer );
+        //IAction autoCorrectAction = new AutoCorrectAction( _problemsViewer );
 
         menuMgr.add( markDoneAction );
         menuMgr.add( markUndoneAction );
         menuMgr.add( ignoreAction );
-        menuMgr.add( autoCorrectAction );
+        //menuMgr.add( autoCorrectAction );
         menuMgr.add( ignoreAlways );
         Menu menu = menuMgr.createContextMenu( table );
         table.setMenu( menu );
