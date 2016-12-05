@@ -336,6 +336,11 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
 
     public void refreshSiblingProject( IMavenProjectFacade projectFacade, IProgressMonitor monitor ) throws CoreException
     {
+        if ( projectFacade == null )
+        {
+            return;
+        }
+
         // need to look up project configuration and refresh the *-service project associated with this project
         try
         {
