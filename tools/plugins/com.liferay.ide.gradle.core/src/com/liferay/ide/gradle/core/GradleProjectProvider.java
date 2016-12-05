@@ -66,7 +66,7 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
             {
                 if( LiferayNature.hasNature( project ) && GradleProjectNature.isPresentOn( project ) )
                 {
-                    if(GradleCore.isWorkspaceWars( project ))
+                    if(LiferayNature.hasLiferayGradleWebNature(  project ))
                     {
                         return new FacetedGradleBundleProject( project );
                     }
@@ -78,7 +78,6 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
             }
             catch( Exception e )
             {
-                // ignore errors
             }
         }
 
