@@ -39,12 +39,14 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.core.resources.IFile;
@@ -104,6 +106,31 @@ import org.eclipse.wst.common.project.facet.core.runtime.internal.BridgedRuntime
 public class ProjectUtil
 {
     public static final String METADATA_FOLDER = ".metadata"; //$NON-NLS-1$
+
+    private static boolean checkGradleThemePlugin( final IProject project )
+    {
+        IFile buildGradleFile = project.getFile( "build.gradle" );
+
+        if( !buildGradleFile.exists() )
+        {
+            return false;
+        }
+
+        try(InputStream ins = buildGradleFile.getContents())
+        {
+            final String content = FileUtil.readContents( ins );
+
+            Pattern themeBuilderPlugin =
+                Pattern.compile( ".*apply.*plugin.*:.*[\'\"]com\\.liferay\\.portal\\.tools\\.theme\\.builder[\'\"].*",
+                    Pattern.MULTILINE | Pattern.DOTALL );
+
+            return content != null && themeBuilderPlugin.matcher( content ).matches();
+        }
+        catch( Exception e )
+        {
+            return false;
+        }
+    }
 
     public static boolean collectSDKProjectsFromDirectory(
         Collection<File> eclipseProjectFiles, Collection<File> liferayProjectDirs, File directory,
@@ -1425,6 +1452,61 @@ public class ProjectUtil
         return hasFacet( project, IPluginFacetConstants.LIFERAY_WEB_FACET_ID );
     }
 
+    public static boolean isWorkspaceWars( IProject project )
+    {
+        try
+        {
+            if( LiferayWorkspaceUtil.hasLiferayWorkspace() && project.getFolder( "src" ).exists() )
+            {
+                IProject wsProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
+
+                File wsRootDir = wsProject.getLocation().toFile();
+
+                String[] warsNames = LiferayWorkspaceUtil.getLiferayWorkspaceProjectWarsDirs( wsProject );
+
+                File[] warsDirs = new File[warsNames.length];
+
+                for( int i = 0; i < warsNames.length; i++ )
+                {
+                    warsDirs[i] = new File( wsRootDir, warsNames[i] );
+                }
+
+                File projectDir = project.getLocation().toFile();
+
+                File parentDir = projectDir.getParentFile();
+
+                if( parentDir == null )
+                {
+                    return false;
+                }
+
+                while( true )
+                {
+                    for( File dir : warsDirs )
+                    {
+                        if( parentDir.equals( dir ) )
+                        {
+                            return true;
+                        }
+                    }
+
+                    parentDir = parentDir.getParentFile();
+
+                    if( parentDir == null )
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+            ProjectCore.logError( e );
+        }
+
+        return false;
+    }
+
     public static boolean isValidLiferayProjectDir( File dir )
     {
         String name = dir.getName();
@@ -1440,6 +1522,11 @@ public class ProjectUtil
         }
 
         return false;
+    }
+
+    public static boolean isFacetedGradleBundleProject( IProject project )
+    {
+        return( isWorkspaceWars( project ) || checkGradleThemePlugin( project ) );
     }
 
     public static boolean isFragmentProject( Object resource ) throws Exception
