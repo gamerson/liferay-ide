@@ -25,6 +25,7 @@ import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.PropertyKey;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
+import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
             {
                 if( LiferayNature.hasNature( project ) && GradleProjectNature.isPresentOn( project ) )
                 {
-                    if(GradleCore.isWorkspaceWars( project ) ||  checkGradleThemePlugin( project ))
+                    if( ProjectUtil.isFacetedGradleBundleProject( project ) )
                     {
                         return new FacetedGradleBundleProject( project );
                     }
@@ -84,24 +85,6 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
         }
 
         return retval;
-    }
-
-    private boolean checkGradleThemePlugin( final IProject project )
-    {
-        final CustomModel customModel =
-            GradleCore.getToolingModel( GradleCore.getDefault(), CustomModel.class, project );
-
-        if( customModel == null )
-        {
-            return false;
-        }
-
-        if( customModel.hasPlugin( "com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin" ) )
-        {
-            return true;
-        }
-
-        return false;
     }
 
     @Override
