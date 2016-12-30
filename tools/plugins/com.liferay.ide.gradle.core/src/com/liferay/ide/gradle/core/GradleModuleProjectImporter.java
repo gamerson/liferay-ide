@@ -141,4 +141,8 @@ public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter
         return new ArrayList<>();
     }
 
+    @Override
+    public void updateBuildFile( String location ) throws Exception
+    {
+    }
 }

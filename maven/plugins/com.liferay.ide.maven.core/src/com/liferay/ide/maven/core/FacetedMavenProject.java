@@ -36,7 +36,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 
-
 /**
  * @author Gregory Amerson
  * @author Cindy Li
