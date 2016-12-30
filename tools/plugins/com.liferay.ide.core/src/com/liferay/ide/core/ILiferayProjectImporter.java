@@ -35,4 +35,5 @@ public interface ILiferayProjectImporter
 
     List<IProject> importProjects( String location, IProgressMonitor monitor ) throws CoreException;
 
+    void updateBuildFile( String location ) throws Exception;
 }

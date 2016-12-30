@@ -18,7 +18,6 @@ package com.liferay.ide.project.ui.upgrade.animated;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.ILiferayProjectImporter;
 import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.LiferayLanguagePropertiesValidator;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.IOUtil;
@@ -1104,6 +1103,8 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
                         if( isMavenProject( location.toPortableString() ) )
                         {
                             ILiferayProjectImporter importer = LiferayCore.getImporter( "maven" );
+
+                            importer.updateBuildFile( location.toPortableString() );
 
                             List<IProject> projects = importer.importProjects( location.toPortableString(), monitor );
 

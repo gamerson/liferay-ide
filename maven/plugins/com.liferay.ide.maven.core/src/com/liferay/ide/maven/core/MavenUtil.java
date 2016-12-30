@@ -550,25 +550,11 @@ public class MavenUtil
     public static List<IMavenProjectImportResult> importProject( String location, IProgressMonitor monitor )
         throws CoreException, InterruptedException
     {
-        MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
-        File root = CoreUtil.getWorkspaceRoot().getLocation().toFile();
-        AbstractProjectScanner<MavenProjectInfo> scanner =
-            new LocalProjectScanner( root, location, false, mavenModelManager );
-
-        scanner.run( monitor );
-
-        List<MavenProjectInfo> projects = scanner.getProjects();
-        List<MavenProjectInfo> mavenProjects = new ArrayList<MavenProjectInfo>();
-
-        findChildMavenProjects( mavenProjects, projects );
-
-        mavenProjects = filterProjects( mavenProjects );
-
         ProjectImportConfiguration importConfiguration = new ProjectImportConfiguration();
 
         IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
 
-        return projectConfigurationManager.importProjects( mavenProjects, importConfiguration, monitor );
+        return projectConfigurationManager.importProjects( scanMavenProjects( location ,  monitor), importConfiguration, monitor );
     }
 
     public static boolean isMavenProject( IProject project ) throws CoreException
@@ -623,6 +609,23 @@ public class MavenUtil
         return loadedParent;
     }
 
+    public static List<MavenProjectInfo> scanMavenProjects(String location , IProgressMonitor monitor) throws InterruptedException
+    {
+        MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
+        File root = CoreUtil.getWorkspaceRoot().getLocation().toFile();
+        AbstractProjectScanner<MavenProjectInfo> scanner =
+            new LocalProjectScanner( root, location, false, mavenModelManager );
+
+        scanner.run( monitor );
+
+        List<MavenProjectInfo> projects = scanner.getProjects();
+        List<MavenProjectInfo> mavenProjects = new ArrayList<MavenProjectInfo>();
+
+        findChildMavenProjects( mavenProjects, projects );
+
+        return filterProjects( mavenProjects );
+    }
+
     public static void setConfigValue( Xpp3Dom configuration, String childName, Object value )
     {
         Xpp3Dom childNode = configuration.getChild( childName );
@@ -635,5 +638,4 @@ public class MavenUtil
 
         childNode.setValue( ( value == null ) ? null : value.toString() );
     }
-
 }
