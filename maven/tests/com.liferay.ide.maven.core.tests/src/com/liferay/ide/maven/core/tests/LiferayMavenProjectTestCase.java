@@ -40,7 +40,7 @@ import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
- * @author Simon Jiang *
+ * 
  */
 @SuppressWarnings( "restriction" )
 public abstract class LiferayMavenProjectTestCase extends AbstractMavenProjectTestCase
