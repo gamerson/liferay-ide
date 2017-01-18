@@ -16,10 +16,10 @@
 package com.liferay.ide.project.ui.upgrade.animated;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.util.MavenLegacyPomUpdater;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.upgrade.LiferayUpgradeCompre;
-import com.liferay.ide.project.ui.upgrade.MavenLegacyPomUpdater;
 import com.liferay.ide.ui.util.SWTUtil;
 import com.liferay.ide.ui.util.UIUtil;
 
@@ -78,8 +78,6 @@ public class UpgradePomPage extends Page
             this.finished = isFixed;
         }
     }
-
-    private UpgradePomElement[] upgradePomElementsArray = null;
 
     private class ProjectLabelProvider extends LabelProvider implements IStyledLabelProvider, IColorProvider
     {
@@ -158,6 +156,8 @@ public class UpgradePomPage extends Page
     private Button upgradeButton;
 
     private MavenLegacyPomUpdater updater = new MavenLegacyPomUpdater();
+
+    private UpgradePomElement[] upgradePomElementsArray = null;
 
     public UpgradePomPage( Composite parent, int style, LiferayUpgradeDataModel dataModel )
     {
