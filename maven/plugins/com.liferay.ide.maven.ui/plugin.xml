@@ -166,7 +166,8 @@
             id="com.liferay.ide.maven.ui.isMavenProject"
             namespace="com.liferay.ide.maven.ui"
             properties="isMavenProject"
-            type="org.eclipse.core.resources.IProject">
+
+            type="org.eclipse.core.resources.IProject">  
       </propertyTester>
       <propertyTester
             class="com.liferay.ide.maven.ui.PomFilePropertyTester"
