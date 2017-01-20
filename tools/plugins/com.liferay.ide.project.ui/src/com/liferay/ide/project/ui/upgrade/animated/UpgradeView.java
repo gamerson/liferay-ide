@@ -369,12 +369,12 @@ public class UpgradeView extends ViewPart implements SelectionChangedListener
 
         resetPages();
 
-        final NavigatorControl navigator = new NavigatorControl( composite, SWT.NONE );
+//        final NavigatorControl navigator = new NavigatorControl( composite, SWT.NONE );
+//
+//        navigator.addPageNavigateListener( gear );
+//        navigator.addPageActionListener( gear );
 
-        navigator.addPageNavigateListener( gear );
-        navigator.addPageActionListener( gear );
-
-        gear.addSelectionChangedListener( navigator );
+//        gear.addSelectionChangedListener( navigator );
         gear.addSelectionChangedListener( this );
         gear.addSelectionChangedListener( (SelectionChangedListener) initConfigureProjectPage );
         gear.addSelectionChangedListener( (SelectionChangedListener) summaryPage );
@@ -385,8 +385,8 @@ public class UpgradeView extends ViewPart implements SelectionChangedListener
 //        navData.widthHint = 400;
 //        navData.heightHint = 55;
 
-        navigator.setLayoutData( navData );
-        navigator.setBackground( backgroundColor );
+//        navigator.setLayoutData( navData );
+//        navigator.setBackground( backgroundColor );
 
         scrolledComposite.setContent(container);
 //        scrolledComposite.setMinSize(container.computeSize(SWT.DEFAULT, 670));
