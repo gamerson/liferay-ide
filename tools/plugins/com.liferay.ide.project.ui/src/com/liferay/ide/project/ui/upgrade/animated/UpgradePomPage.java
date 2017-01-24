@@ -79,8 +79,6 @@ public class UpgradePomPage extends Page
         }
     }
 
-    private UpgradePomElement[] upgradePomElementsArray = null;
-
     private class ProjectLabelProvider extends LabelProvider implements IStyledLabelProvider, IColorProvider
     {
 
@@ -158,6 +156,8 @@ public class UpgradePomPage extends Page
     private Button upgradeButton;
 
     private MavenLegacyPomUpdater updater = new MavenLegacyPomUpdater();
+
+    private UpgradePomElement[] upgradePomElementsArray = null;
 
     public UpgradePomPage( Composite parent, int style, LiferayUpgradeDataModel dataModel )
     {
