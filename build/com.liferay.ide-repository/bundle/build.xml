@@ -381,7 +381,7 @@
 
         <loadfile property="qualifiedBuildVersion" srcfile="${target.dir}/temp.txt">
             <filterchain>
-                <headfilter lines="3"/>
+                <headfilter lines="5"/>
                 <tailfilter lines="1"/>
                 <striplinebreaks />
             </filterchain>
