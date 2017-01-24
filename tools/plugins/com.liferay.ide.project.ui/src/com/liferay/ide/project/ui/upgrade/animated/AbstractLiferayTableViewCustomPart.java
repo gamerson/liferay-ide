@@ -397,7 +397,7 @@ public abstract class AbstractLiferayTableViewCustomPart extends Page
             for( IFile upgradeFilePath : upgradeFiles )
             {
                 IPath filePath = upgradeFilePath.getLocation();
-                if( isNeedUpgrade( filePath.toFile() ) )
+                if( isNeedUpgrade( filePath.toFile() ) && !filePath.toString().contains( "/target/" ) )
                 {
                     final String projectLocation = filePath.makeRelativeTo( project.getLocation() ).toPortableString();
 
