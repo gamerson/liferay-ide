@@ -17,6 +17,8 @@ package com.liferay.ide.project.core.model.internal;
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
+import com.liferay.ide.project.core.modules.jsf.NewLiferayJSFModuleProjectOp;
 
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.services.ServiceCondition;
@@ -48,7 +50,10 @@ public class ProjectProviderValueLabelService extends ValueLabelService
 
             final ValueProperty prop = context.find( ValueProperty.class );
 
-            if( prop != null && prop.equals( NewLiferayPluginProjectOp.PROP_PROJECT_PROVIDER ) )
+            if( prop != null && ( prop.equals( NewLiferayPluginProjectOp.PROP_PROJECT_PROVIDER ) 
+                            || prop.equals( NewLiferayModuleProjectOp.PROP_PROJECT_PROVIDER )
+                            || prop.equals( NewLiferayJSFModuleProjectOp.PROP_JSF_PROJECT_PROVIDER )
+                            ) )
             {
                 retval = true;
             }
