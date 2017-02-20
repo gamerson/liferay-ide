@@ -74,9 +74,11 @@ public class ProjectCore extends Plugin
     public static final String PREF_DEFAULT_PLUGIN_PROJECT_BUILD_TYPE_OPTION = "project-plugin_default-build-type-option";
 
     public static final String PREF_DEFAULT_MODULE_PROJECT_BUILD_TYPE_OPTION = "project-module-default-build-type-option";
+    public static final String PREF_DEFAULT_JSF_MODULE_PROJECT_BUILD_TYPE_OPTION = "project-jsf-module-default-build-type-option";
 
     public static final String PREF_DEFAULT_PLUGIN_PROJECT_MAVEN_GROUPID = "default-plugin-project-maven-groupid";
     public static final String PREF_DEFAULT_MODULE_PROJECT_MAVEN_GROUPID = "default-module-project-maven-groupid";
+    public static final String PREF_DEFAULT_JSF_MODULE_PROJECT_MAVEN_GROUPID = "default-jsf-module-project-maven-groupid";
 
     public static final String PREF_INCLUDE_SAMPLE_CODE = "include-sample-code";
 
