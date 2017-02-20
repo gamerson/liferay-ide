@@ -157,7 +157,7 @@ public class SummaryPage extends Page implements SelectionChangedListener
     private void createImages()
     {
         imageQuestion = ImageDescriptor.createFromURL(
-            ProjectUI.getDefault().getBundle().getEntry( "/images/question.png" ) ).createImage();
+            ProjectUI.getDefault().getBundle().getEntry( "/images/welcome.png" ) ).createImage();
     }
 
     public void createSpecialDescriptor( Composite parent, int style )

@@ -751,7 +751,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
                         importButton.setEnabled( true );
 
-                        setSelectedAction( getSelectedAction( "PageFinishAction" ) );
+//                        setSelectedAction( getSelectedAction( "PageFinishAction" ) );
                     }
                 }
                 catch( CoreException ex )
