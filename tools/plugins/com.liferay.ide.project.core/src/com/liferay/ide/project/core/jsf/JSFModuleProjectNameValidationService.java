@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.core.modules.fragment;
+package com.liferay.ide.project.core.jsf;
 
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.modules.AbstractModuleProjectNameValidationService;
@@ -22,28 +22,16 @@ import org.eclipse.sapphire.ValueProperty;
 
 /**
  * @author Simon Jiang
- * @author Adny Wu
+ * @author Andy Wu
  */
-public class FragmentProjectNameValidationService
-    extends AbstractModuleProjectNameValidationService<NewModuleFragmentOp>
+public class JSFModuleProjectNameValidationService
+    extends AbstractModuleProjectNameValidationService<NewLiferayJSFModuleProjectOp>
 {
 
     @Override
-    protected NewModuleFragmentOp op()
+    protected NewLiferayJSFModuleProjectOp op()
     {
-        return context( NewModuleFragmentOp.class );
-    }
-
-    @Override
-    protected NewLiferayProjectProvider<NewModuleFragmentOp> getProjectProvider()
-    {
-        return op().getProjectProvider().content();
-    }
-
-    @Override
-    protected ValueProperty getProjectNameValueProperty()
-    {
-        return NewModuleFragmentOp.PROP_PROJECT_NAME;
+        return context( NewLiferayJSFModuleProjectOp.class );
     }
 
     @Override
@@ -62,4 +50,17 @@ public class FragmentProjectNameValidationService
 
         return retval;
     }
+
+    @Override
+    protected NewLiferayProjectProvider<NewLiferayJSFModuleProjectOp> getProjectProvider()
+    {
+        return op().getProjectProvider().content();
+    }
+
+    @Override
+    protected ValueProperty getProjectNameValueProperty()
+    {
+        return NewLiferayJSFModuleProjectOp.PROP_PROJECT_NAME;
+    }
+
 }
