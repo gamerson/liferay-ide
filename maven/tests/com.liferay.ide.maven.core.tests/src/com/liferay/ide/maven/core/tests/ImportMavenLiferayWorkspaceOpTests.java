@@ -73,7 +73,7 @@ public class ImportMavenLiferayWorkspaceOpTests
 
         op = ImportLiferayWorkspaceOp.TYPE.instantiate();
 
-        assertEquals( LiferayWorkspaceUtil.hasLiferayWorkspaceMsg, op.validation().message() );
+        assertEquals( LiferayWorkspaceUtil.multiWorkspaceErrorMsg, op.validation().message() );
 
         project = CoreUtil.getProject( "maven-liferay-workspace" );
 
