@@ -16,6 +16,7 @@
 package com.liferay.ide.server.ui.action;
 
 import com.liferay.ide.server.core.ILiferayServer;
+import com.liferay.ide.server.core.portal.PortalServer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +48,12 @@ public class OpenGogoShellAction extends AbstractServerRunningAction
     protected int getRequiredServerState()
     {
         return IServer.STATE_STARTED;
+    }
+
+    @Override
+    protected boolean isSupportServerType( IServer server )
+    {
+        return server.getServerType().getId().equals( PortalServer.ID );
     }
 
     public void run( IAction action )

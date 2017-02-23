@@ -59,6 +59,11 @@ public abstract class AbstractServerRunningAction implements IObjectActionDelega
 
     protected abstract int getRequiredServerState();
 
+    protected boolean isSupportServerType( IServer server )
+    {
+        return true;
+    }
+
     public void selectionChanged( IAction action, ISelection selection )
     {
         selectedServer = null;
@@ -73,13 +78,15 @@ public abstract class AbstractServerRunningAction implements IObjectActionDelega
                 {
                     selectedServer = (IServer) obj;
 
-                    action.setEnabled( ( selectedServer.getServerState() & getRequiredServerState() ) > 0 );
+                    action.setEnabled( ( selectedServer.getServerState() & getRequiredServerState() ) > 0 &&
+                        isSupportServerType( selectedServer ) );
                 }
                 else if( obj instanceof IServerModule )
                 {
                     selectedModule = (IServerModule) obj;
 
-                    action.setEnabled( ( selectedModule.getServer().getServerState() & getRequiredServerState() ) > 0 );
+                    action.setEnabled( ( selectedModule.getServer().getServerState() & getRequiredServerState() ) > 0 &&
+                        isSupportServerType( selectedModule.getServer() ) );
                 }
             }
         }
