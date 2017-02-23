@@ -16,8 +16,11 @@ package com.liferay.ide.project.core.model.internal;
 
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.project.core.jsf.NewLiferayJSFModuleProjectOp;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 
+import org.eclipse.sapphire.ExecutableElement;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.services.ServiceCondition;
 import org.eclipse.sapphire.services.ServiceContext;
@@ -27,7 +30,7 @@ import org.eclipse.sapphire.services.ValueLabelService;
 /**
  * @author Gregory Amerson
  */
-public class ProjectProviderValueLabelService extends ValueLabelService
+public class ProjectProviderValueLabelService<T extends ExecutableElement> extends ValueLabelService
 {
 
     @Override
@@ -45,10 +48,13 @@ public class ProjectProviderValueLabelService extends ValueLabelService
         public boolean applicable( final ServiceContext context )
         {
             boolean retval = false;
-
             final ValueProperty prop = context.find( ValueProperty.class );
 
-            if( prop != null && prop.equals( NewLiferayPluginProjectOp.PROP_PROJECT_PROVIDER ) )
+            if( prop != null &&  (
+                            prop.equals( NewLiferayPluginProjectOp.PROP_PROJECT_PROVIDER ) ||
+                            prop.equals( NewLiferayJSFModuleProjectOp.PROP_PROJECT_PROVIDER ) ||
+                            prop.equals( NewLiferayModuleProjectOp.PROP_PROJECT_PROVIDER )
+                            ) )
             {
                 retval = true;
             }
