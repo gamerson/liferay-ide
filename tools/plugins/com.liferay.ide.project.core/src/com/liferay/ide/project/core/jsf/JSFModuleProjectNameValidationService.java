@@ -12,9 +12,11 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.modules;
+
+package com.liferay.ide.project.core.jsf;
 
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.modules.AbstractModuleProjectNameValidationService;
 
 import org.eclipse.sapphire.ValueProperty;
 
@@ -22,8 +24,15 @@ import org.eclipse.sapphire.ValueProperty;
  * @author Simon Jiang
  * @author Andy Wu
  */
-public class ModuleProjectNameValidationService extends AbstractModuleProjectNameValidationService<NewLiferayModuleProjectOp>
+public class JSFModuleProjectNameValidationService extends  AbstractModuleProjectNameValidationService<NewLiferayJSFModuleProjectOp>
 {
+
+    @Override
+    protected NewLiferayJSFModuleProjectOp op()
+    {
+        return context(NewLiferayJSFModuleProjectOp.class);
+    }
+
     @Override
     protected <A> A getData( String key, Class<A> type )
     {
@@ -41,13 +50,7 @@ public class ModuleProjectNameValidationService extends AbstractModuleProjectNam
     }
 
     @Override
-    protected NewLiferayModuleProjectOp op()
-    {
-        return context(NewLiferayModuleProjectOp.class);
-    }
-
-    @Override
-    protected NewLiferayProjectProvider<NewLiferayModuleProjectOp> getProjectProvider()
+    protected NewLiferayProjectProvider<NewLiferayJSFModuleProjectOp> getProjectProvider()
     {
         return op().getProjectProvider().content();
     }
@@ -55,6 +58,7 @@ public class ModuleProjectNameValidationService extends AbstractModuleProjectNam
     @Override
     protected ValueProperty getProjectNameValueProperty()
     {
-        return NewLiferayModuleProjectOp.PROP_PROJECT_NAME;
+        return NewLiferayJSFModuleProjectOp.PROP_PROJECT_NAME;
     }
+
 }
