@@ -13,40 +13,33 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.core.modules.fragment;
+package com.liferay.ide.project.core.jsf;
 
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.modules.AbstractModuleProjectNameValidationService;
+import com.liferay.ide.project.core.modules.AbstractProjectLocationValidationService;
 
-import org.eclipse.sapphire.ValueProperty;
+import org.eclipse.sapphire.Listener;
 
 /**
  * @author Simon Jiang
- * @author Adny Wu
  */
-public class FragmentProjectNameValidationService
-    extends AbstractModuleProjectNameValidationService<NewModuleFragmentOp>
+public class JSFModuleProjectLocationValidationService
+    extends AbstractProjectLocationValidationService<NewLiferayJSFModuleProjectOp>
 {
 
     @Override
-    protected NewModuleFragmentOp op()
-    {
-        return context( NewModuleFragmentOp.class );
-    }
-
-    @Override
-    protected NewLiferayProjectProvider<NewModuleFragmentOp> getProjectProvider()
+    protected NewLiferayProjectProvider<NewLiferayJSFModuleProjectOp> getProjectProvider()
     {
         return op().getProjectProvider().content();
     }
 
     @Override
-    protected ValueProperty getProjectNameValueProperty()
+    protected void attchListener( final Listener listener )
     {
-        return NewModuleFragmentOp.PROP_PROJECT_NAME;
+        op().getProjectName().attach( listener );
+        op().getProjectProvider().attach( listener );
     }
 
-    @Override
     protected <A> A getData( String key, Class<A> type )
     {
         A retval = null;
@@ -59,7 +52,17 @@ public class FragmentProjectNameValidationService
         {
             retval = type.cast( op().getLocation().content() );
         }
-
+        else if( "UseDefaultLocationValue".equals( key ) )
+        {
+            retval = type.cast( op().getUseDefaultLocation().content() );
+        }
         return retval;
     }
+
+    @Override
+    protected NewLiferayJSFModuleProjectOp op()
+    {
+        return context( NewLiferayJSFModuleProjectOp.class );
+    }
+
 }
