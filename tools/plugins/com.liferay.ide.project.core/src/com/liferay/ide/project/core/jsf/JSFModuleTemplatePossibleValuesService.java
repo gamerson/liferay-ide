@@ -12,26 +12,46 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.model.internal;
 
-import com.liferay.ide.core.ILiferayProjectProvider;
-import com.liferay.ide.core.LiferayCore;
+package com.liferay.ide.project.core.jsf;
 
-import org.eclipse.sapphire.services.ValueLabelService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import org.eclipse.sapphire.PossibleValuesService;
 
 /**
- * @author Gregory Amerson
  * @author Simon Jiang
  */
-public class ProjectProviderValueLabelService extends ValueLabelService
+public class JSFModuleTemplatePossibleValuesService extends PossibleValuesService
 {
 
-    @Override
-    public String provide( String value )
-    {
-        ILiferayProjectProvider provider = LiferayCore.getProvider( value );
+    private List<String> possibleValues;
 
-        return provider != null ? provider.getDisplayName() : value;
+    protected void initPossibleValuesService()
+    {
+        possibleValues = new ArrayList<String>();
+
+        for( String key : NewLiferayJSFModuleProjectOpMethods.JSF_TEMPLATE_MAP.keySet() )
+        {
+            possibleValues.add( key );
+        }
+
+        Collections.sort( possibleValues );
     }
+
+    @Override
+    protected void compute( Set<String> values )
+    {
+        values.addAll( this.possibleValues );
+    }
+
+    @Override
+    public boolean ordered()
+    {
+        return true;
+    }
+
 }
