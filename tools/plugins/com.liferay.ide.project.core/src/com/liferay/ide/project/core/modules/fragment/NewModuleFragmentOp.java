@@ -18,7 +18,6 @@ package com.liferay.ide.project.core.modules.fragment;
 import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.modules.BaseModuleOp;
-import com.liferay.ide.project.core.modules.ModuleProjectNameListener;
 
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ElementType;
@@ -40,6 +39,7 @@ import org.eclipse.sapphire.modeling.annotations.Required;
 import org.eclipse.sapphire.modeling.annotations.Service;
 import org.eclipse.sapphire.modeling.annotations.Services;
 import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
+import org.eclipse.sapphire.modeling.annotations.Whitespace;
 
 /**
  * @author Terry Jia
@@ -129,14 +129,34 @@ public interface NewModuleFragmentOp extends BaseModuleOp
 
     @Type( base = ILiferayProjectProvider.class )
     @Label( standard = "build type" )
-    @Listeners( ModuleProjectNameListener.class )
     @Service( impl = FragmentProjectProviderPossibleValuesService.class )
     @Service( impl = FragmentProjectProviderDefaultValueService.class )
     ValueProperty PROP_PROJECT_PROVIDER = new ValueProperty( TYPE, "ProjectProvider" );
 
     Value<NewLiferayProjectProvider<NewModuleFragmentOp>> getProjectProvider();
-
     void setProjectProvider( String value );
-
     void setProjectProvider( NewLiferayProjectProvider<NewModuleFragmentOp> value );
+
+
+    // *** Maven settings ***
+    // *** ArtifactVersion ***
+
+    @Label( standard = "artifact version" )
+    @Service( impl = ModuleFragmentProjectArtifactVersionDefaultValueService.class )
+    ValueProperty PROP_ARTIFACT_VERSION = new ValueProperty( TYPE, "ArtifactVersion" );
+
+    Value<String> getArtifactVersion();
+    void setArtifactVersion( String value );
+
+
+    // *** GroupId ***
+
+    @Label( standard = "group id" )
+    @Service( impl = ModuleFragmentProjectGroupIdValidationService.class )
+    @Service( impl = ModuleFragmentProjectGroupIdDefaultValueService.class )
+    @Whitespace( trim = false )
+    ValueProperty PROP_GROUP_ID = new ValueProperty( TYPE, "GroupId" );
+
+    Value<String> getGroupId();
+    void setGroupId( String value );
 }

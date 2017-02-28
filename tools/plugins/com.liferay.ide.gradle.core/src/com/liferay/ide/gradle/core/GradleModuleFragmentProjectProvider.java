@@ -17,6 +17,7 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
@@ -50,11 +51,11 @@ import org.eclipse.wst.server.core.IRuntime;
  * @author Terry Jia
  * @author Lovett Li
  */
-public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvider
+public class GradleModuleFragmentProjectProvider extends AbstractLiferayProjectProvider
     implements NewLiferayProjectProvider<NewModuleFragmentOp>
 {
 
-    public ModuleFragmentProjectProvider()
+    public GradleModuleFragmentProjectProvider()
     {
         super( null );
     }
@@ -160,41 +161,44 @@ public class ModuleFragmentProjectProvider extends AbstractLiferayProjectProvide
                 }
             }
 
-            for( OverrideFilePath file : files )
+            if( !CoreUtil.isNullOrEmpty( files ) )
             {
-                File fragmentFile = temp.append( file.getValue().content() ).toFile();
-
-                if( fragmentFile.exists() )
+                for( OverrideFilePath file : files )
                 {
-                    File folder = null;
+                    File fragmentFile = temp.append( file.getValue().content() ).toFile();
 
-                    if( fragmentFile.getName().equals( "portlet.properties" ) )
+                    if( fragmentFile.exists() )
                     {
-                        folder = location.append( projectName ).append( "src/main/java" ).toFile();
+                        File folder = null;
 
-                        FileUtil.copyFileToDir( fragmentFile, "portlet-ext.properties", folder );
-                    }
-                    else
-                    {
-                        String parent = fragmentFile.getParentFile().getPath();
-                        parent = parent.replaceAll( "\\\\", "/" );
-                        String metaInfResources = "META-INF/resources";
-
-                        parent = parent.substring( parent.indexOf( metaInfResources ) + metaInfResources.length() );
-
-                        IPath resources =
-                            location.append( projectName ).append( "src/main/resources/META-INF/resources" );
-
-                        folder = resources.toFile();
-                        folder.mkdirs();
-
-                        if( !parent.equals( "resources" ) && !parent.equals( "" ) )
+                        if( fragmentFile.getName().equals( "portlet.properties" ) )
                         {
-                            folder = resources.append( parent ).toFile();
-                            folder.mkdirs();
-                        }
+                            folder = location.append( projectName ).append( "src/main/java" ).toFile();
 
-                        FileUtil.copyFileToDir( fragmentFile, folder );
+                            FileUtil.copyFileToDir( fragmentFile, "portlet-ext.properties", folder );
+                        }
+                        else
+                        {
+                            String parent = fragmentFile.getParentFile().getPath();
+                            parent = parent.replaceAll( "\\\\", "/" );
+                            String metaInfResources = "META-INF/resources";
+
+                            parent = parent.substring( parent.indexOf( metaInfResources ) + metaInfResources.length() );
+
+                            IPath resources =
+                                location.append( projectName ).append( "src/main/resources/META-INF/resources" );
+
+                            folder = resources.toFile();
+                            folder.mkdirs();
+
+                            if( !parent.equals( "resources" ) && !parent.equals( "" ) )
+                            {
+                                folder = resources.append( parent ).toFile();
+                                folder.mkdirs();
+                            }
+
+                            FileUtil.copyFileToDir( fragmentFile, folder );
+                        }
                     }
                 }
             }

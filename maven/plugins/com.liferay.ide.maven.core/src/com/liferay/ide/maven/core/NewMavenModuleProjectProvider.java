@@ -51,16 +51,7 @@ public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider i
 
         final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
 
-        final String projectName = op.getProjectName().content();
-
         IPath location = PathBridge.create( op.getLocation().content() );
-
-        // for location we should use the parent location
-        if( location.lastSegment().equals( projectName ) )
-        {
-            // use parent dir since maven archetype will generate new dir under this location
-            location = location.removeLastSegments( 1 );
-        }
 
         final String groupId = op.getGroupId().content();
         final String artifactId = op.getProjectName().content();
@@ -127,18 +118,16 @@ public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider i
         {
             for( IProject newProject : newProjects )
             {
-                IFile gradleFile = newProject.getFile( "build.gradle" );
+                String[] gradleFiles = new String[] { "build.gradle", "settings.gradle" };
 
-                if( gradleFile.exists() )
+                for( String path : gradleFiles )
                 {
-                    gradleFile.delete( true, monitor );
-                }
+                    IFile gradleFile = newProject.getFile( path );
 
-                IFile settingsFile = newProject.getFile( "settings.gradle" );
-
-                if( settingsFile.exists() )
-                {
-                    settingsFile.delete( true, monitor );
+                    if( gradleFile.exists() )
+                    {
+                        gradleFile.delete( true, monitor );
+                    }
                 }
             }
 
