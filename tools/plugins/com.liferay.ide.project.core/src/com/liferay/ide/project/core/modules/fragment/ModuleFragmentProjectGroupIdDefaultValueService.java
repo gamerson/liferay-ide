@@ -34,6 +34,7 @@ import com.liferay.ide.project.core.ProjectCore;
  */
 public class ModuleFragmentProjectGroupIdDefaultValueService extends DefaultValueService
 {
+    private Listener listener;
 
     @Override
     protected String compute()
@@ -65,6 +66,20 @@ public class ModuleFragmentProjectGroupIdDefaultValueService extends DefaultValu
         return groupId;
     }
 
+    @Override
+    public void dispose()
+    {
+        if( this.listener != null && op() != null && !op().disposed() )
+        {
+            op().getProjectName().detach( this.listener );
+            op().getProjectName().attach( this.listener );
+
+            this.listener = null;
+        }
+
+        super.dispose();
+    }
+
     private String getDefaultMavenGroupId()
     {
         final IScopeContext[] prefContexts = { DefaultScope.INSTANCE, InstanceScope.INSTANCE };
@@ -78,7 +93,7 @@ public class ModuleFragmentProjectGroupIdDefaultValueService extends DefaultValu
     {
         super.initDefaultValueService();
 
-        final Listener listener = new FilteredListener<PropertyContentEvent>()
+        this.listener = new FilteredListener<PropertyContentEvent>()
         {
 
             @Override
@@ -88,8 +103,8 @@ public class ModuleFragmentProjectGroupIdDefaultValueService extends DefaultValu
             }
         };
 
-        op().getLocation().attach( listener );
-        op().getProjectName().attach( listener );
+        op().getLocation().attach( this.listener );
+        op().getProjectName().attach( this.listener );
     }
 
     private NewModuleFragmentOp op()

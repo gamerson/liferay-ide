@@ -54,6 +54,20 @@ public class ModuleFragmentProjectGroupIdValidationService extends ValidationSer
     }
 
     @Override
+    public void dispose()
+    {
+        if( this.listener != null && op() != null && !op().disposed() )
+        {
+            op().getProjectName().detach( this.listener );
+            op().getLocation().attach( this.listener );
+
+            this.listener = null;
+        }
+
+        super.dispose();
+    }
+
+    @Override
     protected void initValidationService()
     {
         super.initValidationService();

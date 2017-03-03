@@ -28,6 +28,8 @@ import org.eclipse.sapphire.modeling.Path;
 public class ModuleFragmentProjectArtifactVersionDefaultValueService extends DefaultValueService
 {
 
+    private Listener listener;
+
     @Override
     protected String compute()
     {
@@ -54,11 +56,25 @@ public class ModuleFragmentProjectArtifactVersionDefaultValueService extends Def
     }
 
     @Override
+    public void dispose()
+    {
+        if( this.listener != null && op() != null && !op().disposed() )
+        {
+            op().getProjectName().detach( this.listener );
+            op().getProjectName().attach( this.listener );
+
+            this.listener = null;
+        }
+
+        super.dispose();
+    }
+
+    @Override
     protected void initDefaultValueService()
     {
         super.initDefaultValueService();
 
-        final Listener listener = new FilteredListener<PropertyContentEvent>()
+        this.listener = new FilteredListener<PropertyContentEvent>()
         {
 
             @Override
@@ -68,8 +84,8 @@ public class ModuleFragmentProjectArtifactVersionDefaultValueService extends Def
             }
         };
 
-        op().getLocation().attach( listener );
-        op().getProjectName().attach( listener );
+        op().getLocation().attach( this.listener );
+        op().getProjectName().attach( this.listener );
     }
 
     private NewModuleFragmentOp op()
