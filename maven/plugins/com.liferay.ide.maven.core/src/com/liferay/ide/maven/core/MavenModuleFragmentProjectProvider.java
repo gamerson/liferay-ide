@@ -15,8 +15,11 @@
 
 package com.liferay.ide.maven.core;
 
-import java.io.File;
-import java.io.IOException;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOp;
+import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOpMethods;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -34,20 +37,7 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
-import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
-import org.eclipse.wst.server.core.IRuntime;
-
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ZipUtil;
-import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOp;
-import com.liferay.ide.project.core.modules.fragment.OverrideFilePath;
-import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.core.portal.PortalBundle;
-import com.liferay.ide.server.util.ServerUtil;
 
 /**
  * @author Joye Luo
@@ -60,65 +50,15 @@ public class MavenModuleFragmentProjectProvider extends LiferayMavenProjectProvi
     @Override
     public IStatus createNewProject( NewModuleFragmentOp op, IProgressMonitor monitor ) throws CoreException
     {
-        IStatus retval = null;
-
-        final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
+        IStatus retval = Status.OK_STATUS;
 
         final String projectName = op.getProjectName().content();
 
         IPath location = PathBridge.create( op.getLocation().content() );
 
-        final String hostBundleName = op.getHostOsgiBundle().content();
-
-        final IPath temp = ProjectCore.getDefault().getStateLocation().append(
-            hostBundleName.substring( 0, hostBundleName.lastIndexOf( ".jar" ) ) );
-
-        if( !temp.toFile().exists() )
-        {
-            final IRuntime runtime = ServerUtil.getRuntime( op.getLiferayRuntimeName().content() );
-
-            final PortalBundle portalBundle = LiferayServerCore.newPortalBundle( runtime.getLocation() );
-
-            File hostBundle = portalBundle.getOSGiBundlesDir().append( "modules" ).append( hostBundleName ).toFile();
-
-            if( !hostBundle.exists() )
-            {
-                hostBundle = ProjectCore.getDefault().getStateLocation().append( hostBundleName ).toFile();
-            }
-
-            try
-            {
-                ZipUtil.unzip( hostBundle, temp.toFile() );
-            }
-            catch( IOException e )
-            {
-                throw new CoreException( ProjectCore.createErrorStatus( e ) );
-            }
-        }
-
-        String hostBundleSymbolicName = "";
-        String hostBundleVersion = "";
-
-        if( temp.toFile().exists() )
-        {
-            final File file = temp.append( "META-INF/MANIFEST.MF" ).toFile();
-            final String[] contents = FileUtil.readLinesFromFile( file );
-
-            for( String content : contents )
-            {
-                if( content.contains( "Bundle-SymbolicName:" ) )
-                {
-                    hostBundleSymbolicName = content.substring(
-                        content.indexOf( "Bundle-SymbolicName:" ) + "Bundle-SymbolicName:".length() );
-                }
-
-                if( content.contains( "Bundle-Version:" ) )
-                {
-                    hostBundleVersion =
-                        content.substring( content.indexOf( "Bundle-Version:" ) + "Bundle-Version:".length() ).trim();
-                }
-            }
-        }
+        String[] bsnAndVersion = NewModuleFragmentOpMethods.getBsnAndVersion( op );
+        String hostBundleSymbolicName = bsnAndVersion[0];
+        String hostBundleVersion = bsnAndVersion[1];
 
         final String groupId = op.getGroupId().content();
         final String artifactId = projectName;
@@ -142,62 +82,19 @@ public class MavenModuleFragmentProjectProvider extends LiferayMavenProjectProvi
         properties.put( "buildType", "maven" );
         properties.put( "projectType", "standalone" );
 
+        final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
+
         final ResolverConfiguration resolverConfig = new ResolverConfiguration();
         ProjectImportConfiguration configuration = new ProjectImportConfiguration( resolverConfig );
 
         final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
             location, archetype, groupId, artifactId, version, javaPackage, properties, configuration, monitor );
 
-        final ElementList<OverrideFilePath> files = op.getOverrideFiles();
-
-        if( CoreUtil.isNullOrEmpty( files ) )
-        {
-            retval = Status.OK_STATUS;
-
-            return retval;
-        }
-
-        for( OverrideFilePath file : files )
-        {
-            File fragmentFile = temp.append( file.getValue().content() ).toFile();
-
-            if( fragmentFile.exists() )
-            {
-                File folder = null;
-
-                if( fragmentFile.getName().equals( "portlet.properties" ) )
-                {
-                    folder = location.append( projectName ).append( "src/main/java" ).toFile();
-
-                    FileUtil.copyFileToDir( fragmentFile, "portlet-ext.properties", folder );
-                }
-                else
-                {
-                    String parent = fragmentFile.getParentFile().getPath();
-                    parent = parent.replaceAll( "\\\\", "/" );
-                    String metaInfResources = "META-INF/resources";
-
-                    parent = parent.substring( parent.indexOf( metaInfResources ) + metaInfResources.length() );
-
-                    IPath resources = location.append( projectName ).append( "src/main/resources/META-INF/resources" );
-
-                    folder = resources.toFile();
-                    folder.mkdirs();
-
-                    if( !parent.equals( "resources" ) && !parent.equals( "" ) )
-                    {
-                        folder = resources.append( parent ).toFile();
-                        folder.mkdirs();
-                    }
-
-                    FileUtil.copyFileToDir( fragmentFile, folder );
-                }
-            }
-        }
+        NewModuleFragmentOpMethods.copyOverrideFiles( op );
 
         if( newProjects == null || newProjects.size() == 0 )
         {
-            retval = LiferayMavenCore.createErrorStatus( "Unable to create project from archetype." );
+            return LiferayMavenCore.createErrorStatus( "Unable to create fragment project from archetype." );
         }
         else
         {
@@ -217,7 +114,6 @@ public class MavenModuleFragmentProjectProvider extends LiferayMavenProjectProvi
 
                 newProject.refreshLocal( IResource.DEPTH_INFINITE, null );
             }
-            retval = Status.OK_STATUS;
         }
 
         return retval;

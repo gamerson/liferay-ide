@@ -60,6 +60,7 @@ public class ModuleFragmentProjectArtifactVersionDefaultValueService extends Def
 
         final Listener listener = new FilteredListener<PropertyContentEvent>()
         {
+
             @Override
             protected void handleTypedEvent( PropertyContentEvent event )
             {

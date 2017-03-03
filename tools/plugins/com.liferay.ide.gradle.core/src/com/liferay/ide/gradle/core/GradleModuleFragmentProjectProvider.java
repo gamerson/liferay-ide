@@ -17,21 +17,12 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOp;
-import com.liferay.ide.project.core.modules.fragment.OverrideFilePath;
+import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOpMethods;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.core.portal.PortalBundle;
-import com.liferay.ide.server.util.ServerUtil;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,9 +34,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
-import org.eclipse.wst.server.core.IRuntime;
 
 /**
  * @author Terry Jia
@@ -72,63 +61,14 @@ public class GradleModuleFragmentProjectProvider extends AbstractLiferayProjectP
         IStatus retval = Status.OK_STATUS;
 
         final String projectName = op.getProjectName().content();
-
         final IPath location = PathBridge.create( op.getLocation().content() );
 
-        final String hostBundleName = op.getHostOsgiBundle().content();
-
-        final IPath temp = ProjectCore.getDefault().getStateLocation().append(
-            hostBundleName.substring( 0, hostBundleName.lastIndexOf( ".jar" ) ) );
-
-        if( !temp.toFile().exists() )
-        {
-            final IRuntime runtime = ServerUtil.getRuntime( op.getLiferayRuntimeName().content() );
-
-            final PortalBundle portalBundle = LiferayServerCore.newPortalBundle( runtime.getLocation() );
-
-            File hostBundle = portalBundle.getOSGiBundlesDir().append( "modules" ).append( hostBundleName ).toFile();
-
-            if( !hostBundle.exists() )
-            {
-                hostBundle = ProjectCore.getDefault().getStateLocation().append( hostBundleName ).toFile();
-            }
-
-            try
-            {
-                ZipUtil.unzip( hostBundle, temp.toFile() );
-            }
-            catch( IOException e )
-            {
-                throw new CoreException( GradleCore.createErrorStatus( e ) );
-            }
-        }
-
-        String bundleSymbolicName = "";
-        String version = "";
-
-        if( temp.toFile().exists() )
-        {
-            final File file = temp.append( "META-INF/MANIFEST.MF" ).toFile();
-            final String[] contents = FileUtil.readLinesFromFile( file );
-
-            for( String content : contents )
-            {
-                if( content.contains( "Bundle-SymbolicName:" ) )
-                {
-                    bundleSymbolicName = content.substring(
-                        content.indexOf( "Bundle-SymbolicName:" ) + "Bundle-SymbolicName:".length() );
-                }
-
-                if( content.contains( "Bundle-Version:" ) )
-                {
-                    version = content.substring( content.indexOf( "Bundle-Version:" ) + "Bundle-Version:".length() );
-                }
-            }
-        }
-
-        final ElementList<OverrideFilePath> files = op.getOverrideFiles();
+        String[] bsnAndVersion = NewModuleFragmentOpMethods.getBsnAndVersion( op );
+        String bundleSymbolicName = bsnAndVersion[0];
+        String version = bsnAndVersion[1];
 
         final StringBuilder sb = new StringBuilder();
+
         sb.append( "create " );
         sb.append( "-d \"" + location.toFile().getAbsolutePath() + "\" " );
         sb.append( "-t " + "fragment" + " " );
@@ -148,105 +88,55 @@ public class GradleModuleFragmentProjectProvider extends AbstractLiferayProjectP
         try
         {
             BladeCLI.execute( sb.toString() );
-
-            IPath projecLocation = location;
-
-            final String lastSegment = location.lastSegment();
-
-            if( location != null && location.segmentCount() > 0 )
-            {
-                if( !lastSegment.equals( projectName ) )
-                {
-                    projecLocation = location.append( projectName );
-                }
-            }
-
-            if( !CoreUtil.isNullOrEmpty( files ) )
-            {
-                for( OverrideFilePath file : files )
-                {
-                    File fragmentFile = temp.append( file.getValue().content() ).toFile();
-
-                    if( fragmentFile.exists() )
-                    {
-                        File folder = null;
-
-                        if( fragmentFile.getName().equals( "portlet.properties" ) )
-                        {
-                            folder = location.append( projectName ).append( "src/main/java" ).toFile();
-
-                            FileUtil.copyFileToDir( fragmentFile, "portlet-ext.properties", folder );
-                        }
-                        else
-                        {
-                            String parent = fragmentFile.getParentFile().getPath();
-                            parent = parent.replaceAll( "\\\\", "/" );
-                            String metaInfResources = "META-INF/resources";
-
-                            parent = parent.substring( parent.indexOf( metaInfResources ) + metaInfResources.length() );
-
-                            IPath resources =
-                                location.append( projectName ).append( "src/main/resources/META-INF/resources" );
-
-                            folder = resources.toFile();
-                            folder.mkdirs();
-
-                            if( !parent.equals( "resources" ) && !parent.equals( "" ) )
-                            {
-                                folder = resources.append( parent ).toFile();
-                                folder.mkdirs();
-                            }
-
-                            FileUtil.copyFileToDir( fragmentFile, folder );
-                        }
-                    }
-                }
-            }
-
-            final boolean hasLiferayWorkspace = LiferayWorkspaceUtil.hasLiferayWorkspace();
-            final boolean useDefaultLocation = op.getUseDefaultLocation().content( true );
-            boolean inWorkspacePath = false;
-
-            final IProject liferayWorkspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
-
-            if( liferayWorkspaceProject != null && !useDefaultLocation )
-            {
-                IPath workspaceLocation = liferayWorkspaceProject.getLocation();
-
-                if( workspaceLocation != null )
-                {
-                    String liferayWorkspaceProjectModulesDir =
-                        LiferayWorkspaceUtil.getLiferayWorkspaceProjectModulesDir( liferayWorkspaceProject );
-
-                    if( liferayWorkspaceProjectModulesDir != null )
-                    {
-                        IPath modulesPath = workspaceLocation.append( liferayWorkspaceProjectModulesDir );
-
-                        if( modulesPath.isPrefixOf( projecLocation ) )
-                        {
-                            inWorkspacePath = true;
-                        }
-                    }
-                }
-            }
-
-            if( ( hasLiferayWorkspace && useDefaultLocation ) || inWorkspacePath )
-            {
-                Set<IProject> projects = new HashSet<>();
-
-                projects.add( liferayWorkspaceProject );
-
-                CorePlugin.gradleWorkspaceManager().getCompositeBuild( projects ).synchronize(
-                    NewProjectHandler.IMPORT_AND_MERGE );
-            }
-            else
-            {
-                GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
-            }
         }
         catch( Exception e )
         {
-            retval = GradleCore.createErrorStatus( "Could not create module fragment project.", e );
+            return GradleCore.createErrorStatus( "Could not create module fragment project.", e );
+        }
+
+        NewModuleFragmentOpMethods.copyOverrideFiles( op );
+
+        IPath projecLocation = location.append( projectName );
+
+        final boolean hasLiferayWorkspace = LiferayWorkspaceUtil.hasLiferayWorkspace();
+        final boolean useDefaultLocation = op.getUseDefaultLocation().content( true );
+        boolean inWorkspacePath = false;
+
+        final IProject liferayWorkspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
+
+        if( liferayWorkspaceProject != null && !useDefaultLocation )
+        {
+            IPath workspaceLocation = liferayWorkspaceProject.getLocation();
+
+            if( workspaceLocation != null )
+            {
+                String liferayWorkspaceProjectModulesDir =
+                    LiferayWorkspaceUtil.getLiferayWorkspaceProjectModulesDir( liferayWorkspaceProject );
+
+                if( liferayWorkspaceProjectModulesDir != null )
+                {
+                    IPath modulesPath = workspaceLocation.append( liferayWorkspaceProjectModulesDir );
+
+                    if( modulesPath.isPrefixOf( projecLocation ) )
+                    {
+                        inWorkspacePath = true;
+                    }
+                }
+            }
+        }
+
+        if( ( hasLiferayWorkspace && useDefaultLocation ) || inWorkspacePath )
+        {
+            Set<IProject> projects = new HashSet<>();
+
+            projects.add( liferayWorkspaceProject );
+
+            CorePlugin.gradleWorkspaceManager().getCompositeBuild( projects ).synchronize(
+                NewProjectHandler.IMPORT_AND_MERGE );
+        }
+        else
+        {
+            GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
         }
 
         return retval;
@@ -255,16 +145,6 @@ public class GradleModuleFragmentProjectProvider extends AbstractLiferayProjectP
     @Override
     public IStatus validateProjectLocation( String projectName, IPath path )
     {
-        IStatus retval = Status.OK_STATUS;
-
-        File projectFodler = path.append( projectName ).toFile();
-
-        if( projectFodler.exists() )
-        {
-            retval = GradleCore.createErrorStatus( " Project folder is not empty. " );
-        }
-
-        return retval;
+        return Status.OK_STATUS;
     }
-
 }

@@ -58,7 +58,6 @@ public interface NewModuleFragmentOp extends BaseModuleOp
     ValueProperty PROP_PROJECT_NAME = new ValueProperty( TYPE, "ProjectName" );
 
     Value<String> getProjectName();
-
     void setProjectName( String value );
 
     // *** ProjectLocation ***
@@ -72,9 +71,7 @@ public interface NewModuleFragmentOp extends BaseModuleOp
     ValueProperty PROP_LOCATION = new ValueProperty( TYPE, "Location" );
 
     Value<Path> getLocation();
-
     void setLocation( String value );
-
     void setLocation( Path value );
 
     // *** Liferay Runtime ***
@@ -100,7 +97,6 @@ public interface NewModuleFragmentOp extends BaseModuleOp
     ValueProperty PROP_HOST_OSGI_BUNDLE = new ValueProperty( TYPE, "HostOsgiBundle" );
 
     Value<String> getHostOsgiBundle();
-
     void setHostOsgiBundle( String value );
 
     // *** HostOSGiBundle ***
@@ -108,7 +104,6 @@ public interface NewModuleFragmentOp extends BaseModuleOp
     ValueProperty PROP_LPKG_NAME = new ValueProperty( TYPE, "LpkgName" );
 
     Value<String> getLpkgName();
-
     void setLpkgName( String value );
 
     // *** OverrideFiles ***
@@ -118,12 +113,6 @@ public interface NewModuleFragmentOp extends BaseModuleOp
     ListProperty PROP_OVERRIDE_FILES = new ListProperty( TYPE, "OverrideFiles" );
 
     ElementList<OverrideFilePath> getOverrideFiles();
-
-    // *** Method: execute ***
-
-    @Override
-    @DelegateImplementation( NewModuleFragmentOpMethods.class )
-    Status execute( ProgressMonitor monitor );
 
     // *** ProjectProvider ***
 
@@ -136,7 +125,6 @@ public interface NewModuleFragmentOp extends BaseModuleOp
     Value<NewLiferayProjectProvider<NewModuleFragmentOp>> getProjectProvider();
     void setProjectProvider( String value );
     void setProjectProvider( NewLiferayProjectProvider<NewModuleFragmentOp> value );
-
 
     // *** Maven settings ***
     // *** ArtifactVersion ***
@@ -159,4 +147,10 @@ public interface NewModuleFragmentOp extends BaseModuleOp
 
     Value<String> getGroupId();
     void setGroupId( String value );
+    
+    // *** Method: execute ***
+
+    @Override
+    @DelegateImplementation( NewModuleFragmentOpMethods.class )
+    Status execute( ProgressMonitor monitor );
 }
