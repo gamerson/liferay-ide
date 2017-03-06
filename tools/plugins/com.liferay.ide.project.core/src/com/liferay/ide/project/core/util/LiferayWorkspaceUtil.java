@@ -278,6 +278,8 @@ public class LiferayWorkspaceUtil
 
     public static String loadConfiguredHomeDir( String location )
     {
-        return getLiferayWorkspaceGradleProperty( location, "liferay.workspace.home.dir", "bundles" );
+        String result = getLiferayWorkspaceGradleProperty( location, "liferay.workspace.home.dir", "bundles" );
+
+        return result == null ? "bundles" : result;
     }
 }

@@ -385,18 +385,8 @@ public class ProjectCore extends Plugin
                         {
                             String projectLocation = project.getLocation().toOSString();
 
-                            IFolder bundlesFolder = null;
-
-                            if( LiferayWorkspaceUtil.isValidGradleWorkspaceLocation( projectLocation ) )
-                            {
-                                bundlesFolder =
-                                    project.getFolder( LiferayWorkspaceUtil.loadConfiguredHomeDir( projectLocation ) );
-                            }
-
-                            if( LiferayWorkspaceUtil.isValidMavenWorkspaceLocation( projectLocation ) )
-                            {
-                                bundlesFolder = project.getFolder( "bundles" );
-                            }
+                            IFolder bundlesFolder =
+                                project.getFolder( LiferayWorkspaceUtil.loadConfiguredHomeDir( projectLocation ) );
 
                             if( bundlesFolder.exists() )
                             {
@@ -428,18 +418,8 @@ public class ProjectCore extends Plugin
                                         {
                                             String projectLocation = project.getLocation().toOSString();
 
-                                            IPath bundlesPath = null;
-
-                                            if( LiferayWorkspaceUtil.isValidGradleWorkspaceLocation( projectLocation ) )
-                                            {
-                                                bundlesPath = project.getFullPath().append(
-                                                    LiferayWorkspaceUtil.loadConfiguredHomeDir( projectLocation ) );
-                                            }
-
-                                            if( LiferayWorkspaceUtil.isValidMavenWorkspaceLocation( projectLocation ) )
-                                            {
-                                                bundlesPath = project.getFullPath().append( "bundles" );
-                                            }
+                                            IPath bundlesPath = project.getFullPath().append(
+                                                LiferayWorkspaceUtil.loadConfiguredHomeDir( projectLocation ) );
 
                                             if( delta.getFullPath().equals( bundlesPath ) )
                                             {
@@ -452,7 +432,8 @@ public class ProjectCore extends Plugin
                                                 }
                                                 catch( Exception e )
                                                 {
-                                                    ProjectCore.logError( "delete related runtime and server error", e );
+                                                    ProjectCore.logError( "delete related runtime and server error",
+                                                        e );
                                                 }
                                             }
                                         }
@@ -476,28 +457,6 @@ public class ProjectCore extends Plugin
                 return;
             }
         }, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE );
-
-        /*
-        final Job job = new Job( "Checking for the latest Blade CLI" )
-        {
-            @Override
-            public IStatus run( IProgressMonitor monitor )
-            {
-                try
-                {
-                    BladeCLI.getBladeCLIPath();
-                }
-                catch( BladeCLIException e )
-                {
-                    // ignore any errors
-                }
-
-                return Status.OK_STATUS;
-            }
-        };
-
-        job.schedule();
-        */
     }
 
     /*
