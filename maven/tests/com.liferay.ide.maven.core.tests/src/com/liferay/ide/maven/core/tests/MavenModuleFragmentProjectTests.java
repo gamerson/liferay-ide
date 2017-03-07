@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.project.core.tests.fragment;
+package com.liferay.ide.maven.core.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,6 +25,7 @@ import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOp;
 import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOpMethods;
 import com.liferay.ide.project.core.modules.fragment.OverrideFilePath;
 import com.liferay.ide.server.core.tests.ServerCoreBase;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -39,7 +40,7 @@ import org.junit.Test;
 /**
  * @author Joye Luo
  */
-public class NewModuleFragmentProjectOpTests extends ServerCoreBase
+public class MavenModuleFragmentProjectTests extends ServerCoreBase
 {
 
     @Override
@@ -109,10 +110,6 @@ public class NewModuleFragmentProjectOpTests extends ServerCoreBase
 
         assertNotNull( runtime );
 
-        ServerCore.getRuntimes();
-
-        assertNotNull( runtime );
-
         op.setProjectName( "gradle-module-fragment" );
         op.setProjectName( "test-gradle-module-fragment" );
         op.setLiferayRuntimeName( runtimeName );
@@ -161,5 +158,4 @@ public class NewModuleFragmentProjectOpTests extends ServerCoreBase
 
         assertTrue( overrideFile1.exists() );
     }
-
 }
