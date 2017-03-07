@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.liferay.ide.kaleo.ui.editorHelpers">
+      <editorHelper
+            class="com.liferay.ide.kaleo.groovy.ui.GroovyScriptEditorHelper"
+            editorId="com.liferay.ide.kaleo.groovy.ui.editor"
+            fileExtension="groovy"
+            languageType="groovy">
+      </editorHelper>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.liferay.ide.kaleo.groovy.ui.editor.KaleoGroovyEditor"
+            contributorClass="org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditorActionContributor"
+            default="false"
+            id="com.liferay.ide.kaleo.groovy.ui.editor"
+            name="Workflow Groovy Editor"
+            symbolicFontName="org.eclipse.jdt.ui.editors.textfont">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.groovy.core.typeLookup">
+      <lookup
+            lookup="com.liferay.ide.kaleo.groovy.ui.KaleoWorkflowTypeLookup">
+         <appliesTo
+               projectNature="org.eclipse.jdt.core.javanature">
+         </appliesTo>
+      </lookup>
+   </extension>
+   <extension
+         point="org.codehaus.groovy.eclipse.codeassist.completion.completionProposalProvider">
+      <proposalProvider
+            description="Provides proposals for Kaleo workflow groovy scripts"
+            name="Kaleo Designer"
+            proposalProvider="com.liferay.ide.kaleo.groovy.ui.KaleoWorkflowProposalProvider">
+         <appliesTo
+               projectNature="org.eclipse.jdt.core.javanature">
+         </appliesTo>
+      </proposalProvider>
+   </extension>
+   <extension
+         point="org.codehaus.groovy.eclipse.codeassist.completion.completionProposalFilter">
+      <proposalFilter
+            description="Sorts Kaleo workflow context variables to the top"
+            name="Kaleo Designer Filter"
+            proposalFilter="com.liferay.ide.kaleo.groovy.ui.KaleoWorkflowProposalFilter">
+         <appliesTo
+               projectNature="org.eclipse.jdt.core.javanature">
+         </appliesTo>
+      </proposalFilter>
+   </extension>
+   
+
+</plugin>
