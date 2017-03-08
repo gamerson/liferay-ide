@@ -25,6 +25,11 @@ public class ModuleProjectUseDefaultLocationListener extends ModuleProjectNameLi
     protected void handleTypedEvent( PropertyContentEvent event )
     {
         final BaseModuleOp op = op( event );
+        
+        if(op == null)
+        {
+            System.out.println( "jjjjjjjjjjjjjjjjjjjjjjj" );
+        }
 
         if( op.getUseDefaultLocation().content( true ) )
         {
