@@ -77,7 +77,25 @@ public class LiferayWorkspaceUtil
         }
     }
 
-    public static boolean isValidWorkspaceLocation( String location )
+    public static boolean isValidGradleWorkspaceLocation( String location )
+    {
+        File workspaceDir = new File( location );
+
+        File buildGradle = new File( workspaceDir, "build.gradle" );
+        File settingsGradle = new File( workspaceDir, "settings.gradle" );
+        File gradleProperties = new File( workspaceDir, "gradle.properties" );
+
+        if( !( buildGradle.exists() && settingsGradle.exists() && gradleProperties.exists() ) )
+        {
+            return false;
+        }
+
+        final String settingsContent = FileUtil.readContents( settingsGradle, true );
+
+        return settingsContent != null && PATTERN_WORKSPACE_PLUGIN.matcher( settingsContent ).matches();
+    }
+
+    public static boolean isValidMavenWorkspaceLocation( String location )
     {
         File workspaceDir = new File( location );
 
@@ -93,18 +111,17 @@ public class LiferayWorkspaceUtil
             }
         }
 
-        File buildGradle = new File( workspaceDir, "build.gradle" );
-        File settingsGradle = new File( workspaceDir, "settings.gradle" );
-        File gradleProperties = new File( workspaceDir, "gradle.properties" );
+        return false;
+    }
 
-        if( !( buildGradle.exists() && settingsGradle.exists() && gradleProperties.exists() ) )
+    public static boolean isValidWorkspaceLocation( String location )
+    {
+        if( isValidMavenWorkspaceLocation( location ) || isValidGradleWorkspaceLocation( location ) )
         {
-            return false;
+            return true;
         }
 
-        final String settingsContent = FileUtil.readContents( settingsGradle, true );
-
-        return settingsContent != null && PATTERN_WORKSPACE_PLUGIN.matcher( settingsContent ).matches();
+        return false;
     }
 
     private final static Pattern PATTERN_WORKSPACE_PLUGIN = Pattern.compile(".*apply.*plugin.*:.*[\'\"]com\\.liferay\\.workspace[\'\"].*", Pattern.MULTILINE | Pattern.DOTALL );
@@ -261,6 +278,8 @@ public class LiferayWorkspaceUtil
 
     public static String loadConfiguredHomeDir( String location )
     {
-        return getLiferayWorkspaceGradleProperty( location, "liferay.workspace.home.dir", "bundles" );
+        String result = getLiferayWorkspaceGradleProperty( location, "liferay.workspace.home.dir", "bundles" );
+
+        return result == null ? "bundles" : result;
     }
 }
