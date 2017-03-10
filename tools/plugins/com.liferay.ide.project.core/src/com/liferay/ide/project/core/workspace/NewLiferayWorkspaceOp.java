@@ -14,7 +14,11 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.workspace;
 
+import com.liferay.ide.project.core.modules.PropertyKey;
+
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ElementType;
+import org.eclipse.sapphire.ListProperty;
 import org.eclipse.sapphire.Type;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
@@ -34,6 +38,7 @@ import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
 
 /**
  * @author Andy Wu
+ * @author Terry Jia
  */
 public interface NewLiferayWorkspaceOp extends BaseLiferayWorkspaceOp
 {
@@ -81,6 +86,73 @@ public interface NewLiferayWorkspaceOp extends BaseLiferayWorkspaceOp
 
     @Service( impl = NewLiferayWorkspaceServerNameService.class )
     ValueProperty PROP_SERVER_NAME = new ValueProperty( TYPE, BaseLiferayWorkspaceOp.PROP_SERVER_NAME );
+
+    // *** Environment ***
+
+    @Label( standard = "environment" )
+    @DefaultValue( text = "local" )
+    ValueProperty PROP_ENVIRONMENT = new ValueProperty( TYPE, "Environment" );
+
+    Value<String> getEnvironment();
+
+    void setEnvironment( String environment );
+
+    // *** ModulesDefaultRepositoryEnabled ***
+
+    @Type( base = Boolean.class )
+    @DefaultValue( text = "false" )
+    @Label( standard = "modules default repository enabled" )
+    ValueProperty PROP_MODULES_DEFAULT_REPOSITORY_ENABLED =
+        new ValueProperty( TYPE, "ModulesDefaultRepositoryEnabled" );
+
+    Value<Boolean> getModulesDefaultRepositoryEnabled();
+
+    void setModulesDefaultRepositoryEnabled( Boolean modulesDefaultRepositoryEnabled );
+
+    // *** ModulesDir ***
+
+    @Label( standard = "modules dir" )
+    @DefaultValue( text = "modules" )
+    ValueProperty PROP_MODULES_DIR = new ValueProperty( TYPE, "ModulesDir" );
+
+    Value<String> getModulesDir();
+
+    void setModulesDir( String modulesDir );
+
+    // *** ThemesDir ***
+
+    @Label( standard = "themes dir" )
+    @DefaultValue( text = "themes" )
+    ValueProperty PROP_THEMES_DIR = new ValueProperty( TYPE, "ThemesDir" );
+
+    Value<String> getThemesDir();
+
+    void setThemesDir( String themesDir );
+
+    // *** WarsDir ***
+
+    @Label( standard = "wars dir" )
+    @DefaultValue( text = "wars" )
+    ValueProperty PROP_WARS_DIR = new ValueProperty( TYPE, "WarsDir" );
+
+    Value<String> getWarsDir();
+
+    void setWarsDir( String warsDir );
+
+    // *** AdditionalProperties ***
+
+    @Type( base = AdditionalProperty.class )
+    @Label( standard = "additional properties" )
+    ListProperty PROP_ADDITIONAL_PROPERTIES = new ListProperty( TYPE, "AdditionalProperties" );
+
+    ElementList<AdditionalProperty> getAdditionalProperties();
+
+    // *** PropertyKeys ***
+
+    @Type( base = PropertyKey.class )
+    @Label( standard = "Properties" )
+    ListProperty PROP_PROPERTYKEYS = new ListProperty( TYPE, "PropertyKeys" );
+    ElementList<PropertyKey> getPropertyKeys();
 
     // *** Method: execute ***
 
