@@ -202,6 +202,24 @@ public class LiferayWorkspaceUtil
         return retval;
     }
 
+    public static String getLiferayWorkspaceProjectBundlesDir( final IProject project )
+    {
+        String retval = null;
+
+        if( project != null )
+        {
+            final IPath projectLocation = project.getLocation();
+
+            if( projectLocation != null )
+            {
+                retval = getLiferayWorkspaceGradleProperty( projectLocation.toPortableString(),
+                    "#liferay.workspace.home.dir", "bundles" );
+            }
+        }
+
+        return retval;
+    }
+
     public static String getLiferayWorkspaceProjectThemesDir( final IProject project )
     {
         String retval = null;
