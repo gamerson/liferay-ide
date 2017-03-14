@@ -46,16 +46,11 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 
         if( server != null )
         {
-//            if( server.shouldPublish() && ServerCore.isAutoPublishing() )
-//            {
-//                server.publish( IServer.PUBLISH_INCREMENTAL, monitor );
-//            }
-
             launchServer( server, config, mode, launch, monitor );
         }
     }
 
-    private void launchServer(
+    protected void launchServer(
         final IServer server, final ILaunchConfiguration config, final String mode, final ILaunch launch,
         final IProgressMonitor monitor ) throws CoreException
     {
@@ -75,10 +70,10 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 
         final Map<String, Object> vmAttributesMap = getVMSpecificAttributesMap( config );
 
-        final PortalServerBehavior portalServer =
+        final PortalServerBehavior portalServerBehavior =
             (PortalServerBehavior) server.loadAdapter ( PortalServerBehavior.class, monitor );
 
-        final String classToLaunch = portalServer.getClassToLaunch();
+        final String classToLaunch = portalServerBehavior.getClassToLaunch();
         final String[] classpath = getClasspath( config );
 
         final VMRunnerConfiguration runConfig = new VMRunnerConfiguration( classToLaunch, classpath );
@@ -95,16 +90,16 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
             runConfig.setBootClassPath( bootpath );
         }
 
-        portalServer.launchServer( launch, mode, monitor );
+        portalServerBehavior.launchServer( launch, mode, monitor );
 
         try
         {
             runner.run( runConfig, launch, monitor );
-            portalServer.addProcessListener( launch.getProcesses()[0] );
+            portalServerBehavior.addProcessListener( launch.getProcesses()[0] );
         }
         catch( Exception e )
         {
-            portalServer.cleanup();
+        	portalServerBehavior.cleanup();
         }
     }
 
