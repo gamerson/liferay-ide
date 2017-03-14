@@ -61,7 +61,8 @@ public class LiferayServerModuleLabelDecorator extends ModuleLabelDecorator
                 IServer server = portalServer.getServer();
                 IServerType serverType = server.getServerType();
 
-                if( serverType.getRuntimeType().getId().equals( "com.liferay.ide.server.portal.runtime" ) )
+                if( serverType.getRuntimeType().getId().equals( "com.liferay.ide.server.portal.runtime" ) || 
+                                serverType.getRuntimeType().getId().equals( "com.liferay.ide.eclipse.server.ee.websphere.runtime.v7" ) )
                 {
                     bundleImage = getBundleModuleImage();
                 }
