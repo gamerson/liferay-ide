@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -40,6 +41,7 @@ import org.junit.Test;
  */
 public class ImportMavenLiferayWorkspaceOpTests
 {
+    @Ignore
     @Before
     public void clearWorkspace() throws Exception
     {
@@ -49,6 +51,7 @@ public class ImportMavenLiferayWorkspaceOpTests
         }
     }
 
+    @Ignore
     @Test
     public void testImportMavenLiferayWorkspaceOp() throws Exception
     {
