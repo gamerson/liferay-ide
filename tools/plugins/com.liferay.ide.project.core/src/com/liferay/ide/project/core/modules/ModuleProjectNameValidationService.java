@@ -14,127 +14,48 @@
  *******************************************************************************/
 package com.liferay.ide.project.core.modules;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.model.ProjectName;
-import com.liferay.ide.project.core.util.ValidationUtil;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
 
-import java.io.File;
-
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.sapphire.FilteredListener;
-import org.eclipse.sapphire.PropertyContentEvent;
-import org.eclipse.sapphire.modeling.Path;
-import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.platform.StatusBridge;
-import org.eclipse.sapphire.services.ValidationService;
+import org.eclipse.sapphire.ValueProperty;
 
 /**
  * @author Simon Jiang
  * @author Andy Wu
  */
-public class ModuleProjectNameValidationService extends ValidationService
+public class ModuleProjectNameValidationService extends AbstractModuleProjectNameValidationService<NewLiferayModuleProjectOp>
 {
-    private static final String PROJECT_NAME_REGEX = "[A-Za-z0-9_\\-.]+";
-
-    private FilteredListener<PropertyContentEvent> listener;
-
     @Override
-    protected void initValidationService()
+    protected <A> A getData( String key, Class<A> type )
     {
-        super.initValidationService();
+        A retval = null;
 
-        listener = new FilteredListener<PropertyContentEvent>()
+        if( "ProjectNameValue".equals( key ) )
         {
-            @Override
-            protected void handleTypedEvent( PropertyContentEvent event )
-            {
-                if( ! event.property().definition().equals( BaseModuleOp.PROP_FINAL_PROJECT_NAME )
-                                && ! event.property().definition().equals( BaseModuleOp.PROP_PROJECT_NAMES )
-                                && ! event.property().definition().equals( ProjectName.PROP_PROJECT_NAME ) )
-                {
-                    refresh();
-                }
-            }
-        };
-
-        op().attach( listener, "*" );
-    }
-
-    @Override
-    protected Status compute()
-    {
-        Status retval = Status.createOkStatus();
-
-        final NewLiferayModuleProjectOp op = op();
-        final String currentProjectName = op.getProjectName().content();
-
-        if( !CoreUtil.empty( currentProjectName ) )
+            retval = type.cast( op().getProjectName().content() );
+        }
+        else if( "LocationValue".equals( key ) )
         {
-            final IStatus nameStatus = CoreUtil.getWorkspace().validateName( currentProjectName, IResource.PROJECT );
-
-            if( !nameStatus.isOK() )
-            {
-                return StatusBridge.create( nameStatus );
-            }
-
-            if( ValidationUtil.isExistingProjectName( currentProjectName ) )
-            {
-                return Status.createErrorStatus( "A project with that name(ignore case) already exists." );
-            }
-
-            if( !isValidProjectName( currentProjectName ) )
-            {
-                return Status.createErrorStatus( "The project name is invalid." );
-            }
-
-            final Path currentProjectLocation = op.getLocation().content( true );
-
-            // double check to make sure this project wont overlap with existing dir
-            if( currentProjectLocation != null )
-            {
-                final String currentPath = currentProjectLocation.toOSString();
-                final IPath osPath = org.eclipse.core.runtime.Path.fromOSString( currentPath );
-
-                final IStatus projectStatus =
-                    op.getProjectProvider().content().validateProjectLocation( currentProjectName, osPath );
-
-                if( !projectStatus.isOK() )
-                {
-                    return StatusBridge.create( projectStatus );
-                }
-
-                File projectFodler = osPath.append( currentProjectName ).toFile();
-
-                if( projectFodler.exists() && projectFodler.list().length > 0 )
-                {
-                    return StatusBridge.create(
-                        ProjectCore.createErrorStatus( "Target project folder is not empty." ) );
-                }
-            }
+            retval = type.cast( op().getLocation().content() );
         }
 
         return retval;
     }
 
     @Override
-    public void dispose()
+    protected NewLiferayModuleProjectOp op()
     {
-        super.dispose();
-
-        op().detach( listener, "*" );
+        return context(NewLiferayModuleProjectOp.class);
     }
 
-    private boolean isValidProjectName( String currentProjectName )
+    @Override
+    protected NewLiferayProjectProvider<NewLiferayModuleProjectOp> getProjectProvider()
     {
-        return currentProjectName.matches( PROJECT_NAME_REGEX );
+        return op().getProjectProvider().content();
     }
 
-    private NewLiferayModuleProjectOp op()
+    @Override
+    protected ValueProperty getProjectNameValueProperty()
     {
-        return context( NewLiferayModuleProjectOp.class );
+        return NewLiferayModuleProjectOp.PROP_PROJECT_NAME;
     }
-
 }
