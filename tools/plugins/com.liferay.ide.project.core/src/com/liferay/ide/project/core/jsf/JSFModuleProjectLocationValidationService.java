@@ -12,18 +12,34 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.modules;
+
+package com.liferay.ide.project.core.jsf;
 
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.modules.AbstractProjectLocationValidationService;
 
-import org.eclipse.sapphire.ValueProperty;
+import org.eclipse.sapphire.Listener;
 
 /**
  * @author Simon Jiang
- * @author Andy Wu
  */
-public class ModuleProjectNameValidationService extends AbstractModuleProjectNameValidationService<NewLiferayModuleProjectOp>
+public class JSFModuleProjectLocationValidationService
+    extends AbstractProjectLocationValidationService<NewLiferayJSFModuleProjectOp>
 {
+
+    @Override
+    protected NewLiferayProjectProvider<NewLiferayJSFModuleProjectOp> getProjectProvider()
+    {
+        return op().getProjectProvider().content();
+    }
+
+    @Override
+    protected void attchListener( final Listener listener )
+    {
+        op().getProjectName().attach( listener );
+        op().getProjectProvider().attach( listener );
+    }
+
     @Override
     protected <A> A getData( String key, Class<A> type )
     {
@@ -33,28 +49,21 @@ public class ModuleProjectNameValidationService extends AbstractModuleProjectNam
         {
             retval = type.cast( op().getProjectName().content() );
         }
-        else if ( "Location".equals( key ) )
+        else if( "Location".equals( key ) )
         {
             retval = type.cast( op().getLocation().content() );
+        }
+        else if( "UseDefaultLocation".equals( key ) )
+        {
+            retval = type.cast( op().getUseDefaultLocation().content() );
         }
         return retval;
     }
 
     @Override
-    protected NewLiferayModuleProjectOp op()
+    protected NewLiferayJSFModuleProjectOp op()
     {
-        return context(NewLiferayModuleProjectOp.class);
+        return context( NewLiferayJSFModuleProjectOp.class );
     }
 
-    @Override
-    protected NewLiferayProjectProvider<NewLiferayModuleProjectOp> getProjectProvider()
-    {
-        return op().getProjectProvider().content();
-    }
-
-    @Override
-    protected ValueProperty getProjectNameValueProperty()
-    {
-        return NewLiferayModuleProjectOp.PROP_PROJECT_NAME;
-    }
 }
