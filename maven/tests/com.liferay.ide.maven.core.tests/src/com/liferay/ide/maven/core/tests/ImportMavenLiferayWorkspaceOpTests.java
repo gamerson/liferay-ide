@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
+import org.eclipse.sapphire.modeling.Status;
 import org.junit.Test;
 
 /**
@@ -56,6 +57,10 @@ public class ImportMavenLiferayWorkspaceOpTests
         File wsFolder = new File( eclipseWorkspaceLocation, "maven-liferay-workspace" );
 
         op.setWorkspaceLocation( wsFolder.getAbsolutePath() );
+
+        Status validationStatus = op.validation();
+
+        assertTrue( validationStatus.ok() );
 
         op.execute( new ProgressMonitor() );
 
