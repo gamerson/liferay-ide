@@ -60,5 +60,13 @@
         <module>com.liferay.ide.ui.notifications</module>
         <module>com.liferay.ide.ui.snippets</module>
         <module>com.liferay.ide.xml.search.ui</module>
+        <module>com.liferay.ide.color.editor.ui</module>
+        <module>com.liferay.ide.freemarker</module>
+        <module>com.liferay.ide.kaleo.core</module>
+        <module>com.liferay.ide.kaleo.groovy.ui</module>
+        <module>com.liferay.ide.kaleo.ui</module>
+        <module>com.liferay.ide.portal.core</module>
+        <module>com.liferay.ide.portal.ui</module>
+        <module>com.liferay.ide.scripting.core</module>
     </modules>
 </project>
