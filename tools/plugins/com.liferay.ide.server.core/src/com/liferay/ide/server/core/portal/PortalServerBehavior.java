@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -83,6 +85,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     private transient PingThread ping = null;
     private transient IDebugEventSetListener processListener;
     private BundleSupervisor _bundleSupervisor;
+    private Pattern aQuteAgentPortPattern = Pattern.compile("-DaQute.agent.server.port=([0-9]+)");
 
     public PortalServerBehavior()
     {
@@ -888,7 +891,32 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     public void startBundleSupervisor() throws Exception
     {
         _bundleSupervisor = new BundleSupervisor();
-        int agentPort = getServer().getAttribute( AGENT_PORT, Agent.DEFAULT_PORT );
+
+        int agentPort = Agent.DEFAULT_PORT;
+
+        try
+        {
+            String launchVmArguments =
+                getServer().getLaunchConfiguration( true, null ).getWorkingCopy().getAttribute( ATTR_VM_ARGUMENTS, "" );
+
+            Matcher matcher = aQuteAgentPortPattern.matcher( launchVmArguments );
+
+            String agentPortStr = null;
+
+            if( matcher.find() )
+            {
+                agentPortStr = matcher.group( 1 );
+            }
+
+            if( !CoreUtil.empty( agentPortStr ) )
+            {
+                agentPort = Integer.parseInt( agentPortStr );
+            }
+        }
+        catch( Exception e )
+        {
+            LiferayServerCore.logError( "can't get agent port from server launch configuration ", e );
+        }
 
         _bundleSupervisor.connect( getServer().getHost(), agentPort );
     }
