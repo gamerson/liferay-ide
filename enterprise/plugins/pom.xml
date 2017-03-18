@@ -36,5 +36,11 @@
     <modules>
         <module>com.liferay.ide.kaleo.core</module>
         <module>com.liferay.ide.scripting.core</module>
+        <module>com.liferay.ide.freemarker</module>
+        <module>com.liferay.ide.kaleo.groovy.ui</module>
+        <module>com.liferay.ide.kaleo.ui</module>
+        <module>com.liferay.ide.kaleo.ui</module>
+        <module>com.liferay.ide.portal.core</module>
+        <module>com.liferay.ide.portal.ui</module>
     </modules>
 </project>
