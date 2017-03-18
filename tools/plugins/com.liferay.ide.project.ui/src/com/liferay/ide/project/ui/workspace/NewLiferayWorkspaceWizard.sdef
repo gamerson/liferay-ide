@@ -68,6 +68,25 @@
             <margin-vertical>0</margin-vertical>
             <margin>0</margin>
         </page>
+        <page>
+            <id>LiferayWorkspaceSettingWizardPage</id>
+            <label>Liferay Workspace Setting</label>
+            <description>Liferay Workspace Setting</description>
+            <content>
+                <property-editor>Environment</property-editor>
+                <property-editor>ModulesDefaultRepositoryEnabled</property-editor>
+                <property-editor>ModulesDir</property-editor>
+                <property-editor>ThemesDir</property-editor>
+                <property-editor>WarsDir</property-editor>
+                <property-editor>
+                    <property>AdditionalProperties</property>
+                    <scale-vertically>true</scale-vertically>
+                </property-editor>
+            </content>
+            <margin-right>10</margin-right>
+            <margin-left>0</margin-left>
+            <visible-when>${ProjectProvider == 'gradle-liferay-workspace'}</visible-when>
+        </page>
         <description>Create a new Liferay Workspace project for developing modules and themes for Liferay 7</description>
         <image>LiferayWorkspaceWizard.png</image>
         <element-type>com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp</element-type>
