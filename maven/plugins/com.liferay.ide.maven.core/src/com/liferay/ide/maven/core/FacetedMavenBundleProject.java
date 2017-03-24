@@ -16,12 +16,11 @@ package com.liferay.ide.maven.core;
 
 import com.liferay.ide.core.IBundleProject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -59,21 +58,18 @@ public class FacetedMavenBundleProject extends FacetedMavenProject implements IB
     {
         IPath outputJar = null;
 
+        final IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( getProject(), monitor );
         final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( this.getProject() );
 
-        final List<String> goals = new ArrayList<>();
-
-        if( cleanBuild )
+        if( cleanBuild || !isAutoBuild() )
         {
-            goals.add( "clean" );
+            this.getProject().build( IncrementalProjectBuilder.CLEAN_BUILD, monitor );
+            this.getProject().build( IncrementalProjectBuilder.FULL_BUILD, monitor );
         }
 
-        goals.add( "package" );
-
-        mavenProjectBuilder.execGoals( goals, monitor );
+        mavenProjectBuilder.execPackageMojo( projectFacade, "war:war", monitor );
 
         // we are going to try to get the output jar even if the package failed.
-        final IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade( getProject(), monitor );
         final MavenProject mavenProject = projectFacade.getMavenProject( monitor );
 
         final String targetName = mavenProject.getBuild().getFinalName() + ".war";
@@ -105,6 +101,11 @@ public class FacetedMavenBundleProject extends FacetedMavenProject implements IB
     public String getSymbolicName() throws CoreException
     {
         return this.bundleProject.getSymbolicName();
+    }
+
+    private boolean isAutoBuild()
+    {
+        return ResourcesPlugin.getWorkspace().getDescription().isAutoBuilding();
     }
 
     @Override
