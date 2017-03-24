@@ -21,7 +21,6 @@ import com.liferay.ide.project.core.AbstractProjectBuilder;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +29,6 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecution;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.core.resources.IFile;
@@ -191,7 +189,7 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
         return retval;
     }
 
-    public IStatus execJarMojo( IMavenProjectFacade projectFacade, IProgressMonitor monitor ) throws CoreException
+    public IStatus execPackageMojo( IMavenProjectFacade projectFacade, String packageMojo, IProgressMonitor monitor ) throws CoreException
     {
 
         IStatus retval = null;
@@ -210,7 +208,7 @@ public class MavenProjectBuilder extends AbstractProjectBuilder
 
                 final IMaven maven = MavenPlugin.getMaven();
 
-                final MavenExecutionPlan plan = maven.calculateExecutionPlan( mavenProject, Arrays.asList( "jar:jar" ), true, monitor );
+                final MavenExecutionPlan plan = maven.calculateExecutionPlan( mavenProject, Arrays.asList( packageMojo ), true, monitor );
                 final List<MojoExecution> mojoExecutions = plan.getMojoExecutions();
 
                 if( mojoExecutions != null )

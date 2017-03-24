@@ -110,7 +110,7 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
             this.getProject().build( IncrementalProjectBuilder.FULL_BUILD, monitor );
         }
 
-        mavenProjectBuilder.execJarMojo( projectFacade, monitor );
+        mavenProjectBuilder.execPackageMojo( projectFacade, "jar:jar", monitor );
 
         final MavenProject mavenProject = projectFacade.getMavenProject( monitor );
 
