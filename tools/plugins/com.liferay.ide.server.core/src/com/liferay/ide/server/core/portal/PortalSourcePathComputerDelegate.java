@@ -14,11 +14,9 @@
  *******************************************************************************/
 package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
-
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,12 +29,17 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.sourcelookup.ISourceContainer;
 import org.eclipse.debug.core.sourcelookup.ISourcePathComputer;
+import org.eclipse.debug.core.sourcelookup.containers.ExternalArchiveSourceContainer;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.sourcelookup.containers.JavaProjectSourceContainer;
 import org.eclipse.jdt.launching.sourcelookup.containers.JavaSourcePathComputer;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
 
 
 /**
@@ -54,6 +57,31 @@ public class PortalSourcePathComputerDelegate extends JavaSourcePathComputer
 
     @Override
     public ISourceContainer[] computeSourceContainers(
+        ILaunchConfiguration configuration, IProgressMonitor monitor ) throws CoreException
+    {
+		final IServer server = ServerUtil.getServer(configuration);
+		List<ISourceContainer> containers = new ArrayList<ISourceContainer>();
+		ISourceContainer[] webSourceContainer = getWebModuleSourceContainer( configuration, monitor );
+		containers.addAll( Arrays.asList( webSourceContainer ) );
+
+		final IModule[] modules = server.getModules();
+
+		for ( int i = 0; i < modules.length; i++ )
+		{
+		    final IProject project = modules[i].getProject();
+		    final ILiferayProject lrproject = LiferayCore.create( project );
+		    Path[] externalUserLibs = lrproject.getExternalUserLibs();
+
+		    for ( Path libPath : externalUserLibs )
+		    {
+		        ExternalArchiveSourceContainer externalArchiveSourceContainer = new ExternalArchiveSourceContainer( libPath.toString(), true );
+		        containers.add( externalArchiveSourceContainer );
+			}
+		}
+		return containers.toArray( new ISourceContainer[ containers.size() ] );
+    }
+
+    public ISourceContainer[] getWebModuleSourceContainer(
         ILaunchConfiguration configuration, IProgressMonitor monitor ) throws CoreException
     {
         final List<ISourceContainer> containers = new ArrayList<ISourceContainer>();
