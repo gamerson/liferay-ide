@@ -603,6 +603,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
         createHorizontalSpacer = createHorizontalSpacer( this, 3 );
         createSeparator = createSeparator( this, 3 );
 
+        new Label(this, SWT.None);
         importButton = SWTUtil.createButton( pageParent, "Import Projects" );
         importButton.addSelectionListener( new SelectionAdapter()
         {
