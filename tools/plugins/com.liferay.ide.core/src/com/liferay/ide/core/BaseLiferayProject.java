@@ -15,17 +15,18 @@
 
 package com.liferay.ide.core;
 
-import com.liferay.ide.core.util.CoreUtil;
-
 import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+
+import com.liferay.ide.core.util.CoreUtil;
 
 /**
  * @author Gregory Amerson
@@ -125,5 +126,11 @@ public abstract class BaseLiferayProject implements ILiferayProject
         }
 
         return retval;
+    }
+
+    @Override
+    public java.nio.file.Path[] getExternalUserLibs()
+    {
+        return null;
     }
 }
