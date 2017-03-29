@@ -430,4 +430,19 @@ public class UpgradePomPage extends Page
         handleFindEvent();
     }
 
+    @Override
+    public void onSelectionChanged( int targetSelection )
+    {
+        Page selectedPage = UpgradeView.getPage(targetSelection);
+
+        String selectedPageId = selectedPage.getPageId();
+
+        if ( !selectedPageId.equals( getPageId() ) )
+        {
+            return;
+        }
+
+        handleFindEvent();
+    }
+
 }
