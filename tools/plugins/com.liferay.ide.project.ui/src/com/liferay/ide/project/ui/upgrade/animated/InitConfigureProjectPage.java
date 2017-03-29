@@ -68,6 +68,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.sapphire.Event;
 import org.eclipse.sapphire.Listener;
@@ -215,7 +216,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
     private boolean validationResult;
     private Button importButton;
     private Button downloadBundle;
-
+    private Label blankLabel;
     private Composite pageParent;
     private Composite bundleElementComposite;
     private Composite blankComposite;
@@ -609,11 +610,8 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
     private void createBundleElement()
     {
-        blankComposite = SWTUtil.createComposite( pageParent, 1, 1, GridData.FILL );
-
-        bundleElementComposite = SWTUtil.createComposite( pageParent, 2, 1, GridData.FILL_HORIZONTAL );
-
-        downloadBundle = SWTUtil.createCheckButton( bundleElementComposite, "Download Liferay bundle (recommended)", null, true, 1 );
+        downloadBundle = SWTUtil.createCheckButton( pageParent, "Download Liferay bundle (recommended)", null, true, 1 );
+        GridDataFactory.generate( downloadBundle, 2, 1 );
 
         createSubBundleElement();
 
@@ -645,8 +643,8 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
     private void createSubBundleElement()
     {
-        bundleNameLabel = createLabel( bundleElementComposite, "Server Name:" );
-        bundleNameField = createTextField( bundleElementComposite, SWT.NONE );
+        bundleNameLabel = createLabel( pageParent, "Server Name:" );
+        bundleNameField = createTextField( pageParent, SWT.NONE );
 
         bundleNameField.addModifyListener( new ModifyListener()
         {
@@ -661,10 +659,10 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
         bundleNameField.setText( bundleName != null ? bundleName : "" );
 
-        bundleUrlLabel = createLabel( bundleElementComposite, "Bundle URL:" );
+        bundleUrlLabel = createLabel( pageParent, "Bundle URL:" );
 
-        bundleUrlField = createTextField( bundleElementComposite, SWT.NONE );
-        bundleUrlField.setForeground( bundleElementComposite.getDisplay().getSystemColor( SWT.COLOR_DARK_GRAY ) );
+        bundleUrlField = createTextField( pageParent, SWT.NONE );
+        bundleUrlField.setForeground( pageParent.getDisplay().getSystemColor( SWT.COLOR_DARK_GRAY ) );
         bundleUrlField.setText( dataModel.getBundleUrl().content( true ) );
         bundleUrlField.addModifyListener( new ModifyListener()
         {
@@ -711,7 +709,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
         createSeparator = createSeparator( pageParent, 3 );
 
         String backupFolderName = "Backup project into folder";
-
+        blankLabel = new Label( pageParent, SWT.None );
         importButton = SWTUtil.createButton( pageParent, "Import Projects" );
         importButton.addSelectionListener( new SelectionAdapter()
         {
@@ -957,6 +955,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
     {
         if( bundleNameField != null && bundleUrlField != null )
         {
+            downloadBundle.dispose();
             bundleNameField.dispose();
             bundleNameLabel.dispose();
             bundleUrlField.dispose();
@@ -975,6 +974,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
     private void disposeImportElement()
     {
+        blankLabel.dispose();
         createSeparator.dispose();
         createHorizontalSpacer.dispose();
         importButton.dispose();
