@@ -319,11 +319,11 @@ public class LiferayWorkspaceUtil
 
             if( pomFile.exists() )
             {
-                return "maven-liferay-workspace";
+                return "maven";
             }
             else
             {
-                return "gradle-liferay-workspace";
+                return "gradle";
             }
         }
 

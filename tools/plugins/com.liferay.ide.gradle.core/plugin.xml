@@ -5,21 +5,21 @@
          point="com.liferay.ide.core.liferayProjectProviders">
       <liferayProjectProvider
             class="com.liferay.ide.gradle.core.GradleProjectProvider"
-            displayName="Gradle"
+            displayName="gradle"
             id="com.liferay.ide.gradle.core.gradleModuleProjectProvider"
             shortName="gradle-module"
             projectType="module">
       </liferayProjectProvider>
       <liferayProjectProvider
             class="com.liferay.ide.gradle.core.GradleModuleFragmentProjectProvider"
-            displayName="Gradle"
+            displayName="gradle"
             id="com.liferay.ide.gradle.core.gradleModuleFragmentProjectProvider"
             shortName="gradle-module-fragment"
             projectType="module-fragment">
       </liferayProjectProvider>
       <liferayProjectProvider
             class="com.liferay.ide.gradle.core.LiferayGradleWorkspaceProjectProvider"
-            displayName="Gradle"
+            displayName="gradle"
             id="com.liferay.ide.gradle.core.liferayGradleWorkspaceProjectProvider"
             shortName="gradle-liferay-workspace"
             projectType="workspace">
