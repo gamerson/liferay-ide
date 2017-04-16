@@ -113,6 +113,7 @@
             id="com.liferay.ide.portlet.ui.lang.popup"
             objectClass="org.eclipse.core.resources.IResource">
          <action
+               definitionId="com.liferay.ide.project.ui.sdk.command.buildLang"
                class="com.liferay.ide.portlet.ui.action.BuildLanguagesAction"
                definitionId="com.liferay.ide.portlet.ui.buildLang"
                enablesFor="1"
