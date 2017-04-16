@@ -131,7 +131,7 @@
             <id>LiferayPortletPluginProjectWizardPage</id>
             <label>Liferay Portlet Plugin Project</label>
             <description>Choose from available portlet frameworks depending on which technology is most appropriate for this project.</description>
-            <visible-when>${ PluginType == 'portlet' }</visible-when>
+            <visible-when>${ PluginType == 'portlet' || PluginType == 'servicebuilder' }</visible-when>
             <content>
                 <group>
                     <label>Select portlet framework</label>
@@ -196,7 +196,7 @@
                     <visible-when>${PluginType == 'portlet' &amp;&amp; ProjectProvider == 'maven'}</visible-when>
                 </group>
             </content>
-            <visible-when>${ PluginType == 'portlet' &amp;&amp; PortletFramework == 'jsf-2.x' }</visible-when>
+            <visible-when>${ (PluginType == 'portlet' || PluginType == 'servicebuilder') &amp;&amp; PortletFramework == 'jsf-2.x' }</visible-when>
             <id>LiferayJSFPortletPluginProjectWizardPage</id>
             <label>Liferay JSF Portlet Plugin Project</label>
             <description>Choose from available JSF component suites</description>

@@ -311,7 +311,7 @@ public class PluginsSDKProjectProvider extends AbstractLiferayProjectProvider im
         switch( pluginType )
         {
             case servicebuilder:
-                op.setPortletFramework( "mvc" );
+                //op.setPortletFramework( "mvc" );
             case portlet:
                 final String frameworkName = NewLiferayPluginProjectOpMethods.getFrameworkName( op );
 
