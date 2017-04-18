@@ -91,6 +91,10 @@ public class GradleTooling
 
             retval = modelBuilder.withArguments( "--init-script", scriptFile.getAbsolutePath() ).get();
         }
+        catch(Exception e)
+        {
+            GradleCore.logError( "get gradle custom model error", e );
+        }
         finally
         {
             if( connection != null )
