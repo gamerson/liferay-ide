@@ -49,6 +49,11 @@
             </folderList>
         </component>
     </componentList>
+    <preInstallationActionList>
+        <autodetectJava>
+            <promptUser>1</promptUser>
+        </autodetectJava>
+    </preInstallationActionList>
     <postInstallationActionList>
         <if>
             <explanation>is windows</explanation>
@@ -114,7 +119,7 @@
             </elseActionList>
         </if>
         <runProgram>
-            <program>java</program>
+            <program>${java_executable}</program>
             <programArguments>${installJpmCommand}</programArguments>
         </runProgram>
         <if>
