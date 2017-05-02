@@ -43,7 +43,7 @@
       </liferayProjectProvider>
       <liferayProjectProvider
             class="com.liferay.ide.maven.core.NewMavenJSFModuleProjectProvider"
-            displayName="Maven"
+            displayName="maven"
             id="com.liferay.ide.maven.core.mavenJSFModuleProjectProvider"
             priority="high"
             shortName="maven-jsf"
@@ -54,7 +54,7 @@
          point="com.liferay.ide.core.liferayProjectProviders">
       <liferayProjectProvider
             class="com.liferay.ide.maven.core.NewGradleJSFModuleProjectProvider"
-            displayName="Gradle"
+            displayName="gradle"
             id="com.liferay.ide.maven.core.gradleJSFModuleProjectProvider"
             priority="high"
             shortName="gradle-jsf"
@@ -65,7 +65,7 @@
          point="com.liferay.ide.core.liferayProjectProviders">
       <liferayProjectProvider
             class="com.liferay.ide.maven.core.NewMavenModuleProjectProvider"
-            displayName="Maven"
+            displayName="maven"
             id="com.liferay.ide.maven.core.mavenModuleProjectProvider"
             priority="high"
             projectType="module"
@@ -73,14 +73,14 @@
       </liferayProjectProvider>
       <liferayProjectProvider
             class="com.liferay.ide.maven.core.LiferayMavenWorkspaceProjectProvider"
-            displayName="Maven"
+            displayName="maven"
             id="com.liferay.ide.maven.core.liferayMavenWorkspaceProjectProvider"
             projectType="workspace"
             shortName="maven-liferay-workspace">
       </liferayProjectProvider>
       <liferayProjectProvider
             class="com.liferay.ide.maven.core.MavenModuleFragmentProjectProvider"
-            displayName="Maven"
+            displayName="maven"
             id="com.liferay.ide.maven.core.mavenModuleFragmentProjectProvider"
             projectType="module-fragment"
             shortName="maven-module-fragment">
