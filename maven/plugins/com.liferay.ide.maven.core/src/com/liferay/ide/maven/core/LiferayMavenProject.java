@@ -14,12 +14,8 @@
  *******************************************************************************/
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.BaseLiferayProject;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.IProjectBuilder;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.server.remote.IRemoteServerPublisher;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +32,12 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.jdt.IClasspathManager;
 import org.eclipse.m2e.jdt.MavenJdtPlugin;
+
+import com.liferay.ide.core.BaseLiferayProject;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.IProjectBuilder;
+import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.server.remote.IRemoteServerPublisher;
 
 
 /**
@@ -204,4 +206,33 @@ public abstract class LiferayMavenProject extends BaseLiferayProject  implements
         return libs.toArray( new IPath[0] );
     }
 
+    @Override
+    public Path[] getExternalUserLibs()
+    {
+        final List<Path> libs = new ArrayList<Path>();
+
+        final IClasspathManager buildPathManager = MavenJdtPlugin.getDefault().getBuildpathManager();
+
+        try
+        {
+            final IClasspathEntry[] classpath = buildPathManager.getClasspath( 
+                getProject(), IClasspathManager.CLASSPATH_DEFAULT, true, new NullProgressMonitor() );
+
+            for( IClasspathEntry entry : classpath )
+            {
+                IPath sourceFilePath = entry.getSourceAttachmentPath();
+
+                if( sourceFilePath != null && sourceFilePath.toFile().exists() )
+                {
+                    libs.add( Paths.get( entry.getSourceAttachmentPath().toFile().toURI() ) );
+                }
+            }
+        }
+        catch( CoreException e )
+        {
+            LiferayMavenCore.logError( "Unable to get maven classpath.", e ); //$NON-NLS-1$
+        }
+
+        return libs.toArray( new Path[0] );
+    }
 }
