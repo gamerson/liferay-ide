@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.JFaceResources;
@@ -65,15 +66,21 @@ import org.eclipse.sapphire.platform.PathBridge;
 import org.eclipse.sapphire.platform.StatusBridge;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -82,10 +89,8 @@ import org.eclipse.ui.PlatformUI;
  */
 public abstract class AbstractLiferayTableViewCustomPart extends Page
 {
-
     private class LiferayUpgradeValidationListener extends org.eclipse.sapphire.Listener
     {
-
         @Override
         public void handle( org.eclipse.sapphire.Event event )
         {
@@ -140,6 +145,62 @@ public abstract class AbstractLiferayTableViewCustomPart extends Page
         tableData.grabExcessHorizontalSpace = true;
         tableData.horizontalAlignment = SWT.FILL;
         table.setLayoutData( tableData );
+
+        PopupDialog popupDialog = new PopupDialog( parent.getShell(),
+            PopupDialog.INFOPOPUPRESIZE_SHELLSTYLE, true, false, false, false, false, null, null )
+        {
+            private static final int CURSOR_SIZE = 5;
+            private final String extensionDec = "double click can compare";
+
+            protected Point getInitialLocation( Point initialSize )
+            {
+                Display display = getShell().getDisplay();
+                Point location = display.getCursorLocation();
+                location.x += CURSOR_SIZE;
+                //location.y += CURSOR_SIZE;
+                return location;
+            }
+
+            protected Control createDialogArea( Composite parent )
+            {
+                Label label = new Label( parent, SWT.WRAP );
+                label.setText( extensionDec );
+                label.setFont( new Font( null, "Times New Roman", 11, SWT.NORMAL ) );
+                GridData gd = new GridData( GridData.BEGINNING | GridData.FILL_BOTH );
+                gd.horizontalIndent = PopupDialog.POPUP_HORIZONTALSPACING;
+                gd.verticalIndent = PopupDialog.POPUP_VERTICALSPACING;
+                label.setLayoutData( gd );
+                return label;
+            }
+        };
+
+        table.addListener( SWT.MouseHover, new org.eclipse.swt.widgets.Listener()
+        {
+            @Override
+            public void handleEvent( org.eclipse.swt.widgets.Event event )
+            {
+                popupDialog.close();
+                Point pt = new Point(event.x, event.y);
+                TableItem item = table.getItem(pt);
+                if (item == null)
+                  return;
+                Rectangle bounds = item.getBounds();
+
+                if ( bounds.width > pt.x )
+                {
+                    popupDialog.open();
+                }
+            }
+        });
+
+        table.addListener(SWT.MouseExit, new org.eclipse.swt.widgets.Listener()
+        {
+            @Override
+            public void handleEvent( org.eclipse.swt.widgets.Event event )
+            {
+                popupDialog.close();
+            }
+        });
         Composite buttonContainer = new Composite( this, SWT.NONE );
         buttonContainer.setLayout( new GridLayout( 1, false ) );
         buttonContainer.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false, 1, 1 ) );
