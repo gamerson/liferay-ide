@@ -78,6 +78,13 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     }
 
     @Override
+    public String getHttpPort()
+    {
+        // TODO IDE-1955
+        return "8080";
+    }
+
+    @Override
     public IModule[] getChildModules( IModule[] module )
     {
         IModule[] retval = null;
