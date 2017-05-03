@@ -1,6 +1,0 @@
-*.backup
-.settings
-.project
-/outputs/
-/shared/download/
-/shared/lib/blade.jar

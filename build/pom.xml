@@ -34,6 +34,24 @@
             </modules>
         </profile>
         <profile>
+            <id>installers</id>
+            <modules>
+                <module>../tools</module>
+                <module>../jsdt</module>
+                <module>../maven</module>
+                <module>../enterprise</module>
+                <module>com.liferay.ide-repository</module>
+                <module>com.liferay.ide.testing-repository</module>
+                <module>installers</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>installersOnly</id>
+            <modules>
+                <module>installers</module>
+            </modules>
+        </profile>
+        <profile>
             <id>skipTests</id>
             <modules>
                 <module>../tools/plugins</module>
@@ -42,6 +60,8 @@
                 <module>../jsdt/features</module>
                 <module>../maven/plugins</module>
                 <module>../maven/features</module>
+                <module>../enterprise/plugins</module>
+                <module>../enterprise/features</module>
                 <module>com.liferay.ide-repository</module>
             </modules>
         </profile>
