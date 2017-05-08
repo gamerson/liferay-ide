@@ -36,6 +36,7 @@ import org.junit.Test;
  * @author Gregory Amerson
  */
 @SuppressWarnings( "restriction" )
+@Ignore
 public class LiferayMavenProjectCustomJSPValidationTest extends LiferayMavenProjectTestCase
 {
 
@@ -76,6 +77,7 @@ public class LiferayMavenProjectCustomJSPValidationTest extends LiferayMavenProj
     }
 
     @Test
+    @Ignore
     public void testCustomJspValidationDefaults() throws Exception
     {
         final IEclipsePreferences prefs = DefaultScope.INSTANCE.getNode( LiferayMavenCore.PLUGIN_ID );;
