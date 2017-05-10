@@ -213,7 +213,7 @@
                         <argLine>-Xmx1024m -XX:MaxPermSize=512m</argLine>
                         <systemProperties>
                             <liferay.bundles.dir>${liferay.bundles.dir}</liferay.bundles.dir>
-                            <skipBundleTests>${skipBundleTests}</skipBundleTests>
+                            <maven.skip.tests>true</maven.skip.tests>
                         </systemProperties>
                         <dependencies>
 	                        <dependency>

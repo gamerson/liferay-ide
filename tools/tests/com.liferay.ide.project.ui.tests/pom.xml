@@ -212,6 +212,7 @@
                         <systemProperties>
                             <liferay.bundles.dir>${liferay.bundles.dir}</liferay.bundles.dir>
                             <skipBundleTests>${skipBundleTests}</skipBundleTests>
+                            <maven.skip.tests>true</maven.skip.tests>
                         </systemProperties>
                         <dependencies>
 	                        <dependency>
