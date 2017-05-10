@@ -44,6 +44,7 @@
                         <maven.skip.test>true</maven.skip.test>
                         <java.awt.headless>true</java.awt.headless>
                     </systemProperties>
+                    <skipTests>true</skipTests>
                     <excludes>
                         <exclude>**/*ProfilePossibleValuesTests*</exclude>
                     </excludes>

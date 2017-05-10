@@ -63,6 +63,7 @@
                         <maven.skip.test>true</maven.skip.test>
                         <!--osgi.console>1234</osgi.console-->
                     </systemProperties>
+                    <skipTests>true</skipTests>
                     <excludes>
                         <exclude>${exclude.tests}</exclude>
                     </excludes>

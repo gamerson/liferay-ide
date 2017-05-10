@@ -50,6 +50,7 @@
                         <osgi.console>1234</osgi.console>
                         <maven.skip.test>true</maven.skip.test>
                     </systemProperties>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
             <plugin>
