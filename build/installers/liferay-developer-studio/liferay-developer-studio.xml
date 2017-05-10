@@ -27,7 +27,7 @@
                             <origin>../shared/libs/build.gradle</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>../shared/download/liferay-dxp-digital-enterprise-tomcat-7.0-sp2-20170317165321327.zip</origin>
+                            <origin>../shared/download/liferay-ce-portal-tomcat-7.0-ga3-20160804222206210.zip</origin>
                         </distributionFile>
                         <distributionFile>
                             <origin>../shared/download/com.liferay.portal.plugins.sdk-1.0.9-withdependencies.zip</origin>
@@ -194,8 +194,8 @@
             <path>${liferayBundlesPath}</path>
         </createDirectory>
         <copyFile>
-            <destination>${liferayBundlesPath}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp2-20170317165321327.zip</destination>
-            <origin>${installdir}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp2-20170317165321327.zip</origin>
+            <destination>${liferayBundlesPath}${platform_path_separator}liferay-ce-portal-tomcat-7.0-ga3-20160804222206210.zip</destination>
+            <origin>${installdir}${platform_path_separator}liferay-ce-portal-tomcat-7.0-ga3-20160804222206210.zip</origin>
             <ruleList>
                 <compareValues>
                     <logic>equals</logic>
@@ -496,7 +496,7 @@
         <propertiesFileSet>
             <file>${lrws}${platform_path_separator}gradle.properties</file>
             <key>liferay.workspace.bundle.url</key>
-            <value>https://api.liferay.com/downloads/portal/7.0.10.2/liferay-dxp-digital-enterprise-tomcat-7.0-sp2-20170317165321327.zip</value>
+            <value>https://cdn.lfrs.sl/releases.liferay.com/portal/7.0.2-ga3/liferay-ce-portal-tomcat-7.0-ga3-20160804222206210.zip</value>
             <ruleList>
                 <compareValues>
                     <logic>equals</logic>
@@ -524,7 +524,7 @@
             </ruleList>
         </runProgram>
         <deleteFile>
-            <path>${installdir}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp2-20170317165321327.zip</path>
+            <path>${installdir}${platform_path_separator}liferay-ce-portal-tomcat-7.0-ga3-20160804222206210.zip.zip</path>
         </deleteFile>
         <deleteFile>
             <path>${installdir}${platform_path_separator}com.liferay.portal.plugins.sdk-1.0.9-withdependencies.zip</path>

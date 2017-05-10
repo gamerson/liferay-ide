@@ -31,9 +31,9 @@
     <name>Liferay IDE Developer Studio Installer</name>
 
     <properties>
-        <portal-download-base>http://mirrors/files.liferay.com/private/ee/portal</portal-download-base>
-        <portal-version>7.0.10.2</portal-version>
-        <portal-zip-name>liferay-dxp-digital-enterprise-tomcat-7.0-sp2-20170317165321327.zip</portal-zip-name>
+        <portal-download-base>https://cdn.lfrs.sl/releases.liferay.com/portal/</portal-download-base>
+        <portal-version>7.0.2-ga3</portal-version>
+        <portal-zip-name>liferay-ce-portal-tomcat-7.0-ga3-20160804222206210.zip</portal-zip-name>
         <plugin-sdk-download-base>https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public/com/liferay/portal/com.liferay.portal.plugins.sdk</plugin-sdk-download-base>
         <plugin-sdk-zip-name>com.liferay.portal.plugins.sdk-1.0.9-withdependencies.zip</plugin-sdk-zip-name>
         <plugin-sdk-version>1.0.9</plugin-sdk-version>
