@@ -41,7 +41,7 @@
                     <systemProperties>
                         <liferay.bundles.dir>${liferay.bundles.dir}</liferay.bundles.dir>
                         <osgi.console>1234</osgi.console>
-                        <maven.skip.tests>true</maven.skip.tests>
+                        <maven.skip.test>true</maven.skip.test>
                         <java.awt.headless>true</java.awt.headless>
                     </systemProperties>
                     <excludes>
