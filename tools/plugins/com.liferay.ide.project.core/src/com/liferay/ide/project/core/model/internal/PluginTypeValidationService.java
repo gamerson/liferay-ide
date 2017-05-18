@@ -78,6 +78,11 @@ public class PluginTypeValidationService extends ValidationService
                         "The selected Plugins SDK does not support creating theme type plugins.  " +
                             "Please configure version 6.2 or less or using gulp way." );
                 }
+                else if( op.getPluginType().content().equals( PluginType.ext ) && !supportsTypePlugin( op, "ext" ) )
+                {
+                    retval = Status.createErrorStatus( "The selected Plugins SDK does not support creating ext type plugins. " +
+                                    "Please try to confirm whether sdk has ext folder." );
+                }
             }
             else if( op.getPluginType().content().equals( PluginType.ext ) && !supportsTypePlugin( op, "ext" ) )
             {
