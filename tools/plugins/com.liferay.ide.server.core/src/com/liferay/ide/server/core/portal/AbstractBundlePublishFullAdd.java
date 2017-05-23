@@ -1,0 +1,238 @@
+/*******************************************************************************
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ *******************************************************************************/
+
+package com.liferay.ide.server.core.portal;
+
+import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.server.core.LiferayServerCore;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
+import org.osgi.framework.dto.BundleDTO;
+
+/**
+ * @author Gregory Amerson
+ * @author Terry Jia
+ * @author Simon Jiang
+ */
+public abstract class AbstractBundlePublishFullAdd extends AbstractBundlePublishOperation
+{
+
+    public AbstractBundlePublishFullAdd( IServer s, IModule[] modules, BundleDTO[] existingBundles )
+    {
+        super( s, modules, existingBundles );
+    }
+
+    private IStatus autoDeploy( IPath output ) throws CoreException
+    {
+        IStatus retval = null;
+
+        final IPath autoDeployPath = getAutoDeployPath();
+        final IPath statePath = getModulePath().append( "state" );
+
+        if( autoDeployPath.toFile().exists() )
+        {
+            try
+            {
+                FileUtil.writeFileFromStream(
+                    autoDeployPath.append( output.lastSegment() ).toFile(), new FileInputStream( output.toFile() ) );
+
+                retval = Status.OK_STATUS;
+            }
+            catch( IOException e )
+            {
+                retval = LiferayServerCore.error( "Unable to copy file to auto deploy folder", e );
+            }
+        }
+
+        if( statePath.toFile().exists() )
+        {
+            FileUtil.deleteDir( statePath.toFile(), true );
+        }
+
+        return retval;
+    }
+
+    protected boolean cleanBuildNeeded()
+    {
+        return false;
+    }
+
+    @Override
+    public void execute( IProgressMonitor monitor, IAdaptable info ) throws CoreException
+    {
+        for( IModule module : modules )
+        {
+            IStatus retval = Status.OK_STATUS;
+
+            IProject project = module.getProject();
+
+            if( project == null )
+            {
+                continue;
+            }
+
+            final IBundleProject bundleProject = LiferayCore.create( IBundleProject.class, project );
+
+            if( bundleProject != null )
+            {
+                // TODO catch error in getOutputJar and show a popup notification instead
+
+                monitor.subTask( "Building " + module.getName() + " output bundle..." );
+
+                IPath outputJar = null;
+
+                try
+                {
+                    outputJar = bundleProject.getOutputBundle( cleanBuildNeeded(), monitor );
+
+                    if( outputJar != null && outputJar.toFile().exists() )
+                    {
+                        if( this.server.getServerState() == IServer.STATE_STARTED )
+                        {
+                            monitor.subTask(
+                                "Remotely deploying " + module.getName() + " to Liferay module framework..." );
+
+                            retval = remoteDeploy( bundleProject.getSymbolicName(), outputJar, _existingBundles );
+                        }
+                        else
+                        {
+                            retval = autoDeploy( outputJar );
+                        }
+
+                        portalServerBehavior.setModuleState2( new IModule[] { module }, IServer.STATE_STARTED );
+                    }
+                    else
+                    {
+                        retval = LiferayServerCore.error( "Could not create output jar" );
+                    }
+                }
+                catch( Exception e )
+                {
+                    retval = LiferayServerCore.error( "Deploy module project error", e );
+                }
+            }
+            else
+            {
+                retval = LiferayServerCore.error( "Unable to get bundle project for " + module.getProject().getName() );
+            }
+
+            if( retval.isOK() )
+            {
+                this.portalServerBehavior.setModulePublishState2(
+                    new IModule[] { module }, IServer.PUBLISH_STATE_NONE );
+
+                project.deleteMarkers( LiferayServerCore.BUNDLE_OUTPUT_ERROR_MARKER_TYPE, false, 0 );
+            }
+            else
+            {
+                this.portalServerBehavior.setModulePublishState2(
+                    new IModule[] { module }, IServer.PUBLISH_STATE_FULL );
+
+                project.createMarker( LiferayServerCore.BUNDLE_OUTPUT_ERROR_MARKER_TYPE );
+
+                LiferayServerCore.logError( retval );
+            }
+        }
+    }
+
+    private String getBundleUrl( File bundleFile, String bsn ) throws MalformedURLException
+    {
+        String bundleUrl = null;
+
+        if( bundleFile.toPath().toString().toLowerCase().endsWith( ".war" ) )
+        {
+            bundleUrl = "webbundle:" + bundleFile.toURI().toURL().toExternalForm() + "?Web-ContextPath=/" + bsn;
+        }
+        else
+        {
+            bundleUrl = bundleFile.toURI().toURL().toExternalForm();
+        }
+
+        return bundleUrl;
+    }
+
+    private IStatus remoteDeploy( String bsn , IPath output, BundleDTO[] existingBundles )
+    {
+        IStatus retval = null;
+
+        if( output != null && output.toFile().exists() )
+        {
+            BundleSupervisor bundleSupervisor = null;
+
+            try
+            {
+                bundleSupervisor = createBundleSupervisor();
+
+                BundleDTO deployed = bundleSupervisor.deploy(
+                    bsn, output.toFile(), getBundleUrl( output.toFile(), bsn ), existingBundles );
+
+                if( deployed instanceof BundleDTOWithStatus )
+                {
+                    BundleDTOWithStatus withStatus = (BundleDTOWithStatus) deployed;
+
+                    retval = LiferayServerCore.error("Problem with deploying bundle: " + withStatus._status );
+                }
+                else
+                {
+                    retval = new Status( IStatus.OK, LiferayServerCore.PLUGIN_ID, (int) deployed.id, null, null );
+                }
+            }
+            catch( Exception e )
+            {
+                retval = LiferayServerCore.error( "Unable to deploy bundle remotely " +
+                    output.toPortableString(), e );
+            }
+            finally
+            {
+                if( bundleSupervisor != null )
+                {
+                    try
+                    {
+                        bundleSupervisor.close();
+                    }
+                    catch( IOException e1 )
+                    {
+                    }
+                }
+            }
+        }
+        else
+        {
+            retval =
+                LiferayServerCore.error( "Unable to deploy bundle remotely " +
+                    output.toPortableString() );
+        }
+
+        return retval;
+    }
+
+    protected abstract IPath getAutoDeployPath();
+    protected abstract IPath getModulePath();
+}
