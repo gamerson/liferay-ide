@@ -144,11 +144,10 @@ public class ServerUtil
         }
     }
 
-    public static BundleSupervisor createBundleSupervisor( PortalRuntime portalRuntime, IServer server )
+    public static BundleSupervisor createBundleSupervisor( int jmxPort, IServer server )
         throws Exception
     {
         int aQuteAgentPort = Agent.DEFAULT_PORT;
-        int jmxPort = portalRuntime.getPortalBundle().getJmxRemotePort();
 
         try
         {

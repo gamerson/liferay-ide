@@ -14,8 +14,6 @@
  *******************************************************************************/
 package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.server.util.ServerUtil;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +29,9 @@ import org.osgi.framework.dto.BundleDTO;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
-public class BundlePublishOperation extends PublishOperation
+public abstract class AbstractBundlePublishOperation extends PublishOperation
 {
 
     protected final List<IModule> modules;
@@ -41,7 +40,7 @@ public class BundlePublishOperation extends PublishOperation
     protected final IServer server;
     protected final BundleDTO[] _existingBundles;
 
-    public BundlePublishOperation( IServer s, IModule[] modules, BundleDTO[] existingBundles )
+    public AbstractBundlePublishOperation( IServer s, IModule[] modules, BundleDTO[] existingBundles )
     {
         this.server = s;
         this.modules = new ArrayList<IModule>( Arrays.asList( modules ) );
@@ -86,9 +85,5 @@ public class BundlePublishOperation extends PublishOperation
         return 0;
     }
 
-    protected BundleSupervisor createBundleSupervisor() throws Exception
-    {
-        return ServerUtil.createBundleSupervisor( portalRuntime, server );
-    }
-
+    protected abstract BundleSupervisor createBundleSupervisor() throws Exception;
 }
