@@ -76,7 +76,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 {
     public static final String ATTR_STOP = "stop-server";
 
-    private static final String[] JMX_EXCLUDE_ARGS = new String []
+    protected static final String[] JMX_EXCLUDE_ARGS = new String []
     {
         "-Dcom.sun.management.jmxremote",
         "-Dcom.sun.management.jmxremote.port=",
@@ -84,13 +84,123 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         "-Dcom.sun.management.jmxremote.authenticate="
     };
 
+    protected static String renderCommandLine( String[] commandLine, String separator )
+    {
+        if( commandLine == null || commandLine.length < 1 )
+        {
+            return "";
+        }
+
+        StringBuffer buf = new StringBuffer( commandLine[0] );
+
+        for( int i = 1; i < commandLine.length; i++ )
+        {
+            buf.append( separator );
+            buf.append( commandLine[i] );
+        }
+
+        return buf.toString();
+    }
     private IAdaptable info;
-    private transient PingThread ping = null;
-    private transient IDebugEventSetListener processListener;
+    protected transient PingThread ping = null;
+    protected transient IDebugEventSetListener processListener;
 
     public PortalServerBehavior()
     {
         super();
+    }
+
+    protected void addOperation(
+        Class<? extends AbstractBundlePublishOperation> opClass, List<AbstractBundlePublishOperation> tasks, IServer server,
+        IModule[] module, BundleDTO[] existingBundles )
+    {
+        for( AbstractBundlePublishOperation task : tasks )
+        {
+            if( task.getClass().equals( opClass ) )
+            {
+                task.addModule( module );
+                return;
+            }
+        }
+
+        try
+        {
+            AbstractBundlePublishOperation op =
+                opClass.getConstructor(
+                    IServer.class, IModule[].class, BundleDTO[].class ).newInstance(
+                        server, module, existingBundles );
+            tasks.add( op );
+        }
+        catch( Exception e )
+        {
+            LiferayServerCore.logError( "Unable to add bundle operation", e );
+        }
+    }
+
+    public void addOperation( List<AbstractBundlePublishOperation> tasks, IServer server,
+        IModule[] module, BundleDTO[] existingBundles, int kind, int deltaKind , boolean needClean )
+    {
+        switch( kind )
+        {
+            case IServer.PUBLISH_FULL:
+            case IServer.PUBLISH_INCREMENTAL:
+            case IServer.PUBLISH_AUTO:
+                final IProject project = module[0].getProject();
+
+                switch( deltaKind )
+                {
+                    case ServerBehaviourDelegate.ADDED:
+                        addOperation( BundlePublishFullAddCleanBuild.class, tasks, server, module, existingBundles );
+                        break;
+
+                    case ServerBehaviourDelegate.CHANGED:
+                        if (needClean)
+                        {
+                            addOperation( BundlePublishFullAddCleanBuild.class, tasks, server, module, existingBundles );
+                        }
+                        else
+                        {
+                            addOperation( AbstractBundlePublishFullAdd.class, tasks, server, module, existingBundles );
+                        }
+
+                        break;
+
+                    case ServerBehaviourDelegate.REMOVED:
+                        addOperation( BundlePublishFullRemove.class, tasks, server, module, existingBundles );
+                        break;
+
+                    case ServerBehaviourDelegate.NO_CHANGE:
+                        final IBundleProject bundleProject =
+                            LiferayCore.create( IBundleProject.class, project );
+
+                        if( bundleProject != null )
+                        {
+                            try
+                            {
+                                if( isUserRedeploy( module[0] ) ||
+                                    !ServerUtil.bsnExists( bundleProject.getSymbolicName(), existingBundles ) )
+                                {
+                                    addOperation(
+                                        BundlePublishFullAddCleanBuild.class, tasks, server, module, existingBundles );
+                                }
+                            }
+                            catch( CoreException e )
+                            {
+                                LiferayServerCore.logError(
+                                    "Unable to get bsn for project " + project.getName(), e );
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                    }
+                break;
+
+            default:
+                break;
+        }        
     }
 
     public void addProcessListener( final IProcess newProcess )
@@ -161,6 +271,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         setServerState( IServer.STATE_STOPPED );
     }
 
+    public BundleSupervisor createBundleSupervisor() throws Exception
+    {
+        return ServerUtil.createBundleSupervisor( getPortalRuntime().getPortalBundle().getJmxRemotePort(), getServer() );
+    }
+
     public String getClassToLaunch()
     {
         return getPortalRuntime().getPortalBundle().getMainClass();
@@ -175,6 +290,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     public IAdaptable getInfo()
     {
         return this.info;
+    }
+
+    protected IPath getLiferayHome()
+    {
+        return getPortalRuntime().getPortalBundle().getLiferayHome();
     }
 
     private int getNextToken( String s, int start )
@@ -204,7 +324,12 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return -1;
     }
 
-    private PortalRuntime getPortalRuntime()
+    protected File getPortalImplFile()
+    {
+        return getPortalRuntime().getAppServerPortalDir().append( "WEB-INF/lib/portal-impl.jar" ).toFile();
+    }
+
+    protected PortalRuntime getPortalRuntime()
     {
         PortalRuntime retval = null;
 
@@ -216,7 +341,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return retval;
     }
 
-    private PortalServer getPortalServer()
+    protected PortalServer getPortalServer()
     {
         PortalServer retval = null;
 
@@ -228,12 +353,12 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return retval;
     }
 
-    private String[] getRuntimeStartProgArgs()
+    protected String[] getRuntimeStartProgArgs()
     {
         return getPortalRuntime().getPortalBundle().getRuntimeStartProgArgs();
     }
 
-    private String[] getRuntimeStartVMArguments()
+    protected String[] getRuntimeStartVMArguments()
     {
         final List<String> retval = new ArrayList<>();
 
@@ -248,12 +373,13 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return retval.toArray( new String[0] );
     }
 
-    private String[] getRuntimeStopProgArgs()
+    protected String[] getRuntimeStopProgArgs()
     {
         return getPortalRuntime().getPortalBundle().getRuntimeStopProgArgs();
     }
 
-    private String[] getRuntimeStopVMArguments()
+
+    protected String[] getRuntimeStopVMArguments()
     {
         final List<String> retval = new ArrayList<>();
 
@@ -262,6 +388,18 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         Collections.addAll( retval, getPortalRuntime().getPortalBundle().getRuntimeStopVMArgs() );
 
         return retval.toArray( new String[0] );
+    }
+
+    protected boolean isUserRedeploy( IModule module  )
+    {
+        if( getInfo() != null )
+        {
+            Object moduleInfo = getInfo().getAdapter( IModule.class );
+
+            return module.equals( moduleInfo );
+        }
+
+        return false;
     }
 
     public void launchServer( ILaunch launch, String mode, IProgressMonitor monitor ) throws CoreException
@@ -298,7 +436,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         }
     }
 
-    private String mergeArguments(
+    protected String mergeArguments(
         final String orgArgsString, final String[] newArgs, final String[] excludeArgs, boolean keepActionLast )
     {
         String retval = null;
@@ -497,7 +635,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         this.info = null;
     }
-
+    
     @Override
     protected void publishModule(
         final int kind, final int deltaKind, final IModule[] modules, final IProgressMonitor monitor )
@@ -507,13 +645,12 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return;
     }
 
-
     @Override
     protected void publishServer( int kind, IProgressMonitor monitor ) throws CoreException
     {
         setServerPublishState(IServer.PUBLISH_STATE_UNKNOWN);
     }
-
+    
     @Override
     public void redeployModule( final IModule[] module ) throws CoreException
     {
@@ -543,7 +680,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         publish( IServer.PUBLISH_FULL, modules, null, info );
     }
 
-    private void replaceJREConatiner( List<IRuntimeClasspathEntry> oldCp, IRuntimeClasspathEntry newJRECp )
+    protected void replaceJREConatiner( List<IRuntimeClasspathEntry> oldCp, IRuntimeClasspathEntry newJRECp )
     {
         int size = oldCp.size();
 
@@ -574,6 +711,163 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     public void setServerStarted()
     {
         setServerState( IServer.STATE_STARTED );
+    }
+
+    public void setServerStoped()
+    {
+        setServerState( IServer.STATE_STOPPED );
+    }
+
+    protected void setupAgent()
+    {
+        // make sure that agent is either installed or will be installed in modules folder
+
+        // delete legacy jar in static folder cause update the same jar in static will cause portal fail to start
+        final IPath staticPath = getLiferayHome().append( "osgi/static" );
+
+        if( staticPath.append( "biz.aQute.remote.agent.jar" ).toFile().exists() )
+        {
+            try
+            {
+                Files.delete( Paths.get( staticPath.append( "biz.aQute.remote.agent.jar" ).toOSString() ) );
+            }
+            catch( IOException e )
+            {
+                LiferayServerCore.logError( "Unable to remove old remote agent bundle", e );
+            }
+        }
+
+        // check current version of agent and delete old jar and copy latest
+        final IPath modulesPath = getLiferayHome().append( "osgi/modules" );
+        final IPath agentInstalledPath = modulesPath.append( "biz.aQute.remote.agent.jar" );
+
+        File modulesDir = modulesPath.toFile();
+
+        if( !modulesDir.exists() )
+        {
+            modulesDir.mkdirs();
+        }
+
+        File agentFile = agentInstalledPath.toFile();
+
+        if( agentFile.exists() )
+        {
+            boolean shouldDelete = true;
+
+            try(JarFile jarFile = new JarFile( agentFile ))
+            {
+                String bundleVersion = jarFile.getManifest().getMainAttributes().getValue( "Bundle-Version" );
+
+                if( !CoreUtil.empty( bundleVersion ) )
+                {
+                    Version atLeastVersion = new Version( "3.4.0.201704130550-SNAPSHOT" );
+                    Version version = new Version( bundleVersion );
+
+                    if( version.compareTo( atLeastVersion ) >= 0 )
+                    {
+                        shouldDelete = false;
+                    }
+                }
+            }
+            catch( IOException e )
+            {
+            }
+
+            if( shouldDelete )
+            {
+                try
+                {
+                    Files.delete( agentFile.toPath() );
+                }
+                catch( IOException e )
+                {
+                    LiferayServerCore.logError( "Unable to remove old remote agent bundle", e );
+                }
+            }
+        }
+
+        if( !agentFile.exists() )
+        {
+            try
+            {
+                final File file = new File(
+                    FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
+                        "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
+
+                FileUtil.copyFile( file, agentFile );
+            }
+            catch( IOException e )
+            {
+                LiferayServerCore.logError( "Unable to install remote agent into liferay home osgi/modules", e );
+            }
+        }
+    }
+
+    protected void setupAriesJmxBundles()
+    {
+        String[] ariesJmxBundleNames = new String[] { "org.apache.aries.jmx.api.jar", "org.apache.aries.jmx.core.jar",
+            "org.apache.aries.util.jar" };
+
+        String[] ariesJxmBundleFullNames = new String[] { "org.apache.aries.jmx.api-1.1.5.jar",
+            "org.apache.aries.jmx.core-1.1.7.jar", "org.apache.aries.util-1.1.3.jar" };
+
+        // delelte legacy jmx bundles in osgi/static
+        final IPath staticPath = getLiferayHome().append( "osgi/static" );
+
+        for( String bundleName : ariesJmxBundleNames )
+        {
+            File bundleFile = staticPath.append( bundleName ).toFile();
+
+            if( bundleFile.exists() )
+            {
+                try
+                {
+                    Files.delete( bundleFile.toPath() );
+                }
+                catch( IOException e )
+                {
+                    LiferayServerCore.logError( "Unable to remove " + bundleName + " in liferay home osgi/static", e );
+                }
+            }
+        }
+
+        
+        
+        if( !shouldSetUpAriesJmxBundles() )
+        {
+            return;
+        }
+
+        final IPath modulesPath = getLiferayHome().append( "osgi/modules" );
+
+        File modulesDir = modulesPath.toFile();
+
+        if( !modulesDir.exists() )
+        {
+            modulesDir.mkdirs();
+        }
+
+        for( int i = 0; i < ariesJmxBundleNames.length; i++ )
+        {
+            final IPath agentInstalledPath = modulesPath.append( ariesJmxBundleNames[i] );
+
+            File bundleFile = agentInstalledPath.toFile();
+
+            if( !bundleFile.exists() )
+            {
+                try
+                {
+                    final File file = new File(
+                        FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
+                            "bundles/" + ariesJxmBundleFullNames[i] ) ).getFile() );
+
+                    FileUtil.copyFile( file, bundleFile );
+                }
+                catch( IOException e )
+                {
+                }
+            }
+        }
     }
 
     @Override
@@ -686,165 +980,14 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         setupAriesJmxBundles();
     }
-
-    private void setupAgent()
-    {
-        // make sure that agent is either installed or will be installed in modules folder
-
-        // delete legacy jar in static folder cause update the same jar in static will cause portal fail to start
-        final IPath staticPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/static" );
-
-        if( staticPath.append( "biz.aQute.remote.agent.jar" ).toFile().exists() )
-        {
-            try
-            {
-                Files.delete( Paths.get( staticPath.append( "biz.aQute.remote.agent.jar" ).toOSString() ) );
-            }
-            catch( IOException e )
-            {
-                LiferayServerCore.logError( "Unable to remove old remote agent bundle", e );
-            }
-        }
-
-        // check current version of agent and delete old jar and copy latest
-        final IPath modulesPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/modules" );
-        final IPath agentInstalledPath = modulesPath.append( "biz.aQute.remote.agent.jar" );
-
-        File modulesDir = modulesPath.toFile();
-
-        if( !modulesDir.exists() )
-        {
-            modulesDir.mkdirs();
-        }
-
-        File agentFile = agentInstalledPath.toFile();
-
-        if( agentFile.exists() )
-        {
-            boolean shouldDelete = true;
-
-            try(JarFile jarFile = new JarFile( agentFile ))
-            {
-                String bundleVersion = jarFile.getManifest().getMainAttributes().getValue( "Bundle-Version" );
-
-                if( !CoreUtil.empty( bundleVersion ) )
-                {
-                    Version atLeastVersion = new Version( "3.4.0.201704130550-SNAPSHOT" );
-                    Version version = new Version( bundleVersion );
-
-                    if( version.compareTo( atLeastVersion ) >= 0 )
-                    {
-                        shouldDelete = false;
-                    }
-                }
-            }
-            catch( IOException e )
-            {
-            }
-
-            if( shouldDelete )
-            {
-                try
-                {
-                    Files.delete( agentFile.toPath() );
-                }
-                catch( IOException e )
-                {
-                    LiferayServerCore.logError( "Unable to remove old remote agent bundle", e );
-                }
-            }
-        }
-
-        if( !agentFile.exists() )
-        {
-            try
-            {
-                final File file = new File(
-                    FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
-                        "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
-
-                FileUtil.copyFile( file, agentFile );
-            }
-            catch( IOException e )
-            {
-                LiferayServerCore.logError( "Unable to install remote agent into liferay home osgi/modules", e );
-            }
-        }
-    }
-
-    private void setupAriesJmxBundles()
-    {
-        String[] ariesJmxBundleNames = new String[] { "org.apache.aries.jmx.api.jar", "org.apache.aries.jmx.core.jar",
-            "org.apache.aries.util.jar" };
-
-        String[] ariesJxmBundleFullNames = new String[] { "org.apache.aries.jmx.api-1.1.5.jar",
-            "org.apache.aries.jmx.core-1.1.7.jar", "org.apache.aries.util-1.1.3.jar" };
-
-        // delelte legacy jmx bundles in osgi/static
-        final IPath staticPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/static" );
-
-        for( String bundleName : ariesJmxBundleNames )
-        {
-            File bundleFile = staticPath.append( bundleName ).toFile();
-
-            if( bundleFile.exists() )
-            {
-                try
-                {
-                    Files.delete( bundleFile.toPath() );
-                }
-                catch( IOException e )
-                {
-                    LiferayServerCore.logError( "Unable to remove " + bundleName + " in liferay home osgi/static", e );
-                }
-            }
-        }
-
-        if( !shouldSetUpAriesJmxBundles() )
-        {
-            return;
-        }
-
-        final IPath modulesPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/modules" );
-
-        File modulesDir = modulesPath.toFile();
-
-        if( !modulesDir.exists() )
-        {
-            modulesDir.mkdirs();
-        }
-
-        for( int i = 0; i < ariesJmxBundleNames.length; i++ )
-        {
-            final IPath agentInstalledPath = modulesPath.append( ariesJmxBundleNames[i] );
-
-            File bundleFile = agentInstalledPath.toFile();
-
-            if( !bundleFile.exists() )
-            {
-                try
-                {
-                    final File file = new File(
-                        FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
-                            "bundles/" + ariesJxmBundleFullNames[i] ) ).getFile() );
-
-                    FileUtil.copyFile( file, bundleFile );
-                }
-                catch( IOException e )
-                {
-                }
-            }
-        }
-    }
-
-    private boolean shouldSetUpAriesJmxBundles()
+    
+    private boolean shouldSetUpAriesJmxBundles( )
     {
         boolean retVal = false;
 
-        File portalImplFile =
-            getPortalRuntime().getAppServerPortalDir().append( "WEB-INF/lib/portal-impl.jar" ).toFile();
+        File portalImplFile = getPortalImplFile();
 
-        if( !portalImplFile.exists() )
+        if( portalImplFile!= null && !portalImplFile.exists() )
         {
             return false;
         }
@@ -883,10 +1026,29 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         startOrStopModules( modules, "start", monitor );
     }
 
-    @Override
-    public void stopModule( IModule[] modules, IProgressMonitor monitor ) throws CoreException
+    public void startModules()
     {
-        startOrStopModules( modules, "stop", monitor );
+        IServer server = getServer();
+        final List<IModule[]> moduleList = getAllModules();
+        
+        for( IModule[] module : moduleList )
+        {
+            int moduleState = server.getModuleState( module );
+            boolean hasBeenPublished = hasBeenPublished(module);
+            int length = getPublishedResourceDelta(module).length;
+            
+            if ( moduleState != IServer.STATE_STARTED && hasBeenPublished == true && length == 0 )
+            {
+                try
+                {
+                    startModule( module, new NullProgressMonitor());
+                }
+                catch( CoreException e )
+                {
+                    LiferayServerCore.logError( e );
+                }
+            }
+        }
     }
 
     private void startOrStopModules( IModule[] modules, String action, IProgressMonitor monitor )
@@ -1020,10 +1182,42 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             wc.setAttribute( ATTR_STOP, "true" );
 
             wc.launch( ILaunchManager.RUN_MODE, new NullProgressMonitor() );
+            
+            stopModules();
         }
         catch( Exception e )
         {
             LiferayServerCore.logError( "Error stopping portal", e );
+        }
+    }
+
+    @Override
+    public void stopModule( IModule[] modules, IProgressMonitor monitor ) throws CoreException
+    {
+        startOrStopModules( modules, "stop", monitor );
+    }
+
+    public void stopModules()
+    {
+        IServer server = getServer();
+        final List<IModule[]> moduleList = getAllModules();
+        
+        for( IModule[] module : moduleList )
+        {
+            int moduleState = server.getModuleState( module );
+            boolean hasBeenPublished = hasBeenPublished(module);
+            
+            if ( moduleState != IServer.STATE_STOPPED && hasBeenPublished == true )
+            {
+                try
+                {
+                    stopModule( module, new NullProgressMonitor());
+                }
+                catch( CoreException e )
+                {
+                    LiferayServerCore.logError( e );
+                }
+            }
         }
     }
 
@@ -1051,28 +1245,4 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             LiferayServerCore.logError( "Error killing the process", e );
         }
     }
-
-    protected static String renderCommandLine( String[] commandLine, String separator )
-    {
-        if( commandLine == null || commandLine.length < 1 )
-        {
-            return "";
-        }
-
-        StringBuffer buf = new StringBuffer( commandLine[0] );
-
-        for( int i = 1; i < commandLine.length; i++ )
-        {
-            buf.append( separator );
-            buf.append( commandLine[i] );
-        }
-
-        return buf.toString();
-    }
-
-    public BundleSupervisor createBundleSupervisor() throws Exception
-    {
-        return ServerUtil.createBundleSupervisor( getPortalRuntime(), getServer() );
-    }
-
 }
