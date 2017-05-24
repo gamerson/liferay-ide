@@ -15,19 +15,13 @@
 
 package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.core.IBundleProject;
-import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
@@ -35,7 +29,6 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.PublishTaskDelegate;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.osgi.framework.dto.BundleDTO;
 
 /**
@@ -50,37 +43,10 @@ public class PortalPublishTask extends PublishTaskDelegate
         super();
     }
 
-    private void addOperation(
-        Class<? extends BundlePublishOperation> opClass, List<BundlePublishOperation> tasks, IServer server,
-        IModule[] module, BundleDTO[] existingBundles )
-    {
-        for( BundlePublishOperation task : tasks )
-        {
-            if( task.getClass().equals( opClass ) )
-            {
-                task.addModule( module );
-                return;
-            }
-        }
-
-        try
-        {
-            BundlePublishOperation op =
-                opClass.getConstructor(
-                    IServer.class, IModule[].class, BundleDTO[].class ).newInstance(
-                        server, module, existingBundles );
-            tasks.add( op );
-        }
-        catch( Exception e )
-        {
-            LiferayServerCore.logError( "Unable to add bundle operation", e );
-        }
-    }
-
     @SuppressWarnings( "rawtypes" )
     public PublishOperation[] getTasks( IServer server, int kind, List modules, List kindList )
     {
-        final List<BundlePublishOperation> tasks = new ArrayList<BundlePublishOperation>();
+        final List<AbstractBundlePublishOperation> tasks = new ArrayList<AbstractBundlePublishOperation>();
 
         final PortalServerBehavior serverBehavior =
             (PortalServerBehavior) server.loadAdapter( PortalServerBehavior.class, null );
@@ -135,68 +101,7 @@ public class PortalPublishTask extends PublishTaskDelegate
                         break;
                     }
                 }
-
-                switch( kind )
-                {
-                    case IServer.PUBLISH_FULL:
-                    case IServer.PUBLISH_INCREMENTAL:
-                    case IServer.PUBLISH_AUTO:
-                        final IProject project = module[0].getProject();
-
-                        switch( deltaKind )
-                        {
-                            case ServerBehaviourDelegate.ADDED:
-                                addOperation( BundlePublishFullAddCleanBuild.class, tasks, server, module, existingBundles );
-                                break;
-
-                            case ServerBehaviourDelegate.CHANGED:
-                                if (needClean)
-                                {
-                                    addOperation( BundlePublishFullAddCleanBuild.class, tasks, server, module, existingBundles );
-                                }
-                                else
-                                {
-                                    addOperation( BundlePublishFullAdd.class, tasks, server, module, existingBundles );
-                                }
-
-                                break;
-
-                            case ServerBehaviourDelegate.REMOVED:
-                                addOperation( BundlePublishFullRemove.class, tasks, server, module, existingBundles );
-                                break;
-
-                            case ServerBehaviourDelegate.NO_CHANGE:
-                                final IBundleProject bundleProject =
-                                    LiferayCore.create( IBundleProject.class, project );
-
-                                if( bundleProject != null )
-                                {
-                                    try
-                                    {
-                                        if( isUserRedeploy( serverBehavior, module[0] ) ||
-                                            !ServerUtil.bsnExists( bundleProject.getSymbolicName(), existingBundles ) )
-                                        {
-                                            addOperation(
-                                                BundlePublishFullAddCleanBuild.class, tasks, server, module, existingBundles );
-                                        }
-                                    }
-                                    catch( CoreException e )
-                                    {
-                                        LiferayServerCore.logError(
-                                            "Unable to get bsn for project " + project.getName(), e );
-                                    }
-                                }
-
-                                break;
-
-                            default:
-                                break;
-                            }
-                        break;
-
-                    default:
-                        break;
-                }
+                serverBehavior.addOperation ( tasks, server, module, existingBundles, kind, deltaKind, needClean );
             }
         }
 
@@ -210,15 +115,4 @@ public class PortalPublishTask extends PublishTaskDelegate
         return super.getTasks( server, modules );
     }
 
-    private boolean isUserRedeploy( PortalServerBehavior serverBehavior, IModule module  )
-    {
-        if( serverBehavior.getInfo() != null )
-        {
-            Object moduleInfo = serverBehavior.getInfo().getAdapter( IModule.class );
-
-            return module.equals( moduleInfo );
-        }
-
-        return false;
-    }
 }

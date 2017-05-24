@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000-present Liferay, Inc. All riproghts reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -13,30 +13,26 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.server.core.portal;
-
-import com.liferay.ide.server.util.ServerUtil;
+package com.liferay.ide.server.websphere.core.publish;
 
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.osgi.framework.dto.BundleDTO;
 
 /**
- * @author Gregory Amerson
- * @author Andy Wu
  * @author Simon Jiang
  */
-public class BundlePublishFullRemove extends AbstractBundlePublishFullRemove
+public class WebsphereBundlePublishFullAddCleanBuild extends WebsphereBundlePublishFullAdd
 {
 
-    public BundlePublishFullRemove( IServer server, IModule[] modules, BundleDTO[] existingBundles )
+    public WebsphereBundlePublishFullAddCleanBuild( IServer server, IModule[] modules, BundleDTO[] existingBundles )
     {
         super( server, modules, existingBundles );
     }
 
-    @Override
-    protected BundleSupervisor createBundleSupervisor() throws Exception
+    protected boolean cleanBuildNeeded()
     {
-        return ServerUtil.createBundleSupervisor( portalRuntime.getPortalBundle().getJmxRemotePort(), server );
+        return true;
     }
+
 }
