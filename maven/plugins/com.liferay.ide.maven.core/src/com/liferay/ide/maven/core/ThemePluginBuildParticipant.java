@@ -67,7 +67,7 @@ public abstract class ThemePluginBuildParticipant extends AbstractBuildParticipa
             }
         };
 
-        IStatus retval = null;
+        /*IStatus retval = null;
 
         try
         {
@@ -81,7 +81,7 @@ public abstract class ThemePluginBuildParticipant extends AbstractBuildParticipa
         if( retval != null && ! retval.isOK() )
         {
             LiferayMavenCore.log( retval );
-        }
+        }*/
 
         try
         {
@@ -107,7 +107,7 @@ public abstract class ThemePluginBuildParticipant extends AbstractBuildParticipa
         MavenUtil.setConfigValue( config, ILiferayMavenConstants.PLUGIN_CONFIG_WEBAPP_DIR, targetFolderValue );
     }
 
-    protected IStatus executeMaven( final IMavenProjectFacade projectFacade,
+    /*protected IStatus executeMaven( final IMavenProjectFacade projectFacade,
                                     final ICallable<IStatus> callable,
                                     final IProgressMonitor monitor ) throws CoreException
     {
@@ -122,7 +122,7 @@ public abstract class ThemePluginBuildParticipant extends AbstractBuildParticipa
             },
             monitor
         );
-    }
+    }*/
 
 
     protected IStatus executeThemeMojo( final IMavenProjectFacade facade,

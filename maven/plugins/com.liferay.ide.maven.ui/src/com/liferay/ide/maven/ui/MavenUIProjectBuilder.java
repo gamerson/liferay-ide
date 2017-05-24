@@ -18,6 +18,7 @@ import com.liferay.ide.core.adapter.LaunchAdapter;
 import com.liferay.ide.maven.core.ILiferayMavenConstants;
 import com.liferay.ide.maven.core.IMavenProject;
 import com.liferay.ide.maven.core.MavenProjectBuilder;
+import com.liferay.ide.project.core.util.ProjectUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -124,6 +125,11 @@ public class MavenUIProjectBuilder extends MavenProjectBuilder
         workingCopy.setAttribute( MavenLaunchConstants.ATTR_UPDATE_SNAPSHOTS, true );
         workingCopy.setAttribute( MavenLaunchConstants.ATTR_WORKSPACE_RESOLUTION, true );
         workingCopy.setAttribute( MavenLaunchConstants.ATTR_SKIP_TESTS, true );
+
+        if( ProjectUtil.isThemeProject( getProject() ) )
+        {
+            workingCopy.setAttribute( MavenLaunchConstants.ATTR_WORKSPACE_RESOLUTION, false );
+        }
 
         if( projectFacade != null )
         {
