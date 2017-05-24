@@ -395,6 +395,13 @@
     <enableTimestamp>1</enableTimestamp>
     <outputDirectory>../outputs</outputDirectory>
     <vendor>Liferay, Inc</vendor>
+    <customLanguageFileList>
+        <language>
+            <code>en</code>
+            <encoding>utf-8</encoding>
+            <file>custom_en.lng</file>
+        </language>
+    </customLanguageFileList>
     <parameterList>
         <directoryParameter>
             <name>installdir</name>
