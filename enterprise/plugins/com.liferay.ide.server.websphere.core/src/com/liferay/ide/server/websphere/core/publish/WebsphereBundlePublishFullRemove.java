@@ -13,30 +13,36 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.server.core.portal;
+package com.liferay.ide.server.websphere.core.publish;
 
+import com.liferay.ide.server.core.portal.AbstractBundlePublishFullRemove;
+import com.liferay.ide.server.core.portal.BundleSupervisor;
 import com.liferay.ide.server.util.ServerUtil;
+import com.liferay.ide.server.websphere.core.IWebsphereServer;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.osgi.framework.dto.BundleDTO;
 
 /**
- * @author Gregory Amerson
- * @author Andy Wu
  * @author Simon Jiang
  */
-public class BundlePublishFullRemove extends AbstractBundlePublishFullRemove
+public class WebsphereBundlePublishFullRemove extends AbstractBundlePublishFullRemove
 {
 
-    public BundlePublishFullRemove( IServer server, IModule[] modules, BundleDTO[] existingBundles )
+    protected IWebsphereServer websphereServer;
+
+    public WebsphereBundlePublishFullRemove( IServer server, IModule[] modules, BundleDTO[] existingBundles )
     {
         super( server, modules, existingBundles );
+        websphereServer = (IWebsphereServer) server.loadAdapter( IWebsphereServer.class, new NullProgressMonitor() );
     }
 
     @Override
     protected BundleSupervisor createBundleSupervisor() throws Exception
     {
-        return ServerUtil.createBundleSupervisor( portalRuntime.getPortalBundle().getJmxRemotePort(), server );
+        return ServerUtil.createBundleSupervisor( Integer.valueOf( websphereServer.getWebsphereJMXPort() ), server );
     }
+
 }
