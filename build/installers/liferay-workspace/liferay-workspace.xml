@@ -52,7 +52,7 @@
     <postInstallationActionList>
         <runProgram>
             <program>java</program>
-            <programArguments>-jar ${installdir}${platform_path_separator}biz.aQute.jpm.run.jar -u init</programArguments>
+            <programArguments>-jar "${installdir}${platform_path_separator}biz.aQute.jpm.run.jar" -u init</programArguments>
         </runProgram>
         <if>
             <explanation>is linux</explanation>
