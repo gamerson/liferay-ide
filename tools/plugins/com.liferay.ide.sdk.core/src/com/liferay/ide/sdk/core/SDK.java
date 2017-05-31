@@ -1210,7 +1210,7 @@ public class SDK
                         if( !SUPPORTED_SERVER_TYPES.contains( propertyValue ) )
                         {
                             status.add( SDKCorePlugin.createErrorStatus( "The " + propertyKey + "(" +
-                                            propertyValue + ") server is not supported by Liferay IDE." ) );
+                                            propertyValue + ") server is not supported to create plugin sdk project by Liferay IDE." ) );
                         }
 
                         break;
