@@ -51,7 +51,7 @@ public class StudioPlugin extends AbstractUIPlugin implements IStartup
     // The plugin ID
     public static final String PLUGIN_ID = "com.liferay.ide.studio.ui"; //$NON-NLS-1$
 
-    public static final String PRODUCT_ID = PLUGIN_ID + ".product";
+    public static final String PRODUCT_ID = PLUGIN_ID + ".studio";
 
     public static boolean canInitLiferayWorkspace()
     {
