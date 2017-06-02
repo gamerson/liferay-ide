@@ -50,6 +50,7 @@
         <swtbot-site>http://download.eclipse.org/technology/swtbot/releases/latest</swtbot-site>
         <sapphire-site>http://download.eclipse.org/sapphire/9.1/repository/</sapphire-site>
         <maven-deps-plugin-site>http://ianbrandt.github.io/m2e-maven-dependency-plugin/0.0.4/</maven-deps-plugin-site>
+        <groovy-site>http://dist.springsource.org/snapshot/GRECLIPSE/e4.6/</groovy-site>
         <gmaven.runtime>1.8</gmaven.runtime>
     </properties>
 
@@ -153,6 +154,11 @@
             <id>maven-deps-plugin</id>
             <layout>p2</layout>
             <url>${maven-deps-plugin-site}</url>
+        </repository>
+        <repository>
+            <id>groovy-site</id>
+            <layout>p2</layout>
+            <url>${groovy-site}</url>
         </repository>
     </repositories>
 
