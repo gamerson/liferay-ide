@@ -12,10 +12,10 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.maven.ui.action;
 
 import com.liferay.ide.maven.core.ILiferayMavenConstants;
-
 
 /**
  * @author Gregory Amerson
@@ -27,6 +27,12 @@ public class ThemeMergeGoalAction extends MavenGoalAction
     protected String getMavenGoals()
     {
         return "compile " + ILiferayMavenConstants.PLUGIN_GOAL_THEME_MERGE;
+    }
+
+    @Override
+    protected String getMavenGoalName()
+    {
+        return "theme-merge";
     }
 
 }

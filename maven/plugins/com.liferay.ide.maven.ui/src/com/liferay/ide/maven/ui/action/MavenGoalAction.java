@@ -15,11 +15,14 @@
 
 package com.liferay.ide.maven.ui.action;
 
+import com.liferay.ide.maven.core.ILiferayMavenConstants;
+import com.liferay.ide.maven.core.MavenUtil;
 import com.liferay.ide.maven.ui.LiferayMavenUI;
 import com.liferay.ide.maven.ui.MavenUIProjectBuilder;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.ui.action.AbstractObjectAction;
 
+import org.apache.maven.model.Plugin;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -38,10 +41,13 @@ import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
 public abstract class MavenGoalAction extends AbstractObjectAction
 {
+
+    Plugin plugin = null;
 
     public MavenGoalAction()
     {
@@ -49,6 +55,18 @@ public abstract class MavenGoalAction extends AbstractObjectAction
     }
 
     protected abstract String getMavenGoals();
+
+    protected abstract String getMavenGoalName();
+
+    protected String getPluginKey()
+    {
+        return "";
+    }
+
+    protected String getGroupId()
+    {
+        return ILiferayMavenConstants.NEW_LIFERAY_MAVEN_PLUGINS_GROUP_ID;
+    }
 
     public void run( IAction action )
     {
@@ -77,13 +95,30 @@ public abstract class MavenGoalAction extends AbstractObjectAction
                 final IProject p = project;
                 final IFile pomXmlFile = pomXml;
 
-                final Job job = new Job( p.getName() + " - " + getMavenGoals() ) //$NON-NLS-1$
+                final Job job = new Job( p.getName() + " - " + getMavenGoalName() ) //$NON-NLS-1$
                 {
                     @Override
                     protected IStatus run( IProgressMonitor monitor )
                     {
                         try
                         {
+                            plugin = MavenUtil.getPlugin(
+                                MavenUtil.getProjectFacade( p ),
+                                ILiferayMavenConstants._LIFERAY_MAVEN_PLUGINS_GROUP_ID + ":" +
+                                    ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_ARTIFACT_ID,
+                                monitor );
+
+                            if( plugin == null )
+                            {
+                                plugin = MavenUtil.getPlugin(
+                                    MavenUtil.getProjectFacade( p ), getGroupId() + ":" + getPluginKey(), monitor );
+
+                                if( plugin == null )
+                                {
+                                    return ProjectUI.createErrorStatus( "Can't find plugin " + getMavenGoalName() );
+                                }
+                            }
+
                             monitor.beginTask( getMavenGoals(), 100 );
 
                             runMavenGoal( pomXmlFile, getMavenGoals(), monitor );

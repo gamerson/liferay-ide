@@ -15,24 +15,48 @@
 
 package com.liferay.ide.maven.ui.action;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.maven.core.ILiferayMavenConstants;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
-public class BuildDBGoalAction extends MavenGoalAction
+public class InitBundleGoalAction extends MavenGoalAction
 {
 
     @Override
     protected String getMavenGoals()
     {
-        return ILiferayMavenConstants.PLUGIN_GOAL_BUILD_DB;
+        if( CoreUtil.compareVersions( new Version( plugin.getVersion() ), new Version( "2.0.2" ) ) >= 0 )
+        {
+            return "bundle-support:init";
+        }
+        else
+        {
+            return "liferay:init-bundle";
+        }
+    }
+
+    @Override
+    protected void updateProject( IProject p, IProgressMonitor monitor )
+    {
+    }
+
+    @Override
+    protected String getPluginKey()
+    {
+        return ILiferayMavenConstants.LIFERAY_MAVEN_PLUGINS_BUNDLE_SUPPORT_KEY;
     }
 
     @Override
     protected String getMavenGoalName()
     {
-        return "build-db";
+        return "init-bundle";
     }
 
 }
