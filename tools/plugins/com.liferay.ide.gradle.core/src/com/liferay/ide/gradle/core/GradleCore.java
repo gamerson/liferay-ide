@@ -51,6 +51,7 @@ import org.osgi.framework.BundleContext;
  * @author Terry Jia
  * @author Andy Wu
  */
+@SuppressWarnings( "restriction" )
 public class GradleCore extends Plugin
 {
 
