@@ -717,6 +717,28 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         File agentFile = agentInstalledPath.toFile();
 
+        File embeddedAgentFile = null;
+        String embeddedAgentVersion = null;
+
+        try
+        {
+            embeddedAgentFile = new File(
+                FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
+                    "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
+        }
+        catch( IOException e )
+        {
+            LiferayServerCore.logError( "Unable to get embedded biz.aQute.remote.agent.jar", e );
+        }
+
+        try(JarFile embededJarFile = new JarFile( embeddedAgentFile ))
+        {
+            embeddedAgentVersion = embededJarFile.getManifest().getMainAttributes().getValue( "Bundle-Version" );
+        }
+        catch( IOException e )
+        {
+        }
+
         if( agentFile.exists() )
         {
             boolean shouldDelete = true;
@@ -727,7 +749,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
                 if( !CoreUtil.empty( bundleVersion ) )
                 {
-                    Version atLeastVersion = new Version( "3.4.0.201704130550-SNAPSHOT" );
+                    Version atLeastVersion = new Version( embeddedAgentVersion );
                     Version version = new Version( bundleVersion );
 
                     if( version.compareTo( atLeastVersion ) >= 0 )
@@ -755,18 +777,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         if( !agentFile.exists() )
         {
-            try
-            {
-                final File file = new File(
-                    FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
-                        "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
-
-                FileUtil.copyFile( file, agentFile );
-            }
-            catch( IOException e )
-            {
-                LiferayServerCore.logError( "Unable to install remote agent into liferay home osgi/modules", e );
-            }
+            FileUtil.copyFile( embeddedAgentFile, agentFile );
         }
     }
 
