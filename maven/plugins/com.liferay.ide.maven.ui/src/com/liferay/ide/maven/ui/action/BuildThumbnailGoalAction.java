@@ -29,4 +29,10 @@ public class BuildThumbnailGoalAction extends MavenGoalAction
         return ILiferayMavenConstants.PLUGIN_GOAL_BUILD_THUMBNAIL;
     }
 
+    @Override
+    protected String getMavenGoalName()
+    {
+        return "build-thumbnail";
+    }
+
 }
