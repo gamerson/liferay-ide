@@ -47,11 +47,11 @@ public class WorkflowValidationSettingsPage extends AbstractValidationSettingsPa
     public static final String[] ERRORS = new String[] { "Error", "Warning", "Ignore" };
 
     public static final String PORTLET_UI_PROPERTY_PAGE_PROJECT_VALIDATION_ID =
-        "com.liferay.ide.eclipse.kaleo.ui.propertyPage.workflow.validation";
+        "com.liferay.ide.kaleo.ui.propertyPage.workflow.validation";
 
     public static final String SETTINGS_SECTION_NAME = "WorkflowValidationSeverities";
 
-    public static final String VALIDATION_ID = "com.liferay.ide.eclipse.kaleo.ui.validation.preference";
+    public static final String VALIDATION_ID = "com.liferay.ide.kaleo.ui.validation.preference";
 
     static
     {

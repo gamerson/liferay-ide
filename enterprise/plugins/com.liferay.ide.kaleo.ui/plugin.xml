@@ -491,7 +491,7 @@
       <perspective
             class="com.liferay.ide.kaleo.ui.WorkflowDesignerPerspectiveFactory"
             icon="icons/e16/workflow_16x16.png"
-            id="com.liferay.ide.eclipse.kaleo.ui.perspective.designer"
+            id="com.liferay.ide.kaleo.ui.perspective.designer"
             name="Kaleo Designer">
       </perspective>
    </extension>
