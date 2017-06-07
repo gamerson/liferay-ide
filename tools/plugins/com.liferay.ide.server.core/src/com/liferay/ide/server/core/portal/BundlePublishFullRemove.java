@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.IServer;
 /**
  * @author Gregory Amerson
  * @author Andy Wu
+ * @author Simon Jiang
  */
 public class BundlePublishFullRemove extends BundlePublishOperation
 {
@@ -102,7 +103,7 @@ public class BundlePublishFullRemove extends BundlePublishOperation
 
         try
         {
-            bundleSupervisor = createBundleSupervisor();
+            bundleSupervisor = portalServerBehavior.createBundleSupervisor();
 
             String error = bundleSupervisor.uninstall( bundleProject, outputJar );
 
@@ -141,5 +142,4 @@ public class BundlePublishFullRemove extends BundlePublishOperation
 
         return retval;
     }
-
 }
