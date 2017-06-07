@@ -27,7 +27,7 @@ import org.eclipse.ui.progress.IProgressConstants;
 public class WorkflowDesignerPerspectiveFactory extends LiferayPerspectiveFactory
 {
 
-    public static final String ID = "com.liferay.ide.eclipse.kaleo.ui.perspective.designer";
+    public static final String ID = "com.liferay.ide.kaleo.ui.perspective.designer";
     public static final String ID_NEW_WORKFLOW_DEFINITION_WIZARD = "com.liferay.ide.kaleo.ui.new.definition";
 
     protected void addShortcuts( IPageLayout layout )
