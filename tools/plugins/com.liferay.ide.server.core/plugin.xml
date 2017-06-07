@@ -1361,7 +1361,7 @@
       <publishTask
             class="com.liferay.ide.server.core.portal.PortalPublishTask"
             id="com.liferay.ide.server.portal.publishTask"
-            typeIds="com.liferay.ide.server.portal">
+            typeIds="com.liferay.ide.server.portal,com.liferay.ide.eclipse.server.websphere.v7">
       </publishTask>
    </extension>
    <extension

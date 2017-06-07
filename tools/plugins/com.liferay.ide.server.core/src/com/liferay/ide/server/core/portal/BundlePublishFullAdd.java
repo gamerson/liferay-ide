@@ -39,6 +39,7 @@ import org.osgi.framework.dto.BundleDTO;
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class BundlePublishFullAdd extends BundlePublishOperation
 {
@@ -52,8 +53,8 @@ public class BundlePublishFullAdd extends BundlePublishOperation
     {
         IStatus retval = null;
 
-        final IPath autoDeployPath = portalRuntime.getPortalBundle().getAutoDeployPath();
-        final IPath statePath = portalRuntime.getPortalBundle().getModulesPath().append( "state" );
+        final IPath autoDeployPath = portalServerBehavior.getAutoDeployPath();
+        final IPath statePath = portalServerBehavior.getModulePath().append( "state" );
 
         if( autoDeployPath.toFile().exists() )
         {
@@ -185,7 +186,7 @@ public class BundlePublishFullAdd extends BundlePublishOperation
 
             try
             {
-                bundleSupervisor = createBundleSupervisor();
+                bundleSupervisor = portalServerBehavior.createBundleSupervisor();
 
                 BundleDTO deployed = bundleSupervisor.deploy(
                     bsn, output.toFile(), getBundleUrl( output.toFile(), bsn ) );
@@ -229,5 +230,4 @@ public class BundlePublishFullAdd extends BundlePublishOperation
 
         return retval;
     }
-
 }
