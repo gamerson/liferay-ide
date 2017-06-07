@@ -16,9 +16,9 @@
 package com.liferay.ide.server.ui.action;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.server.core.portal.PortalServerBehavior;
 import com.liferay.ide.server.ui.LiferayServerUI;
 import com.liferay.ide.server.ui.util.ServerUIUtil;
-import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.IOException;
 
@@ -49,11 +49,15 @@ public class OpenLiferayHomeFolderServerAction extends AbstractServerRunningActi
     {
         if( selectedServer != null )
         {
-            final IPath path = ServerUtil.getLiferayRuntime( selectedServer.getRuntime() ).getAppServerDir();
+            PortalServerBehavior serverBehavior = (PortalServerBehavior) selectedServer.loadAdapter( PortalServerBehavior.class, null );
 
             try
             {
-                ServerUIUtil.openFileInSystemExplorer( path );
+                IPath appServerPath = serverBehavior.getAppServerDir();
+                if ( appServerPath != null )
+                {
+                    ServerUIUtil.openFileInSystemExplorer( appServerPath );
+                }
             }
             catch( IOException e )
             {
