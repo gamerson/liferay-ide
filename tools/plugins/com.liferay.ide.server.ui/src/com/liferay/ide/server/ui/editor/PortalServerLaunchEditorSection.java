@@ -129,7 +129,7 @@ public class PortalServerLaunchEditorSection extends ServerEditorSection
                 else if( PortalServer.PROPERTY_DEVELOPER_MODE.equals( event.getPropertyName() ) )
                 {
                     boolean s = (Boolean) event.getNewValue();
-                    developerMode.setSelection( s );
+                    //developerMode.setSelection( s );
                 }
                 else if( PortalServer.PROPERTY_LAUNCH_SETTINGS.equals( event.getPropertyName() ) )
                 {
@@ -170,14 +170,14 @@ public class PortalServerLaunchEditorSection extends ServerEditorSection
     {
         if( useDefaultPortalSeverSetting )
         {
-            developerMode.setEnabled( false );
+            //developerMode.setEnabled( false );
             externalProperties.setEnabled( false );
             externalPropertiesBrowse.setEnabled( false );
             memoryArgs.setEnabled( false );
         }
         else
         {
-            developerMode.setEnabled( true );
+            //developerMode.setEnabled( true );
             externalProperties.setEnabled( true );
             externalPropertiesBrowse.setEnabled( true );
             memoryArgs.setEnabled( true );;
@@ -329,6 +329,8 @@ public class PortalServerLaunchEditorSection extends ServerEditorSection
             }
         });
 
+        /**
+         * todo IDE-3201
         label = createLabel( toolkit, composite, StringPool.EMPTY );
         data = new GridData( SWT.BEGINNING, SWT.CENTER, false, false );
         label.setLayoutData( data );
@@ -357,6 +359,7 @@ public class PortalServerLaunchEditorSection extends ServerEditorSection
         label = createLabel( toolkit, composite, StringPool.EMPTY );
         data = new GridData( SWT.BEGINNING, SWT.CENTER, false, false );
         label.setLayoutData( data );
+         */
 
         setDefault = toolkit.createHyperlink( composite, Msgs.restoreDefaultsLink, SWT.WRAP );
         setDefault.addHyperlinkListener( new HyperlinkAdapter()
