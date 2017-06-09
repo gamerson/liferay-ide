@@ -27,12 +27,18 @@ import com.liferay.ide.server.util.PingThread;
 import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -234,6 +240,39 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
     private String[] getRuntimeStartVMArguments()
     {
+        if( getPortalServer().getDeveloperMode() )
+        {
+            File portalext = getPortalRuntime().getLiferayHome().append( "portal-ext.properties" ).toFile();
+
+            if( !portalext.exists() )
+            {
+                try
+                {
+                    portalext.createNewFile();
+                }
+                catch( IOException e )
+                {
+                }
+            }
+
+            try(InputStream in = new FileInputStream( portalext ); OutputStream out = new FileOutputStream( portalext ))
+            {
+                Properties properties = new Properties();
+
+                properties.load( in );
+
+                properties.setProperty( "include-and-override", "portal-developer.properties" );
+
+                properties.store( out, null );
+            }
+            catch( FileNotFoundException e )
+            {
+            }
+            catch( IOException e )
+            {
+            }
+        }
+
         final List<String> retval = new ArrayList<>();
 
         Collections.addAll( retval, getPortalServer().getMemoryArgs() );
