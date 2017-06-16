@@ -105,7 +105,7 @@ public class RedeployAction extends AbstractServerRunningAction
         {
             final List<ModuleServer> newModules = new ArrayList<>();
 
-            if( selection instanceof IStructuredSelection )
+            if( selection instanceof IStructuredSelection && ( (IStructuredSelection) selection ).size() == 1 )
             {
                 final IStructuredSelection obj = (IStructuredSelection) selection;
                 final Iterator selectionIterator = obj.iterator();
