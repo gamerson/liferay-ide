@@ -18,18 +18,24 @@ package com.liferay.ide.maven.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOp;
 import com.liferay.ide.project.core.modules.fragment.NewModuleFragmentOpMethods;
 import com.liferay.ide.project.core.modules.fragment.OverrideFilePath;
 import com.liferay.ide.server.core.tests.ServerCoreBase;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
 import org.eclipse.wst.server.core.IRuntime;
@@ -108,6 +114,27 @@ public class MavenModuleFragmentProjectTests extends ServerCoreBase
             runtime = runtimeWC.save( true, npm );
         }
 
+        File lib =
+            new File( FileLocator.toFileURL( ProjectCore.getDefault().getBundle().getEntry( "lib" ) ).getFile() );
+
+        File tempBladeJar = new File( lib, "com.liferay.blade.cli.jar" );
+
+        boolean needCopy = false;
+
+        if( !tempBladeJar.exists() )
+        {
+            File bladeCliJar = new File(
+                FileLocator.toFileURL(
+                    Platform.getBundle( "com.liferay.ide.maven.core.tests" ).getEntry(
+                        "lib/com.liferay.blade.cli_2.2.0.201706190431.jar" ) ).getFile() );
+
+            FileUtil.copyFile( bladeCliJar, tempBladeJar );
+
+            assertTrue( tempBladeJar.exists() );
+
+            needCopy = true;
+        }
+
         assertNotNull( runtime );
 
         op.setProjectName( "test-gradle-module-fragment" );
@@ -157,5 +184,12 @@ public class MavenModuleFragmentProjectTests extends ServerCoreBase
         IFile overrideFile1 = existedMavenProject.getFile( "src/main/resources/META-INF/resources/login.jsp" );
 
         assertTrue( overrideFile1.exists() );
+
+        if( needCopy )
+        {
+            tempBladeJar.delete();
+
+            assertFalse( tempBladeJar.exists() );
+        }
     }
 }
