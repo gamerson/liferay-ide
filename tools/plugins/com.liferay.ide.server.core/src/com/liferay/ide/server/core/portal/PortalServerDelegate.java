@@ -22,19 +22,32 @@ import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.server.core.ILiferayServerBehavior;
 import com.liferay.ide.server.core.LiferayServerCore;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * @author Gregory Amerson
@@ -44,6 +57,7 @@ import org.eclipse.wst.server.core.model.ServerDelegate;
 @SuppressWarnings( "restriction" )
 public class PortalServerDelegate extends ServerDelegate implements PortalServerWorkingCopy
 {
+
     private final static List<String> SUPPORT_TYPES_LIST = Arrays.asList( "liferay.bundle", "jst.web", "jst.utility" );
 
     public PortalServerDelegate()
@@ -74,7 +88,7 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 
     public int getAutoPublishTime()
     {
-        return getAttribute(Server.PROP_AUTO_PUBLISH_TIME, 0);
+        return getAttribute( Server.PROP_AUTO_PUBLISH_TIME, 0 );
     }
 
     @Override
@@ -104,8 +118,7 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     @Override
     public boolean getDeveloperMode()
     {
-        return getAttribute(
-            PROPERTY_DEVELOPER_MODE, PortalServerConstants.DEFAULT_DEVELOPER_MODE );
+        return getAttribute( PROPERTY_DEVELOPER_MODE, PortalServerConstants.DEFAULT_DEVELOPER_MODE );
     }
 
     public String getExternalProperties()
@@ -172,7 +185,7 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     {
         try
         {
-            return new URL("http://localhost:8080");
+            return new URL( "http://localhost:" + getHttpPort() );
         }
         catch( Exception e )
         {
@@ -249,6 +262,72 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     public void setUsername( String username )
     {
         setAttribute( ATTR_USERNAME, username );
+    }
+
+    public void setHttpPort( String httpPort )
+    {
+        setAttribute( ATTR_HTTP_PORT, httpPort );
+
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        if( runtime != null )
+        {
+            File serverXmlFile = new File( runtime.getAppServerDir().toPortableString(), "conf/server.xml" );
+
+            if( !serverXmlFile.exists() )
+            {
+                return;
+            }
+
+            DocumentBuilder db = null;
+
+            DocumentBuilderFactory dbf = null;
+
+            try
+            {
+                dbf = DocumentBuilderFactory.newInstance();
+
+                db = dbf.newDocumentBuilder();
+
+                Document document = db.parse( serverXmlFile );
+
+                NodeList connectorNodes = document.getElementsByTagName( "Connector" );
+
+                for( int i = 0; i < connectorNodes.getLength(); i++ )
+                {
+                    Node node = connectorNodes.item( i );
+
+                    NamedNodeMap attributes = node.getAttributes();
+
+                    Node protocolNode = attributes.getNamedItem( "protocol" );
+
+                    if( protocolNode != null )
+                    {
+                        if( protocolNode.getNodeValue().equals( "HTTP/1.1" ) )
+                        {
+                            attributes.getNamedItem( "port" ).setNodeValue( httpPort );;
+
+                            break;
+                        }
+                    }
+                }
+
+                TransformerFactory factory = TransformerFactory.newInstance();
+
+                Transformer transformer = factory.newTransformer();
+
+                DOMSource domSource = new DOMSource( document );
+
+                StreamResult result = new StreamResult( serverXmlFile );
+
+                transformer.transform( domSource, result );
+            }
+            catch( Exception e )
+            {
+                LiferayServerCore.logError( e );
+            }
+        }
     }
 
 }
