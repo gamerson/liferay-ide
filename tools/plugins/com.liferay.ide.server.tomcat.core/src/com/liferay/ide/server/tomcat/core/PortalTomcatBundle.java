@@ -19,7 +19,6 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileListing;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.server.core.portal.AbstractPortalBundle;
-import com.liferay.ide.server.core.portal.PortalBundle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,7 +37,7 @@ import org.eclipse.core.runtime.Platform;
  * @author Simon Jiang
  * @author Terry Jia
  */
-public class PortalTomcatBundle extends AbstractPortalBundle implements PortalBundle
+public class PortalTomcatBundle extends AbstractPortalBundle
 {
     public PortalTomcatBundle( IPath path )
     {
@@ -112,6 +111,14 @@ public class PortalTomcatBundle extends AbstractPortalBundle implements PortalBu
         }
 
         return retVal;
+    }
+
+    @Override
+    public void setHttpPort( String port )
+    {
+        setHttpPortValue(
+            new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Connector", "protocol", "HTTP/1.1",
+            "port", port );
     }
 
     @Override
