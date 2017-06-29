@@ -18,7 +18,6 @@ package com.liferay.ide.server.tomcat.core;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileListing;
 import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.portal.AbstractPortalBundle;
 
 import java.io.File;
@@ -29,20 +28,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Gregory Amerson
@@ -282,59 +270,4 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
         return libs.toArray( new IPath[libs.size()] );
     }
-
-    private void setHttpPortValue(
-        File xmlFile, String tagName, String attriName, String attriValue, String targetName, String value )
-    {
-        DocumentBuilder db = null;
-
-        DocumentBuilderFactory dbf = null;
-
-        try
-        {
-            dbf = DocumentBuilderFactory.newInstance();
-
-            db = dbf.newDocumentBuilder();
-
-            Document document = db.parse( xmlFile );
-
-            NodeList connectorNodes = document.getElementsByTagName( tagName );
-
-            for( int i = 0; i < connectorNodes.getLength(); i++ )
-            {
-                Node node = connectorNodes.item( i );
-
-                NamedNodeMap attributes = node.getAttributes();
-
-                Node protocolNode = attributes.getNamedItem( attriName );
-
-                if( protocolNode != null )
-                {
-                    if( protocolNode.getNodeValue().equals( attriValue ) )
-                    {
-                        Node portNode = attributes.getNamedItem( targetName );
-
-                        portNode.setNodeValue( value );
-
-                        break;
-                    }
-                }
-            }
-
-            TransformerFactory factory = TransformerFactory.newInstance();
-
-            Transformer transformer = factory.newTransformer();
-
-            DOMSource domSource = new DOMSource( document );
-
-            StreamResult result = new StreamResult( xmlFile );
-
-            transformer.transform( domSource, result );
-        }
-        catch( Exception e )
-        {
-            LiferayServerCore.logError( e );
-        }
-    }
-
 }

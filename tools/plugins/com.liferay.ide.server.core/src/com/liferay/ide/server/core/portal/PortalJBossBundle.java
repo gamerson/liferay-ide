@@ -77,6 +77,15 @@ public class PortalJBossBundle extends AbstractPortalBundle
 
         String portValue = getHttpPortValue( standaloneXmlFile, "socket-binding", "name", "http", "port" );
 
+        retVal = parserPort( portValue );
+
+        return retVal;
+    }
+
+    private String parserPort( final String portValue )
+    {
+        String retVal = null;
+
         if( !CoreUtil.empty( portValue ) )
         {
             if( portValue.lastIndexOf( ":" ) == -1 )
@@ -95,6 +104,8 @@ public class PortalJBossBundle extends AbstractPortalBundle
     @Override
     public void setHttpPort( String port )
     {
+        File standaloneXmlFile = new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
+        setHttpPortValue( standaloneXmlFile, "socket-binding", "name", "http", "port", port );
     }
 
     @Override
@@ -154,7 +165,9 @@ public class PortalJBossBundle extends AbstractPortalBundle
 
         args.add( "-mp \"" + this.bundlePath.toPortableString() +  "/modules" + "\"" );
         args.add( "org.jboss.as.cli" );
-        args.add( "--controller=localhost:" + 9999 );
+        File standaloneXmlFile = new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
+        String portValue = getHttpPortValue( standaloneXmlFile, "socket-binding", "name", "management-http", "port" );
+        args.add( "--controller=localhost:" + parserPort( portValue ) );
         args.add( "--connect" );
         args.add( "--command=:shutdown" );
 
