@@ -24,7 +24,7 @@
                             <origin>../shared/download/blade.jar</origin>
                         </distributionFile>
                         <distributionFile>
-                            <origin>../shared/libs/com.liferay.portal.tools.bundle.support-3.0.1.jar</origin>
+                            <origin>../shared/download/com.liferay.portal.tools.bundle.support.jar</origin>
                         </distributionFile>
                         <distributionFile>
                             <origin>../shared/download/liferay-dxp-digital-enterprise-tomcat-7.0-sp3-20170503123037723.zip</origin>
@@ -141,9 +141,9 @@
     </componentList>
     <postInstallationActionList>
         <runProgram>
-            <customErrorMessage>You may type a wrong email and password for liferay.com</customErrorMessage>
+            <customErrorMessage>Could not create DXP download token. Make sure you type correct email address and password and are connected to the internet.</customErrorMessage>
             <program>java</program>
-            <programArguments>-jar "${installdir}${platform_path_separator}com.liferay.portal.tools.bundle.support-3.0.1.jar" createToken --force --email ${email} --password ${password}</programArguments>
+            <programArguments>-jar "${installdir}${platform_path_separator}com.liferay.portal.tools.bundle.support.jar" createToken --force --email ${email} --password ${password}</programArguments>
             <onErrorActionList>
                 <deleteFile>
                     <path>${installdir}</path>
@@ -410,7 +410,7 @@
             <path>${installdir}${platform_path_separator}biz.aQute.jpm.run.jar</path>
         </deleteFile>
         <deleteFile>
-            <path>${installdir}${platform_path_separator}com.liferay.portal.tools.bundle.support-3.0.1.jar</path>
+            <path>${installdir}${platform_path_separator}com.liferay.portal.tools.bundle.support.jar</path>
         </deleteFile>
         <deleteFile>
             <path>${studioZipPath}</path>
@@ -506,7 +506,7 @@
         <parameterGroup>
             <name>dxpinfo</name>
             <title>Download Liferay DXP Bundle</title>
-            <explanation>We would not store your username and password, they are only for generating the liferay token.</explanation>
+            <explanation>Email address and password are used for generating a download token. Your password will not be saved locally.</explanation>
             <value></value>
             <default></default>
             <parameterList>
