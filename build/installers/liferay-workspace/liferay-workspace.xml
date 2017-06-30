@@ -353,7 +353,7 @@
         <parameterGroup>
             <name>dxpinfo</name>
             <title>Liferay DXP Customer Credentials</title>
-            <explanation>This information will be stored in your {user.home}/.gradle/gradle.properties file. Please do not share this file with anyone.</explanation>
+            <explanation>We would not store your username and password, they are only for generating the liferay token.</explanation>
             <value></value>
             <default></default>
             <parameterList>

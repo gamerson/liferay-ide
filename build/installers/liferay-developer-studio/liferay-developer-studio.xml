@@ -506,7 +506,7 @@
         <parameterGroup>
             <name>dxpinfo</name>
             <title>Download Liferay DXP Bundle</title>
-            <explanation></explanation>
+            <explanation>We would not store your username and password, they are only for generating the liferay token.</explanation>
             <value></value>
             <default></default>
             <parameterList>
