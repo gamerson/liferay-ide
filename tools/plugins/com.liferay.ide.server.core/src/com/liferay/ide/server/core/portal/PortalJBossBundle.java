@@ -316,4 +316,10 @@ public class PortalJBossBundle extends AbstractPortalBundle
         }
     }
 
+    @Override
+    public boolean shouldLoadLiferayProcess()
+    {
+        return true;
+    }
+
 }

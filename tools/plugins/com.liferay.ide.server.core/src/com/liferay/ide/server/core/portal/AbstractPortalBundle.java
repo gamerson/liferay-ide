@@ -27,7 +27,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -60,7 +62,8 @@ public abstract class AbstractPortalBundle implements PortalBundle
     protected IPath liferayHome;
     protected IPath modulesPath;
     protected IPath bundlePath;
-
+    protected SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd"); 
+    
     public AbstractPortalBundle( IPath path )
     {
         if( path == null )
@@ -403,5 +406,10 @@ public abstract class AbstractPortalBundle implements PortalBundle
                 }
             }
         }
+    }
+
+    public IPath getLogPath()
+    {
+        return getLiferayHome().append( "logs" ).append( "Liferay." + sdf.format( new Date() ) + ".log" );
     }
 }

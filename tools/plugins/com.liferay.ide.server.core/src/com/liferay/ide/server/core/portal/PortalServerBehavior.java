@@ -67,6 +67,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.eclipse.wst.server.core.util.SocketUtil;
 import org.osgi.framework.Version;
 
 /**
@@ -74,19 +75,18 @@ import org.osgi.framework.Version;
  * @author Simon Jiang
  * @author Terry Jia
  */
-@SuppressWarnings( {"restriction","rawtypes"} )
+@SuppressWarnings( { "restriction", "rawtypes" } )
 public class PortalServerBehavior extends ServerBehaviourDelegate
     implements ILiferayServerBehavior, IJavaLaunchConfigurationConstants
 {
-    public static final String ATTR_STOP = "stop-server";
 
-    private static final String[] JMX_EXCLUDE_ARGS = new String []
-    {
-        "-Dcom.sun.management.jmxremote",
-        "-Dcom.sun.management.jmxremote.port=",
-        "-Dcom.sun.management.jmxremote.ssl=",
-        "-Dcom.sun.management.jmxremote.authenticate="
-    };
+    public static final String ATTR_STOP = "stop-server";
+    private transient IProcess process;
+    private boolean canTerminateProcess;
+
+    private static final String[] JMX_EXCLUDE_ARGS =
+        new String[] { "-Dcom.sun.management.jmxremote", "-Dcom.sun.management.jmxremote.port=",
+            "-Dcom.sun.management.jmxremote.ssl=", "-Dcom.sun.management.jmxremote.authenticate=" };
 
     private IAdaptable info;
     private transient PingThread ping = null;
@@ -95,6 +95,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     public PortalServerBehavior()
     {
         super();
+        canTerminateProcess = true;
     }
 
     public void addProcessListener( final IProcess newProcess )
@@ -106,6 +107,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         processListener = new IDebugEventSetListener()
         {
+
             public void handleDebugEvents( DebugEvent[] events )
             {
                 if( events != null )
@@ -123,6 +125,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         };
 
         DebugPlugin.getDefault().addDebugEventListener( processListener );
+    }
+
+    public boolean canTerminateProcess()
+    {
+        return canTerminateProcess;
     }
 
     @Override
@@ -162,7 +169,21 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             processListener = null;
         }
 
+        setProcess( null );
         setServerState( IServer.STATE_STOPPED );
+    }
+
+    @Override
+    public void dispose()
+    {
+        setCanTerminateProcess( false );
+
+        if( this.process != null )
+        {
+            setProcess( null );
+        }
+
+        setCanTerminateProcess( true );
     }
 
     public String getClassToLaunch()
@@ -206,6 +227,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             i++;
         }
         return -1;
+    }
+    
+    public IProcess getProcess()
+    {
+        return this.process;
     }
 
     private PortalRuntime getPortalRuntime()
@@ -331,6 +357,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return retval.toArray( new String[0] );
     }
 
+    public boolean isLocalHost()
+    {
+        return SocketUtil.isLocalhost( getPortalServer().getHost() );
+    }
+
     public void launchServer( ILaunch launch, String mode, IProgressMonitor monitor ) throws CoreException
     {
         if( "true".equals( launch.getLaunchConfiguration().getAttribute( ATTR_STOP, "false" ) ) )
@@ -340,7 +371,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         final IStatus status = getPortalRuntime().validate();
 
-        if( status != null && status.getSeverity() == IStatus.ERROR ) throw new CoreException( status );
+        if( status != null && status.getSeverity() == IStatus.ERROR )
+            throw new CoreException( status );
 
         setServerRestartState( false );
         setServerState( IServer.STATE_STARTING );
@@ -447,8 +479,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                             if( index2 >= 0 )
                             {
                                 // If remainder will become the first argument, remove leading blanks
-                                while( index2 < retval.length() &&
-                                    Character.isWhitespace( retval.charAt( index2 ) ) )
+                                while( index2 < retval.length() && Character.isWhitespace( retval.charAt( index2 ) ) )
                                     index2 += 1;
                                 retval = s + retval.substring( index2 );
                             }
@@ -469,8 +500,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                             if( index2 >= 0 )
                             {
                                 // If remainder will become the first argument, remove leading blanks
-                                while( index2 < retval.length() &&
-                                    Character.isWhitespace( retval.charAt( index2 ) ) )
+                                while( index2 < retval.length() && Character.isWhitespace( retval.charAt( index2 ) ) )
                                     index2 += 1;
                                 retval = s + retval.substring( index2 );
                             }
@@ -490,8 +520,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                             if( index2 >= 0 )
                             {
                                 // Remove leading blanks
-                                while( index2 < retval.length() &&
-                                    Character.isWhitespace( retval.charAt( index2 ) ) )
+                                while( index2 < retval.length() && Character.isWhitespace( retval.charAt( index2 ) ) )
                                     index2 += 1;
                                 retval = s + retval.substring( index2 );
                             }
@@ -568,17 +597,16 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     @Override
     protected void publishModule(
         final int kind, final int deltaKind, final IModule[] modules, final IProgressMonitor monitor )
-        throws CoreException
+            throws CoreException
     {
         // publishing is done by PortalPublishTask
         return;
     }
 
-
     @Override
     protected void publishServer( int kind, IProgressMonitor monitor ) throws CoreException
     {
-        setServerPublishState(IServer.PUBLISH_STATE_UNKNOWN);
+        setServerPublishState( IServer.PUBLISH_STATE_UNKNOWN );
     }
 
     @Override
@@ -588,6 +616,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         IAdaptable info = new IAdaptable()
         {
+
             @SuppressWarnings( "unchecked" )
             public Object getAdapter( Class adapter )
             {
@@ -628,7 +657,12 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         oldCp.add( 0, newJRECp );
     }
 
-    public void setModulePublishState2( IModule[] module, int state  )
+    public void setCanTerminateProcess( boolean value )
+    {
+        canTerminateProcess = value;
+    }
+
+    public void setModulePublishState2( IModule[] module, int state )
     {
         super.setModulePublishState( module, state );
     }
@@ -636,6 +670,23 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     public void setModuleState2( IModule[] modules, int state )
     {
         super.setModuleState( modules, state );
+    }
+
+    protected void setProcess( IProcess newProcess )
+    {
+        if( ( this.process != null ) && ( !( this.process.isTerminated() ) ) )
+        {
+            try
+            {
+                this.process.terminate();
+            }
+            catch( Exception e )
+            {
+                LiferayServerCore.logError( e );
+            }
+        }
+
+        this.process = newProcess;
     }
 
     public void setServerStarted()
@@ -648,7 +699,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         throws CoreException
     {
         final String existingProgArgs = launch.getAttribute( ATTR_PROGRAM_ARGUMENTS, (String) null );
-        launch.setAttribute( ATTR_PROGRAM_ARGUMENTS, mergeArguments( existingProgArgs, getRuntimeStartProgArgs(), null, true ) );
+        launch.setAttribute(
+            ATTR_PROGRAM_ARGUMENTS, mergeArguments( existingProgArgs, getRuntimeStartProgArgs(), null, true ) );
 
         final String existingVMArgs = launch.getAttribute( ATTR_VM_ARGUMENTS, (String) null );
 
@@ -660,7 +712,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         if( vmInstall != null )
         {
-            launch.setAttribute( ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath( vmInstall ).toPortableString() );
+            launch.setAttribute(
+                ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath( vmInstall ).toPortableString() );
         }
 
         final IRuntimeClasspathEntry[] orgClasspath = JavaRuntime.computeUnresolvedRuntimeClasspath( launch );
@@ -681,10 +734,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             try
             {
                 final String typeId = vmInstall.getVMInstallType().getId();
-                final IRuntimeClasspathEntry newJRECp =
-                    JavaRuntime.newRuntimeContainerClasspathEntry(
-                        new Path( JavaRuntime.JRE_CONTAINER ).append( typeId ).append( vmInstall.getName() ),
-                        IRuntimeClasspathEntry.BOOTSTRAP_CLASSES );
+                final IRuntimeClasspathEntry newJRECp = JavaRuntime.newRuntimeContainerClasspathEntry(
+                    new Path( JavaRuntime.JRE_CONTAINER ).append( typeId ).append( vmInstall.getName() ),
+                    IRuntimeClasspathEntry.BOOTSTRAP_CLASSES );
                 replaceJREConatiner( oldCp, newJRECp );
             }
             catch( Exception e )
@@ -734,9 +786,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         {
             try
             {
-                if ( entry.getClasspathEntry().getEntryKind() !=  IClasspathEntry.CPE_CONTAINER)
+                if( entry.getClasspathEntry().getEntryKind() != IClasspathEntry.CPE_CONTAINER )
                 {
-                    entry = new LiferayRuntimeClasspathEntry(entry.getClasspathEntry());
+                    entry = new LiferayRuntimeClasspathEntry( entry.getClasspathEntry() );
                 }
                 cp.add( entry.getMemento() );
             }
@@ -792,8 +844,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         try
         {
             embeddedAgentFile = new File(
-                FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
-                    "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
+                FileLocator.toFileURL(
+                    LiferayServerCore.getDefault().getBundle().getEntry(
+                        "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
         }
         catch( IOException e )
         {
@@ -903,8 +956,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                 try
                 {
                     final File file = new File(
-                        FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
-                            "bundles/" + ariesJxmBundleFullNames[i] ) ).getFile() );
+                        FileLocator.toFileURL(
+                            LiferayServerCore.getDefault().getBundle().getEntry(
+                                "bundles/" + ariesJxmBundleFullNames[i] ) ).getFile() );
 
                     FileUtil.copyFile( file, bundleFile );
                 }
@@ -1074,11 +1128,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         int state = getServer().getServerState();
 
         // If stopped or stopping, no need to run stop command again
-        if (state == IServer.STATE_STOPPED || state == IServer.STATE_STOPPING)
+        if( state == IServer.STATE_STOPPED || state == IServer.STATE_STOPPING )
         {
             return;
         }
-        else if (state == IServer.STATE_STARTING)
+        else if( state == IServer.STATE_STARTING )
         {
             terminate();
             return;
@@ -1107,8 +1161,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             }
             else
             {
-                wc.setAttribute(
-                    IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
+                wc.setAttribute( IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
                     mergeArguments( existingVMArgs, getRuntimeStopVMArguments(), null, true ) );
             }
 
@@ -1117,6 +1170,14 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             wc.setAttribute( ATTR_STOP, "true" );
 
             wc.launch( ILaunchManager.RUN_MODE, new NullProgressMonitor() );
+
+            boolean shouldLoadLiferayProcess = getPortalRuntime().getPortalBundle().shouldLoadLiferayProcess();
+
+            if ( shouldLoadLiferayProcess == true )
+            {
+                LiferayServerStopThread stopThread = new LiferayServerStopThread( getServer(), this, getPortalRuntime() );
+                stopThread.startMonitor();
+            }
         }
         catch( Exception e )
         {
@@ -1171,5 +1232,4 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     {
         return ServerUtil.createBundleSupervisor( getPortalRuntime(), getServer() );
     }
-
 }

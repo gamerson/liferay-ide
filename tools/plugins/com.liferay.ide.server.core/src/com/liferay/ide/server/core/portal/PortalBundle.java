@@ -65,5 +65,9 @@ public interface PortalBundle extends ILiferayPortal
     String getHttpPort();
 
     void setHttpPort( String port );
+    
+    IPath getLogPath();
+    
+    boolean shouldLoadLiferayProcess();
 
 }
