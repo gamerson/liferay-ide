@@ -354,7 +354,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
             if( port != 80 )
             {
-                url += ":" + port;
+                url += ":" + port + "/web/guest/home";
             }
 
             ping = new PingThread( getServer(), url, -1, this );
