@@ -1,15 +1,15 @@
-def basedir = project.basedir.canonicalPath
-def appDir = new File(new File(basedir, "../com.liferay.ide-repository/target/products/com.liferay.ide.studio/macosx/cocoa/x86_64/DeveloperStudio.app").canonicalPath)
-def serverURL = project.properties.get("signing-server-url")
+def appDir = new File(project.properties.get("appDir")).canonicalFile
+def serverURL = project.properties.get("signingServerURL")
 
 println appDir
-println serverURL
 
 if (appDir.exists() && serverURL != null) {
+	println "Calling codesign service..."
+
 	def url = new URL(serverURL + "/codesign")
 	def post = url.openConnection()
 	def path = appDir.toURI().toASCIIString().replaceAll("^file:","")
-	def body = "path=${path}&identity=Developer+ID+Application%3A+Liferay%2C+Inc.+%287H3SPU5TB9%29"
+	def body = "path=${path}&identity=Developer+ID+Application%3A+Liferay%2C+Inc.+%287H3SPU5TB9%29&dmg=true"
 
 	println("Posting to ${url} with body=${body}")
 

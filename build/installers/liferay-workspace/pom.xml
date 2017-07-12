@@ -124,6 +124,27 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-app</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <properties>
+                        <appDir>${pom.basedir}/../outputs/LiferayWorkspace-${workspace-installer-version}-osx-installer.app</appDir>
+                        <signingServerURL>http://localhost:8080</signingServerURL>
+                    </properties>
+                    <source>${pom.basedir}/../shared/scripts/SignApp.groovy</source>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.6</version>

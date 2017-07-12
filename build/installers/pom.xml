@@ -42,7 +42,7 @@
 
     <modules>
         <module>liferay-workspace</module>
-        <module>liferay-developer-studio</module>
+        <!--module>liferay-developer-studio</module-->
     </modules>
 
     <build>
