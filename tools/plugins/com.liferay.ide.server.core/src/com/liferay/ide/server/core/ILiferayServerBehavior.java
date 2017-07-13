@@ -27,6 +27,8 @@ public interface ILiferayServerBehavior
 
     String AGENT_PORT = "AGENT_PORT";
 
+    String JMX_PORT = "JMX_PORT";
+
     IPath getDeployedPath( IModule[] module );
 
     void redeployModule( IModule[] module ) throws CoreException;

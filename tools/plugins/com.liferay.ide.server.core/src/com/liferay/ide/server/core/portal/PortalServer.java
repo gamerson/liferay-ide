@@ -31,6 +31,22 @@ public interface PortalServer extends ILiferayServer
 
     String STOP = "stop";
 
+    String ATTR_AJP_PORT = "ajp-port";
+
+    String ATTR_SHUTDON_PORT = "shutdown-port";
+
+    String ATTR_TELNET_PORT = "telnet-port";
+
+    String DEFAULT_AGENT_PORT  = defaultPrefs.get( "default.agent.port", StringPool.EMPTY );
+
+    String DEFAULT_AJP_PORT  = defaultPrefs.get( "default.ajp.port", StringPool.EMPTY );
+
+    String DEFAULT_JMX_PORT  = defaultPrefs.get( "default.jmx.port", StringPool.EMPTY );
+
+    String DEFAUT_SHUTDON_PORT = defaultPrefs.get( "default.shutdown.port", StringPool.EMPTY );
+
+    String DEFAULT_TELNET_PORT  = defaultPrefs.get( "default.telnet.port", StringPool.EMPTY );
+
     String PROPERTY_EXTERNAL_PROPERTIES = "externalProperties";
 
     String PROPERTY_MEMORY_ARGS = "memoryArgs";
@@ -41,7 +57,9 @@ public interface PortalServer extends ILiferayServer
 
     String PROPERTY_DEVELOPER_MODE = "developerMode";
 
-    String DEFAULT_HTTP_PORT = defaultPrefs.get( "default.http.port", StringPool.EMPTY );
+    String getAgentPort();
+
+    String getAjpPort();
 
     int getAutoPublishTime();
 
@@ -49,8 +67,14 @@ public interface PortalServer extends ILiferayServer
 
     String getExternalProperties();
 
+    String getJmxPort();
+
     boolean getLaunchSettings();
 
     String[] getMemoryArgs();
+
+    String getShutdownPort();
+
+    String getTelnetPort();
 
 }

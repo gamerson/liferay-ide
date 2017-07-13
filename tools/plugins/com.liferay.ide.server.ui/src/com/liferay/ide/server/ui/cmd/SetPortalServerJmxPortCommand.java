@@ -11,40 +11,37 @@
 
 package com.liferay.ide.server.ui.cmd;
 
-import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.core.portal.PortalServerDelegate;
+
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
- * @author Terry Jia
+ * @author Joye Luo
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerHttpPortCommand extends ServerCommand
+public class SetPortalServerJmxPortCommand extends ServerCommand
 {
+    protected String oldJmxPort;
+    protected String jmxPort;
 
-    protected String oldHttpPort;
-    protected String httpPort;
-
-    public SetPortalServerHttpPortCommand( IServerWorkingCopy server, String httpPort )
+    public SetPortalServerJmxPortCommand( IServerWorkingCopy server, String jmxPort )
     {
         super( server, Messages.editorResourceModifiedTitle );
-        this.httpPort = httpPort;
+        this.jmxPort = jmxPort;
     }
 
     public void execute()
     {
-        oldHttpPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getHttpPort();
+        oldJmxPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getJmxPort();
 
-        ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setHttpPort( httpPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( jmxPort );
     }
 
     public void undo()
     {
-        ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setHttpPort( oldHttpPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( oldJmxPort );
     }
-
 }

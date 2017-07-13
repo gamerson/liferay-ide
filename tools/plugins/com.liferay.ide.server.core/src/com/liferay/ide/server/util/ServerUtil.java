@@ -34,6 +34,7 @@ import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.core.portal.PortalBundleFactory;
 import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.core.portal.PortalServerDelegate;
 import com.liferay.ide.server.remote.IRemoteServer;
 import com.liferay.ide.server.remote.IServerManagerConnection;
 
@@ -127,8 +128,10 @@ public class ServerUtil
     public static BundleSupervisor createBundleSupervisor( PortalRuntime portalRuntime, IServer server )
         throws Exception
     {
-        int aQuteAgentPort = Agent.DEFAULT_PORT;
-        int jmxPort = portalRuntime.getPortalBundle().getJmxRemotePort();
+        PortalServerDelegate portalServerDelegate = (PortalServerDelegate) server.loadAdapter( PortalServer.class, null );
+
+        int aQuteAgentPort = Integer.parseInt( portalServerDelegate.getAgentPort() );
+        int jmxPort = Integer.parseInt( portalServerDelegate.getJmxPort() );
 
         /*
         try

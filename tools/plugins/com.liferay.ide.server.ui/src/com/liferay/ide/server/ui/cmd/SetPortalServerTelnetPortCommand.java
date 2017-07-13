@@ -13,38 +13,37 @@ package com.liferay.ide.server.ui.cmd;
 
 import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
+
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
- * @author Terry Jia
+ * @author Joye Luo
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerHttpPortCommand extends ServerCommand
+public class SetPortalServerTelnetPortCommand extends ServerCommand
 {
+    protected String oldTelnetPort;
+    protected String telnetPort;
 
-    protected String oldHttpPort;
-    protected String httpPort;
-
-    public SetPortalServerHttpPortCommand( IServerWorkingCopy server, String httpPort )
+    public SetPortalServerTelnetPortCommand( IServerWorkingCopy server, String telnetPort )
     {
         super( server, Messages.editorResourceModifiedTitle );
-        this.httpPort = httpPort;
+        this.telnetPort = telnetPort;
     }
 
     public void execute()
     {
-        oldHttpPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getHttpPort();
+        oldTelnetPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getTelnetPort();
 
         ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setHttpPort( httpPort );
+        .getPortalBundle().setTelnetPort( telnetPort );
     }
 
     public void undo()
     {
         ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setHttpPort( oldHttpPort );
+        .getPortalBundle().setTelnetPort( oldTelnetPort );
     }
-
 }

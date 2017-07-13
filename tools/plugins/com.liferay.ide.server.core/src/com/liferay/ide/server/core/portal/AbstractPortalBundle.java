@@ -129,8 +129,6 @@ public abstract class AbstractPortalBundle implements PortalBundle
 
     protected abstract IPath getAppServerLibDir();
 
-    protected abstract int getDefaultJMXRemotePort();
-
     @Override
     public String[] getHookSupportedProperties()
     {
@@ -140,7 +138,7 @@ public abstract class AbstractPortalBundle implements PortalBundle
         return new LiferayPortalValueLoader( portalDir, extraLibs ).loadHookPropertiesFromClass();
     }
 
-    protected String getHttpPortValue(
+    protected String getPortalServerPortValue(
         File xmlFile, String tagName, String attriName, String attriValue, String targetName )
     {
         DocumentBuilder db = null;
@@ -182,12 +180,6 @@ public abstract class AbstractPortalBundle implements PortalBundle
         }
 
         return null;
-    }
-
-    @Override
-    public int getJmxRemotePort()
-    {
-        return getDefaultJMXRemotePort();
     }
 
     @Override
