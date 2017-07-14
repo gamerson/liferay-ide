@@ -139,7 +139,8 @@
                 <configuration>
                     <properties>
                         <appDir>${pom.basedir}/../outputs/LiferayWorkspace-${workspace-installer-version}-osx-installer.app</appDir>
-                        <signingServerURL>http://localhost:8080</signingServerURL>
+                        <signingServerURL>${signing-server-url}</signingServerURL>
+                        <signApps>${signApps}</signApps>
                     </properties>
                     <source>${pom.basedir}/../shared/scripts/SignApp.groovy</source>
                 </configuration>

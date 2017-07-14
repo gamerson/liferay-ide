@@ -2,6 +2,7 @@ def appDir = new File(project.properties.get("appDir")).canonicalFile
 def serverURL = project.properties.get("signingServerURL")
 
 println appDir
+println serverURL
 
 if (appDir.exists() && serverURL != null) {
 	println "Calling codesign service..."
