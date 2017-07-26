@@ -67,11 +67,11 @@ public interface PortalBundle extends ILiferayPortal
 
     IPath[] getUserLibs();
 
-    void setAjpPort( String port );
+    void setAjpPort( int port );
 
-    void setHttpPort( String port );
+    void setHttpPort( int port );
 
-    void setShutdownPort( String port );
+    void setShutdownPort( int port );
 
-    void setTelnetPort( String port );
+    void setTelnetPort( int port );
 }

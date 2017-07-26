@@ -63,17 +63,9 @@ public interface IKaleoConnection extends IRemoteConnection
     void publishKaleoDraftDefinition( String name, String titleMap, String content, String companyId, String userId, String groupId )
         throws KaleoAPIException;
 
-    void setHost( String host );
-
-    void setHttpPort( String httpPort );
-
-    void setPassword( String password );
-
     void setPortalHtmlUrl( URL portalHomeUrl );
 
     void setPortalContextPath( String path );
-
-    void setUsername( String username );
 
     JSONObject updateKaleoDraftDefinition(
         String name, String titleMap, String content, int version, int draftVersion, long companyId, long userId )

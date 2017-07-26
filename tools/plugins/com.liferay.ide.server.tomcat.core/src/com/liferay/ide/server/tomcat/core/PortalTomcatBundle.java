@@ -49,18 +49,19 @@ import org.w3c.dom.NodeList;
  */
 public class PortalTomcatBundle extends AbstractPortalBundle
 {
+
     private final static String FRAMEWORK_OSGI_CONSOLE_NAME = "module.framework.properties.osgi.console";
 
     private final static String PORTAL_EXT_PROPERTIES = "portal-ext.properties";
 
     public PortalTomcatBundle( IPath path )
     {
-       super(path);
+        super( path );
     }
 
     public PortalTomcatBundle( Map<String, String> appServerProperties )
     {
-       super(appServerProperties);
+        super( appServerProperties );
     }
 
     @Override
@@ -204,8 +205,8 @@ public class PortalTomcatBundle extends AbstractPortalBundle
         args.add( "-Djava.endorsed.dirs=" + "\"" + this.bundlePath.append( "endorsed" ).toPortableString() + "\"" );
         args.add( "-Djava.io.tmpdir=" + "\"" + this.bundlePath.append( "temp" ).toPortableString() + "\"" );
         args.add( "-Djava.net.preferIPv4Stack=true" );
-        args.add( "-Djava.util.logging.config.file=" + "\"" + this.bundlePath.append( "conf/logging.properties" ) +
-            "\"" );
+        args.add(
+            "-Djava.util.logging.config.file=" + "\"" + this.bundlePath.append( "conf/logging.properties" ) + "\"" );
         args.add( "-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager" );
         args.add( "-Dorg.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false" );
         args.add( "-Duser.timezone=GMT" );
@@ -253,11 +254,11 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
                 if( config.containsKey( FRAMEWORK_OSGI_CONSOLE_NAME ) )
                 {
-                    port = ( (String) config.getProperty( FRAMEWORK_OSGI_CONSOLE_NAME ) )
-                                    .replaceAll( "localhost:", "" ).trim();
+                    port = ( (String) config.getProperty( FRAMEWORK_OSGI_CONSOLE_NAME ) ).replaceAll(
+                        "localhost:", "" ).trim();
                 }
 
-                if( !CoreUtil.empty( port ))
+                if( !CoreUtil.empty( port ) )
                 {
                     return port;
                 }
@@ -282,7 +283,8 @@ public class PortalTomcatBundle extends AbstractPortalBundle
         List<IPath> libs = new ArrayList<IPath>();
         try
         {
-            List<File>  portallibFiles = FileListing.getFileListing( new File( getAppServerPortalDir().append( "WEB-INF/lib" ).toPortableString() ) );
+            List<File> portallibFiles = FileListing.getFileListing(
+                new File( getAppServerPortalDir().append( "WEB-INF/lib" ).toPortableString() ) );
             for( File lib : portallibFiles )
             {
                 if( lib.exists() && lib.getName().endsWith( ".jar" ) ) //$NON-NLS-1$
@@ -291,16 +293,17 @@ public class PortalTomcatBundle extends AbstractPortalBundle
                 }
             }
 
-            List<File>  libFiles = FileListing.getFileListing( new File( getAppServerLibDir().toPortableString() ) );
+            List<File> libFiles = FileListing.getFileListing( new File( getAppServerLibDir().toPortableString() ) );
             for( File lib : libFiles )
             {
-                if( lib.exists() && lib.getName().endsWith( ".jar" ))
+                if( lib.exists() && lib.getName().endsWith( ".jar" ) )
                 {
                     libs.add( new Path( lib.getPath() ) );
                 }
             }
 
-            List<File>  extlibFiles = FileListing.getFileListing( new File( getAppServerLibGlobalDir().toPortableString() ) );
+            List<File> extlibFiles =
+                FileListing.getFileListing( new File( getAppServerLibGlobalDir().toPortableString() ) );
             for( File lib : extlibFiles )
             {
                 if( lib.exists() && lib.getName().endsWith( ".jar" ) )
@@ -317,19 +320,19 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     }
 
     @Override
-    public void setAjpPort( String port )
+    public void setAjpPort( int port )
     {
         setPortalServerPortValue(
             new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Connector", "protocol", "AJP/1.3",
-            "port", port );
+            "port", String.valueOf( port ) );
     }
 
     @Override
-    public void setHttpPort( String port )
+    public void setHttpPort( int port )
     {
         setPortalServerPortValue(
             new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Connector", "protocol", "HTTP/1.1",
-            "port", port );
+            "port", String.valueOf( port ) );
     }
 
     private void setPortalServerPortValue(
@@ -387,15 +390,15 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     }
 
     @Override
-    public void setShutdownPort( String port )
+    public void setShutdownPort( int port )
     {
         setPortalServerPortValue(
             new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Server", "shutdown", "SHUTDOWN",
-            "port", port );
+            "port", String.valueOf( port ) );
     }
 
     @Override
-    public void setTelnetPort( String port )
+    public void setTelnetPort( int port )
     {
         File portalExt = liferayHome.append( PORTAL_EXT_PROPERTIES ).toFile();
 
@@ -424,7 +427,6 @@ public class PortalTomcatBundle extends AbstractPortalBundle
             }
 
             config.save( portalExt );
-
         }
         catch( Exception e )
         {

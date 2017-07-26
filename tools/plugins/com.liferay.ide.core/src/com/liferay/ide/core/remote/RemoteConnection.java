@@ -105,8 +105,8 @@ public class RemoteConnection implements IRemoteConnection
                         if( data.getHost() != null && data.getPort() > 0 )
                         {
                             SchemeRegistry schemeRegistry = new SchemeRegistry();
-                            schemeRegistry.register( new Scheme(
-                                "http", data.getPort(), PlainSocketFactory.getSocketFactory() ) ); //$NON-NLS-1$
+                            schemeRegistry.register(
+                                new Scheme( "http", data.getPort(), PlainSocketFactory.getSocketFactory() ) ); //$NON-NLS-1$
 
                             PoolingClientConnectionManager cm = new PoolingClientConnectionManager( schemeRegistry );
                             cm.setMaxTotal( 200 );
@@ -378,16 +378,9 @@ public class RemoteConnection implements IRemoteConnection
         releaseHttpClient();
     }
 
-    public void setHttpPort( String httpPort )
+    public void setHttpPort( int httpPort )
     {
-        if( httpPort != null )
-        {
-            this.httpPort = Integer.parseInt( httpPort );
-        }
-        else
-        {
-            this.httpPort = -1;
-        }
+        this.httpPort = httpPort;
 
         releaseHttpClient();
     }
@@ -414,4 +407,5 @@ public class RemoteConnection implements IRemoteConnection
             this.httpClient = null;
         }
     }
+
 }

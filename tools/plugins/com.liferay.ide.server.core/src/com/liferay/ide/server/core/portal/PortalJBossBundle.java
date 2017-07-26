@@ -44,16 +44,17 @@ import org.w3c.dom.NodeList;
  */
 public class PortalJBossBundle extends AbstractPortalBundle
 {
+
     public static final int DEFAULT_JMX_PORT = 2099;
 
     public PortalJBossBundle( IPath path )
     {
-       super(path);
+        super( path );
     }
 
     public PortalJBossBundle( Map<String, String> appServerProperties )
     {
-       super(appServerProperties);
+        super( appServerProperties );
     }
 
     @Override
@@ -104,7 +105,8 @@ public class PortalJBossBundle extends AbstractPortalBundle
     {
         String retVal = "8080";
 
-        File standaloneXmlFile = new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
+        File standaloneXmlFile =
+            new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
 
         String portValue = getPortalServerPortValue( standaloneXmlFile, "socket-binding", "name", "http", "port" );
 
@@ -147,14 +149,14 @@ public class PortalJBossBundle extends AbstractPortalBundle
     {
         final List<String> args = new ArrayList<String>();
 
-        args.add( "-mp \"" + this.bundlePath.toPortableString() +  "/modules" + "\"");
+        args.add( "-mp \"" + this.bundlePath.toPortableString() + "/modules" + "\"" );
         args.add( "-jaxpmodule" );
         args.add( "javax.xml.jaxp-provider" );
         args.add( "org.jboss.as.standalone" );
         args.add( "-b" );
         args.add( "localhost" );
         args.add( "--server-config=standalone.xml" );
-        args.add( "-Djboss.server.base.dir=" + "\"" + this.bundlePath.toPortableString() + "/standalone/"+ "\"" );
+        args.add( "-Djboss.server.base.dir=" + "\"" + this.bundlePath.toPortableString() + "/standalone/" + "\"" );
 
         return args.toArray( new String[0] );
 
@@ -165,7 +167,7 @@ public class PortalJBossBundle extends AbstractPortalBundle
     {
         final List<String> args = new ArrayList<String>();
 
-        args.add( "-mp \"" + this.bundlePath.toPortableString() +  "/modules" + "\"" );
+        args.add( "-mp \"" + this.bundlePath.toPortableString() + "/modules" + "\"" );
         args.add( "org.jboss.as.cli" );
         args.add( "--controller=localhost" );
         args.add( "--connect" );
@@ -191,12 +193,19 @@ public class PortalJBossBundle extends AbstractPortalBundle
         args.add( "-Dfile.encoding=UTF8" );
         args.add( "-server" );
         args.add( "-Djava.util.logging.manager=org.jboss.logmanager.LogManager" );
-        args.add( "-Xbootclasspath/p:" +  "\""  +  this.bundlePath +  "/modules/org/jboss/logmanager/main/jboss-logmanager-1.2.2.GA.jar"  +  "\"" );
-        args.add( "-Xbootclasspath/p:" +  "\""  +  this.bundlePath +  "/modules/org/jboss/logmanager/log4j/main/jboss-logmanager-log4j-1.0.0.GA.jar"  +  "\"" );
-        args.add( "-Xbootclasspath/p:" +  "\""  +  this.bundlePath +  "/modules/org/apache/log4j/main/log4j-1.2.16.jar"  +  "\"" );
-        args.add( "-Djboss.modules.system.pkgs=org.jboss.logmanager");
-        args.add( "-Dorg.jboss.boot.log.file=" +  "\""  + this.bundlePath.append("/standalone/log/boot.log") + "\"" );
-        args.add( "-Dlogging.configuration=file:" + "\"" + this.bundlePath + "/standalone/configuration/logging.properties" + "\"" );
+        args.add(
+            "-Xbootclasspath/p:" + "\"" + this.bundlePath +
+                "/modules/org/jboss/logmanager/main/jboss-logmanager-1.2.2.GA.jar" + "\"" );
+        args.add(
+            "-Xbootclasspath/p:" + "\"" + this.bundlePath +
+                "/modules/org/jboss/logmanager/log4j/main/jboss-logmanager-log4j-1.0.0.GA.jar" + "\"" );
+        args.add(
+            "-Xbootclasspath/p:" + "\"" + this.bundlePath + "/modules/org/apache/log4j/main/log4j-1.2.16.jar" + "\"" );
+        args.add( "-Djboss.modules.system.pkgs=org.jboss.logmanager" );
+        args.add( "-Dorg.jboss.boot.log.file=" + "\"" + this.bundlePath.append( "/standalone/log/boot.log" ) + "\"" );
+        args.add(
+            "-Dlogging.configuration=file:" + "\"" + this.bundlePath + "/standalone/configuration/logging.properties" +
+                "\"" );
         args.add( "-Djboss.home.dir=" + "\"" + this.bundlePath + "\"" );
         args.add( "-Djboss.bind.address.management=localhost" );
         args.add( "-Duser.timezone=GMT" );
@@ -208,7 +217,7 @@ public class PortalJBossBundle extends AbstractPortalBundle
     public String[] getRuntimeStopVMArgs()
     {
         final List<String> args = new ArrayList<String>();
-        args.add( "-Djboss.home.dir=" + "\"" + this.bundlePath + "\"");
+        args.add( "-Djboss.home.dir=" + "\"" + this.bundlePath + "\"" );
 
         return args.toArray( new String[0] );
     }
@@ -238,7 +247,8 @@ public class PortalJBossBundle extends AbstractPortalBundle
 
         try
         {
-            List<File>  portallibFiles = FileListing.getFileListing( new File( getAppServerPortalDir().append( "WEB-INF/lib" ).toPortableString() ) );
+            List<File> portallibFiles = FileListing.getFileListing(
+                new File( getAppServerPortalDir().append( "WEB-INF/lib" ).toPortableString() ) );
 
             for( File lib : portallibFiles )
             {
@@ -248,7 +258,7 @@ public class PortalJBossBundle extends AbstractPortalBundle
                 }
             }
 
-            List<File>  libFiles = FileListing.getFileListing( new File( getAppServerLibDir().toPortableString() ) );
+            List<File> libFiles = FileListing.getFileListing( new File( getAppServerLibDir().toPortableString() ) );
 
             for( File lib : libFiles )
             {
@@ -266,16 +276,17 @@ public class PortalJBossBundle extends AbstractPortalBundle
     }
 
     @Override
-    public void setAjpPort( String port )
+    public void setAjpPort( int port )
     {
     }
 
     @Override
-    public void setHttpPort( String port )
+    public void setHttpPort( int port )
     {
-        File standaloneXmlFile = new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
+        File standaloneXmlFile =
+            new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
 
-        setHttpPortValue( standaloneXmlFile, "socket-binding", "name", "http", "port", port );
+        setHttpPortValue( standaloneXmlFile, "socket-binding", "name", "http", "port", String.valueOf( port ) );
     }
 
     private void setHttpPortValue(
@@ -333,12 +344,12 @@ public class PortalJBossBundle extends AbstractPortalBundle
     }
 
     @Override
-    public void setShutdownPort( String port )
+    public void setShutdownPort( int port )
     {
     }
 
     @Override
-    public void setTelnetPort( String port )
+    public void setTelnetPort( int port )
     {
     }
 

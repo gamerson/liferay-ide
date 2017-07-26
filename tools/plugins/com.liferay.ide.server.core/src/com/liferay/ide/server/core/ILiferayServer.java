@@ -37,7 +37,7 @@ public interface ILiferayServer
 
     String ATTR_USERNAME = "username";
 
-    String DEFAULT_HTTP_PORT = defaultPrefs.get( "default.http.port", StringPool.EMPTY );
+    int DEFAULT_HTTP_PORT = Integer.parseInt( defaultPrefs.get( "default.http.port", StringPool.EMPTY ) );
 
     String DEFAULT_PASSWORD = defaultPrefs.get( "default.password", StringPool.EMPTY );
 
@@ -45,7 +45,7 @@ public interface ILiferayServer
 
     String getId();
 
-    String getHttpPort();
+    int getHttpPort();
 
     String getHost();
 

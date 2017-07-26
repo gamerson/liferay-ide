@@ -11,40 +11,34 @@
 
 package com.liferay.ide.server.ui.cmd;
 
-import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.core.portal.PortalServerDelegate;
 
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.ui.internal.Messages;
-import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
  * @author Joye Luo
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerShutdownPortCommand extends ServerCommand
+public class SetPortalServerShutdownPortCommand extends AbstractSetPortCommond
 {
-    protected String oldShutdownPort;
-    protected String shutdownPort;
 
-    public SetPortalServerShutdownPortCommand( IServerWorkingCopy server, String shutdownPort )
+    public SetPortalServerShutdownPortCommand( IServerWorkingCopy server, int port )
     {
-        super( server, Messages.editorResourceModifiedTitle );
-        this.shutdownPort = shutdownPort;
+        super( server, port );
     }
 
     public void execute()
     {
-        oldShutdownPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getShutdownPort();
+        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getShutdownPort();
 
-        ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setShutdownPort( shutdownPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setShutdownPort( port );
     }
 
     public void undo()
     {
-        ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setShutdownPort( oldShutdownPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setShutdownPort( oldPort );
     }
 
 }

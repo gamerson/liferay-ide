@@ -15,33 +15,30 @@ import com.liferay.ide.server.core.portal.PortalServer;
 import com.liferay.ide.server.core.portal.PortalServerDelegate;
 
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.ui.internal.Messages;
-import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
  * @author Joye Luo
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerJmxPortCommand extends ServerCommand
+public class SetPortalServerJmxPortCommand extends AbstractSetPortCommond
 {
-    protected String oldJmxPort;
-    protected String jmxPort;
 
-    public SetPortalServerJmxPortCommand( IServerWorkingCopy server, String jmxPort )
+    public SetPortalServerJmxPortCommand( IServerWorkingCopy server, int port )
     {
-        super( server, Messages.editorResourceModifiedTitle );
-        this.jmxPort = jmxPort;
+        super( server, port );
     }
 
     public void execute()
     {
-        oldJmxPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getJmxPort();
+        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getJmxPort();
 
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( jmxPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( port );
     }
 
     public void undo()
     {
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( oldJmxPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( oldPort );
     }
+
 }

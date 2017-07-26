@@ -17,22 +17,18 @@ package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.server.core.ILiferayServerBehavior;
 import com.liferay.ide.server.core.LiferayServerCore;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.internal.Server;
@@ -49,10 +45,6 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 {
 
     private final static List<String> SUPPORT_TYPES_LIST = Arrays.asList( "liferay.bundle", "jst.web", "jst.utility" );
-
-    private static Pattern aQuteAgentPortPattern = Pattern.compile( "-DaQute.agent.server.port=([0-9]+)" );
-
-    private static Pattern jmxRemotePortPattern = Pattern.compile( "-Dcom.sun.management.jmxremote.port=([0-9]+)" );
 
     public PortalServerDelegate()
     {
@@ -81,38 +73,13 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     }
 
     @Override
-    public String getAgentPort()
+    public int getAgentPort()
     {
-        String retval = DEFAULT_AGENT_PORT;
-
-        try
-        {
-            ILaunchConfigurationWorkingCopy wc = getServer().getLaunchConfiguration( true, null ).getWorkingCopy();
-
-            String launchVmArguments = wc.getAttribute( IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "" );
-
-            Matcher agentMatcher = aQuteAgentPortPattern.matcher( launchVmArguments );
-
-            if( !CoreUtil.isNullOrEmpty( launchVmArguments ) )
-            {
-                if( agentMatcher.find() )
-                {
-                    retval = agentMatcher.group( 1 );
-
-                    return retval;
-                }
-            }
-        }
-        catch( CoreException e )
-        {
-            LiferayServerCore.logError( "Unable to get portal agent port.", e );
-        }
-
-        return retval;
+        return getAttribute( ATTR_AGENT_PORT, DEFAULT_AGENT_PORT );
     }
 
     @Override
-    public String getAjpPort()
+    public int getAjpPort()
     {
         return getAttribute( ATTR_AJP_PORT, DEFAULT_AJP_PORT );
     }
@@ -151,15 +118,15 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         return getAttribute( PROPERTY_EXTERNAL_PROPERTIES, StringPool.EMPTY );
     }
 
-    @Override
-    public String getHttpPort()
-    {
-        return getAttribute( ATTR_HTTP_PORT, DEFAULT_HTTP_PORT );
-    }
-
     public String getHost()
     {
         return getServer().getHost();
+    }
+
+    @Override
+    public int getHttpPort()
+    {
+        return getAttribute( ATTR_HTTP_PORT, DEFAULT_HTTP_PORT );
     }
 
     public String getId()
@@ -168,34 +135,9 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     }
 
     @Override
-    public String getJmxPort()
+    public int getJmxPort()
     {
-        String retval = DEFAULT_JMX_PORT;
-
-        try
-        {
-            ILaunchConfigurationWorkingCopy wc = getServer().getLaunchConfiguration( true, null ).getWorkingCopy();
-
-            String launchVmArguments = wc.getAttribute( IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "" );
-
-            Matcher jmxMatcher = jmxRemotePortPattern.matcher( launchVmArguments );
-
-            if( !CoreUtil.isNullOrEmpty( launchVmArguments ) )
-            {
-                if( jmxMatcher.find() )
-                {
-                    retval = jmxMatcher.group( 1 );
-
-                    return retval;
-                }
-            }
-        }
-        catch( CoreException e )
-        {
-            LiferayServerCore.logError( "Unable to get jmx port.", e );;
-        }
-
-        return retval;
+        return getAttribute( ATTR_JMX_PORT, DEFAULT_JMX_PORT );
     }
 
     @Override
@@ -263,13 +205,13 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     }
 
     @Override
-    public String getShutdownPort()
+    public int getShutdownPort()
     {
-        return getAttribute( ATTR_SHUTDON_PORT, DEFAUT_SHUTDON_PORT );
+        return getAttribute( ATTR_SHUTDON_PORT, DEFAULT_SHUTDOWN_PORT );
     }
 
     @Override
-    public String getTelnetPort()
+    public int getTelnetPort()
     {
         return getAttribute( ATTR_TELNET_PORT, DEFAULT_TELNET_PORT );
     }
@@ -299,31 +241,32 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     {
     }
 
-    public void setAgentPort( String agentPort )
+    public void setAgentPort( int port )
     {
-        setAttribute( ILiferayServerBehavior.AGENT_PORT, agentPort );
+        setAttribute( ATTR_AGENT_PORT, port );
+    }
 
-        try
-        {
-            getServerWorkingCopy().saveAll( true, null );
+    public void setAjpPort( int port )
+    {
+        setAttribute( ATTR_AJP_PORT, port );
 
-            ILaunchConfigurationWorkingCopy wc = getServer().getLaunchConfiguration( true, null ).getWorkingCopy();
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
 
-            wc.doSave();
-        }
-        catch( CoreException e )
-        {
-            LiferayServerCore.logError( "Failed to set agent port.", e );
-        }
-
+        runtime.getPortalBundle().setAjpPort( port );
     }
 
     @Override
     public void setDefaults( IProgressMonitor monitor )
     {
         setAttribute( Server.PROP_AUTO_PUBLISH_TIME, getAutoPublishTime() );
-        setAttribute( ILiferayServerBehavior.AGENT_PORT, DEFAULT_AGENT_PORT );
-        setAttribute( ILiferayServerBehavior.JMX_PORT, DEFAULT_JMX_PORT );
+
+        setAgentPort( DEFAULT_AGENT_PORT );
+        setAjpPort( DEFAULT_AJP_PORT );
+        setHttpPort( DEFAULT_HTTP_PORT );
+        setJmxPort( DEFAULT_JMX_PORT );
+        setTelnetPort( DEFAULT_TELNET_PORT );
+        setShutdownPort( DEFAULT_SHUTDOWN_PORT );
     }
 
     @Override
@@ -337,28 +280,19 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         setAttribute( PROPERTY_EXTERNAL_PROPERTIES, externalProperties );
     }
 
-    public void setHttpPort( String httpPort )
+    public void setHttpPort( int port )
     {
-        setAttribute( ATTR_HTTP_PORT, httpPort );
+        setAttribute( ATTR_HTTP_PORT, port );
+
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        runtime.getPortalBundle().setHttpPort( port );
     }
 
-    public void setJmxPort( String jmxPort )
+    public void setJmxPort( int port )
     {
-        setAttribute( ILiferayServerBehavior.JMX_PORT, Integer.parseInt( jmxPort ) );
-
-        try
-        {
-            getServerWorkingCopy().saveAll( true, null );
-
-            ILaunchConfigurationWorkingCopy wc = getServer().getLaunchConfiguration( true, null ).getWorkingCopy();
-
-            wc.doSave();
-        }
-        catch( CoreException e )
-        {
-            LiferayServerCore.logError( "Failed to set jmx port.", e );
-        }
-
+        setAttribute( ATTR_JMX_PORT, port );
     }
 
     @Override
@@ -377,9 +311,24 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         setAttribute( ATTR_PASSWORD, password );
     }
 
-    public void setShutdownPort( String shutdownPort )
+    public void setShutdownPort( int port )
     {
-        setAttribute( ATTR_SHUTDON_PORT, shutdownPort );
+        setAttribute( ATTR_SHUTDON_PORT, port );
+
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        runtime.getPortalBundle().setShutdownPort( port );
+    }
+
+    public void setTelnetPort( int port )
+    {
+        setAttribute( ATTR_TELNET_PORT, port );
+
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        runtime.getPortalBundle().setTelnetPort( port );
     }
 
     public void setUsername( String username )

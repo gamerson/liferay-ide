@@ -58,7 +58,7 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
     public boolean canMakeHttpConnection()
     {
         String host = getServer().getHost();
-        String http = getHTTPPort();
+        int http = getHttpPort();
 
         final Socket socket = new Socket();
 
@@ -110,7 +110,7 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
             {
                 IProject addModuleProject = addModule.getProject();
 
-                if( ! CoreUtil.isLiferayProject( addModuleProject ) )
+                if( !CoreUtil.isLiferayProject( addModuleProject ) )
                 {
                     return LiferayServerCore.error( Msgs.notAddNonLiferayPluginProjectModule );
                 }
@@ -205,12 +205,7 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
         return getServer().getHost();
     }
 
-    public String getHttpPort()
-    {
-        return getHTTPPort();
-    }
-
-    public String getHTTPPort()
+    public int getHttpPort()
     {
         return getAttribute( ATTR_HTTP_PORT, DEFAULT_HTTP_PORT );
     }
@@ -237,17 +232,14 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
 
     public URL getPluginContextURL( String context )
     {
-        String httpPort = getHTTPPort();
+        int httpPort = getHttpPort();
 
-        if( httpPort != null )
+        try
         {
-            try
-            {
-                return new URL( "http://" + getServer().getHost() + ":" + httpPort + context ); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            catch( MalformedURLException e )
-            {
-            }
+            return new URL( "http://" + getServer().getHost() + ":" + httpPort + context ); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        catch( MalformedURLException e )
+        {
         }
 
         return null;
@@ -255,10 +247,10 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
 
     public URL getPortalHomeUrl()
     {
-        String httpPort = getHTTPPort();
+        int httpPort = getHttpPort();
         String contextUrl = getLiferayPortalContextPath();
 
-        if( httpPort != null && ( !CoreUtil.isNullOrEmpty( contextUrl ) ) )
+        if( !CoreUtil.isNullOrEmpty( contextUrl ) )
         {
             try
             {
@@ -302,7 +294,7 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
     {
         try
         {
-            return new URL( "http://" + getServer().getHost() + ":" + getHTTPPort() + "/tunnel-web/axis" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return new URL( "http://" + getServer().getHost() + ":" + getHttpPort() + "/tunnel-web/axis" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         catch( MalformedURLException e )
         {
@@ -370,9 +362,9 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
         getServerWorkingCopy().setName( defaultName );
     }
 
-    public void setHTTPPort( String httpPort )
+    public void setHttpPort( int port )
     {
-        setAttribute( ATTR_HTTP_PORT, httpPort );
+        setAttribute( ATTR_HTTP_PORT, port );
     }
 
     public void setLiferayPortalContextPath( String path )
@@ -405,13 +397,14 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
 
             if( monitor != null )
             {
-                monitor.beginTask( NLS.bind( Msgs.validatingConnection, host, getHTTPPort() ), IProgressMonitor.UNKNOWN );
+                monitor.beginTask(
+                    NLS.bind( Msgs.validatingConnection, host, getHttpPort() ), IProgressMonitor.UNKNOWN );
             }
 
             if( !canMakeHttpConnection() )
             {
-                return LiferayServerCore.createWarningStatus( NLS.bind(
-                    Msgs.serverNotAvailable, host, getHTTPPort() ) );
+                return LiferayServerCore.createWarningStatus(
+                    NLS.bind( Msgs.serverNotAvailable, host, getHttpPort() ) );
             }
 
             IServerManagerConnection connection = LiferayServerCore.getRemoteConnection( this );
@@ -450,6 +443,7 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
 
     private static class Msgs extends NLS
     {
+
         public static String extPluginDeployment;
         public static String notAddNonLiferayPluginProjectModule;
         public static String notConnectRemoteIDEConnectorPlugin;
@@ -461,4 +455,5 @@ public class RemoteServer extends ServerDelegate implements IRemoteServerWorking
             initializeMessages( RemoteServer.class.getName(), Msgs.class );
         }
     }
+
 }

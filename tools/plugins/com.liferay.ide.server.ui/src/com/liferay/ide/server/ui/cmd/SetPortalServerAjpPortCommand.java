@@ -15,39 +15,34 @@
 
 package com.liferay.ide.server.ui.cmd;
 
-import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.core.portal.PortalServerDelegate;
 
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.ui.internal.Messages;
-import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
  * @author Joye Luo
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerAjpPortCommand extends ServerCommand
+public class SetPortalServerAjpPortCommand extends AbstractSetPortCommond
 {
-    protected String oldAjpPort;
-    protected String AjpPort;
 
-    public SetPortalServerAjpPortCommand( IServerWorkingCopy server, String AjpPort )
+    public SetPortalServerAjpPortCommand( IServerWorkingCopy server, int port )
     {
-        super( server, Messages.editorResourceModifiedTitle );
-        this.AjpPort = AjpPort;
+        super( server, port );
     }
 
     public void execute()
     {
-        oldAjpPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getAjpPort();
+        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getAjpPort();
 
-        ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setAjpPort( AjpPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAjpPort( port );
     }
 
     public void undo()
     {
-        ( (PortalRuntime) server.getRuntime().loadAdapter( PortalRuntime.class, null ) )
-        .getPortalBundle().setAjpPort( oldAjpPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAjpPort( oldPort );
     }
+
 }

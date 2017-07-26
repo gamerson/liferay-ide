@@ -45,10 +45,10 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 
     public ServerManagerConnection()
     {
-        this( null, null, null, null, null );
+        this( null, -1, null, null, null );
     }
 
-    public ServerManagerConnection( String host, String httpPort, String username, String pw, String managerContextPath )
+    public ServerManagerConnection( String host, int httpPort, String username, String pw, String managerContextPath )
     {
         setHost( host );
         setHttpPort( httpPort );

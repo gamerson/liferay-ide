@@ -42,12 +42,6 @@ public interface IRemoteServer extends ILiferayServer, IURLProvider
 
     boolean getAdjustDeploymentTimestamp();
 
-    String getHost();
-
-    String getHTTPPort();
-
-    String getId();
-
     String getLiferayPortalContextPath();
 
     String getServerManagerContextPath();

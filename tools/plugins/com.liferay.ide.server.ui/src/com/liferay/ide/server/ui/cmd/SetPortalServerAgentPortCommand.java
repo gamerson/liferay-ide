@@ -19,33 +19,30 @@ import com.liferay.ide.server.core.portal.PortalServer;
 import com.liferay.ide.server.core.portal.PortalServerDelegate;
 
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.ui.internal.Messages;
-import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
  * @author Joye Luo
+ * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerAgentPortCommand extends ServerCommand
+public class SetPortalServerAgentPortCommand extends AbstractSetPortCommond
 {
-    protected String oldAgentPort;
-    protected String agentPort;
 
-    public SetPortalServerAgentPortCommand( IServerWorkingCopy server, String agentPort )
+    public SetPortalServerAgentPortCommand( IServerWorkingCopy server, int port )
     {
-        super( server, Messages.editorResourceModifiedTitle );
-        this.agentPort = agentPort;
+        super( server, port );
     }
 
     public void execute()
     {
-        oldAgentPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getAgentPort();
+        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getAgentPort();
 
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAgentPort( agentPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAgentPort( port );
     }
 
     public void undo()
     {
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAgentPort( agentPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAgentPort( oldPort );
     }
+
 }
