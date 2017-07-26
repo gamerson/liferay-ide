@@ -58,9 +58,9 @@ public class PortalJBossBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getAjpPort()
+    public int getAjpPort()
     {
-        return null;
+        return -1;
     }
 
     @Override
@@ -101,9 +101,9 @@ public class PortalJBossBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getHttpPort()
+    public int getHttpPort()
     {
-        String retVal = "8080";
+        int retVal = 8080;
 
         File standaloneXmlFile =
             new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
@@ -114,11 +114,12 @@ public class PortalJBossBundle extends AbstractPortalBundle
         {
             if( portValue.lastIndexOf( ":" ) == -1 )
             {
-                retVal = portValue;
+                retVal = Integer.valueOf( portValue );
             }
             else
             {
-                retVal = portValue.substring( portValue.lastIndexOf( ":" ) + 1, portValue.length() - 1 );
+                retVal =
+                    Integer.valueOf( portValue.substring( portValue.lastIndexOf( ":" ) + 1, portValue.length() - 1 ) );
             }
         }
 
@@ -229,15 +230,15 @@ public class PortalJBossBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getTelnetPort()
+    public int getTelnetPort()
     {
-        return null;
+        return -1;
     }
 
     @Override
-    public String getShutdownPort()
+    public int getShutdownPort()
     {
-        return null;
+        return -1;
     }
 
     @Override

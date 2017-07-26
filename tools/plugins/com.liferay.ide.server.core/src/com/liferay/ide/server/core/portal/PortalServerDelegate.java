@@ -81,7 +81,10 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     @Override
     public int getAjpPort()
     {
-        return getAttribute( ATTR_AJP_PORT, DEFAULT_AJP_PORT );
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getAjpPort();
     }
 
     public int getAutoPublishTime()
@@ -126,7 +129,10 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     @Override
     public int getHttpPort()
     {
-        return getAttribute( ATTR_HTTP_PORT, DEFAULT_HTTP_PORT );
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getHttpPort();
     }
 
     public String getId()
@@ -207,13 +213,19 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     @Override
     public int getShutdownPort()
     {
-        return getAttribute( ATTR_SHUTDON_PORT, DEFAULT_SHUTDOWN_PORT );
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getShutdownPort();
     }
 
     @Override
     public int getTelnetPort()
     {
-        return getAttribute( ATTR_TELNET_PORT, DEFAULT_TELNET_PORT );
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getTelnetPort();
     }
 
     public String getUsername()
@@ -248,8 +260,6 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 
     public void setAjpPort( int port )
     {
-        setAttribute( ATTR_AJP_PORT, port );
-
         PortalRuntime runtime =
             (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
 
@@ -282,8 +292,6 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 
     public void setHttpPort( int port )
     {
-        setAttribute( ATTR_HTTP_PORT, port );
-
         PortalRuntime runtime =
             (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
 
@@ -313,8 +321,6 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 
     public void setShutdownPort( int port )
     {
-        setAttribute( ATTR_SHUTDON_PORT, port );
-
         PortalRuntime runtime =
             (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
 
@@ -323,8 +329,6 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 
     public void setTelnetPort( int port )
     {
-        setAttribute( ATTR_TELNET_PORT, port );
-
         PortalRuntime runtime =
             (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
 

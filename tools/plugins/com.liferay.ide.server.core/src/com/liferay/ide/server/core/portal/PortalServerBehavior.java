@@ -356,7 +356,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         {
             String url = "http://" + getServer().getHost();
 
-            final int port = Integer.parseInt( getPortalRuntime().getPortalBundle().getHttpPort() );
+            final int port = getPortalRuntime().getPortalBundle().getHttpPort();
 
             if( port != 80 )
             {

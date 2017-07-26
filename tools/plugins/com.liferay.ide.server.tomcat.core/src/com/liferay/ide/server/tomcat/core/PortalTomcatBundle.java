@@ -65,9 +65,9 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getAjpPort()
+    public int getAjpPort()
     {
-        String retval = "8009";
+        int retval = 8009;
 
         File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
 
@@ -75,7 +75,7 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
         if( !CoreUtil.empty( portValue ) )
         {
-            return portValue;
+            return Integer.valueOf( portValue );
         }
 
         return retval;
@@ -119,9 +119,9 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getHttpPort()
+    public int getHttpPort()
     {
-        String retVal = "8080";
+        int retVal = 8080;
 
         File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
 
@@ -129,7 +129,7 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
         if( !CoreUtil.empty( portValue ) )
         {
-            return portValue;
+            return Integer.valueOf( portValue );
         }
 
         return retVal;
@@ -215,9 +215,9 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getShutdownPort()
+    public int getShutdownPort()
     {
-        String retVal = "8005";
+        int retVal = 8005;
 
         File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
 
@@ -225,16 +225,16 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
         if( !CoreUtil.empty( portValue ) )
         {
-            return portValue;
+            return Integer.valueOf( portValue );
         }
 
         return retVal;
     }
 
     @Override
-    public String getTelnetPort()
+    public int getTelnetPort()
     {
-        String retVal = "11311";
+        int retVal = 11311;
 
         String port = null;
 
@@ -260,7 +260,7 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
                 if( !CoreUtil.empty( port ) )
                 {
-                    return port;
+                    return Integer.valueOf( port );
                 }
             }
             catch( Exception e )
@@ -268,6 +268,7 @@ public class PortalTomcatBundle extends AbstractPortalBundle
                 LiferayServerCore.logError( "Could not read telnet port from properties ext file", e );
             }
         }
+
         return retVal;
     }
 

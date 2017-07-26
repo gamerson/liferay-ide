@@ -1136,4 +1136,52 @@ public class ServerUtil
 
         return false;
     }
+
+    public static Map<String, String> checkUsingPorts( String serverName, int port )
+    {
+        final Map<String, String> ports = new HashMap<>();
+
+        final IServer[] servers = ServerCore.getServers();
+
+        for( IServer server : servers )
+        {
+            PortalServer portalServer = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) );
+
+            if( portalServer != null && !server.getName().equals( serverName ) )
+            {
+                if( portalServer.getAgentPort() == port )
+                {
+                    ports.put( server.getName(), "Agent Port" );
+                }
+
+                if( portalServer.getAjpPort() == port )
+                {
+                    ports.put( server.getName(), "AJP Port" );
+                }
+
+                if( portalServer.getHttpPort() == port )
+                {
+                    ports.put( server.getName(), "HTTP Port" );
+                }
+
+                if( portalServer.getJmxPort() == port )
+                {
+                    ports.put( server.getName(), "JMX Port" );
+                }
+
+                if( portalServer.getShutdownPort() == port )
+                {
+                    ports.put( server.getName(), "Shutdown Port" );
+                }
+
+                if( portalServer.getTelnetPort() == port )
+                {
+                    ports.put( server.getName(), "Telnet Port" );
+                }
+            }
+        }
+
+        return ports;
+    }
+
 }

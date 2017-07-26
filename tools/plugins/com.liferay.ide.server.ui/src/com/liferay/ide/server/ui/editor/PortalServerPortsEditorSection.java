@@ -14,17 +14,19 @@ package com.liferay.ide.server.ui.editor;
 
 import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
-import com.liferay.ide.server.core.portal.PortalServerConstants;
-import com.liferay.ide.server.ui.cmd.SetPortalServerAjpPortCommand;
 import com.liferay.ide.server.ui.cmd.SetPortalServerAgentPortCommand;
+import com.liferay.ide.server.ui.cmd.SetPortalServerAjpPortCommand;
 import com.liferay.ide.server.ui.cmd.SetPortalServerHttpPortCommand;
 import com.liferay.ide.server.ui.cmd.SetPortalServerJmxPortCommand;
 import com.liferay.ide.server.ui.cmd.SetPortalServerShutdownPortCommand;
 import com.liferay.ide.server.ui.cmd.SetPortalServerTelnetPortCommand;
+import com.liferay.ide.server.util.ServerUtil;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -64,6 +66,44 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
         }
     }
 
+    private void checkPorts()
+    {
+        checkPort( agentPort );
+        checkPort( ajpPort );
+        checkPort( httpPort );
+        checkPort( jmxPort );
+        checkPort( shutdownPort );
+        checkPort( telnetPort );
+    }
+
+    private void checkPort( Text text )
+    {
+        final int port = Integer.parseInt( text.getText().trim() );
+        final Map<String, String> usingPorts = ServerUtil.checkUsingPorts( server.getName(), port );
+        if( usingPorts.size() > 0 )
+        {
+            StringBuffer sb = new StringBuffer();
+
+            sb.append( port );
+            sb.append( " is being used at: " );
+
+            for( String serverName : usingPorts.keySet() )
+            {
+                sb.append( serverName );
+                sb.append( "-" );
+                sb.append( usingPorts.get( serverName ) );
+                sb.append( " " );
+            }
+
+            getManagedForm().getMessageManager().addMessage(
+                text, sb.toString(), null, IMessageProvider.WARNING, text );
+        }
+        else
+        {
+            getManagedForm().getMessageManager().removeMessage( text, text );
+        }
+    }
+
     protected void createEditorSection( FormToolkit toolkit, Composite composite )
     {
         Label label = createLabel( toolkit, composite, Msgs.agentPort );
@@ -77,12 +117,14 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating )
+                if( updating || agentPort.getText().trim().equals( "" ) )
                 {
                     return;
                 }
 
                 updating = true;
+
+                checkPorts();
 
                 execute(
                     new SetPortalServerAgentPortCommand( server, Integer.parseInt( agentPort.getText().trim() ) ) );
@@ -101,12 +143,14 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating )
+                if( updating || ajpPort.getText().trim().equals( "" ) )
                 {
                     return;
                 }
 
                 updating = true;
+
+                checkPorts();
 
                 execute( new SetPortalServerAjpPortCommand( server, Integer.parseInt( ajpPort.getText().trim() ) ) );
 
@@ -124,12 +168,14 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating )
+                if( updating || httpPort.getText().trim().equals( "" ) )
                 {
                     return;
                 }
 
                 updating = true;
+
+                checkPorts();
 
                 execute( new SetPortalServerHttpPortCommand( server, Integer.parseInt( httpPort.getText().trim() ) ) );
 
@@ -147,12 +193,14 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating )
+                if( updating || jmxPort.getText().trim().equals( "" ) )
                 {
                     return;
                 }
 
                 updating = true;
+
+                checkPorts();
 
                 execute( new SetPortalServerJmxPortCommand( server, Integer.parseInt( jmxPort.getText().trim() ) ) );
 
@@ -170,12 +218,14 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating )
+                if( updating || jmxPort.getText().trim().equals( "" ) )
                 {
                     return;
                 }
 
                 updating = true;
+
+                checkPorts();
 
                 execute(
                     new SetPortalServerTelnetPortCommand( server, Integer.parseInt( telnetPort.getText().trim() ) ) );
@@ -194,12 +244,14 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating )
+                if( updating || jmxPort.getText().trim().equals( "" ) )
                 {
                     return;
                 }
 
                 updating = true;
+
+                checkPorts();
 
                 execute(
                     new SetPortalServerShutdownPortCommand(
@@ -223,6 +275,8 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
         jmxPort.setText( String.valueOf( portalServer.getJmxPort() ) );
         shutdownPort.setText( String.valueOf( portalServer.getShutdownPort() ) );
         telnetPort.setText( String.valueOf( portalServer.getTelnetPort() ) );
+
+        checkPorts();
     }
 
     protected void setDefault()
@@ -244,6 +298,8 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
         execute( new SetPortalServerTelnetPortCommand( server, PortalServer.DEFAULT_TELNET_PORT ) );
         telnetPort.setText( String.valueOf( PortalServer.DEFAULT_TELNET_PORT ) );
+
+        checkPorts();
     }
 
     private static class Msgs extends NLS
