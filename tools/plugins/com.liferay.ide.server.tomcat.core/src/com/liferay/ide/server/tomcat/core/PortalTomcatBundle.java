@@ -20,6 +20,8 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileListing;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.portal.AbstractPortalBundle;
+import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.core.portal.PortalServerDelegate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,6 +56,8 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
     private final static String PORTAL_EXT_PROPERTIES = "portal-ext.properties";
 
+    private final File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
+
     public PortalTomcatBundle( IPath path )
     {
         super( path );
@@ -67,15 +71,13 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     @Override
     public int getAjpPort()
     {
-        int retval = 8009;
+        int retval = PortalServer.DEFAULT_AJP_PORT;
 
-        File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
-
-        String portValue = getPortalServerPortValue( serverXmlFile, "Connector", "protocol", "AJP/1.3", "port" );
+        final String portValue = getPortalServerPortValue( serverXmlFile, "Connector", "protocol", "AJP/1.3", "port" );
 
         if( !CoreUtil.empty( portValue ) )
         {
-            return Integer.valueOf( portValue );
+            retval = Integer.valueOf( portValue );
         }
 
         return retval;
@@ -121,18 +123,16 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     @Override
     public int getHttpPort()
     {
-        int retVal = 8080;
+        int retval = PortalServer.DEFAULT_HTTP_PORT;
 
-        File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
-
-        String portValue = getPortalServerPortValue( serverXmlFile, "Connector", "protocol", "HTTP/1.1", "port" );
+        final String portValue = getPortalServerPortValue( serverXmlFile, "Connector", "protocol", "HTTP/1.1", "port" );
 
         if( !CoreUtil.empty( portValue ) )
         {
-            return Integer.valueOf( portValue );
+            retval = Integer.valueOf( portValue );
         }
 
-        return retVal;
+        return retval;
     }
 
     @Override
@@ -172,17 +172,17 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     }
 
     @Override
+    public String[] getRuntimeStartVMArgs()
+    {
+        return getRuntimeVMArgs();
+    }
+
+    @Override
     public String[] getRuntimeStopProgArgs()
     {
         final String[] retval = new String[1];
         retval[0] = "stop";
         return retval;
-    }
-
-    @Override
-    public String[] getRuntimeStartVMArgs()
-    {
-        return getRuntimeVMArgs();
     }
 
     @Override
@@ -217,50 +217,42 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     @Override
     public int getShutdownPort()
     {
-        int retVal = 8005;
+        int retval = PortalServerDelegate.DEFAULT_SHUTDOWN_PORT;
 
-        File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
-
-        String portValue = getPortalServerPortValue( serverXmlFile, "Server", "shutdown", "SHUTDOWN", "port" );
+        final String portValue = getPortalServerPortValue( serverXmlFile, "Server", "shutdown", "SHUTDOWN", "port" );
 
         if( !CoreUtil.empty( portValue ) )
         {
-            return Integer.valueOf( portValue );
+            retval = Integer.valueOf( portValue );
         }
 
-        return retVal;
+        return retval;
     }
 
     @Override
     public int getTelnetPort()
     {
-        int retVal = 11311;
+        int retval = PortalServer.DEFAULT_TELNET_PORT;
 
-        String port = null;
-
-        File portalExt = liferayHome.append( PORTAL_EXT_PROPERTIES ).toFile();
+        final File portalExt = liferayHome.append( PORTAL_EXT_PROPERTIES ).toFile();
 
         if( portalExt.exists() )
         {
-            PortalPropertiesConfiguration config;
-            try
+            try(InputStream in = new FileInputStream( portalExt ))
             {
-                config = new PortalPropertiesConfiguration();
-                InputStream in = new FileInputStream( portalExt );
+                final PortalPropertiesConfiguration config = new PortalPropertiesConfiguration();
 
                 config.load( in );
 
-                in.close();
-
                 if( config.containsKey( FRAMEWORK_OSGI_CONSOLE_NAME ) )
                 {
-                    port = ( (String) config.getProperty( FRAMEWORK_OSGI_CONSOLE_NAME ) ).replaceAll(
+                    final String port = ( (String) config.getProperty( FRAMEWORK_OSGI_CONSOLE_NAME ) ).replaceAll(
                         "localhost:", "" ).trim();
-                }
 
-                if( !CoreUtil.empty( port ) )
-                {
-                    return Integer.valueOf( port );
+                    if( !CoreUtil.empty( port ) )
+                    {
+                        retval = Integer.valueOf( port );
+                    }
                 }
             }
             catch( Exception e )
@@ -269,7 +261,7 @@ public class PortalTomcatBundle extends AbstractPortalBundle
             }
         }
 
-        return retVal;
+        return retval;
     }
 
     @Override
@@ -323,17 +315,13 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     @Override
     public void setAjpPort( int port )
     {
-        setPortalServerPortValue(
-            new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Connector", "protocol", "AJP/1.3",
-            "port", String.valueOf( port ) );
+        setPortalServerPortValue( serverXmlFile, "Connector", "protocol", "AJP/1.3", "port", String.valueOf( port ) );
     }
 
     @Override
     public void setHttpPort( int port )
     {
-        setPortalServerPortValue(
-            new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Connector", "protocol", "HTTP/1.1",
-            "port", String.valueOf( port ) );
+        setPortalServerPortValue( serverXmlFile, "Connector", "protocol", "HTTP/1.1", "port", String.valueOf( port ) );
     }
 
     private void setPortalServerPortValue(
@@ -393,17 +381,15 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     @Override
     public void setShutdownPort( int port )
     {
-        setPortalServerPortValue(
-            new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Server", "shutdown", "SHUTDOWN",
-            "port", String.valueOf( port ) );
+        setPortalServerPortValue( serverXmlFile, "Server", "shutdown", "SHUTDOWN", "port", String.valueOf( port ) );
     }
 
     @Override
     public void setTelnetPort( int port )
     {
-        File portalExt = liferayHome.append( PORTAL_EXT_PROPERTIES ).toFile();
+        final File portalExt = liferayHome.append( PORTAL_EXT_PROPERTIES ).toFile();
 
-        try
+        try(InputStream in = new FileInputStream( portalExt ))
         {
             if( !portalExt.exists() )
             {
@@ -412,11 +398,7 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
             final PortalPropertiesConfiguration config = new PortalPropertiesConfiguration();
 
-            InputStream in = new FileInputStream( portalExt );
-
             config.load( in );
-
-            in.close();
 
             if( !config.containsKey( FRAMEWORK_OSGI_CONSOLE_NAME ) )
             {

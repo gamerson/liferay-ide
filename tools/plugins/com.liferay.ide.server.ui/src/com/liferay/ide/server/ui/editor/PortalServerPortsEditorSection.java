@@ -66,19 +66,38 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
         }
     }
 
-    private void checkPorts()
+    private boolean checkPorts()
     {
-        checkPort( agentPort );
-        checkPort( ajpPort );
-        checkPort( httpPort );
-        checkPort( jmxPort );
-        checkPort( shutdownPort );
-        checkPort( telnetPort );
+        return checkPort( agentPort ) && checkPort( ajpPort ) && checkPort( httpPort ) && checkPort( jmxPort ) &&
+            checkPort( shutdownPort ) && checkPort( telnetPort );
     }
 
-    private void checkPort( Text text )
+    private boolean checkPort( Text text )
     {
-        final int port = Integer.parseInt( text.getText().trim() );
+        int port = -1;
+
+        String portValue = text.getText().trim();
+
+        try
+        {
+            port = Integer.parseInt( portValue );
+
+            if( port < 0 || port > 65535 )
+            {
+                getManagedForm().getMessageManager().addMessage(
+                    text, "Port must to be a number from 1~65535", null, IMessageProvider.ERROR, text );
+
+                return false;
+            }
+        }
+        catch( Exception e )
+        {
+            getManagedForm().getMessageManager().addMessage(
+                text, "Port must to be a number from 1~65535", null, IMessageProvider.ERROR, text );
+
+            return false;
+        }
+
         final Map<String, String> usingPorts = ServerUtil.checkUsingPorts( server.getName(), port );
         if( usingPorts.size() > 0 )
         {
@@ -102,6 +121,8 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
         {
             getManagedForm().getMessageManager().removeMessage( text, text );
         }
+
+        return true;
     }
 
     protected void createEditorSection( FormToolkit toolkit, Composite composite )
@@ -117,14 +138,12 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating || agentPort.getText().trim().equals( "" ) )
+                if( updating || agentPort.getText().trim().equals( "" ) || !checkPorts() )
                 {
                     return;
                 }
 
                 updating = true;
-
-                checkPorts();
 
                 execute(
                     new SetPortalServerAgentPortCommand( server, Integer.parseInt( agentPort.getText().trim() ) ) );
@@ -143,14 +162,12 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating || ajpPort.getText().trim().equals( "" ) )
+                if( updating || ajpPort.getText().trim().equals( "" ) || !checkPorts() )
                 {
                     return;
                 }
 
                 updating = true;
-
-                checkPorts();
 
                 execute( new SetPortalServerAjpPortCommand( server, Integer.parseInt( ajpPort.getText().trim() ) ) );
 
@@ -168,14 +185,12 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating || httpPort.getText().trim().equals( "" ) )
+                if( updating || httpPort.getText().trim().equals( "" ) || !checkPorts() )
                 {
                     return;
                 }
 
                 updating = true;
-
-                checkPorts();
 
                 execute( new SetPortalServerHttpPortCommand( server, Integer.parseInt( httpPort.getText().trim() ) ) );
 
@@ -193,14 +208,12 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating || jmxPort.getText().trim().equals( "" ) )
+                if( updating || jmxPort.getText().trim().equals( "" ) || !checkPorts() )
                 {
                     return;
                 }
 
                 updating = true;
-
-                checkPorts();
 
                 execute( new SetPortalServerJmxPortCommand( server, Integer.parseInt( jmxPort.getText().trim() ) ) );
 
@@ -218,14 +231,12 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating || jmxPort.getText().trim().equals( "" ) )
+                if( updating || jmxPort.getText().trim().equals( "" ) || !checkPorts() )
                 {
                     return;
                 }
 
                 updating = true;
-
-                checkPorts();
 
                 execute(
                     new SetPortalServerTelnetPortCommand( server, Integer.parseInt( telnetPort.getText().trim() ) ) );
@@ -244,14 +255,12 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating || jmxPort.getText().trim().equals( "" ) )
+                if( updating || jmxPort.getText().trim().equals( "" ) || !checkPorts() )
                 {
                     return;
                 }
 
                 updating = true;
-
-                checkPorts();
 
                 execute(
                     new SetPortalServerShutdownPortCommand(

@@ -103,7 +103,7 @@ public class PortalJBossBundle extends AbstractPortalBundle
     @Override
     public int getHttpPort()
     {
-        int retVal = 8080;
+        int retVal = PortalServer.DEFAULT_HTTP_PORT;
 
         File standaloneXmlFile =
             new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
