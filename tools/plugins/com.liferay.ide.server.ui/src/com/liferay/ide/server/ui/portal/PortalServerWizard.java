@@ -15,20 +15,40 @@
 /**
  *
  */
+
 package com.liferay.ide.server.ui.portal;
 
-import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import com.liferay.ide.server.ui.LiferayServerUI;
+import com.liferay.ide.server.util.ServerUtil;
 
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.TaskModel;
+import org.eclipse.wst.server.core.internal.Runtime;
+import org.eclipse.wst.server.ui.wizard.WizardFragment;
 
 /**
  * @author Gregory Amerson
  */
+@SuppressWarnings( "restriction" )
 public class PortalServerWizard extends WizardFragment
 {
 
     public PortalServerWizard()
     {
         super();
+    }
+
+    public void exit()
+    {
+        Runtime runtime = (Runtime) getTaskModel().getObject( TaskModel.TASK_RUNTIME );
+
+        IServer[] servers = ServerUtil.getServersForRuntime( runtime );
+
+        if( servers.length > 0 )
+        {
+            LiferayServerUI.logWarning(
+                "The runtime selected already has server(s), you shouldn't make multiple servers point to the same runtime if you want to launch multiple servers in IDE at one time" );
+        }
     }
 
 }
