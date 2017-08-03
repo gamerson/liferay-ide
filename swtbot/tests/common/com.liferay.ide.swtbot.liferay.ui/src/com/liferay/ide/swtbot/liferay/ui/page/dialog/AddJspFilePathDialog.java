@@ -13,20 +13,31 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.swtbot.liferay.ui;
+package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import com.liferay.ide.swtbot.ui.UI;
+import com.liferay.ide.swtbot.ui.page.Dialog;
+import com.liferay.ide.swtbot.ui.page.Text;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
- * @author Li Lu
+ * @author Vicky Wang
  */
-public interface VaadinPortletWizardUI extends UI
+public class AddJspFilePathDialog extends Dialog
 {
 
-    public final int INDEX_VAADIN_VALIDATION_MESSAGE1 = 3;
-    public final int INDEX_VAADIN_VALIDATION_MESSAGE2 = 4;
-    public final int INDEX_VAADIN_VALIDATION_MESSAGE3 = 6;
-    public final String LABEL_APPLICATION_CLASS = "Application class:";
-    public final String TEXT_MUST_SPECIFY_VAADIN_PORTLET_CLASS = " Must specify a vaadin portlet class.";
+    private Text jspFilePath;
+
+    public AddJspFilePathDialog( SWTBot bot )
+    {
+        super( bot );
+
+        jspFilePath = new Text( bot, JSP_FILE_PATH );
+    }
+
+    public Text getJspFilePath()
+    {
+        return jspFilePath;
+    }
 
 }

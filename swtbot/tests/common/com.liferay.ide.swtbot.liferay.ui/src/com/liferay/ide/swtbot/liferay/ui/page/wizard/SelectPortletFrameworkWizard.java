@@ -15,18 +15,17 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Radio;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ashley Yuan
  * @author Li Lu
  */
-public class SelectPortletFrameworkWizard extends Wizard implements WizardUI
+public class SelectPortletFrameworkWizard extends Wizard
 {
 
     private Text displayName;
@@ -38,24 +37,14 @@ public class SelectPortletFrameworkWizard extends Wizard implements WizardUI
 
     public SelectPortletFrameworkWizard( SWTBot bot )
     {
-        this( bot, TEXT_BLANK, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
+        super( bot );
 
-    public SelectPortletFrameworkWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
-
-    public SelectPortletFrameworkWizard( SWTBot bot, String title, int indexValidationMsg )
-    {
-        super( bot, title, indexValidationMsg );
-
-        liferayMvc = new Radio( bot, LABEL_LIFERAY_MVC_FRAMEWORK );
-        jsf = new Radio( bot, LABEL_JSF_FRAMEWORK );
-        springMvc = new Radio( bot, LABEL_SPRING_MVC_FRAMEWORK );
-        vaadin = new Radio( bot, LABEL_VAADIN_FRAMEWORK );
-        portletName = new Text( bot, LABEL_PORTLET_NAME );
-        displayName = new Text( bot, LABEL_DISPLAY_NAME );
+        liferayMvc = new Radio( bot, LIFERAY_MVC );
+        jsf = new Radio( bot, JSF_2_X );
+        springMvc = new Radio( bot, SPRING_MVC );
+        vaadin = new Radio( bot, VAADIN );
+        portletName = new Text( bot, PORTLET_NAME );
+        displayName = new Text( bot, DISPLAY_NAME );
     }
 
     public Text getDisplayName()

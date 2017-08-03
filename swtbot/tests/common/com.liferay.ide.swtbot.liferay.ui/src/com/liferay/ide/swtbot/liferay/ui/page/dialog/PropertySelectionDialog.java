@@ -15,18 +15,16 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.DialogUI;
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Tree;
 
+import org.eclipse.swtbot.swt.finder.SWTBot;
+
 /**
  * @author Vicky Wang
  */
-public class PropertySelectionDialog extends Dialog implements DialogUI, WizardUI
+public class PropertySelectionDialog extends Dialog
 {
 
     private Tree paths;
@@ -37,7 +35,7 @@ public class PropertySelectionDialog extends Dialog implements DialogUI, WizardU
         super( bot );
 
         paths = new Tree( bot );
-        selectProperty = new Text( bot, LABLE_PLEASE_SELECT_A_PROPERTY );
+        selectProperty = new Text( bot, PLEASE_SELECT_A_PROPERTY );
     }
 
     public Text getSelectProperty()

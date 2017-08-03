@@ -20,13 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-
-import com.liferay.ide.swtbot.liferay.ui.ModuleWizardUI;
-import com.liferay.ide.swtbot.liferay.ui.SWTBotBase;
+import com.liferay.ide.swtbot.liferay.ui.SwtbotBase;
 import com.liferay.ide.swtbot.liferay.ui.page.dialog.SelectModuleServiceNameDialog;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizard;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizardSecondPageWizard;
@@ -35,13 +29,30 @@ import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesDialog;
 import com.liferay.ide.swtbot.ui.page.CTabItem;
 import com.liferay.ide.swtbot.ui.page.Editor;
 import com.liferay.ide.swtbot.ui.page.Tree;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import java.io.File;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 /**
  * @author Ashley Yuan
  * @author Sunny Shi
  */
-public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements ModuleWizardUI
+public class BaseNewLiferayModuleProjectWizard extends SwtbotBase
 {
+
+    String[] expectedBuildTypeItems = { GRADLE, MAVEN };
+
+    String[] expectedModuleProjectTemplateItems = { ACTIVATOR, API, CONTENT_TARGETING_REPORT, CONTENT_TARGETING_RULE,
+        CONTENT_TARGETING_TRACKING_ACTION, CONTROL_MENU_ENTRY, FORM_FIELD, FREEMARKER_PORTLET, LAYOUT_TEMPLATE, MVC_PORTLET,
+        PANEL_APP, PORTLET, PORTLET_CONFIGURATION_ICON, PORTLET_PROVIDER, PORTLET_TOOLBAR_CONTRIBUTOR, REST, SERVICE,
+        SERVICE_BUILDER, SERVICE_WRAPPER_UPPER, SIMULATION_PANEL_ENTRY, SOY_PORTLET, SPRING_MVC_PORTLET,
+        TEMPLATE_CONTEXT_CONCONTRIBUTOR, THEME, THEME_CONTRIBUTOR };
+
+    String[] templatesWithoutPropertyKeys = { ACTIVATOR, API, CONTENT_TARGETING_REPORT, CONTENT_TARGETING_RULE,
+        CONTENT_TARGETING_TRACKING_ACTION, THEME_CONTRIBUTOR, PORTLET_PROVIDER };
 
     static NewLiferayWorkspaceProjectWizard newLiferayWorkspace = new NewLiferayWorkspaceProjectWizard( bot );
 
@@ -52,7 +63,7 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
     @AfterClass
     public static void cleanAll()
     {
-        ide.closeShell( LABEL_NEW_LIFERAY_MODULE_PROJECT );
+        ide.closeShell( NEW_LIFERAY_MODULE_PROJECT );
         ide.getPackageExporerView().deleteProjectExcludeNames( new String[] { getLiferayPluginsSdkName() }, true );
     }
 
@@ -77,15 +88,13 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
         sleep( 20000 );
     }
 
-    NewLiferayModuleProjectWizard createModuleProjectWizard =
-        new NewLiferayModuleProjectWizard( bot, INDEX_NEW_LIFERAY_MODULE_PROJECT_VALIDATION_MESSAGE );
+    NewLiferayModuleProjectWizard createModuleProjectWizard = new NewLiferayModuleProjectWizard( bot );
 
     NewLiferayModuleProjectWizardSecondPageWizard createModuleProjectSecondPageWizard =
-        new NewLiferayModuleProjectWizardSecondPageWizard( bot, INDEX_CONFIGURE_COMPONENT_CLASS_VALIDATION_MESSAGE );
+        new NewLiferayModuleProjectWizardSecondPageWizard( bot );
 
     NewLiferayModuleProjectWizardSecondPageWizard createServiceModuleProjectSecondPage =
-        new NewLiferayModuleProjectWizardSecondPageWizard(
-            bot, INDEX_SERVICE_CONFIGURE_COMPONENT_CLASS_VALIDATION_MESSAGE );
+        new NewLiferayModuleProjectWizardSecondPageWizard( bot );
 
     public void checkBuildTypes()
     {
@@ -93,7 +102,7 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
 
         for( int i = 0; i < liferayWorkspaceBuildTypeItems.length; i++ )
         {
-            if( liferayWorkspaceBuildTypeItems[0].equals( TEXT_BUILD_TYPE_GRADLE ) )
+            if( liferayWorkspaceBuildTypeItems[0].equals( GRADLE ) )
             {
                 assertTrue( liferayWorkspaceBuildTypeItems[i].equals( expectedBuildTypeItems[i] ) );
             }
@@ -113,8 +122,8 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
     {
         ide.getCreateLiferayProjectToolbar().getNewLiferayModuleProject().click();
 
-        assertEquals( TEXT_PLEASE_ENTER_A_PROJECT_NAME, createModuleProjectWizard.getValidationMsg() );
-        assertEquals( MODULE_MVC_PORTLET, createModuleProjectWizard.getProjectTemplateNames().getText() );
+        assertEquals( PLEASE_ENTER_A_PROJECT_NAME, createModuleProjectWizard.getValidationMsg() );
+        assertEquals( MVC_PORTLET, createModuleProjectWizard.getProjectTemplateNames().getText() );
         assertTrue( createModuleProjectWizard.getUseDefaultLocation().isChecked() );
 
         createModuleProjectWizard.getUseDefaultLocation().deselect();
@@ -125,7 +134,7 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
 
         assertEquals( buildType, createModuleProjectWizard.getBuildTypes().getText() );
 
-        createModuleProjectWizard.getLocation().setText( TEXT_BLANK );
+        createModuleProjectWizard.getLocation().setText( StringPool.BLANK );
 
         assertEquals( LOCATION_MUST_BE_SPECIFIED, createModuleProjectWizard.getValidationMsg() );
 
@@ -141,7 +150,7 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
 
             createModuleProjectWizard.getLocation().setText( customizeDir.toString() );
 
-            assertEquals( NEW_LIFERAY_MODULE_MESSAGE, createModuleProjectWizard.getValidationMsg() );
+            assertEquals( ENTER_A_NAME_AND_CHOOSE_A_TEMPlATE_FOR_A_NEW_LIFERAY_MODULE_MESSAGE, createModuleProjectWizard.getValidationMsg() );
         }
         else
         {
@@ -154,7 +163,7 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
             createModuleProjectWizard.getUseDefaultLocation().select();
         }
 
-        assertEquals( NEW_LIFERAY_MODULE_MESSAGE, createModuleProjectWizard.getValidationMsg() );
+        assertEquals( ENTER_A_NAME_AND_CHOOSE_A_TEMPlATE_FOR_A_NEW_LIFERAY_MODULE_MESSAGE, createModuleProjectWizard.getValidationMsg() );
 
         String[] moduleProjectTemplateItems = createModuleProjectWizard.getProjectTemplateNames().items();
 
@@ -163,14 +172,14 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
             assertTrue( moduleProjectTemplateItems[i].equals( expectedModuleProjectTemplateItems[i] ) );
         }
 
-        if( !projectTemplate.equals( MODULE_THEME ) )
+        if( !projectTemplate.equals( THEME ) )
         {
             createModuleProjectWizard.next();
             sleep();
 
             if( addProperties )
             {
-                if( projectTemplate.equals( MODULE_SERVICE ) || projectTemplate.equals( MODULE_SERVICE_WRAPPER ) )
+                if( projectTemplate.equals( SERVICE ) || projectTemplate.equals( SERVICE_WRAPPER_UPPER ) )
                 {
                     assertEquals( CONFIGURE_COMPONENT_CLASS, createServiceModuleProjectSecondPage.getValidationMsg() );
                 }
@@ -178,20 +187,20 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
                 {
                     assertEquals( CONFIGURE_COMPONENT_CLASS, createModuleProjectSecondPageWizard.getValidationMsg() );
                 }
-                assertEquals( "", createModuleProjectSecondPageWizard.getComponentClassName().getText() );
-                assertEquals( "", createModuleProjectSecondPageWizard.getPackageName().getText() );
+                assertEquals( StringPool.BLANK, createModuleProjectSecondPageWizard.getComponentClassName().getText() );
+                assertEquals( StringPool.BLANK, createModuleProjectSecondPageWizard.getPackageName().getText() );
 
-                if( projectTemplate.equals( MODULE_SERVICE ) || projectTemplate.equals( MODULE_SERVICE_WRAPPER ) )
+                if( projectTemplate.equals( SERVICE ) || projectTemplate.equals( SERVICE_WRAPPER_UPPER ) )
                 {
 
-                    assertEquals( "", createModuleProjectSecondPageWizard.getServiceName().getText() );
+                    assertEquals( StringPool.BLANK, createModuleProjectSecondPageWizard.getServiceName().getText() );
 
                     createModuleProjectSecondPageWizard.getBrowseBtn().click();
 
                     SelectModuleServiceNameDialog selectOneServiceName = new SelectModuleServiceNameDialog( bot );
                     selectOneServiceName.cancel();
 
-                    if( !serviceName.equals( TEXT_BLANK ) )
+                    if( !serviceName.equals( StringPool.BLANK ) )
                     {
                         createModuleProjectSecondPageWizard.getBrowseBtn().click();
                         sleep();
@@ -209,12 +218,12 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
                     }
                 }
 
-                if( !componentClass.equals( TEXT_BLANK ) )
+                if( !componentClass.equals( StringPool.BLANK ) )
                 {
                     createModuleProjectSecondPageWizard.getComponentClassName().setText( componentClass );
                 }
 
-                if( !packageName.equals( TEXT_BLANK ) )
+                if( !packageName.equals( StringPool.BLANK ) )
                 {
                     createModuleProjectSecondPageWizard.getPackageName().setText( packageName );
                 }
@@ -231,7 +240,7 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
                     createModuleProjectSecondPageWizard.getAddPropertyKeyBtn().click();
                     sleep();
 
-                    if( projectTemplate.equals( MODULE_SERVICE ) || projectTemplate.equals( MODULE_SERVICE_WRAPPER ) )
+                    if( projectTemplate.equals( SERVICE ) || projectTemplate.equals( SERVICE_WRAPPER_UPPER ) )
                     {
                         createModuleProjectSecondPageWizard.getProperties().setText( 3, "a" );
                         sleep( 500 );
@@ -260,7 +269,7 @@ public class BaseNewLiferayModuleProjectWizard extends SWTBotBase implements Mod
                     createModuleProjectSecondPageWizard.getAddPropertyKeyBtn().click();
                     sleep();
 
-                    if( projectTemplate.equals( MODULE_SERVICE ) || projectTemplate.equals( MODULE_SERVICE_WRAPPER ) )
+                    if( projectTemplate.equals( SERVICE ) || projectTemplate.equals( SERVICE_WRAPPER_UPPER ) )
                     {
                         createModuleProjectSecondPageWizard.getProperties().setText( 3, "c" );
                         sleep( 500 );

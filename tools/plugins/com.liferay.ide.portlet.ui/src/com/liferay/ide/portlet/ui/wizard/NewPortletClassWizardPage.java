@@ -174,7 +174,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
         }
 
         folderButton = new Button( composite, SWT.PUSH );
-        folderButton.setText( J2EEUIMessages.BROWSE_BUTTON_LABEL );
+        folderButton.setText( J2EEUIMessages.BROWSE_LABEL );
         folderButton.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
         folderButton.addSelectionListener( new SelectionListener()
         {
@@ -260,7 +260,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
         else
         {
             packageButton = new Button( parent, SWT.PUSH );
-            packageButton.setText( J2EEUIMessages.BROWSE_BUTTON_LABEL );
+            packageButton.setText( J2EEUIMessages.BROWSE_LABEL );
             packageButton.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
             packageButton.addSelectionListener( new SelectionListener()
             {
@@ -352,7 +352,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
         else
         {
             superButton = new Button( parent, SWT.PUSH );
-            superButton.setText( J2EEUIMessages.BROWSE_BUTTON_LABEL );
+            superButton.setText( J2EEUIMessages.BROWSE_LABEL );
             superButton.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
             superButton.addSelectionListener( new SelectionListener()
             {

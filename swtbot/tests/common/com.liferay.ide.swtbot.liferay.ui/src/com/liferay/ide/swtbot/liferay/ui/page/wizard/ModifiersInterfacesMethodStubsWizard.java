@@ -15,30 +15,25 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.LiferayPortletWizardUI;
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Button;
 import com.liferay.ide.swtbot.ui.page.CheckBox;
 import com.liferay.ide.swtbot.ui.page.Table;
 import com.liferay.ide.swtbot.ui.page.Wizard;
 
+import org.eclipse.swtbot.swt.finder.SWTBot;
+
 /**
  * @author Ashley Yuan
  */
-public class ModifiersInterfacesMethodStubsWizard extends Wizard implements LiferayPortletWizardUI, WizardUI
+public class ModifiersInterfacesMethodStubsWizard extends Wizard
 {
 
     private Button addBtn;
     private CheckBox constrcutFromSuperClass;
     private CheckBox createEntryClass;
-
     private CheckBox destory;
     private CheckBox doAbout;
-
     private CheckBox doConfig;
-
     private CheckBox doEdit;
     private CheckBox doEditDefaults;
     private CheckBox doEditGuest;
@@ -54,39 +49,33 @@ public class ModifiersInterfacesMethodStubsWizard extends Wizard implements Life
     private CheckBox isPublic;
     private CheckBox processAction;
     private Button removeBtn;
-
     private CheckBox serveResource;
 
-    public ModifiersInterfacesMethodStubsWizard( SWTBot bot, int validationMsgIndex )
+    public ModifiersInterfacesMethodStubsWizard( SWTBot bot )
     {
-        this( bot, TEXT_BLANK, validationMsgIndex );
-    }
+        super( bot, 0 );
 
-    public ModifiersInterfacesMethodStubsWizard( SWTBot bot, String title, int validationMsgIndex )
-    {
-        super( bot, title, BACK_WITH_LEFT_BRACKET, NEXT_WITH_BRACKET, FINISH, CANCEL, validationMsgIndex );
-
-        isPublic = new CheckBox( bot, LABEL_PUBLIC );
-        isAbstract = new CheckBox( bot, LABEL_ABSTRACT );
-        isFinal = new CheckBox( bot, LABEL_FINAL );
-        interfaces = new Table( bot, LABEL_INTERFACES );
-        addBtn = new Button( bot, ADD_WITH_THREE_DOT );
+        isPublic = new CheckBox( bot, PUBLIC );
+        isAbstract = new CheckBox( bot, ABSTRACT );
+        isFinal = new CheckBox( bot, FINAL );
+        interfaces = new Table( bot, INTERFACES );
+        addBtn = new Button( bot, ADD_WITH_DOT );
         removeBtn = new Button( bot, REMOVE );
-        constrcutFromSuperClass = new CheckBox( bot, LABEL_CONSTRUCTORS_FROM_SUPERCLASS );
-        inheritedAbstractMethods = new CheckBox( bot, LABEL_INHERITED_ABSTRACT_METHODS );
-        init = new CheckBox( bot, LABEL_INIT );
-        destory = new CheckBox( bot, LABEL_DESTROY );
-        doView = new CheckBox( bot, LABEL_DOVIEW );
-        doEdit = new CheckBox( bot, LABEL_DOEDIT );
-        doHelp = new CheckBox( bot, LABEL_DOHELP );
-        doAbout = new CheckBox( bot, LABEL_DOABOUT );
-        doConfig = new CheckBox( bot, LAEBL_DOCONFIG );
-        doEditDefaults = new CheckBox( bot, LABEL_DOEDITDEFAULTS );
-        doEditGuest = new CheckBox( bot, LABEL_DOEDITGUEST );
-        doPreview = new CheckBox( bot, LABEL_DOPREVIEW );
-        doPrint = new CheckBox( bot, LABEL_DOPRINT );
-        processAction = new CheckBox( bot, LABEL_PROCESSACTION );
-        serveResource = new CheckBox( bot, LABEL_SERVERESOURCE );
+        constrcutFromSuperClass = new CheckBox( bot, CONSTRUCTORS_FROM_SUPERCLASS );
+        inheritedAbstractMethods = new CheckBox( bot, INHERITED_ABSTRACT_METHODS );
+        init = new CheckBox( bot, INIT );
+        destory = new CheckBox( bot, DESTROY );
+        doView = new CheckBox( bot, DOVIEW );
+        doEdit = new CheckBox( bot, DOEDIT );
+        doHelp = new CheckBox( bot, DOHELP );
+        doAbout = new CheckBox( bot, DOABOUT );
+        doConfig = new CheckBox( bot, DOCONFIG );
+        doEditDefaults = new CheckBox( bot, DOEDITDEFAULTS );
+        doEditGuest = new CheckBox( bot, DOEDITGUEST );
+        doPreview = new CheckBox( bot, DOPREVIEW );
+        doPrint = new CheckBox( bot, DOPRINT );
+        processAction = new CheckBox( bot, PROCESSACTION );
+        serveResource = new CheckBox( bot, SERVERESOURCE );
     }
 
     public Button getAddBtn()

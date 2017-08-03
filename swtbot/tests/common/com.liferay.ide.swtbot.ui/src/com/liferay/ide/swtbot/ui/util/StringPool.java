@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.swtbot.liferay.ui.util;
+package com.liferay.ide.swtbot.ui.util;
 
 /**
  * @author Gregory Amerson
@@ -21,6 +21,7 @@ package com.liferay.ide.swtbot.liferay.ui.util;
  */
 public class StringPool
 {
+
     public static final String ASTERISK = "*";
     public static final String BLANK = "";
     public static final String COLON = ":";
@@ -37,4 +38,5 @@ public class StringPool
     public static final char SINGLE_QUOTE_CHAR = '\'';
     public static final String SPACE = " ";
     public static final String UNDERSCORE = "_";
+
 }

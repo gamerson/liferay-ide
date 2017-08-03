@@ -15,42 +15,26 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Terry Jia
  * @author Ying Xu
  * @author Ashley Yuan
  */
-public class SetSDKLocationWizard extends Wizard implements WizardUI
+public class SetSDKLocationWizard extends Wizard
 {
 
     private Text sdkLocation;
 
     public SetSDKLocationWizard( SWTBot bot )
     {
-        this( bot, TEXT_BLANK );
-    }
+        super( bot, 1 );
 
-    public SetSDKLocationWizard( SWTBot bot, int index )
-    {
-        this( bot, TEXT_BLANK, index );
-    }
-
-    public SetSDKLocationWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
-
-    public SetSDKLocationWizard( SWTBot bot, String title, int index )
-    {
-        super( bot, title, index );
-
-        sdkLocation = new Text( bot, LABEL_SDK_LOCATION );
+        sdkLocation = new Text( bot, SDK_LOCATION );
     }
 
     public Text getSdkLocation()

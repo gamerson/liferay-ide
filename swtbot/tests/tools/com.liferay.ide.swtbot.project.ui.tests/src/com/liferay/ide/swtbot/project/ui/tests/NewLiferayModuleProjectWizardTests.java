@@ -19,6 +19,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizard;
+import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizardSecondPageWizard;
+import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayWorkspaceProjectWizard;
+import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesContinueDialog;
+import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesDialog;
+import com.liferay.ide.swtbot.ui.page.Tree;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
 import java.io.IOException;
 
 import org.junit.AfterClass;
@@ -27,19 +35,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.liferay.ide.swtbot.liferay.ui.ModuleWizardUI;
-import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizard;
-import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizardSecondPageWizard;
-import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayWorkspaceProjectWizard;
-import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesContinueDialog;
-import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesDialog;
-import com.liferay.ide.swtbot.ui.page.Tree;
-
 /**
  * @author Ying Xu
  * @author Sunny Shi
  */
-public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProjectWizard implements ModuleWizardUI
+public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProjectWizard
 {
 
     static String fullClassname = new SecurityManager()
@@ -55,16 +55,15 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
 
     Tree projectTree = ide.getPackageExporerView().getProjectTree();
 
-    NewLiferayModuleProjectWizard createModuleProjectWizard =
-        new NewLiferayModuleProjectWizard( bot, INDEX_NEW_LIFERAY_MODULE_PROJECT_VALIDATION_MESSAGE );
+    NewLiferayModuleProjectWizard createModuleProjectWizard = new NewLiferayModuleProjectWizard( bot );
 
     NewLiferayModuleProjectWizardSecondPageWizard createModuleProjectSecondPageWizard =
-        new NewLiferayModuleProjectWizardSecondPageWizard( bot, INDEX_CONFIGURE_COMPONENT_CLASS_VALIDATION_MESSAGE );
+        new NewLiferayModuleProjectWizardSecondPageWizard( bot );
 
     @AfterClass
     public static void cleanAll()
     {
-        ide.closeShell( LABEL_NEW_LIFERAY_MODULE_PROJECT );
+        ide.closeShell( NEW_LIFERAY_MODULE_PROJECT );
         ide.getPackageExporerView().deleteProjectExcludeNames( new String[] { getLiferayPluginsSdkName() }, true );
     }
 
@@ -83,33 +82,31 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         ide.getCreateLiferayProjectToolbar().getNewLiferayModuleProject().click();
         sleep();
 
-        assertEquals( TEXT_PLEASE_ENTER_A_PROJECT_NAME, createModuleProjectWizard.getValidationMsg() );
+        assertEquals( PLEASE_ENTER_A_PROJECT_NAME, createModuleProjectWizard.getValidationMsg() );
         assertFalse( createModuleProjectWizard.finishBtn().isEnabled() );
 
-        createModuleProjectWizard.createModuleProject( "." );
-        sleep( 1000 );
-        assertEquals( " '.'" + TEXT_INVALID_NAME_ON_PLATFORM, createModuleProjectWizard.getValidationMsg() );
+        createModuleProjectWizard.getProjectName().setText( "." );
+
+        assertEquals( " '.'" + IS_AN_INVALID_NAME_ON_PLATFORM, createModuleProjectWizard.getValidationMsg() );
         assertFalse( createModuleProjectWizard.finishBtn().isEnabled() );
 
-        createModuleProjectWizard.createModuleProject( "/" );
-        sleep( 1000 );
+        createModuleProjectWizard.getProjectName().setText( "/" );
         assertEquals(
-            " /" + TEXT_INVALID_CHARACTER_IN_RESOURCE_NAME + "'/'.", createModuleProjectWizard.getValidationMsg() );
+            " /" + IS_AN_INVALID_CHARACTER_IN_RESOURCE_NAME + "'/'.", createModuleProjectWizard.getValidationMsg() );
         assertFalse( createModuleProjectWizard.finishBtn().isEnabled() );
 
-        createModuleProjectWizard.createModuleProject( "$" );
-        sleep( 1000 );
-        assertEquals( TEXT_THE_PROJECT_NAME_INVALID, createModuleProjectWizard.getValidationMsg() );
+        createModuleProjectWizard.getProjectName().setText( "$" );
+        assertEquals( THE_PROJECT_NAME_IS_INVALID, createModuleProjectWizard.getValidationMsg() );
         assertFalse( createModuleProjectWizard.finishBtn().isEnabled() );
 
-        createModuleProjectWizard.createModuleProject( "" );
-        sleep( 1000 );
-        assertEquals( TEXT_PROJECT_NAME_MUST_BE_SPECIFIED, createModuleProjectWizard.getValidationMsg() );
+        createModuleProjectWizard.getProjectName().setText( StringPool.BLANK );
+        assertEquals( PROJECT_NAME_MUST_BE_SPECIFIED, createModuleProjectWizard.getValidationMsg() );
         assertFalse( createModuleProjectWizard.finishBtn().isEnabled() );
 
-        createModuleProjectWizard.createModuleProject( "a" );
-        sleep( 1000 );
-        assertEquals( NEW_LIFERAY_MODULE_MESSAGE, createModuleProjectWizard.getValidationMsg() );
+        createModuleProjectWizard.getProjectName().setText( "a" );
+        assertEquals(
+            ENTER_A_NAME_AND_CHOOSE_A_TEMPlATE_FOR_A_NEW_LIFERAY_MODULE_MESSAGE,
+            createModuleProjectWizard.getValidationMsg() );
         assertTrue( createModuleProjectWizard.finishBtn().isEnabled() );
 
         createModuleProjectWizard.cancel();
@@ -121,12 +118,12 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         ide.getCreateLiferayProjectToolbar().getNewLiferayModuleProject().click();
         sleep();
 
-        createModuleProjectWizard.createModuleProject( "test" );
+        createModuleProjectWizard.getProjectName().setText( "test" );
         createModuleProjectWizard.next();
 
         createModuleProjectSecondPageWizard.getComponentClassName().setText( "@@" );
         sleep();
-        assertEquals( TEXT_INVALID_CLASS_NAME, createModuleProjectSecondPageWizard.getValidationMsg() );
+        assertEquals( INVALID_CLASS_NAME, createModuleProjectSecondPageWizard.getValidationMsg() );
         createModuleProjectSecondPageWizard.getComponentClassName().setText( "testClassName" );
         sleep();
 
@@ -162,8 +159,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testMvcportletProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_MVC_PORTLET, eclipseWorkspace, true,
-            eclipseWorkspace + "newFolder", TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, true );
+            GRADLE, projectName, MVC_PORTLET, eclipseWorkspace, true, eclipseWorkspace + "newFolder", StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, true );
 
         createModuleProjectSecondPageWizard.waitForPageToClose();
 
@@ -199,9 +196,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         newLiferayWorkspace.waitForPageToClose();
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_MVC_PORTLET,
-            eclipseWorkspace + "/" + liferayWorkspaceName + "/modules", false, eclipseWorkspace + "newFolder",
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, MVC_PORTLET, eclipseWorkspace + "/" + liferayWorkspaceName + "/modules", false,
+            eclipseWorkspace + "newFolder", StringPool.BLANK, StringPool.BLANK, StringPool.BLANK, false );
 
         createModuleProjectSecondPageWizard.waitForPageToClose();
 
@@ -248,8 +244,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testServiceProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_SERVICE, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, "*lifecycleAction", true );
+            GRADLE, projectName, SERVICE, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            "*lifecycleAction", true );
 
         String javaFileName = "TestServiceProject.java";
         String javaContent = "implements LifecycleAction";
@@ -270,8 +266,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testServiceBuilderProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_SERVICE_BUILDER, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, SERVICE_BUILDER, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue( projectTree.expandNode( projectName ).isVisible() );
         assertTrue( projectTree.expandNode( projectName, projectName + "-api" ).isVisible() );
@@ -316,8 +312,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testActivatorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_ACTIVATOR, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, ACTIVATOR, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String buildGradleFileName = "build.gradle";
         String gradleContent =
@@ -333,8 +329,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testApiProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_API, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, API, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -354,8 +350,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testContentTargetingReportProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_CONTENT_TARGETING_REPORT, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, CONTENT_TARGETING_REPORT, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -376,8 +372,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testContentTargetingRuleProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_CONTENT_TARGETING_RULE, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, CONTENT_TARGETING_RULE, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -397,8 +393,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testContentTargetingTrackingActionProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_CONTENT_TARGETING_TRACKING_ACTION, eclipseWorkspace, false,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, CONTENT_TARGETING_TRACKING_ACTION, eclipseWorkspace, false, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -419,8 +415,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testControlMenuEntryProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_CONTROL_MENU_ENTRY, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, CONTROL_MENU_ENTRY, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String buildGradleFileName = "build.gradle";
         String gradleContent =
@@ -440,8 +436,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testFormFieldProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_FORM_FIELD, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, FORM_FIELD, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -467,8 +463,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testPanelAppProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_PANEL_APP, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, PANEL_APP, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -513,8 +509,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testPortletProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_PORTLET, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, PORTLET, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         assertTrue( projectTree.expandNode( projectName, "src/main/java", "testPortletProject.portlet" ).isVisible() );
 
@@ -536,8 +532,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testPortletConfigurationIconProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_PORTLET_CONFIGURATION_ICON, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, PORTLET_CONFIGURATION_ICON, eclipseWorkspace, false, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -557,8 +553,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testPortletProviderProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_PORTLET_PROVIDER, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, PORTLET_PROVIDER, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -600,8 +596,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testPortletToolbarContributorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_PORTLET_TOOLBAR_CONTRIBUTOR, eclipseWorkspace, false,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, PORTLET_TOOLBAR_CONTRIBUTOR, eclipseWorkspace, false, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -621,8 +617,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testRestProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_REST, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, REST, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -642,8 +638,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testServiceWrapperProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_SERVICE_WRAPPER, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, "*BookmarksEntryLocalServiceWrapper", true );
+            GRADLE, projectName, SERVICE_WRAPPER_UPPER, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, "*BookmarksEntryLocalServiceWrapper", true );
 
         sleep( 5000 );
         assertTrue(
@@ -668,8 +664,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testSimulationPanelEntryProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_SIMULATION_PANEL_ENTRY, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, SIMULATION_PANEL_ENTRY, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -689,8 +685,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testTemplateContextContributorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_TEMPLATE_CONTEXT_CONTRIBUTOR, eclipseWorkspace, false,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, TEMPLATE_CONTEXT_CONCONTRIBUTOR, eclipseWorkspace, false, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(
@@ -710,8 +706,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testThemeProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_THEME, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, THEME, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         assertTrue( projectTree.expandNode( projectName, "src", "main", "webapp", "css", "_custom.scss" ).isVisible() );
 
@@ -728,8 +724,8 @@ public class NewLiferayModuleProjectWizardTests extends BaseNewLiferayModuleProj
         String projectName = "testThemeContributorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_GRADLE, projectName, MODULE_THEME_CONTRIBUTOR, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            GRADLE, projectName, THEME_CONTRIBUTOR, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue(
             projectTree.expandNode(

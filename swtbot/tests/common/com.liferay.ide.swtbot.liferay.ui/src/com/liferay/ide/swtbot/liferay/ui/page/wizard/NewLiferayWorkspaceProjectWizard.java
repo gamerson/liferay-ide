@@ -15,18 +15,17 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.ModuleWizardUI;
 import com.liferay.ide.swtbot.ui.page.ComboBox;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  * @author Ashley Xu
  */
-public class NewLiferayWorkspaceProjectWizard extends Wizard implements ModuleWizardUI
+public class NewLiferayWorkspaceProjectWizard extends Wizard
 {
 
     private ComboBox buildTypes;
@@ -36,8 +35,8 @@ public class NewLiferayWorkspaceProjectWizard extends Wizard implements ModuleWi
     {
         super( bot );
 
-        workspaceName = new Text( bot, LABEL_WORKSPACE_NAME );
-        buildTypes = new ComboBox( bot, LABEL_BUILD_TYPE );
+        workspaceName = new Text( bot, WORKSPACE_NAME );
+        buildTypes = new ComboBox( bot, BUILD_TYPE );
     }
 
     public ComboBox getBuildTypes()

@@ -15,49 +15,42 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.CheckBox;
 import com.liferay.ide.swtbot.ui.page.ComboBox;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Terry Jia
  * @author Ashley Yuan
  */
-public class BaseProjectWizard extends Wizard implements WizardUI
+public class BaseProjectWizard extends Wizard
 {
 
     private CheckBox addToWorkingSet;
-
     private Text projectName;
-
     private ComboBox workingSets;
-
-    public BaseProjectWizard( SWTBot bot )
-    {
-        this( bot, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
 
     public BaseProjectWizard( SWTBot bot, int index )
     {
-        this( bot, TEXT_BLANK, index );
+        this( bot, StringPool.BLANK, index );
     }
 
     public BaseProjectWizard( SWTBot bot, String title, int index )
     {
         super( bot, title, index );
 
-        projectName = new Text( bot, LABEL_PROJECT_NAME );
-        addToWorkingSet = new CheckBox( bot, CHECKBOX_ADD_PROJECT_TO_WORKING_SET );
-        workingSets = new ComboBox( bot, COMBOBOX_WORKING_SET );
+        projectName = new Text( bot, PROJECT_NAME );
+        addToWorkingSet = new CheckBox( bot, ADD_PROJECT_TO_WORKING_SET );
+        workingSets = new ComboBox( bot, WORKING_SET );
     }
 
     public void createProject( String projectName )
     {
-        createProject( projectName, false, TEXT_BLANK );
+        createProject( projectName, false, StringPool.BLANK );
     }
 
     public void createProject( String name, boolean workingSetBox, String set )

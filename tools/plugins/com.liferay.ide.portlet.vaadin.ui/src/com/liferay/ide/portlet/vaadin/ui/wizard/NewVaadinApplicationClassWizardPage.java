@@ -101,7 +101,7 @@ public class NewVaadinApplicationClassWizardPage extends NewPortletClassWizardPa
         else
         {
             vaadinPortletClassButton = new Button( parent, SWT.PUSH );
-            vaadinPortletClassButton.setText( J2EEUIMessages.BROWSE_BUTTON_LABEL );
+            vaadinPortletClassButton.setText( J2EEUIMessages.BROWSE_LABEL );
             vaadinPortletClassButton.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
             vaadinPortletClassButton.addSelectionListener( new SelectionListener()
             {

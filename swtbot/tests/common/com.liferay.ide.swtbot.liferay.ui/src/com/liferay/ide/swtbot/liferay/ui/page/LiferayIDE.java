@@ -40,10 +40,10 @@ public class LiferayIDE extends Eclipse
         super( bot );
 
         createLiferayProjectToolbar = new CreateLifeayProjectToolbarDropDownButton( bot );
-        codeUpgradeView = new CodeUpgradeView( bot, LABEL_LIFERAY_CODE_UPGRADE );
+        codeUpgradeView = new CodeUpgradeView( bot, LIFERAY_CODE_UPGRADE );
 
-        liferayPerspective = new Perspective( bot, LABEL_LIFERAY_PLUGINS );
-        liferayWorkspacePerspective = new Perspective( bot, LABEL_LIFERAY_WORKSPACE );
+        liferayPerspective = new Perspective( bot, LIFERAY_PLUGINS );
+        liferayWorkspacePerspective = new Perspective( bot, LIFERAY_WORKSPACE );
 
         newBtn = new NewToolbarDropDownButton( bot );
     }

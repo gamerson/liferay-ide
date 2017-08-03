@@ -33,11 +33,11 @@ public class NewLiferay7RuntimeWizard extends Wizard
 
     public NewLiferay7RuntimeWizard( SWTBot bot )
     {
-        super( bot, TITLE_NEW_SERVER_RUNTIME_ENVIRONMENT, SPECIFY_PORTAL_BUNDLE_LOCATION_INDEX );
+        super( bot, NEW_SERVER_RUNTIME_ENVIRONMENT, 3 );
 
-        serverLocation = new Text( bot, LABEL_SERVER_LOCATION );
-        portalBundleType = new Text( bot, LABEL_BUNDLE_TYPE );
-        name = new Text( bot, LABEL_RUNTIME_NAME );
+        serverLocation = new Text( bot, LIFERAY_PORTLET_BUNDLE_DIRECTORY );
+        portalBundleType = new Text( bot, DETECTED_PORTAL_BUNDLE_TYPE );
+        name = new Text( bot, NAME );
     }
 
     public Text getName()

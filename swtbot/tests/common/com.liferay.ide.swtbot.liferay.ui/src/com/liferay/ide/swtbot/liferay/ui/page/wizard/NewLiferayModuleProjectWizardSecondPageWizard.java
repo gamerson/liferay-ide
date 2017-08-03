@@ -15,18 +15,17 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.ModuleWizardUI;
 import com.liferay.ide.swtbot.ui.page.Table;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.ToolbarButtonWithTooltip;
 import com.liferay.ide.swtbot.ui.page.Wizard;
 
+import org.eclipse.swtbot.swt.finder.SWTBot;
+
 /**
  * @author Ying Xu
  */
-public class NewLiferayModuleProjectWizardSecondPageWizard extends Wizard implements ModuleWizardUI
+public class NewLiferayModuleProjectWizardSecondPageWizard extends Wizard
 {
 
     private ToolbarButtonWithTooltip addPropertyKeyBtn;
@@ -41,26 +40,12 @@ public class NewLiferayModuleProjectWizardSecondPageWizard extends Wizard implem
 
     public NewLiferayModuleProjectWizardSecondPageWizard( SWTBot bot )
     {
-        this( bot, TEXT_BLANK );
-    }
+        super( bot, 2 );
 
-    public NewLiferayModuleProjectWizardSecondPageWizard( SWTBot bot, int validationMsgIndex )
-    {
-        this( bot, TEXT_BLANK, validationMsgIndex );
-    }
-
-    public NewLiferayModuleProjectWizardSecondPageWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
-
-    public NewLiferayModuleProjectWizardSecondPageWizard( SWTBot bot, String title, int validationMsgIndex )
-    {
-        super( bot, title, validationMsgIndex );
-        componentClassName = new Text( bot, MODULE_COMPONENT_CLASS_NAME );
-        packageName = new Text( bot, LABEL_PACKAGE_NAME_UPPERCASE );
-        serviceName = new Text( bot, LABEL_SERVICE_NAME );
-        properties = new Table( bot, MODULE_PROPERTIES );
+        componentClassName = new Text( bot, COMPONENT_CLASS_NAME );
+        packageName = new Text( bot, PACKAGE_NAME );
+        serviceName = new Text( bot, SERVICE_NAME );
+        properties = new Table( bot, PROPERTIES );
         browseBtn = new ToolbarButtonWithTooltip( bot, BROWSE );
         addPropertyKeyBtn = new ToolbarButtonWithTooltip( bot, ADD_PROPERTY_KEY );
         moveUpBtn = new ToolbarButtonWithTooltip( bot, MOVE_UP );

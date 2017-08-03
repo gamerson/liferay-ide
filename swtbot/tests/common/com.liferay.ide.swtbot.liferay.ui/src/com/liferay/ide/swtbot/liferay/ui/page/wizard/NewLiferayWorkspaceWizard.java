@@ -15,12 +15,12 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
 import com.liferay.ide.swtbot.ui.page.CheckBox;
 import com.liferay.ide.swtbot.ui.page.ComboBox;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Vicky Wang
@@ -39,30 +39,15 @@ public class NewLiferayWorkspaceWizard extends Wizard
 
     public NewLiferayWorkspaceWizard( SWTBot bot )
     {
-        this( bot, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
+        super( bot, 2 );
 
-    public NewLiferayWorkspaceWizard( SWTBot bot, int index )
-    {
-        this( bot, TEXT_BLANK, index );
-    }
-
-    public NewLiferayWorkspaceWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
-
-    public NewLiferayWorkspaceWizard( SWTBot bot, String title, int validationMsgIndex )
-    {
-        super( bot, title, validationMsgIndex );
-
-        workspaceName = new Text( bot, LABEL_WORKSPACE_NAME );
-        serverName = new Text( bot, LABEL_SERVER_NAME );
-        bundleUrl = new Text( bot, LABEL_BUNDLE_URL );
-        location = new Text( bot, LABEL_LOCATION );
-        buildTypes = new ComboBox( bot, LABEL_BUILD_TYPE );
-        downloadLiferayBundle = new CheckBox( bot, LABEL_DOWNLOAD_LIFERAY_BUNDLE );
-        useDefaultLocation = new CheckBox( bot, LABEL_USE_DEFAULT_LOCATION );
+        workspaceName = new Text( bot, WORKSPACE_NAME );
+        serverName = new Text( bot, SERVER_NAME );
+        bundleUrl = new Text( bot, BUNDLE_URL );
+        location = new Text( bot, LOCATION_WITH_COLON );
+        buildTypes = new ComboBox( bot, BUILD_TYPE );
+        downloadLiferayBundle = new CheckBox( bot, DOWNLOAD_LIFERAY_BUNDLE );
+        useDefaultLocation = new CheckBox( bot, USE_DEFAULT_LOCATION );
     }
 
     public ComboBox getBuildTypes()

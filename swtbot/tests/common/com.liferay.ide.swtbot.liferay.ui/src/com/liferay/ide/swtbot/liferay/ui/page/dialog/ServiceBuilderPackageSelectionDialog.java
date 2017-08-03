@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.ServiceBuilderUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Text;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class ServiceBuilderPackageSelectionDialog extends Dialog implements ServiceBuilderUI
+public class ServiceBuilderPackageSelectionDialog extends Dialog
 {
 
     private Text packageSelection;
@@ -33,7 +32,7 @@ public class ServiceBuilderPackageSelectionDialog extends Dialog implements Serv
     {
         super( bot );
 
-        packageSelection = new Text( bot, LABEL_CHOOSE_PACKAGE );
+        packageSelection = new Text( bot, CHOOSE_A_PACKAGE );
     }
 
     public Text getPackageSelection()

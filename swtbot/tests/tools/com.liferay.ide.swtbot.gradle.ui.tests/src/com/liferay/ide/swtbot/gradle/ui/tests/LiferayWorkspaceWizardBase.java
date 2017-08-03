@@ -29,8 +29,7 @@ public class LiferayWorkspaceWizardBase extends BaseNewLiferayModuleProjectWizar
 
     protected String serverName = "Liferay 7.0 CE Server";
 
-    protected NewLiferayWorkspaceWizard newLiferayWorkspaceProjectWizard =
-        new NewLiferayWorkspaceWizard( bot, INDEX_VALIDATION_WORKSPACE_NAME_MESSAGE );
+    protected NewLiferayWorkspaceWizard newLiferayWorkspaceProjectWizard = new NewLiferayWorkspaceWizard( bot );
 
     protected Tree projectTree = ide.getPackageExporerView().getProjectTree();
 

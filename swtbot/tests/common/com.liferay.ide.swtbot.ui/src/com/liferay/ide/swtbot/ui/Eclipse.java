@@ -56,20 +56,20 @@ public class Eclipse extends BasePageObject
         super( bot );
 
         packageExporerView = new PackageExplorerView( bot );
-        welcomeView = new View( bot, LABEL_WELCOME );
+        welcomeView = new View( bot, WELCOME );
         progressView = new ProgressView( bot );
         projectTree = new Tree( bot );
-        fileMenu = new Menu( bot, MENU_FILE );
+        fileMenu = new Menu( bot, FILE );
 
-        String[] otherLabel = { LABEL_WINDOW, LABEL_SHOW_VIEW, LABEL_OTHER };
-        String[] preferencesLabel = { LABEL_WINDOW, LABEL_PREFERENCES };
+        String[] otherLabel = { WINDOW, SHOW_VIEW, OTHER };
+        String[] preferencesLabel = { WINDOW, PREFERENCES };
 
         preferencesMenu = new Menu( bot, preferencesLabel );
         otherMenu = new Menu( bot, otherLabel );
 
         showViewDialog = new ShowViewDialog( bot );
         errorLogView = new ErrorLogView( bot );
-        projectExplorerView = new View( bot, LABEL_PROJECT_EXPLORER );
+        projectExplorerView = new View( bot, PROJECT_EXPLORER );
         serversView = new ServersView( bot );
         browser = new Browser( bot );
     }
@@ -161,7 +161,7 @@ public class Eclipse extends BasePageObject
         {
             otherMenu.click();
 
-            showViewDialog.getSearch().setText( ( LABEL_PROGRESS ) );
+            showViewDialog.getSearch().setText( ( PROGRESS ) );
 
             sleep( 100 );
 
@@ -183,7 +183,7 @@ public class Eclipse extends BasePageObject
         {
             otherMenu.click();
 
-            showViewDialog.getSearch().setText( ( LABEL_ERROR_LOG ) );
+            showViewDialog.getSearch().setText( ( ERROR_LOG ) );
 
             sleep( 100 );
 

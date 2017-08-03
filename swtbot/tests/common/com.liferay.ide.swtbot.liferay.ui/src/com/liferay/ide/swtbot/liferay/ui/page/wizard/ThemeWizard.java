@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.ComboBox;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Vicky Wang
  */
-public class ThemeWizard extends Wizard implements WizardUI
+public class ThemeWizard extends Wizard
 {
 
     ComboBox themeFrameworkTypes;
@@ -32,20 +31,10 @@ public class ThemeWizard extends Wizard implements WizardUI
 
     public ThemeWizard( SWTBot bot )
     {
-        this( bot, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
+        super( bot, 0 );
 
-    public ThemeWizard( SWTBot bot, int indexThemeValidationMsg )
-    {
-        this( bot, TEXT_BLANK, indexThemeValidationMsg );
-    }
-
-    public ThemeWizard( SWTBot bot, String title, int indexThemeValidationMsg )
-    {
-        super( bot, title, indexThemeValidationMsg );
-
-        themeParentTypes = new ComboBox( bot, THEME_PARENT_TYPE );
-        themeFrameworkTypes = new ComboBox( bot, THEME_FARMEWORK_TYPE );
+        themeParentTypes = new ComboBox( bot, THEME_PARENT );
+        themeFrameworkTypes = new ComboBox( bot, FARMEWORK_TYPE );
     }
 
     public void setParentFramework( String parent, String framework )

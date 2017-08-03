@@ -15,26 +15,24 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.DialogUI;
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Text;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Vicky Wang
  */
-public class SuperClassDialog extends Dialog implements DialogUI, WizardUI
+public class SuperClassDialog extends Dialog
 {
 
-    Text superClass;
+    private Text superClass;
 
     public SuperClassDialog( SWTBot bot )
     {
         super( bot );
 
-        superClass = new Text( bot, LABLE_CHOOSE_SUPERCLASS );
+        superClass = new Text( bot, CHOOSE_A_SUPERCLASS );
     }
 
     public Text getSuperClass()

@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.ModuleWizardUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Text;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class SelectModuleServiceNameDialog extends Dialog implements ModuleWizardUI
+public class SelectModuleServiceNameDialog extends Dialog 
 {
 
     private Text serviceName;
@@ -33,7 +32,7 @@ public class SelectModuleServiceNameDialog extends Dialog implements ModuleWizar
     {
         super( bot );
 
-        serviceName = new Text( bot, MODULE_SELECT_SERVICE_NAME );
+        serviceName = new Text( bot, SELECT_SERVICE_NAME );
     }
 
     public Text getServiceName()

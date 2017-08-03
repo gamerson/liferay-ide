@@ -15,10 +15,11 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
 import com.liferay.ide.swtbot.ui.page.CheckBox;
 import com.liferay.ide.swtbot.ui.page.Text;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ashley Yuan
@@ -31,12 +32,7 @@ public class NewProjectWizard extends BaseProjectWizard
 
     public NewProjectWizard( SWTBot bot, int validationMsgIndex )
     {
-        this( bot, TEXT_BLANK, validationMsgIndex );
-    }
-
-    public NewProjectWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_DEFAULT_VALIDATION_MESSAGE );
+        this( bot, StringPool.BLANK, validationMsgIndex );
     }
 
     public NewProjectWizard( SWTBot bot, String title, int validationMsgIndex )
@@ -46,7 +42,7 @@ public class NewProjectWizard extends BaseProjectWizard
 
     public void createJavaProject( String projectName )
     {
-        createJavaProject( projectName, true, TEXT_BLANK );
+        createJavaProject( projectName, true, StringPool.BLANK );
     }
 
     public void createJavaProject( String projectName, boolean useDefaultLocationValue, String customLocationValue )
