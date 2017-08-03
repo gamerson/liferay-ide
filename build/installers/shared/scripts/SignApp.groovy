@@ -1,16 +1,25 @@
-def appDir = new File(project.properties.get("appDir")).canonicalFile
-def serverURL = project.properties.get("signingServerURL")
+def signApps = properties["signApps"]
+
+if (!"true".equals(signApps)) {
+	return
+}
+
+def appDir = new File(properties["appDir"]).canonicalFile
+def serverURL = properties["signingServerURL"]
+def certificate = properties["certificate"]
+def createDmg = properties["createDmg"]
 
 println appDir
 println serverURL
+println certificate
 
 if (appDir.exists() && serverURL != null) {
 	println "Calling codesign service..."
 
-	def url = new URL(serverURL + "/codesign")
+	def url = new URL(serverURL)
 	def post = url.openConnection()
 	def path = appDir.toURI().toASCIIString().replaceAll("^file:","")
-	def body = "path=${path}&identity=Developer+ID+Application%3A+Liferay%2C+Inc.+%287H3SPU5TB9%29&dmg=true"
+	def body = "path=${path}&identity=${certificate}&createDmg=${createDmg}"
 
 	println("Posting to ${url} with body=${body}")
 

@@ -56,7 +56,6 @@
         <blade-latest-md5>f3f503915055437463cc6f57c27284a8</blade-latest-md5>
         <blade-latest-download-url>https://liferay-test-01.ci.cloudbees.com/job/liferay-blade-cli/167/artifact/build/generated/p2/plugins/com.liferay.blade.cli_2.2.0.201707052044.jar</blade-latest-download-url>
         <blade-latest-md5>e7d9fe28a535df2ff702ff0aeaadcd5b</blade-latest-md5>
-        <signing-server-url>http://localhost:8080</signing-server-url>
         <sign-apps>false</sign-apps>
     </properties>
 
