@@ -15,18 +15,16 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.DialogUI;
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Tree;
 
+import org.eclipse.swtbot.swt.finder.SWTBot;
+
 /**
  * @author Vicky Wang
  */
-public class LiferayCustomJSPDialog extends Dialog implements DialogUI, WizardUI
+public class LiferayCustomJSPDialog extends Dialog 
 {
 
     private Tree paths;
@@ -36,7 +34,8 @@ public class LiferayCustomJSPDialog extends Dialog implements DialogUI, WizardUI
     {
         super( bot );
 
-        selectJspToCustomize = new Text( bot, LABEL_SELECT_A_JSP_TO_CUSTOMIZE );
+        paths = new Tree( bot );
+        selectJspToCustomize = new Text( bot, SELECT_A_JSP_TO_CUSTOMIZE );
     }
 
     public void select( String... items )

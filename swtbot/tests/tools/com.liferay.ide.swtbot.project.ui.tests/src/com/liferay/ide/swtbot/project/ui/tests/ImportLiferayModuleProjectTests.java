@@ -20,29 +20,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.liferay.ide.swtbot.liferay.ui.SWTBotBase;
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
+import com.liferay.ide.swtbot.liferay.ui.SwtbotBase;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.ImportLiferayModuleProjectWizard;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.SelectTypeWizard;
 import com.liferay.ide.swtbot.ui.page.Editor;
 import com.liferay.ide.swtbot.ui.page.Tree;
 import com.liferay.ide.swtbot.ui.page.TreeItem;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import org.junit.After;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Ashley Yuan
  */
-public class ImportLiferayModuleProjectTests extends SWTBotBase implements WizardUI
+public class ImportLiferayModuleProjectTests extends SwtbotBase
 {
 
     Editor buildGradleText = new Editor( bot, "build.gradle" );
     private String existingDirectory = getLiferayServerDir().toOSString();
-    ImportLiferayModuleProjectWizard importLiferayModulePage = new ImportLiferayModuleProjectWizard(
-        bot, TITLE_IMPORT_LIFERAY_MODULE_PROJECT, INDEX_IMPORT_LIFERAY_WORKSPACE_LOCATION_VALIDATION_MESSAGE );
+    ImportLiferayModuleProjectWizard importLiferayModulePage = new ImportLiferayModuleProjectWizard( bot );
     private String inexistentLocation = "c:/123";
     private String invalidLocation = "1.*";
 
@@ -50,8 +49,7 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
 
     Tree projectTree = ide.showPackageExporerView().getProjectTree();
 
-    SelectTypeWizard selectImportPage =
-        new SelectTypeWizard( bot, INDEX_SELECT_IMPORT_LIFERAY_MODULE_PROJECTS_VALIDATION_MESSAGE );
+    SelectTypeWizard selectImportPage = new SelectTypeWizard( bot );
 
     Editor settingsGradleText = new Editor( bot, "settings.gradle" );
 
@@ -60,7 +58,7 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
     @After
     public void clean()
     {
-        ide.closeShell( TITLE_IMPORT_LIFERAY_MODULE_PROJECT );
+        ide.closeShell( IMPORT_LIFERAY_MODULE_PROJECT );
 
         ide.getPackageExporerView().deleteProjectExcludeNames( new String[] { getLiferayPluginsSdkName() }, false );
     }
@@ -72,8 +70,7 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
         importLiferayModulePage.getLocation().setText( moduleRootPath + "/projects/MvcportletModule" );
 
         sleep();
-        assertContains(
-            TEXT_SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
+        assertContains( SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
 
         assertEquals( "gradle", importLiferayModulePage.getBuildType().getText() );
         assertTrue( importLiferayModulePage.finishBtn().isEnabled() );
@@ -95,14 +92,13 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
         importLiferayModulePage.getLocation().setText( moduleRootPath + "/projects/MvcportletModule" );
 
         sleep();
-        assertContains( TEXT_PROJECT_ALREADY_EXISTS, importLiferayModulePage.getValidationMsg() );
+        assertContains( A_PROJECT_WITH_THAT_NAME_ALREADY_EXISTS, importLiferayModulePage.getValidationMsg() );
 
         // import servicebuilder module which have sub-modules
         importLiferayModulePage.getLocation().setText( moduleRootPath + "/projects/ServicebuilderModule" );
 
         sleep();
-        assertContains(
-            TEXT_SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
+        assertContains( SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
         assertEquals( "gradle", importLiferayModulePage.getBuildType().getText() );
 
         assertTrue( importLiferayModulePage.finishBtn().isEnabled() );
@@ -117,7 +113,8 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
         projectTree.getTreeItem( "ServicebuilderModule" ).getTreeItem( "settings.gradle" ).doubleClick();
 
         assertContains(
-            "include " + "\"" + "ServicebuilderModule-api" + "\", " + "\"" + "ServicebuilderModule-service" + "\"",
+            "include " + StringPool.DOUBLE_QUOTE + "ServicebuilderModule-api" + "\", " + StringPool.DOUBLE_QUOTE +
+                "ServicebuilderModule-service" + StringPool.DOUBLE_QUOTE,
             settingsGradleText.getText() );
         assertTrue( projectTree.getTreeItem( "ServicebuilderModule-api" ).isVisible() );
         assertTrue( projectTree.getTreeItem( "ServicebuilderModule-service" ).isVisible() );
@@ -151,9 +148,8 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
             moduleRootPath + "/projects/testWorkspace/modules/PortletModule" );
 
         sleep();
-        assertEquals( TEXT_BLANK, importLiferayModulePage.getBuildType().getText() );
-        assertContains(
-            TEXT_NOT_ROOT_LOCATION_OF_MULTI_MODULE_PROJECT, importLiferayModulePage.getValidationMsg() );
+        assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
+        assertContains( LOCATION_IS_NOT_ROOT_LOCATION, importLiferayModulePage.getValidationMsg() );
         assertFalse( importLiferayModulePage.finishBtn().isEnabled() );
 
         importLiferayModulePage.cancel();
@@ -163,11 +159,10 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
 
     public void importLiferayModuleProjects()
     {
-        ide.getFileMenu().clickMenu( LABEL_IMPORT );
+        ide.getFileMenu().clickMenu( IMPORT );
 
-        selectImportPage.selectItem( "liferay", "Liferay", LABEL_IMPORT_MODULE_PROJECTS );
-        assertEquals(
-            TEXT_SELECT_IMPORT_LIFERAY_MODULE_PROJECTS_VALIDATION_MESSAGE, selectImportPage.getValidationMsg() );
+        selectImportPage.selectItem( "liferay", "Liferay", LIFERAY_MODULE_PROJECTS );
+        assertEquals( IMPORT_EXISTING_LIFERAY_MODULE_PROJECTS, selectImportPage.getValidationMsg() );
 
         selectImportPage.next();
     }
@@ -188,13 +183,12 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
         sleep();
         assertFalse( importLiferayModulePage.finishBtn().isEnabled() );
         assertContains(
-            TEXT_LOCATION_NOT_RECOGNIZED_AS_A_VALID_PROJECT_TYPE, importLiferayModulePage.getValidationMsg() );
+            LOCATION_IS_NOT_RECOGNIZED_AS_A_VALID_PROJECT_TYPE, importLiferayModulePage.getValidationMsg() );
 
         importLiferayModulePage.getLocation().setText( moduleRootPath + "/projects/testWorkspace" );
 
         sleep();
-        assertContains(
-            TEXT_SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
+        assertContains( SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
 
         importLiferayModulePage.finish();
         importLiferayModulePage.waitForPageToClose();
@@ -202,6 +196,7 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
         assertTrue( projectTree.getTreeItem( "testWorkspace" ).isVisible() );
 
         ide.getLiferayWorkspacePerspective().activate();
+        ide.getProjectExplorerView().show();
 
         projectTree.expandNode( "testWorkspace", "modules" );
 
@@ -215,10 +210,9 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
     public void liferayModuleLocationTest()
     {
         // initial state check
-        assertContains(
-            TEXT_SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
-        assertEquals( TEXT_BLANK, importLiferayModulePage.getLocation().getText() );
-        assertEquals( TEXT_BLANK, importLiferayModulePage.getBuildType().getText() );
+        assertContains( SELECT_LOCATION_OF_MODULE_PROJECT_DIRECTORY, importLiferayModulePage.getValidationMsg() );
+        assertEquals( StringPool.BLANK, importLiferayModulePage.getLocation().getText() );
+        assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         assertTrue( importLiferayModulePage.getLocation().isEnabled() );
         assertFalse( importLiferayModulePage.getBuildType().isActive() );
@@ -227,35 +221,33 @@ public class ImportLiferayModuleProjectTests extends SWTBotBase implements Wizar
         // location validation
         importLiferayModulePage.getLocation().setText( invalidLocation );
 
-        sleep();
         assertContains(
-            "\"" + invalidLocation + "\"" + TEXT_IS_NOT_A_VALID_PATH, importLiferayModulePage.getValidationMsg() );
-        assertEquals( TEXT_BLANK, importLiferayModulePage.getBuildType().getText() );
+            StringPool.DOUBLE_QUOTE + invalidLocation + StringPool.DOUBLE_QUOTE + IS_NOT_A_VALID_PATH,
+            importLiferayModulePage.getValidationMsg() );
+        assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         importLiferayModulePage.getLocation().setText( wrongPath );
 
-        sleep();
         assertContains(
-            "\"" + wrongPath + "\"" + TEXT_IS_NOT_AN_ABSOLUTE_PATH, importLiferayModulePage.getValidationMsg() );
-        assertEquals( TEXT_BLANK, importLiferayModulePage.getBuildType().getText() );
+            StringPool.DOUBLE_QUOTE + wrongPath + StringPool.DOUBLE_QUOTE + IS_NOT_AN_ABSOLUTE_PATH,
+            importLiferayModulePage.getValidationMsg() );
+        assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         importLiferayModulePage.getLocation().setText( inexistentLocation );
 
-        sleep();
-        assertContains( TEXT_DIRECTORY_DOESNT_EXIST, importLiferayModulePage.getValidationMsg() );
-        assertEquals( TEXT_BLANK, importLiferayModulePage.getBuildType().getText() );
+        assertContains( DIRECTORY_DOESNT_EXIST, importLiferayModulePage.getValidationMsg() );
+        assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         importLiferayModulePage.getLocation().setText( existingDirectory );
 
-        sleep();
         assertContains(
-            TEXT_LOCATION_NOT_RECOGNIZED_AS_A_VALID_PROJECT_TYPE, importLiferayModulePage.getValidationMsg() );
-        assertEquals( TEXT_BLANK, importLiferayModulePage.getBuildType().getText() );
+            LOCATION_IS_NOT_RECOGNIZED_AS_A_VALID_PROJECT_TYPE, importLiferayModulePage.getValidationMsg() );
+        assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         importLiferayModulePage.getLocation().setText( "projects/MvcportletModule" );
 
         sleep();
-        assertContains( TEXT_IS_NOT_AN_ABSOLUTE_PATH, importLiferayModulePage.getValidationMsg() );
+        assertContains( IS_NOT_AN_ABSOLUTE_PATH, importLiferayModulePage.getValidationMsg() );
         assertEquals( "gradle", importLiferayModulePage.getBuildType().getText() );
 
         assertFalse( importLiferayModulePage.finishBtn().isEnabled() );

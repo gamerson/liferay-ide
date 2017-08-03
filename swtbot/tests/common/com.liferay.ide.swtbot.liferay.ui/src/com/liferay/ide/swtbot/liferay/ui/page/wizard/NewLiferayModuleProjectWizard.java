@@ -15,68 +15,39 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.ui.page.CheckBox;
 import com.liferay.ide.swtbot.ui.page.ComboBox;
-import com.liferay.ide.swtbot.ui.page.Text;
-import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  * @author Sunny Shi
  * @author Ashley Yuan
  */
-public class NewLiferayModuleProjectWizard extends Wizard
+public class NewLiferayModuleProjectWizard extends NewProjectWizard
 {
 
     private ComboBox buildTypes;
-    private Text location;
-    private Text projectName;
     private ComboBox projectTemplateNames;
-    private CheckBox useDefaultLocation;
 
     public NewLiferayModuleProjectWizard( SWTBot bot )
     {
-        this( bot, TEXT_BLANK );
-    }
-
-    public NewLiferayModuleProjectWizard( SWTBot bot, int validationMsgIndex )
-    {
-        this( bot, TEXT_BLANK, validationMsgIndex );
-    }
-
-    public NewLiferayModuleProjectWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
-
-    public NewLiferayModuleProjectWizard( SWTBot bot, String title, int validationMsgIndex )
-    {
-        super( bot, title, validationMsgIndex );
+        super( bot, 2 );
 
         projectTemplateNames = new ComboBox( bot, "Project Template Name:" );
-        projectName = new Text( bot, LABEL_PROJECT_NAME );
-        useDefaultLocation = new CheckBox( bot, "Use default location" );
-        location = new Text( bot, LABEL_LOCATION );
-        buildTypes = new ComboBox( bot, LABEL_BUILD_TYPE );
-    }
-
-    public void createModuleProject( String text )
-    {
-        projectName.setText( text );
+        buildTypes = new ComboBox( bot, BUILD_TYPE );
     }
 
     public void createModuleProject( String text, String projectTemplate )
     {
         projectTemplateNames.setSelection( projectTemplate );
-        projectName.setText( text );
+        getProjectName().setText( text );
     }
 
     public void createModuleProject( String text, String projectTemplate, String buildType )
     {
         projectTemplateNames.setSelection( projectTemplate );
-        projectName.setText( text );
+        getProjectName().setText( text );
         buildTypes.setSelection( buildType );
     }
 
@@ -85,24 +56,9 @@ public class NewLiferayModuleProjectWizard extends Wizard
         return buildTypes;
     }
 
-    public Text getLocation()
-    {
-        return location;
-    }
-
-    public Text getProjectName()
-    {
-        return projectName;
-    }
-
     public ComboBox getProjectTemplateNames()
     {
         return projectTemplateNames;
-    }
-
-    public CheckBox getUseDefaultLocation()
-    {
-        return useDefaultLocation;
     }
 
 }

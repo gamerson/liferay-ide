@@ -40,6 +40,13 @@ public class Wizard extends CancelableShell
         super( bot, title );
     }
 
+    public Wizard( SWTBot bot, int validationMsgIndex )
+    {
+        super( bot );
+
+        this.validationMsgIndex = validationMsgIndex;
+    }
+
     public Wizard( SWTBot bot, String title, int validationMsgIndex )
     {
         super( bot, title );
@@ -106,7 +113,7 @@ public class Wizard extends CancelableShell
 
         sleep();
 
-        return bot.text( validationMsgIndex ).getText();
+        return bot.text( validationMsgIndex ).getText().trim();
     }
 
     public void next()

@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.DialogUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Tree;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class AddOverriddenFileDialog extends Dialog implements DialogUI
+public class AddOverriddenFileDialog extends Dialog
 {
 
     private Tree addFilesToOverride;

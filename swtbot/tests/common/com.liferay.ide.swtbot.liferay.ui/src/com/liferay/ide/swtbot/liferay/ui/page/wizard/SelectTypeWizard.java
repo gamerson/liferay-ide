@@ -15,35 +15,30 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ashley Yuan
  */
-public class SelectTypeWizard extends Wizard implements WizardUI
+public class SelectTypeWizard extends Wizard
 {
 
     private Text filterName;
 
-    public SelectTypeWizard( SWTBot bot, int validationMsgIndex )
+    public SelectTypeWizard( SWTBot bot )
     {
-        this( bot, TEXT_BLANK, validationMsgIndex );
-    }
+        super( bot, 1 );
 
-    public SelectTypeWizard( SWTBot bot, String title, int validationMsgIndex )
-    {
-        super( bot, title, validationMsgIndex );
-
-        filterName = new Text( bot, TEXT_BLANK );
+        filterName = new Text( bot, StringPool.BLANK );
     }
 
     public void selectItem( String selectTypeTree, String selectTypeNode )
     {
-        selectItem( TEXT_BLANK, selectTypeTree, selectTypeNode );
+        selectItem( StringPool.BLANK, selectTypeTree, selectTypeNode );
     }
 
     public void selectItem( String filterText, String selectTypeTree, String selectTypeNode )

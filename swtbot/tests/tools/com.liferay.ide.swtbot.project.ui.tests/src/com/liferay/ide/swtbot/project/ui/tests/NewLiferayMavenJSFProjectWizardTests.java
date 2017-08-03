@@ -15,17 +15,16 @@
 
 package com.liferay.ide.swtbot.project.ui.tests;
 
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.liferay.ide.swtbot.liferay.ui.NewLiferayJSFProjectWizardUI;
 
 /**
  * @author Ying Xu
  */
 public class NewLiferayMavenJSFProjectWizardTests extends BaseNewLiferayJSFProjectWizard
-    implements NewLiferayJSFProjectWizardUI
 {
 
     @Test
@@ -33,7 +32,7 @@ public class NewLiferayMavenJSFProjectWizardTests extends BaseNewLiferayJSFProje
     {
         String projectName = "testMavenICEFacesProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_MAVEN, MENU_ICEFACES, TEXT_BLANK );
+        newLiferayJSFProject( projectName, MAVEN, ICEFACES, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -54,7 +53,7 @@ public class NewLiferayMavenJSFProjectWizardTests extends BaseNewLiferayJSFProje
     {
         String projectName = "testMavenJSFStandardProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_MAVEN, MENU_JSF_STANDARD, TEXT_BLANK );
+        newLiferayJSFProject( projectName, MAVEN, JSF_STANDARD, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -75,7 +74,7 @@ public class NewLiferayMavenJSFProjectWizardTests extends BaseNewLiferayJSFProje
     {
         String projectName = "testMavenLiferayFacesAlloyProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_MAVEN, MENU_LIFERAY_FACES_ALLOY, TEXT_BLANK );
+        newLiferayJSFProject( projectName, MAVEN, LIFERAY_FACES_ALLOY, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -96,7 +95,7 @@ public class NewLiferayMavenJSFProjectWizardTests extends BaseNewLiferayJSFProje
     {
         String projectName = "testMavenPrimeFacesProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_MAVEN, MENU_PRIMEFACES, TEXT_BLANK );
+        newLiferayJSFProject( projectName, MAVEN, PRIMEFACES, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -117,7 +116,7 @@ public class NewLiferayMavenJSFProjectWizardTests extends BaseNewLiferayJSFProje
     {
         String projectName = "testMavenRichFacesProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_MAVEN, MENU_RICHFFACES, TEXT_BLANK );
+        newLiferayJSFProject( projectName, MAVEN, RICHFACES, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";

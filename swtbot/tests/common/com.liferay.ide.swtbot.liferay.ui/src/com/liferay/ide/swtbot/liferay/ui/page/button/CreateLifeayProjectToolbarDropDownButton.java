@@ -45,21 +45,21 @@ public class CreateLifeayProjectToolbarDropDownButton extends ToolbarDropDownBut
 
     public CreateLifeayProjectToolbarDropDownButton( SWTBot bot )
     {
-        super( bot, TOOLBAR_CREATE_LIFERAY_PROJECT );
+        super( bot, CREATE_A_NEW_LIFERAY_MODULE_PROJECT );
 
-        newLiferayPluginProject = new MenuItem( bot, this, LABEL_NEW_LIFERAY_PLUGIN_PROJECT );
-        newLiferayPortlet = new MenuItem( bot, this, LABEL_NEW_LIFERAY_PORTLET );
-        newLiferayHookConfiguration = new MenuItem( bot, this, LABEL_NEW_LIFERAY_HOOK_CONFIGURATION );
-        newLiferayServer = new MenuItem( bot, this, LABEL_NEW_LIFERAY_SERVER );
-        newLiferayServiceBuilder = new MenuItem( bot, this, LABEL_NEW_LIFERAY_SERVICE_BUILDER );
-        newLiferayJSFPortlet = new MenuItem( bot, this, LABEL_NEW_LIFERAY_JSF_PORTLET );
-        newLiferayVaadinPortlet = new MenuItem( bot, this, LABEL_NEW_LIFERAY_VAADIN_PORTLET );
-        newLiferayLayouTemplate = new MenuItem( bot, this, LABEL_NEW_LIFERAY_LAYOUT_TMEPLATE );
-        newLiferayModuleProjectFragment = new MenuItem( bot, this, LABEL_NEW_LIFERAY_MODULE_PROJECT_FRAGMENT );
-        newLiferayWorkspaceProject = new MenuItem( bot, this, LABEL_NEW_LIFERAY_WORPSPACE_PROJECT );
-        newLiferayComponentClass = new MenuItem( bot, this, LABEL_NEW_LIFERAY_COMPONENT_CLASS );
-        newLiferayModuleProject = new MenuItem( bot, this, LABEL_NEW_LIFERAY_MODULE_PROJECT );
-        newLiferayJSFProject = new MenuItem( bot, this, LABEL_NEW_LIFERAY_JSF_PROJECT );
+        newLiferayPluginProject = new MenuItem( bot, this, NEW_LIFERAY_PLUGIN_PROJECT );
+        newLiferayPortlet = new MenuItem( bot, this, NEW_LIFERAY_PORTLET );
+        newLiferayHookConfiguration = new MenuItem( bot, this, NEW_LIFERAY_HOOK_CONFIGURATION );
+        newLiferayServer = new MenuItem( bot, this, NEW_LIFERAY_SERVER );
+        newLiferayServiceBuilder = new MenuItem( bot, this, NEW_LIFERAY_SERVICE_BUILDER );
+        newLiferayJSFPortlet = new MenuItem( bot, this, NEW_LIFERAY_JSF_PORTLET );
+        newLiferayVaadinPortlet = new MenuItem( bot, this, NEW_LIFERAY_VAADIN_PORTLET );
+        newLiferayLayouTemplate = new MenuItem( bot, this, NEW_LIFERAY_LAYOUT_TMEPLATE );
+        newLiferayModuleProjectFragment = new MenuItem( bot, this, NEW_LIFERAY_MODULE_PROJECT_FRAGMENT );
+        newLiferayWorkspaceProject = new MenuItem( bot, this, NEW_LIFERAY_WORPSPACE_PROJECT );
+        newLiferayComponentClass = new MenuItem( bot, this, NEW_LIFERAY_COMPONENT_CLASS );
+        newLiferayModuleProject = new MenuItem( bot, this, NEW_LIFERAY_MODULE_PROJECT );
+        newLiferayJSFProject = new MenuItem( bot, this, NEW_LIFERAY_JSF_PROJECT );
     }
 
     public MenuItem getNewLiferayHookConfiguration()

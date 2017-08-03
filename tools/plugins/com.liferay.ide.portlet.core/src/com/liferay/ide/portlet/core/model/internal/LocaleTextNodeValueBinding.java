@@ -30,7 +30,7 @@ import org.eclipse.sapphire.modeling.xml.XmlValueBindingImpl;
 public class LocaleTextNodeValueBinding extends XmlValueBindingImpl
 {
 
-    final Locale[] AVAILABLE_LOCALES = Locale.getAvailableLocales();
+    final Locale[] AVAILOCALES = Locale.getAvailableLocales();
 
     /*
      * (non-Javadoc)
@@ -53,9 +53,9 @@ public class LocaleTextNodeValueBinding extends XmlValueBindingImpl
             if( !value.isEmpty() )
             {
                 value = value.trim();
-                for( int i = 0; i < AVAILABLE_LOCALES.length; i++ )
+                for( int i = 0; i < AVAILOCALES.length; i++ )
                 {
-                    Locale locale = AVAILABLE_LOCALES[i];
+                    Locale locale = AVAILOCALES[i];
                     if( value.equals( locale.toString() ) )
                     {
                         value = PortletUtil.buildLocaleDisplayString( locale.getDisplayName(), locale );

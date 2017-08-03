@@ -18,28 +18,42 @@ package com.liferay.ide.swtbot.gradle.ui.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesContinueDialog;
+import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesDialog;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
 import java.io.IOException;
 
 import org.junit.After;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
-
-import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesContinueDialog;
-import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesDialog;
 
 /**
  * @author Vicky Wang
  * @author Ying Xu
  */
-public class ValidationLiferayWorkspaceWizardTests extends LiferayWorkspaceWizardTestsBase
+public class ValidationLiferayWorkspaceWizardTests extends LiferayWorkspaceWizardBase
 {
+
+    static String fullClassname = new SecurityManager()
+    {
+
+        public String getClassName()
+        {
+            return getClassContext()[1].getName();
+        }
+    }.getClassName();
+
+    static String currentClassname = fullClassname.substring( fullClassname.lastIndexOf( '.' ) ).substring( 1 );
 
     @Test
     public void initialStateTest()
     {
         ide.getCreateLiferayProjectToolbar().getNewLiferayWorkspaceProject().click();
 
-        assertEquals( TEXT_PLEASE_ENTER_THE_WORKSPACE_NAME, newLiferayWorkspaceProjectWizard.getValidationMsg() );
-        assertEquals( "", newLiferayWorkspaceProjectWizard.getWorkspaceName().getText() );
+        assertEquals( PLEASE_ENTER_THE_WORKSPACE_NAME, newLiferayWorkspaceProjectWizard.getValidationMsg() );
+        assertEquals( StringPool.BLANK, newLiferayWorkspaceProjectWizard.getWorkspaceName().getText() );
 
         checkBuildTypes();
 
@@ -51,8 +65,8 @@ public class ValidationLiferayWorkspaceWizardTests extends LiferayWorkspaceWizar
         newLiferayWorkspaceProjectWizard.getUseDefaultLocation().select();
 
         newLiferayWorkspaceProjectWizard.getDownloadLiferayBundle().select();
-        assertEquals( "", newLiferayWorkspaceProjectWizard.getServerName().getText() );
-        assertEquals( "", newLiferayWorkspaceProjectWizard.getBundleUrl().getText() );
+        assertEquals( StringPool.BLANK, newLiferayWorkspaceProjectWizard.getServerName().getText() );
+        assertEquals( StringPool.BLANK, newLiferayWorkspaceProjectWizard.getBundleUrl().getText() );
         newLiferayWorkspaceProjectWizard.getDownloadLiferayBundle().deselect();
 
         newLiferayWorkspaceProjectWizard.cancel();
@@ -65,23 +79,25 @@ public class ValidationLiferayWorkspaceWizardTests extends LiferayWorkspaceWizar
 
         newLiferayWorkspaceProjectWizard.getWorkspaceName().setText( ".." );
 
-        assertEquals( " '..'" + TEXT_INVALID_NAME_ON_PLATFORM, newLiferayWorkspaceProjectWizard.getValidationMsg() );
+        assertEquals( " '..'" + IS_AN_INVALID_NAME_ON_PLATFORM, newLiferayWorkspaceProjectWizard.getValidationMsg() );
 
         newLiferayWorkspaceProjectWizard.getWorkspaceName().setText( "##" );
 
-        assertEquals( TEXT_INVALID_NAME_PROJECT, newLiferayWorkspaceProjectWizard.getValidationMsg() );
+        assertEquals( THE_NAME_IS_INVALID_FOR_A_PROJECT, newLiferayWorkspaceProjectWizard.getValidationMsg() );
 
         newLiferayWorkspaceProjectWizard.getWorkspaceName().setText( "*" );
 
-        assertEquals( " The name is invalid for a project.", newLiferayWorkspaceProjectWizard.getValidationMsg() );
+        assertEquals(
+            " *" + IS_AN_INVALID_CHARACTER_IN_RESOURCE_NAME + "'*'.",
+            newLiferayWorkspaceProjectWizard.getValidationMsg() );
 
-        newLiferayWorkspaceProjectWizard.getWorkspaceName().setText( TEXT_BLANK );
+        newLiferayWorkspaceProjectWizard.getWorkspaceName().setText( StringPool.BLANK );
 
-        assertEquals( TEXT_WORKSPACE_NAME_COULD_NOT_EMPTY, newLiferayWorkspaceProjectWizard.getValidationMsg() );
+        assertEquals( lIFERAY_WORKSPACE_NAME_COULD_NOT_EMPTY, newLiferayWorkspaceProjectWizard.getValidationMsg() );
 
         newLiferayWorkspaceProjectWizard.getWorkspaceName().setText( projectName );
 
-        assertEquals( TEXT_CREATE_LIFERAY_WORKSPACE, newLiferayWorkspaceProjectWizard.getValidationMsg() );
+        assertEquals( CREATE_A_NEW_LIFERAY_WORKSPACE, newLiferayWorkspaceProjectWizard.getValidationMsg() );
 
         newLiferayWorkspaceProjectWizard.cancel();
     }
@@ -111,6 +127,12 @@ public class ValidationLiferayWorkspaceWizardTests extends LiferayWorkspaceWizar
             {
             }
         }
+    }
+
+    @Before
+    public void importModuleProject()
+    {
+        Assume.assumeTrue( runTest() || runAllTests() );
     }
 
 }

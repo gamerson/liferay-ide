@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.ToolbarButtonWithTooltip;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class NewModuleFragmentWizardSecondPageWizard extends Wizard implements WizardUI
+public class NewModuleFragmentWizardSecondPageWizard extends Wizard 
 {
 
     private ToolbarButtonWithTooltip addOverridFilesBtn;
@@ -35,7 +34,7 @@ public class NewModuleFragmentWizardSecondPageWizard extends Wizard implements W
         super( bot );
 
         browseOSGiBundleBtn = new ToolbarButtonWithTooltip( bot, BROWSE );
-        addOverridFilesBtn = new ToolbarButtonWithTooltip( bot, ADD_FILES_TO_OVERRIDE );
+        addOverridFilesBtn = new ToolbarButtonWithTooltip( bot, ADD_FILES_FROM_OSGI_TO_OVERRIDE );
     }
 
     public ToolbarButtonWithTooltip getAddOverridFilesBtn()

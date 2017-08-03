@@ -15,17 +15,16 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.ImportLiferayWorkspaceProjectUI;
 import com.liferay.ide.swtbot.ui.page.CheckBox;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
 
+import org.eclipse.swtbot.swt.finder.SWTBot;
+
 /**
  * @author Terry Jia
  */
-public class ImportLiferayWorkspaceProjectWizard extends Wizard implements ImportLiferayWorkspaceProjectUI
+public class ImportLiferayWorkspaceProjectWizard extends Wizard
 {
 
     private CheckBox addProjectToWorkingSet;
@@ -35,16 +34,16 @@ public class ImportLiferayWorkspaceProjectWizard extends Wizard implements Impor
     private Text serverName;
     private Text workspaceLocation;
 
-    public ImportLiferayWorkspaceProjectWizard( SWTBot bot, String title, int validationMsgIndex )
+    public ImportLiferayWorkspaceProjectWizard( SWTBot bot )
     {
+        super( bot, IMPORT_LIFERAY_WORKSPACE, 2 );
 
-        super( bot, title, validationMsgIndex );
-        buildType = new Text( bot, LABEL_BUILD_TYPE );
-        workspaceLocation = new Text( bot, TEXT_WORKSPACE_LOCATION );
-        downloadLiferaybundle = new CheckBox( bot, CHECKBOX_DOWNLOAD_LIFERAY_BUNDLE );
-        serverName = new Text( bot, TEXT_SERVER_NAME );
-        bundleUrl = new Text( bot, TEXT_BUNDLE_URL );
-        addProjectToWorkingSet = new CheckBox( bot, CHECKBOX_ADD_PROJECT_TO_WORKING_SET );
+        buildType = new Text( bot, BUILD_TYPE );
+        workspaceLocation = new Text( bot, WORKSPACE_LOCATION );
+        downloadLiferaybundle = new CheckBox( bot, DOWNLOAD_LIFERAY_BUNDLE );
+        serverName = new Text( bot, SERVER_NAME );
+        bundleUrl = new Text( bot, BUNDLE_URL );
+        addProjectToWorkingSet = new CheckBox( bot, ADD_PROJECT_TO_WORKING_SET );
     }
 
     public CheckBox getAddProjectToWorkingSet()

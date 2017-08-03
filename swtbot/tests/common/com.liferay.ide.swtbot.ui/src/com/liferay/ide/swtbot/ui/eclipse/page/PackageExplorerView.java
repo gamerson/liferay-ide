@@ -15,17 +15,16 @@
 
 package com.liferay.ide.swtbot.ui.eclipse.page;
 
-import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
-
-import com.liferay.ide.swtbot.ui.UI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Tree;
 import com.liferay.ide.swtbot.ui.page.View;
 
+import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+
 /**
  * @author Terry Jia
  */
-public class PackageExplorerView extends View implements UI
+public class PackageExplorerView extends View
 {
 
     private Tree projects;
@@ -34,11 +33,11 @@ public class PackageExplorerView extends View implements UI
 
     public PackageExplorerView( SWTWorkbenchBot bot )
     {
-        super( bot, LABEL_PACKAGE_EXPLORER );
+        super( bot, PACKAGE_EXPLORER );
 
         projects = new Tree( bot );
         deleteResourcesDialog = new DeleteResourcesDialog( bot );
-        continueDeleteResourcesDialog = new Dialog( bot, TITLE_DELETE_RESOURCES, CANCEL, CONTINUE );
+        continueDeleteResourcesDialog = new Dialog( bot, DELETE_RESOURCES, CANCEL, CONTINUE );
     }
 
     public void deleteProjectExcludeNames( String[] names, boolean deleteFromDisk )

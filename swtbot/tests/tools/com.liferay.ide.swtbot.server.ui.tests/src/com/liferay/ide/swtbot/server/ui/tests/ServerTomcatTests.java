@@ -86,7 +86,7 @@ public class ServerTomcatTests extends ServerTestsBase
     @After
     public void closeWizard()
     {
-        ide.closeShell( TITLE_NEW_SERVER );
+        ide.closeShell( NEW_SERVER );
     }
 
     @Before

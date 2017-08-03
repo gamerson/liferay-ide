@@ -108,7 +108,7 @@ public class NewServiceBuilderWizardPage extends LiferayDataModelWizardPage
         }
 
         packageButton = new Button( group, SWT.PUSH );
-        packageButton.setText( J2EEUIMessages.BROWSE_BUTTON_LABEL );
+        packageButton.setText( J2EEUIMessages.BROWSE_LABEL );
         packageButton.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
         packageButton.addSelectionListener( new SelectionListener()
         {

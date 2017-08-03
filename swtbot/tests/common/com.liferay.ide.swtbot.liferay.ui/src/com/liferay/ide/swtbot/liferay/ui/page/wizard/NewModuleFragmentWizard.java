@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.Text;
 import com.liferay.ide.swtbot.ui.page.Wizard;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class NewModuleFragmentWizard extends Wizard implements WizardUI
+public class NewModuleFragmentWizard extends Wizard 
 {
 
     private Text projectName;
@@ -33,7 +32,7 @@ public class NewModuleFragmentWizard extends Wizard implements WizardUI
     {
         super( bot );
 
-        projectName = new Text( bot, LABEL_PROJECT_NAME );
+        projectName = new Text( bot, PROJECT_NAME );
     }
 
     public Text getProjectName()

@@ -82,7 +82,7 @@ public class NewJSFPortletClassWizardPage extends NewPortletClassWizardPage
         else
         {
             jsfPortletClassButton = new Button( parent, SWT.PUSH );
-            jsfPortletClassButton.setText( J2EEUIMessages.BROWSE_BUTTON_LABEL );
+            jsfPortletClassButton.setText( J2EEUIMessages.BROWSE_LABEL );
             jsfPortletClassButton.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
             jsfPortletClassButton.addSelectionListener( new SelectionListener()
             {

@@ -6,39 +6,36 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.liferay.ide.swtbot.liferay.ui.ImportLiferayWorkspaceProjectUI;
-import com.liferay.ide.swtbot.liferay.ui.SWTBotBase;
+import com.liferay.ide.swtbot.liferay.ui.SwtbotBase;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.ImportLiferayWorkspaceProjectWizard;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.SelectTypeWizard;
 import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesContinueDialog;
 import com.liferay.ide.swtbot.ui.page.CTabItem;
 import com.liferay.ide.swtbot.ui.page.Editor;
 import com.liferay.ide.swtbot.ui.page.Tree;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import org.junit.After;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Sunny Shi
  */
-public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements ImportLiferayWorkspaceProjectUI
+public class ImportLiferayWorkspaceProjectTests extends SwtbotBase
 {
 
     private String liferayWorkspaceRootPath = System.getProperty( "user.dir" );
 
     Tree projectTree = ide.showPackageExporerView().getProjectTree();
 
-    ImportLiferayWorkspaceProjectWizard importLiferayWorkspaceProject = new ImportLiferayWorkspaceProjectWizard(
-        bot, TITLE_IMPORT_LIFERAY_WORKSPACE, INDEX_PLEASE_SELECT_THE_WORKSPACE_LOCATION );
+    ImportLiferayWorkspaceProjectWizard importLiferayWorkspaceProject = new ImportLiferayWorkspaceProjectWizard( bot );
 
     ImportLiferayWorkspaceProjectWizard importLiferayWorkspaceProjectWithServerLabel =
-        new ImportLiferayWorkspaceProjectWizard(
-            bot, TITLE_IMPORT_LIFERAY_WORKSPACE, INDEX_PLEASE_SELECT_THE_WORKSPACE_LOCATION_WITH_SERVERNAME );
+        new ImportLiferayWorkspaceProjectWizard( bot );
 
-    SelectTypeWizard selectImportPage =
-        new SelectTypeWizard( bot, INDEX_SELECT_IMPORT_LIFERAY_WORKSPACE_PROJECT_VALIDATION_MESSAGE );
+    SelectTypeWizard selectImportPage = new SelectTypeWizard( bot );
 
     DeleteResourcesContinueDialog continueDeleteResources =
         new DeleteResourcesContinueDialog( bot, "Delete Resources" );
@@ -57,7 +54,7 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
     @After
     public void clean()
     {
-        ide.closeShell( TITLE_IMPORT_LIFERAY_WORKSPACE );
+        ide.closeShell( IMPORT_LIFERAY_WORKSPACE );
 
         if( addedProjects() )
         {
@@ -67,11 +64,10 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
 
     public void importLiferayWorkspaceProject()
     {
-        ide.getFileMenu().clickMenu( LABEL_IMPORT );
+        ide.getFileMenu().clickMenu( IMPORT );
 
-        selectImportPage.selectItem( "liferay", "Liferay", LABEL_IMPORT_LIFERAY_WORKSPACE_PROJECT );
-        assertEquals(
-            TEXT_SELECT_IMPORT_LIFERAY_WORKSPACE_PROJECT_VALIDATION_MESSAGE, selectImportPage.getValidationMsg() );
+        selectImportPage.selectItem( "liferay", "Liferay", LIFERAY_WORKSPACE_PROJECT );
+        assertEquals( IMPORT_AN_EXISTING_LIFERAY_WORKSPACE_PROJECT, selectImportPage.getValidationMsg() );
         selectImportPage.next();
     }
 
@@ -84,9 +80,9 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
         String liferayWorkspaceName = "testGradleWorkspace";
 
         sleep();
-        assertEquals( TEXT_GRADLE_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getBuildTypeText().getText() );
+        assertEquals( GRADLE_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getBuildTypeText().getText() );
         sleep();
-        assertEquals( "", importLiferayWorkspaceProject.getServerName().getText() );
+        assertEquals( StringPool.BLANK, importLiferayWorkspaceProject.getServerName().getText() );
         importLiferayWorkspaceProject.finish();
         sleep( 8000 );
 
@@ -112,16 +108,15 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
             liferayWorkspaceRootPath + "/projects/testGradleWorkspace" );
         sleep();
         assertEquals(
-            TEXT_SELECT_LOCATION_OF_LIFERAY_WORKSPACE_PARENT_DIRECTORY,
-            importLiferayWorkspaceProject.getValidationMsg() );
+            SELECT_LOCATION_OF_LIFERAY_WORKSPACE_PARENT_DIRECTORY, importLiferayWorkspaceProject.getValidationMsg() );
 
-        assertEquals( TEXT_GRADLE_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getBuildTypeText().getText() );
+        assertEquals( GRADLE_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getBuildTypeText().getText() );
 
         importLiferayWorkspaceProject.getDownloadLiferaybundle().select();
         sleep();
 
-        assertEquals( "", importLiferayWorkspaceProject.getServerName().getText() );
-        assertEquals( "", importLiferayWorkspaceProject.getBundleUrl().getText() );
+        assertEquals( StringPool.BLANK, importLiferayWorkspaceProject.getServerName().getText() );
+        assertEquals( StringPool.BLANK, importLiferayWorkspaceProject.getBundleUrl().getText() );
         sleep();
 
         importLiferayWorkspaceProject.getServerName().setText( "test-lrws" );
@@ -175,10 +170,9 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
         importLiferayWorkspaceProject.setWorkspaceLocation( liferayWorkspaceRootPath + "/projects/testMavenWorkspace" );
         sleep();
         assertEquals(
-            TEXT_SELECT_LOCATION_OF_LIFERAY_WORKSPACE_PARENT_DIRECTORY,
-            importLiferayWorkspaceProject.getValidationMsg() );
+            SELECT_LOCATION_OF_LIFERAY_WORKSPACE_PARENT_DIRECTORY, importLiferayWorkspaceProject.getValidationMsg() );
 
-        assertEquals( TEXT_MAVEN_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getBuildTypeText().getText() );
+        assertEquals( MAVEN_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getBuildTypeText().getText() );
         assertFalse( importLiferayWorkspaceProject.getDownloadLiferaybundle().isChecked() );
 
         importLiferayWorkspaceProject.finish();
@@ -214,13 +208,14 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
         sleep();
 
         importLiferayWorkspaceProject();
+
         importLiferayWorkspaceProject.setWorkspaceLocation(
             liferayWorkspaceRootPath + "/projects/testGradleWorkspace" );
 
-        sleep();
         assertEquals(
-            TEXT_A_LIFERAY_WORKSPACE_PROJECT_ALREADY_EXISTS_IN_THIS_ECLIPSE_INSTANCE,
+            A_LIFERAY_WORKSPACE_PROJECT_ALREADY_EXISTS,
             importLiferayWorkspaceProjectWithServerLabel.getValidationMsg() );
+
         importLiferayWorkspaceProject.cancel();
 
     }
@@ -228,10 +223,10 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
     @Test
     public void initialStateAndValidationProjectName()
     {
-        assertEquals( TEXT_PLEASE_SELECT_THE_WORKSPACE_LOCATION, importLiferayWorkspaceProject.getValidationMsg() );
+        assertEquals( PLEASE_SELECT_THE_WORKSPACE_LOCATION, importLiferayWorkspaceProject.getValidationMsg() );
 
-        assertEquals( TEXT_BLANK, importLiferayWorkspaceProject.getWorkspaceLocation().getText() );
-        assertEquals( TEXT_BLANK, importLiferayWorkspaceProject.getBuildTypeText().getText() );
+        assertEquals( StringPool.BLANK, importLiferayWorkspaceProject.getWorkspaceLocation().getText() );
+        assertEquals( StringPool.BLANK, importLiferayWorkspaceProject.getBuildTypeText().getText() );
         assertFalse( importLiferayWorkspaceProject.getAddProjectToWorkingSet().isChecked() );
 
         assertTrue( importLiferayWorkspaceProject.backBtn().isEnabled() );
@@ -240,35 +235,34 @@ public class ImportLiferayWorkspaceProjectTests extends SWTBotBase implements Im
         assertTrue( importLiferayWorkspaceProject.cancelBtn().isEnabled() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( ".." );
-        sleep();
+
         assertEquals(
-            " " + "\"" + ".." + "\"" + TEXT_IS_NOT_AN_ABSOLUTE_PATH,
+            " " + StringPool.DOUBLE_QUOTE + ".." + StringPool.DOUBLE_QUOTE + IS_NOT_AN_ABSOLUTE_PATH,
             importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( "1.*" );
-        sleep();
+
         assertEquals(
-            " " + "\"" + "1.*" + "\"" + TEXT_IS_NOT_A_VALID_PATH,
+            " " + StringPool.DOUBLE_QUOTE + "1.*" + StringPool.DOUBLE_QUOTE + IS_NOT_A_VALID_PATH,
             importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( " " );
         sleep();
-        assertEquals( TEXT_WORKSPACE_LOCATION_MUST_BE_SPECIFIED, importLiferayWorkspaceProject.getValidationMsg() );
+        assertEquals( WORKSPACE_LOCATION_MUST_BE_SPECIFIED, importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( "C://non-exist-dir" );
-        sleep();
-        assertEquals( TEXT_DIRECTORY_DOESNT_EXIST, importLiferayWorkspaceProject.getValidationMsg() );
+
+        assertEquals( DIRECTORY_DOESNT_EXIST, importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( "C:/Users" );
-        sleep();
-        assertEquals( TEXT_INVALID_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getValidationMsg() );
+
+        assertEquals( INVALID_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation(
             liferayWorkspaceRootPath + "/projects/testGradleWorkspace" );
-        sleep();
 
         assertEquals(
-            TEXT_THE_SERVER_OR_RUNTIME_NAME_IS_ALREADY_IN_USE,
+            THE_SERVER_OR_RUNTIME_NAME_IS_ALREADY_IN_USE,
             importLiferayWorkspaceProjectWithServerLabel.getValidationMsg() );
 
         importLiferayWorkspaceProject.cancel();;

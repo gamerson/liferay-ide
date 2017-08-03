@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.DialogUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Text;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class FragmentHostOSGIBundleDialog extends Dialog implements DialogUI
+public class FragmentHostOSGIBundleDialog extends Dialog
 {
 
     private Text osgiBundle;
@@ -33,7 +32,7 @@ public class FragmentHostOSGIBundleDialog extends Dialog implements DialogUI
     {
         super( bot );
 
-        osgiBundle = new Text( bot, LABLE_SELECT_OSGI_BUNDLE );
+        osgiBundle = new Text( bot, SELECT_HOST_OSGI_BUNDLE );
     }
 
     public Text getOsgiBundle()

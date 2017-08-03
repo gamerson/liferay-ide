@@ -70,12 +70,12 @@ public class TomcatDeployTests extends ServerTestsBase
     {
         ide.getCreateLiferayProjectToolbar().getNewLiferayModuleProject().click();
 
-        newModuleProjectWizard.createModuleProject( "test" );
+        newModuleProjectWizard.getProjectName().setText( "test" );
         newModuleProjectWizard.finish();
 
         ide.getCreateLiferayProjectToolbar().getNewLiferayModuleProject().click();
 
-        newModuleProjectWizard.createModuleProject( "test2" );
+        newModuleProjectWizard.getProjectName().setText( "test2" );
         newModuleProjectWizard.finish();
 
         serversView.getServers().getTreeItem( serverStartedLabel ).contextMenu( "Add and Remove..." );

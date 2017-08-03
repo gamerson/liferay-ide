@@ -19,17 +19,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.liferay.ide.swtbot.liferay.ui.NewLiferayJSFProjectWizardUI;
 
 /**
  * @author Ying Xu
  */
 public class NewLiferayJSFProjectWizardTests extends BaseNewLiferayJSFProjectWizard
-    implements NewLiferayJSFProjectWizardUI
 {
 
     @Test
@@ -37,7 +36,7 @@ public class NewLiferayJSFProjectWizardTests extends BaseNewLiferayJSFProjectWiz
     {
         String projectName = "testICEFacesProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_GRADLE, MENU_ICEFACES, TEXT_BLANK );
+        newLiferayJSFProject( projectName, GRADLE, ICEFACES, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -57,7 +56,7 @@ public class NewLiferayJSFProjectWizardTests extends BaseNewLiferayJSFProjectWiz
     {
         String projectName = "testJSFStandardProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_GRADLE, MENU_JSF_STANDARD, TEXT_BLANK );
+        newLiferayJSFProject( projectName, GRADLE, JSF_STANDARD, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -77,7 +76,7 @@ public class NewLiferayJSFProjectWizardTests extends BaseNewLiferayJSFProjectWiz
     {
         String projectName = "testLiferayFacesAlloyProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_GRADLE, MENU_LIFERAY_FACES_ALLOY, TEXT_BLANK );
+        newLiferayJSFProject( projectName, GRADLE, LIFERAY_FACES_ALLOY, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -97,7 +96,7 @@ public class NewLiferayJSFProjectWizardTests extends BaseNewLiferayJSFProjectWiz
     {
         String projectName = "testPrimeFacesProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_GRADLE, MENU_PRIMEFACES, TEXT_BLANK );
+        newLiferayJSFProject( projectName, GRADLE, PRIMEFACES, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -117,7 +116,7 @@ public class NewLiferayJSFProjectWizardTests extends BaseNewLiferayJSFProjectWiz
     {
         String projectName = "testRichFacesProject";
 
-        newLiferayJSFProject( projectName, TEXT_BUILD_TYPE_GRADLE, MENU_RICHFFACES, TEXT_BLANK );
+        newLiferayJSFProject( projectName, GRADLE, RICHFACES, StringPool.BLANK );
 
         String i18nPropertiesFileName = " i18n.properties";
         String facesConfigXmlFileName = "faces-config.xml";
@@ -143,32 +142,32 @@ public class NewLiferayJSFProjectWizardTests extends BaseNewLiferayJSFProjectWiz
     @Test
     public void validateProjectName()
     {
-        assertEquals( TEXT_PLEASE_ENTER_A_PROJECT_NAME, newJSFProject.getValidationMsg() );
+        assertEquals( PLEASE_ENTER_A_PROJECT_NAME, newJSFProject.getValidationMsg() );
         assertFalse( newJSFProject.finishBtn().isEnabled() );
 
         newJSFProject.getProjectName().setText( "." );
         sleep();
-        assertEquals( " '.'" + TEXT_INVALID_NAME_ON_PLATFORM, newJSFProject.getValidationMsg() );
+        assertEquals( " '.'" + IS_AN_INVALID_NAME_ON_PLATFORM, newJSFProject.getValidationMsg() );
         assertFalse( newJSFProject.finishBtn().isEnabled() );
 
         newJSFProject.getProjectName().setText( "/" );
         sleep();
-        assertEquals( " /" + TEXT_INVALID_CHARACTER_IN_RESOURCE_NAME + "'/'.", newJSFProject.getValidationMsg() );
+        assertEquals( " /" + IS_AN_INVALID_CHARACTER_IN_RESOURCE_NAME + "'/'.", newJSFProject.getValidationMsg() );
         assertFalse( newJSFProject.finishBtn().isEnabled() );
 
         newJSFProject.getProjectName().setText( "$" );
         sleep();
-        assertEquals( TEXT_THE_PROJECT_NAME_INVALID, newJSFProject.getValidationMsg() );
+        assertEquals( THE_PROJECT_NAME_IS_INVALID, newJSFProject.getValidationMsg() );
         assertFalse( newJSFProject.finishBtn().isEnabled() );
 
-        newJSFProject.getProjectName().setText( "" );
+        newJSFProject.getProjectName().setText( StringPool.BLANK );
         sleep();
-        assertEquals( TEXT_PROJECT_NAME_MUST_BE_SPECIFIED, newJSFProject.getValidationMsg() );
+        assertEquals( PROJECT_NAME_MUST_BE_SPECIFIED, newJSFProject.getValidationMsg() );
         assertFalse( newJSFProject.finishBtn().isEnabled() );
 
         newJSFProject.getProjectName().setText( "a" );
         sleep();
-        assertEquals( TEXT_CHOOSE_TEMPLATE_FOR_NEW_JSF_PROJECT, newJSFProject.getValidationMsg() );
+        assertEquals( ENTER_A_NAME_AND_CHOOSE_TEMPLATE_FOR_NEW_JSF_PROJECT, newJSFProject.getValidationMsg() );
         assertTrue( newJSFProject.finishBtn().isEnabled() );
 
         newJSFProject.cancel();

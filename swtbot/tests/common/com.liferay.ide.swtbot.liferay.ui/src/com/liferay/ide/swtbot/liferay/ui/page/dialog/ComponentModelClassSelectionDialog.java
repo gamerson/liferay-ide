@@ -15,16 +15,15 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.dialog;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.NewLiferayComponentWizardUI;
 import com.liferay.ide.swtbot.ui.page.Dialog;
 import com.liferay.ide.swtbot.ui.page.Text;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class ComponentModelClassSelectionDialog extends Dialog implements NewLiferayComponentWizardUI
+public class ComponentModelClassSelectionDialog extends Dialog
 {
 
     private Text modelClassSelection;
@@ -33,7 +32,7 @@ public class ComponentModelClassSelectionDialog extends Dialog implements NewLif
     {
         super( bot );
 
-        modelClassSelection = new Text( bot, LABEL_SELECT_MODEL_CLASS );
+        modelClassSelection = new Text( bot, SELECT_MODEL_CLASS );
     }
 
     public Text getModelClassSelection()

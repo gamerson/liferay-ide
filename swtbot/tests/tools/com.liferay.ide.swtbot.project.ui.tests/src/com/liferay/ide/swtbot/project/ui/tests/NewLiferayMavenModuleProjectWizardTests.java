@@ -17,17 +17,18 @@ package com.liferay.ide.swtbot.project.ui.tests;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizard;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizardSecondPageWizard;
 import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesContinueDialog;
 import com.liferay.ide.swtbot.ui.eclipse.page.DeleteResourcesDialog;
 import com.liferay.ide.swtbot.ui.page.Tree;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import org.junit.After;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author Sunny Shi
@@ -48,8 +49,7 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
 
     Tree projectTree = ide.getPackageExporerView().getProjectTree();
 
-    NewLiferayModuleProjectWizard createMavenModuleProjectWizard =
-        new NewLiferayModuleProjectWizard( bot, INDEX_NEW_LIFERAY_MODULE_PROJECT_VALIDATION_MESSAGE );
+    NewLiferayModuleProjectWizard createMavenModuleProjectWizard = new NewLiferayModuleProjectWizard( bot );
 
     NewLiferayModuleProjectWizardSecondPageWizard createMavenModuleProjectSecondPageWizard =
         new NewLiferayModuleProjectWizardSecondPageWizard( bot );
@@ -57,12 +57,12 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
     @After
     public void clean()
     {
-        ide.closeShell( LABEL_NEW_LIFERAY_MODULE_PROJECT );
+        ide.closeShell( NEW_LIFERAY_MODULE_PROJECT );
 
-        if( addedProjects() )
-        {
-            ide.getPackageExporerView().deleteProjectExcludeNames( new String[] { getLiferayPluginsSdkName() }, true );
-        }
+        // if( addedProjects() )
+        // {
+        // ide.getPackageExporerView().deleteProjectExcludeNames( new String[] { getLiferayPluginsSdkName() }, true );
+        // }
     }
 
     @BeforeClass
@@ -87,8 +87,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testMvcportletProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_MVC_PORTLET, eclipseWorkspace, true,
-            eclipseWorkspace + "newFolder", TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, true );
+            MAVEN, projectName, MVC_PORTLET, eclipseWorkspace, true, eclipseWorkspace + "newFolder", StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, true );
 
         createMavenModuleProjectSecondPageWizard.waitForPageToClose();
 
@@ -110,8 +110,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testServiceProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_SERVICE, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, "*lifecycleAction", true );
+            MAVEN, projectName, SERVICE, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            "*lifecycleAction", true );
 
         String javaFileName = "TestServiceProject.java";
         String javaContent = "service = LifecycleAction.class";
@@ -127,11 +127,13 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
     @Test
     public void createServiceBuilderModuleProject()
     {
+        // ide.getProjectExplorerView().show();
+
         String projectName = "testServiceBuilderProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_SERVICE_BUILDER, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, SERVICE_BUILDER, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue( projectTree.expandNode( projectName ).isVisible() );
         assertTrue( projectTree.expandNode( projectName, projectName + "-api" ).isVisible() );
@@ -143,16 +145,17 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
 
         openEditorAndCheck( pomContent, projectName, projectName, pomXmlFileName );
 
-        projectTree.getTreeItem( projectName + "-service" ).doAction( "Liferay", "liferay:build-service" );
+        projectTree.expandNode( projectName, projectName + "-service" ).doAction( "Liferay", "build-service" );
         sleep( 10000 );
 
         assertTrue(
             projectTree.expandNode(
-                projectName + "-api", "src/main/java", "testServiceBuilderProject.service" ).isVisible() );
+                projectName, projectName + "-api", "src/main/java", "testServiceBuilderProject.service" ).isVisible() );
 
         assertTrue(
             projectTree.expandNode(
-                projectName + "-service", "src/main/java", "testServiceBuilderProject.model.impl" ).isVisible() );
+                projectName, projectName + "-service", "src/main/java",
+                "testServiceBuilderProject.model.impl" ).isVisible() );
 
     }
 
@@ -162,8 +165,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testActivatorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_ACTIVATOR, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, ACTIVATOR, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestActivatorProjectActivator.java";
         String javaContent = "implements BundleActivator";
@@ -181,8 +184,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testApiProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_API, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, API, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         String pomXmlFileName = "pom.xml";
         String pomContent = "<artifactId>testApiProject</artifactId>";
@@ -197,8 +200,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testContentTargetingReportProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_CONTENT_TARGETING_REPORT, eclipseWorkspace, false,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, CONTENT_TARGETING_REPORT, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestContentTargetingReportProjectReport.java";
         String javaContent = "extends BaseJSPReport";
@@ -218,8 +221,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testContentTargetingRuleProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_CONTENT_TARGETING_RULE, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, CONTENT_TARGETING_RULE, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestContentTargetingRuleProjectRule.java";
         String javaContent = "osgi.web.symbolicname=testContentTargetingRuleProject";
@@ -239,8 +242,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testContentTargetingTrackingActionProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_CONTENT_TARGETING_RULE, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, CONTENT_TARGETING_RULE, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String pomXmlFileName = "pom.xml";
         String pomContent = "<groupId>testContentTargetingTrackingActionProject</groupId>";
@@ -255,8 +258,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testControlMenuEntryProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_CONTROL_MENU_ENTRY, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, CONTROL_MENU_ENTRY, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestControlMenuEntryProjectProductNavigationControlMenuEntry.java";
         String javaContent = "extends BaseProductNavigationControlMenuEntry";
@@ -276,8 +279,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testFormFieldProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_FORM_FIELD, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, FORM_FIELD, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName1 = "TestFormFieldProjectDDMFormFieldRenderer.java";
         String javaContent1 = "extends BaseDDMFormFieldRenderer";
@@ -308,8 +311,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testPanelAppProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_PANEL_APP, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, PANEL_APP, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         assertTrue( projectTree.getTreeItem( projectName ).isVisible() );
         assertTrue(
@@ -333,8 +336,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testPortletProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_PORTLET, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, PORTLET, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         String javaFileName = "TestPortletProjectPortlet.java";
         String javaContent = "service = Portlet.class";
@@ -353,8 +356,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testPortletConfigurationIconProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_PORTLET_CONFIGURATION_ICON, eclipseWorkspace, false,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, PORTLET_CONFIGURATION_ICON, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestPortletConfigurationIconProjectPortletConfigurationIcon.java";
         String javaContent = "extends BasePortletConfigurationIcon";
@@ -373,8 +376,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testPortletProviderProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_PORTLET_PROVIDER, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, PORTLET_PROVIDER, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName1 = "TestPortletProviderProjectAddPortletProvider.java";
         String javaContent1 = "service = AddPortletProvider.class";
@@ -399,8 +402,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testPortletToolBarContributorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_PORTLET_TOOLBAR_CONTRIBUTOR, eclipseWorkspace, false,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, PORTLET_TOOLBAR_CONTRIBUTOR, eclipseWorkspace, false, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestPortletToolBarContributorProjectPortletToolbarContributor.java";
         String javaContent = "service = PortletToolbarContributor.class";
@@ -421,8 +424,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testRestProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_REST, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, REST, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         String javaFileName = "TestRestProjectApplication.java";
         String javaContent = "TestRestProjectApplication extends Application";
@@ -442,8 +445,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testServiceWrapperProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_SERVICE_WRAPPER, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, "*bookmarksEntryServiceWrapper", true );
+            MAVEN, projectName, SERVICE_WRAPPER_UPPER, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, "*bookmarksEntryServiceWrapper", true );
 
         String javaFileName = "TestServiceWrapperProject.java";
         String javaContent = "extends BookmarksEntryServiceWrapper";
@@ -464,8 +467,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testSimulationPanelEntryProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_SIMULATION_PANEL_ENTRY, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, SIMULATION_PANEL_ENTRY, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestSimulationPanelEntryProjectSimulationPanelApp.java";
         String javaContent = "SimulationPanelCategory.SIMULATION";
@@ -488,15 +491,15 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testTemplateContextContributorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_TEMPLATE_CONTEXT_CONTRIBUTOR, eclipseWorkspace, false,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, TEMPLATE_CONTEXT_CONCONTRIBUTOR, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
         String javaFileName = "TestTemplateContextContributorProjectTemplateContextContributor.java";
         String javaContent = "implements TemplateContextContributor";
 
         openEditorAndCheck(
             javaContent, projectName, projectName, "src/main/java",
-            "testTemplateContextContributorProject.theme.contributor", javaFileName );
+            "testTemplateContextContributorProject.context.contributor", javaFileName );
 
         String pomXmlFileName = "pom.xml";
         String pomContent = "<artifactId>testTemplateContextContributorProject</artifactId>";
@@ -510,8 +513,8 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testThemeProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_THEME, eclipseWorkspace, false, TEXT_BLANK, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, THEME, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, false );
 
         String scssFileName = "_custom.scss";
         assertTrue( projectTree.expandNode( projectName, "src", "main", "webapp", "css", scssFileName ).isVisible() );
@@ -541,16 +544,9 @@ public class NewLiferayMavenModuleProjectWizardTests extends BaseNewLiferayModul
         String projectName = "testThemeContributorProject";
 
         newLiferayModuleProject(
-            TEXT_BUILD_TYPE_MAVEN, projectName, MENU_MODULE_THEME_CONTRIBUTOR, eclipseWorkspace, false, TEXT_BLANK,
-            TEXT_BLANK, TEXT_BLANK, TEXT_BLANK, false );
+            MAVEN, projectName, THEME_CONTRIBUTOR, eclipseWorkspace, false, StringPool.BLANK, StringPool.BLANK,
+            StringPool.BLANK, StringPool.BLANK, false );
 
-        assertTrue(
-            projectTree.expandNode(
-                projectName, "src/main/resources", "META-INF", "resources", "css",
-                projectName + "_rtl.css" ).isVisible() );
-        assertTrue(
-            projectTree.expandNode(
-                projectName, "src/main/resources", "META-INF", "resources", "css", projectName + ".css" ).isVisible() );
         assertTrue(
             projectTree.expandNode(
                 projectName, "src/main/resources", "META-INF", "resources", "css",

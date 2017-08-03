@@ -15,7 +15,7 @@
 
 package com.liferay.ide.swtbot.server.ui.tests;
 
-import com.liferay.ide.swtbot.liferay.ui.SWTBotBase;
+import com.liferay.ide.swtbot.liferay.ui.SwtbotBase;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferay7RuntimeWizard;
 import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayModuleProjectWizard;
 import com.liferay.ide.swtbot.ui.eclipse.page.AddAndRemoveDialog;
@@ -29,7 +29,7 @@ import com.liferay.ide.swtbot.ui.page.Browser;
 /**
  * @author Terry Jia
  */
-public class ServerTestsBase extends SWTBotBase
+public class ServerTestsBase extends SwtbotBase
 {
 
     protected static AddAndRemoveDialog addAndRemoveDialog = new AddAndRemoveDialog( bot );

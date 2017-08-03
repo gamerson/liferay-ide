@@ -33,7 +33,7 @@ public class SelectionDialog extends Dialog
 
     public SelectionDialog( SWTBot bot, String title )
     {
-        this( bot, title, INDEX_DEFAULT_START );
+        this( bot, title, 0 );
     }
 
     public SelectionDialog( SWTBot bot, String title, int index )

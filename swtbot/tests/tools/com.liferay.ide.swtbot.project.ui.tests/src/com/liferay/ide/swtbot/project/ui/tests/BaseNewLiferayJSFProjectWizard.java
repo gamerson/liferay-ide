@@ -18,22 +18,23 @@ package com.liferay.ide.swtbot.project.ui.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayJsfProjectWizard;
+import com.liferay.ide.swtbot.ui.page.Tree;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
 import org.junit.Assume;
 import org.junit.Before;
-
-import com.liferay.ide.swtbot.liferay.ui.NewLiferayJSFProjectWizardUI;
-import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayJSFProjectWizard;
-import com.liferay.ide.swtbot.ui.page.Tree;
 
 /**
  * @author Ying Xu
  */
 public class BaseNewLiferayJSFProjectWizard extends BaseNewLiferayModuleProjectWizard
-    implements NewLiferayJSFProjectWizardUI
 {
 
-    NewLiferayJSFProjectWizard newJSFProject =
-        new NewLiferayJSFProjectWizard( bot, INDEX_NEW_JSF_PROJECT_VALIDATION_MESSAGE );
+    String expectedJSFProjectcomponentSuiteItems[] =
+        { LIFERAY_FACES_ALLOY, ICEFACES, JSF_STANDARD, PRIMEFACES, RICHFACES };
+
+    NewLiferayJsfProjectWizard newJSFProject = new NewLiferayJsfProjectWizard( bot );
 
     Tree projectTree = ide.getPackageExporerView().getProjectTree();
 
@@ -49,9 +50,9 @@ public class BaseNewLiferayJSFProjectWizard extends BaseNewLiferayModuleProjectW
     public void newLiferayJSFProject(
         String projectName, String buildFramework, String componentSuite, String defaultLocation )
     {
-        assertEquals( TEXT_PLEASE_ENTER_A_PROJECT_NAME, newJSFProject.getValidationMsg() );
-        assertEquals( "", newJSFProject.getProjectName().getText() );
-        assertEquals( MENU_JSF_STANDARD, newJSFProject.getComponentSuite().getText() );
+        assertEquals( PLEASE_ENTER_A_PROJECT_NAME, newJSFProject.getValidationMsg() );
+        assertEquals( StringPool.BLANK, newJSFProject.getProjectName().getText() );
+        assertEquals( JSF_STANDARD, newJSFProject.getComponentSuite().getText() );
         assertTrue( newJSFProject.getUseDefaultLocation().isChecked() );
 
         newJSFProject.createJSFProject( projectName, buildFramework, componentSuite );

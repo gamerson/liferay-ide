@@ -13,33 +13,24 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.swtbot.liferay.ui.page.dialog;
+package com.liferay.ide.swtbot.gradle.ui.tests;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.DialogUI;
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
-import com.liferay.ide.swtbot.ui.page.Dialog;
-import com.liferay.ide.swtbot.ui.page.Text;
+import com.liferay.ide.swtbot.liferay.ui.page.wizard.NewLiferayWorkspaceWizard;
+import com.liferay.ide.swtbot.project.ui.tests.BaseNewLiferayModuleProjectWizard;
+import com.liferay.ide.swtbot.ui.page.Tree;
 
 /**
- * @author Vicky Wang
+ * @author Terry Jia
  */
-public class AddJSPFilePathDialog extends Dialog implements DialogUI, WizardUI
+public class LiferayWorkspaceWizardBase extends BaseNewLiferayModuleProjectWizard
 {
 
-    private Text jspFilePath;
+    protected String projectName = "workspace-project";
 
-    public AddJSPFilePathDialog( SWTBot bot )
-    {
-        super( bot );
+    protected String serverName = "Liferay 7.0 CE Server";
 
-        jspFilePath = new Text( bot, LABLE_JSP_FILE_PATH );
-    }
+    protected NewLiferayWorkspaceWizard newLiferayWorkspaceProjectWizard = new NewLiferayWorkspaceWizard( bot );
 
-    public Text getJspFilePath()
-    {
-        return jspFilePath;
-    }
+    protected Tree projectTree = ide.getPackageExporerView().getProjectTree();
 
 }

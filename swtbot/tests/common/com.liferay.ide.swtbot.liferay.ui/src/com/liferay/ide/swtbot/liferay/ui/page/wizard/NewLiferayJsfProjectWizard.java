@@ -15,41 +15,25 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.NewLiferayJSFProjectWizardUI;
 import com.liferay.ide.swtbot.ui.page.ComboBox;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Ying Xu
  */
-public class NewLiferayJSFProjectWizard extends NewProjectWizard implements NewLiferayJSFProjectWizardUI
+public class NewLiferayJsfProjectWizard extends NewProjectWizard
 {
 
     private ComboBox buildFramework;
     private ComboBox componentSuite;
 
-    public NewLiferayJSFProjectWizard( SWTBot bot )
+    public NewLiferayJsfProjectWizard( SWTBot bot )
     {
-        this( bot, TEXT_BLANK );
-    }
+        super( bot, 2 );
 
-    public NewLiferayJSFProjectWizard( SWTBot bot, int validationMsgIndex )
-    {
-        this( bot, TEXT_BLANK, validationMsgIndex );
-    }
-
-    public NewLiferayJSFProjectWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_NEW_JSF_PROJECT_VALIDATION_MESSAGE );
-    }
-
-    public NewLiferayJSFProjectWizard( SWTBot bot, String title, int validationMsgIndex )
-    {
-        super( bot, title, validationMsgIndex );
-
-        buildFramework = new ComboBox( bot, LABEL_BUILD_FRAMEWORK );
-        componentSuite = new ComboBox( bot, LABEL_COMPONENT_SUITE );
+        buildFramework = new ComboBox( bot, BUILD_FRAMEWORK );
+        componentSuite = new ComboBox( bot, COMPONENT_SUITE );
     }
 
     public void createJSFProject( String projectNameValue, String buildFrameworkspace )

@@ -15,18 +15,18 @@
 
 package com.liferay.ide.swtbot.liferay.ui.page.wizard;
 
-import org.eclipse.swtbot.swt.finder.SWTBot;
-
-import com.liferay.ide.swtbot.liferay.ui.WizardUI;
 import com.liferay.ide.swtbot.ui.page.CheckBox;
 import com.liferay.ide.swtbot.ui.page.ComboBox;
 import com.liferay.ide.swtbot.ui.page.Text;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
+import org.eclipse.swtbot.swt.finder.SWTBot;
 
 /**
  * @author Terry Jia
  * @author Ashley Yuan
  */
-public class NewSdkProjectWizard extends NewProjectWizard implements WizardUI
+public class NewSdkProjectWizard extends NewProjectWizard
 {
 
     private ComboBox buildTypes;
@@ -37,38 +37,28 @@ public class NewSdkProjectWizard extends NewProjectWizard implements WizardUI
 
     public NewSdkProjectWizard( SWTBot bot )
     {
-        this( bot, INDEX_DEFAULT_VALIDATION_MESSAGE );
-    }
-
-    public NewSdkProjectWizard( SWTBot bot, int index )
-    {
-        this( bot, TEXT_BLANK, index );
-    }
-
-    public NewSdkProjectWizard( SWTBot bot, String title )
-    {
-        this( bot, title, INDEX_DEFAULT_VALIDATION_MESSAGE );
+        this( bot, NEW_LIFERAY_PLUGIN_PROJECT, 2 );
     }
 
     public NewSdkProjectWizard( SWTBot bot, String title, int validationMsgIndex )
     {
         super( bot, title, validationMsgIndex );
 
-        displayName = new Text( bot, LABEL_DISPLAY_NAME );
-        buildTypes = new ComboBox( bot, LABEL_BUILD_TYPE );
-        pluginTypes = new ComboBox( bot, LABEL_PLUGIN_TYPE );
-        includeSimpleCode = new CheckBox( bot, CHECKBOX_INCLUDE_SAMPLE_CODE );
-        launchNewPortletWizard = new CheckBox( bot, LABEL_LAUNCH_NEW_PORTLET_WIZARD_AFTER_PROJECT );
+        displayName = new Text( bot, DISPLAY_NAME );
+        buildTypes = new ComboBox( bot, BUILD_TYPE );
+        pluginTypes = new ComboBox( bot, PLUGIN_TYPE );
+        includeSimpleCode = new CheckBox( bot, INCLUDE_SAMPLE_CODE );
+        launchNewPortletWizard = new CheckBox( bot, LAUNCH_NEW_PORTLET_WIZARD_AFTER_PROJECT );
     }
 
     public void createSDKPortletProject( String projectName )
     {
-        createSDKProject( projectName, MENU_PORTLET );
+        createSDKProject( projectName, PORTLET );
     }
 
     public void createSDKProject( String projectName, String pluginType )
     {
-        createSDKProject( projectName, TEXT_BLANK, pluginType );
+        createSDKProject( projectName, StringPool.BLANK, pluginType );
     }
 
     public void createSDKProject( String projectName, String pluginType, boolean includeSimpleCode )
@@ -79,7 +69,7 @@ public class NewSdkProjectWizard extends NewProjectWizard implements WizardUI
     public void createSDKProject(
         String projectName, String pluginType, boolean includeSimpleCode, boolean launchNewPortletWizard )
     {
-        createSDKProject( projectName, TEXT_BLANK, pluginType, includeSimpleCode, launchNewPortletWizard );
+        createSDKProject( projectName, StringPool.BLANK, pluginType, includeSimpleCode, launchNewPortletWizard );
     }
 
     public void createSDKProject( String projectName, String displayName, String pluginType )
@@ -93,16 +83,16 @@ public class NewSdkProjectWizard extends NewProjectWizard implements WizardUI
     {
         getProjectName().setText( projectNameValue );
 
-        if( displayNameValue != null && !displayNameValue.equals( TEXT_BLANK ) )
+        if( displayNameValue != null && !displayNameValue.equals( StringPool.BLANK ) )
         {
             displayName.setText( displayNameValue );
         }
 
-        buildTypes.setSelection( MENU_BUILD_TYPE_ANT );
+        buildTypes.setSelection( ANT_LIFERAY_PLUGINS_SDK );
 
         pluginTypes.setSelection( pluginType );
 
-        if( pluginType.equals( MENU_PORTLET ) || pluginType.equals( MENU_SERVICE_BUILDER_PORTLET ) )
+        if( pluginType.equals( PORTLET ) || pluginType.equals( SERVICE_BUILDER_PORTLET ) )
         {
             if( checkIncludeSimpleCode )
             {
@@ -114,7 +104,7 @@ public class NewSdkProjectWizard extends NewProjectWizard implements WizardUI
             }
         }
 
-        if( pluginType.equals( MENU_PORTLET ) )
+        if( pluginType.equals( PORTLET ) )
         {
             if( checkLaunchNewPortletWizard )
             {

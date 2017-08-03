@@ -17,6 +17,16 @@ package com.liferay.ide.swtbot.liferay.ui;
 
 import static org.junit.Assert.assertEquals;
 
+import com.liferay.ide.swtbot.liferay.ui.page.LiferayIDE;
+import com.liferay.ide.swtbot.liferay.ui.util.BundleInfo;
+import com.liferay.ide.swtbot.liferay.ui.util.CSVReader;
+import com.liferay.ide.swtbot.liferay.ui.util.CoreUtil;
+import com.liferay.ide.swtbot.liferay.ui.util.FileUtil;
+import com.liferay.ide.swtbot.liferay.ui.util.ZipUtil;
+import com.liferay.ide.swtbot.ui.Keys;
+import com.liferay.ide.swtbot.ui.UI;
+import com.liferay.ide.swtbot.ui.util.StringPool;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -51,15 +61,6 @@ import org.eclipse.ui.ide.IDE;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
-import com.liferay.ide.swtbot.liferay.ui.page.LiferayIDE;
-import com.liferay.ide.swtbot.liferay.ui.util.BundleInfo;
-import com.liferay.ide.swtbot.liferay.ui.util.CSVReader;
-import com.liferay.ide.swtbot.liferay.ui.util.CoreUtil;
-import com.liferay.ide.swtbot.liferay.ui.util.FileUtil;
-import com.liferay.ide.swtbot.liferay.ui.util.ZipUtil;
-import com.liferay.ide.swtbot.ui.Keys;
-import com.liferay.ide.swtbot.ui.UI;
-
 /**
  * @author Terry Jia
  * @author Ashley Yuan
@@ -67,7 +68,7 @@ import com.liferay.ide.swtbot.ui.UI;
  * @author Ying Xu
  */
 @RunWith( SWTBotJunit4ClassRunner.class )
-public class SWTBotBase implements UI, Keys
+public class SwtbotBase implements UI, Keys, Messages
 {
 
     public final static String PLUGINS_SDK_ZIP =
@@ -168,7 +169,7 @@ public class SWTBotBase implements UI, Keys
 
     protected static boolean runAllTests()
     {
-        return( "".equals( runTest ) || runTest == null );
+        return( StringPool.BLANK.equals( runTest ) || runTest == null );
     }
 
     protected boolean runTest()
