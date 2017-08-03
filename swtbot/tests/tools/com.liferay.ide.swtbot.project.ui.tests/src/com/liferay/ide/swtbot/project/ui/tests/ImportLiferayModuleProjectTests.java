@@ -113,7 +113,8 @@ public class ImportLiferayModuleProjectTests extends SwtbotBase
         projectTree.getTreeItem( "ServicebuilderModule" ).getTreeItem( "settings.gradle" ).doubleClick();
 
         assertContains(
-            "include " + "\"" + "ServicebuilderModule-api" + "\", " + "\"" + "ServicebuilderModule-service" + "\"",
+            "include " + StringPool.DOUBLE_QUOTE + "ServicebuilderModule-api" + "\", " + StringPool.DOUBLE_QUOTE +
+                "ServicebuilderModule-service" + StringPool.DOUBLE_QUOTE,
             settingsGradleText.getText() );
         assertTrue( projectTree.getTreeItem( "ServicebuilderModule-api" ).isVisible() );
         assertTrue( projectTree.getTreeItem( "ServicebuilderModule-service" ).isVisible() );
@@ -220,26 +221,25 @@ public class ImportLiferayModuleProjectTests extends SwtbotBase
         // location validation
         importLiferayModulePage.getLocation().setText( invalidLocation );
 
-        sleep();
         assertContains(
-            "\"" + invalidLocation + "\"" + IS_NOT_A_VALID_PATH, importLiferayModulePage.getValidationMsg() );
+            StringPool.DOUBLE_QUOTE + invalidLocation + StringPool.DOUBLE_QUOTE + IS_NOT_A_VALID_PATH,
+            importLiferayModulePage.getValidationMsg() );
         assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         importLiferayModulePage.getLocation().setText( wrongPath );
 
-        sleep();
-        assertContains( "\"" + wrongPath + "\"" + IS_NOT_AN_ABSOLUTE_PATH, importLiferayModulePage.getValidationMsg() );
+        assertContains(
+            StringPool.DOUBLE_QUOTE + wrongPath + StringPool.DOUBLE_QUOTE + IS_NOT_AN_ABSOLUTE_PATH,
+            importLiferayModulePage.getValidationMsg() );
         assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         importLiferayModulePage.getLocation().setText( inexistentLocation );
 
-        sleep();
         assertContains( DIRECTORY_DOESNT_EXIST, importLiferayModulePage.getValidationMsg() );
         assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );
 
         importLiferayModulePage.getLocation().setText( existingDirectory );
 
-        sleep();
         assertContains(
             LOCATION_IS_NOT_RECOGNIZED_AS_A_VALID_PROJECT_TYPE, importLiferayModulePage.getValidationMsg() );
         assertEquals( StringPool.BLANK, importLiferayModulePage.getBuildType().getText() );

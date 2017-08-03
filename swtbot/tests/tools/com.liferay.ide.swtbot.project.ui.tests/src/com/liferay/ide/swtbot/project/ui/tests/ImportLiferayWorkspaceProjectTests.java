@@ -235,30 +235,31 @@ public class ImportLiferayWorkspaceProjectTests extends SwtbotBase
         assertTrue( importLiferayWorkspaceProject.cancelBtn().isEnabled() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( ".." );
-        sleep();
+
         assertEquals(
-            " " + "\"" + ".." + "\"" + IS_NOT_AN_ABSOLUTE_PATH, importLiferayWorkspaceProject.getValidationMsg() );
+            " " + StringPool.DOUBLE_QUOTE + ".." + StringPool.DOUBLE_QUOTE + IS_NOT_AN_ABSOLUTE_PATH,
+            importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( "1.*" );
-        sleep();
+
         assertEquals(
-            " " + "\"" + "1.*" + "\"" + IS_NOT_A_VALID_PATH, importLiferayWorkspaceProject.getValidationMsg() );
+            " " + StringPool.DOUBLE_QUOTE + "1.*" + StringPool.DOUBLE_QUOTE + IS_NOT_A_VALID_PATH,
+            importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( " " );
         sleep();
         assertEquals( WORKSPACE_LOCATION_MUST_BE_SPECIFIED, importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( "C://non-exist-dir" );
-        sleep();
+
         assertEquals( DIRECTORY_DOESNT_EXIST, importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation( "C:/Users" );
-        sleep();
+
         assertEquals( INVALID_LIFERAY_WORKSPACE, importLiferayWorkspaceProject.getValidationMsg() );
 
         importLiferayWorkspaceProject.setWorkspaceLocation(
             liferayWorkspaceRootPath + "/projects/testGradleWorkspace" );
-        sleep();
 
         assertEquals(
             THE_SERVER_OR_RUNTIME_NAME_IS_ALREADY_IN_USE,
