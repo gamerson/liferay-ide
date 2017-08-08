@@ -17,9 +17,11 @@ package com.liferay.ide.maven.core;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceProjectProvider;
+import com.liferay.ide.server.util.ServerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
@@ -144,7 +147,8 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
     }
 
     @Override
-    public IStatus importProject( String location, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
+    public IStatus importProject(
+        String location, String serverName, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
     {
         IStatus retval = Status.OK_STATUS;
 
@@ -158,11 +162,38 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
 
             if( initBundle )
             {
-                IProject workspaceProject = ProjectUtil.getProject( projectName );
+                new Job( "init liferay bundle" )
+                {
 
-                final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+                    @Override
+                    protected IStatus run( IProgressMonitor monitor )
+                    {
+                        IProject workspaceProject = ProjectUtil.getProject( projectName );
 
-                mavenProjectBuilder.execInitBundle( workspaceProject, "init-bundle", bundleUrl, monitor );
+                        final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+
+                        try
+                        {
+                            IStatus status = mavenProjectBuilder.execInitBundle(
+                                workspaceProject, "init-bundle", bundleUrl, monitor );
+
+                            final IPath bundlesLocation = LiferayWorkspaceUtil.getHomeLocation( location );
+
+                            if( bundlesLocation.toFile().exists() )
+                            {
+                                ServerUtil.addPortalRuntimeAndServer( serverName, bundlesLocation, monitor );
+                            }
+
+                            return status;
+                        }
+                        catch( CoreException e )
+                        {
+                            return LiferayMavenCore.createErrorStatus( "Unable to download liferay bundle", e );
+                        }
+                    }
+
+                }.schedule();
+
             }
         }
         catch( Exception e )
