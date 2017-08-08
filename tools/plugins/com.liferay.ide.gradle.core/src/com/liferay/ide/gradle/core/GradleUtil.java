@@ -58,14 +58,12 @@ import org.eclipse.debug.core.ILaunchManager;
  * @author Andy Wu
  * @author Lovett Li
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings( "restriction" )
 public class GradleUtil
 {
 
-    private static GradleRunConfigurationAttributes getRunConfigurationAttributes( IProject project, String[] tasks )
+    private static GradleRunConfigurationAttributes getRunConfigurationAttributes( File rootDir, String[] tasks )
     {
-        File rootDir = project.getLocation().toFile();
-
         BuildConfiguration buildConfig = CorePlugin.configurationManager().loadBuildConfiguration( rootDir );
 
         String projectDirectoryExpression = null;
@@ -90,7 +88,7 @@ public class GradleUtil
         {
             taskList.add( task );
         }
-        
+
         return new GradleRunConfigurationAttributes(
             taskList, projectDirectoryExpression,
             GradleDistributionSerializer.INSTANCE.serializeToString( buildConfig.getGradleDistribution() ),
@@ -98,7 +96,7 @@ public class GradleUtil
             buildConfig.isOverrideWorkspaceSettings(), buildConfig.isOfflineMode(), buildConfig.isBuildScansEnabled() );
     }
 
-	public static IStatus importGradleProject( File dir, IProgressMonitor monitor ) throws CoreException
+    public static IStatus importGradleProject( File dir, IProgressMonitor monitor ) throws CoreException
     {
         Validator<File> projectDirValidator = Validators.and(
             Validators.requiredDirectoryValidator( "Project root directory" ),
@@ -134,7 +132,7 @@ public class GradleUtil
 
         return Status.OK_STATUS;
     }
-	
+
     public static boolean isBuildFile( IFile buildFile )
     {
         return buildFile != null && buildFile.exists() && "build.gradle".equals( buildFile.getName() ) &&
@@ -163,11 +161,17 @@ public class GradleUtil
         Set<IProject> projects = new HashSet<>();
 
         projects.add( project );
-        
-		CorePlugin.gradleWorkspaceManager().getGradleBuilds(projects).synchronize(NewProjectHandler.IMPORT_AND_MERGE);
+
+        CorePlugin.gradleWorkspaceManager().getGradleBuilds( projects ).synchronize(
+            NewProjectHandler.IMPORT_AND_MERGE );
     }
 
     public static void runGradleTask( IProject project, String[] tasks, IProgressMonitor monitor ) throws CoreException
+    {
+        runGradleTask( project.getLocation().toFile(), tasks, monitor );
+    }
+
+    public static void runGradleTask( File project, String[] tasks, IProgressMonitor monitor ) throws CoreException
     {
         ILaunchConfiguration launchConfiguration =
             CorePlugin.gradleLaunchConfigurationManager().getOrCreateRunConfiguration(
@@ -182,6 +186,11 @@ public class GradleUtil
         launchConfigurationWC.doSave();
 
         launchConfigurationWC.launch( ILaunchManager.RUN_MODE, monitor );
+    }
+
+    public static void runGradleTask( File rootDir, String task, IProgressMonitor monitor ) throws CoreException
+    {
+        runGradleTask( rootDir, new String[] { task }, monitor );
     }
 
     public static void runGradleTask( IProject project, String task, IProgressMonitor monitor ) throws CoreException

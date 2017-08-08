@@ -17,12 +17,9 @@ package com.liferay.ide.project.core.workspace;
 
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
-import com.liferay.ide.server.util.ServerUtil;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
@@ -56,16 +53,17 @@ public class ImportLiferayWorkspaceOpMethods
             boolean isInitBundle = op.getProvisionLiferayBundle().content();
             boolean isHasBundlesDir = op.getHasBundlesDir().content();
             String bundleUrl = op.getBundleUrl().content( false );
+            String serverName = op.getServerName().content( false );
 
             final IStatus importStatus;
 
             if( isInitBundle && !isHasBundlesDir )
             {
-                importStatus = provider.importProject( location, monitor, true, bundleUrl );
+                importStatus = provider.importProject( location, serverName, monitor, true, bundleUrl );
             }
             else
             {
-                importStatus = provider.importProject( location, monitor, false, null );
+                importStatus = provider.importProject( location, serverName, monitor, false, null );
             }
 
             retval = StatusBridge.create( importStatus );
@@ -73,26 +71,6 @@ public class ImportLiferayWorkspaceOpMethods
             if( !retval.ok() || retval.exception() != null )
             {
                 return retval;
-            }
-
-            if( isInitBundle || isHasBundlesDir )
-            {
-                String serverRuntimeName = op.getServerName().content();
-                IPath bundlesLocation = null;
-
-                if( op.getBuildType().content().equals( "gradle-liferay-workspace" ) )
-                {
-                    bundlesLocation = LiferayWorkspaceUtil.getHomeLocation( location );
-                }
-                else
-                {
-                    bundlesLocation = new Path( location ).append( "bundles" );
-                }
-
-                if( bundlesLocation != null && bundlesLocation.toFile().exists() )
-                {
-                    ServerUtil.addPortalRuntimeAndServer( serverRuntimeName, bundlesLocation, monitor );
-                }
             }
         }
         catch( Exception e )
