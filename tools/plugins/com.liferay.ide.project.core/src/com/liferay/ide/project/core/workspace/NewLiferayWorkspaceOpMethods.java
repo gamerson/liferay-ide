@@ -18,13 +18,9 @@ package com.liferay.ide.project.core.workspace;
 
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
-import com.liferay.ide.server.util.ServerUtil;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
@@ -48,8 +44,6 @@ public class NewLiferayWorkspaceOpMethods
 
         try
         {
-            final String wsName = op.getWorkspaceName().content();
-
             final NewLiferayProjectProvider<NewLiferayWorkspaceOp> provider = op.getProjectProvider().content( true );
 
             final IStatus status = provider.createNewProject( op, monitor );
@@ -59,30 +53,6 @@ public class NewLiferayWorkspaceOpMethods
             if( !retval.ok() )
             {
                 return retval;
-            }
-
-            String location = op.getLocation().content().append( wsName ).toPortableString();
-
-            boolean isInitBundle = op.getProvisionLiferayBundle().content();
-
-            if( isInitBundle )
-            {
-                String serverRuntimeName = op.getServerName().content();
-                IPath bundlesLocation = null;
-
-                if( op.getProjectProvider().text().equals( "gradle-liferay-workspace" ) )
-                {
-                    bundlesLocation = LiferayWorkspaceUtil.getHomeLocation( location );
-                }
-                else
-                {
-                    bundlesLocation =  new Path( location ).append( "bundles" );
-                }
-
-                if( bundlesLocation.toFile().exists() )
-                {
-                    ServerUtil.addPortalRuntimeAndServer( serverRuntimeName, bundlesLocation, monitor );
-                }
             }
         }
         catch( Exception e )

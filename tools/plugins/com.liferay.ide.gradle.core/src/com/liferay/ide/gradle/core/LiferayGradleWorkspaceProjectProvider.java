@@ -25,6 +25,7 @@ import com.liferay.ide.project.core.modules.BladeCLIException;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceProjectProvider;
+import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -38,6 +39,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sapphire.platform.PathBridge;
 
 /**
@@ -78,12 +80,14 @@ public class LiferayGradleWorkspaceProjectProvider extends AbstractLiferayProjec
         String workspaceLocation = location.append( wsName ).toPortableString();
         boolean isInitBundle = op.getProvisionLiferayBundle().content();
         String bundleUrl = op.getBundleUrl().content( false );
+        String serverName = op.getServerName().content();
 
-        return importProject( workspaceLocation, monitor, isInitBundle, bundleUrl );
+        return importProject( workspaceLocation, serverName, monitor, isInitBundle, bundleUrl );
     }
 
     @Override
-    public IStatus importProject( String location, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
+    public IStatus importProject(
+        String location, String serverName, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
     {
         try
         {
@@ -116,9 +120,36 @@ public class LiferayGradleWorkspaceProjectProvider extends AbstractLiferayProjec
                         new ByteArrayInputStream( newContent.getBytes() ), IResource.FORCE, monitor );
                 }
 
-                GradleUtil.runGradleTask( project, "initBundle", monitor );
+                new Job( "init liferay bundle" )
+                {
 
-                project.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+                    @Override
+                    protected IStatus run( IProgressMonitor monitor )
+                    {
+                        try
+                        {
+                            GradleUtil.runGradleTask( project, "initBundle", monitor );
+
+                            project.refreshLocal( IResource.DEPTH_INFINITE, monitor );
+
+                            IPath bundlesLocation = null;
+
+                            bundlesLocation = LiferayWorkspaceUtil.getHomeLocation( location );
+
+                            if( bundlesLocation.toFile().exists() )
+                            {
+                                ServerUtil.addPortalRuntimeAndServer( serverName, bundlesLocation, monitor );
+                            }
+                        }
+                        catch( CoreException e )
+                        {
+                            return GradleCore.createErrorStatus( "Unable to download liferay bundle", e );
+                        }
+
+                        return Status.OK_STATUS;
+                    }
+
+                }.schedule();
             }
         }
         catch( Exception e )
