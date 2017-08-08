@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core;
 
 import com.liferay.ide.core.ILiferayProjectProvider;
@@ -22,13 +23,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sapphire.ExecutableElement;
 
-
 /**
  * @author Gregory Amerson
  */
 public abstract interface NewLiferayProjectProvider<T extends ExecutableElement> extends ILiferayProjectProvider
 {
+
     public abstract IStatus createNewProject( T op, IProgressMonitor monitor ) throws CoreException;
 
     public abstract IStatus validateProjectLocation( String projectName, IPath path );
+
 }

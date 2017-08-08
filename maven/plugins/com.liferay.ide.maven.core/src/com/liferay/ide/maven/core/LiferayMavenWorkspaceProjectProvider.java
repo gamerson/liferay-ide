@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
@@ -144,7 +145,8 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
     }
 
     @Override
-    public IStatus importProject( String location, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
+    public IStatus importProject(
+        String location, String serverName, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
     {
         IStatus retval = Status.OK_STATUS;
 
@@ -158,11 +160,27 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
 
             if( initBundle )
             {
-                IProject workspaceProject = ProjectUtil.getProject( projectName );
+                new Job( "init liferay bundle" )
+                {
 
-                final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+                    @Override
+                    protected IStatus run( IProgressMonitor monitor )
+                    {
+                        IProject workspaceProject = ProjectUtil.getProject( projectName );
 
-                mavenProjectBuilder.initBundle( workspaceProject, bundleUrl, monitor );
+                        final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+
+                        try
+                        {
+                            return mavenProjectBuilder.initBundle( workspaceProject, bundleUrl, monitor );
+                        }
+                        catch( CoreException e )
+                        {
+                            return LiferayMavenCore.createErrorStatus( "Unable to init liferay bundle", e );
+                        }
+                    }
+
+                }.schedule();
             }
         }
         catch( Exception e )
