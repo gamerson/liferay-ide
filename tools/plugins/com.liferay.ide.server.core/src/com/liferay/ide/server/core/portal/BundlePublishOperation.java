@@ -14,7 +14,6 @@
  *******************************************************************************/
 package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.server.util.ServerUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,16 +26,17 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.PublishOperation;
 
+
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class BundlePublishOperation extends PublishOperation
 {
-
-    protected final List<IModule> modules;
-    protected final PortalRuntime portalRuntime;
-    protected final PortalServerBehavior portalServerBehavior;
-    protected final IServer server;
+    protected List<IModule> modules;
+    protected PortalRuntime portalRuntime;
+    protected PortalServerBehavior portalServerBehavior;
+    protected IServer server;
 
     public BundlePublishOperation( IServer s, IModule[] modules )
     {
@@ -80,10 +80,4 @@ public class BundlePublishOperation extends PublishOperation
     {
         return 0;
     }
-
-    protected BundleSupervisor createBundleSupervisor() throws Exception
-    {
-        return ServerUtil.createBundleSupervisor( portalRuntime, server );
-    }
-
 }
