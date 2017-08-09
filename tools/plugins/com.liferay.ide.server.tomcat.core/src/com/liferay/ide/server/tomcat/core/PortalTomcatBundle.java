@@ -337,4 +337,10 @@ public class PortalTomcatBundle extends AbstractPortalBundle
         }
     }
 
+    @Override
+    public boolean shouldLoadLiferayProcess()
+    {
+        return false;
+    }
+
 }
