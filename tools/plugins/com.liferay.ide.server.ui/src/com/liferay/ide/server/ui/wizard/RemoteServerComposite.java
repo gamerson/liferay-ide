@@ -102,13 +102,14 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
             // IDE-425
             if( this.initialServerName != null && this.initialHostName.contains( this.initialHostName ) )
             {
-                this.serverWC.setName( this.initialServerName.replaceAll( this.initialHostName, textHostname.getText() ) );
+                this.serverWC.setName(
+                    this.initialServerName.replaceAll( this.initialHostName, textHostname.getText() ) );
             }
 
         }
         else if( src.equals( textHTTP ) )
         {
-            this.remoteServerWC.setHTTPPort( textHTTP.getText() );
+            this.remoteServerWC.setHttpPort( Integer.parseInt( textHTTP.getText() ) );
         }
         else if( src.equals( textServerManagerContextPath ) )
         {
@@ -139,8 +140,8 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
             IRemoteServer.ATTR_SERVER_MANAGER_CONTEXT_PATH.equals( evt.getPropertyName() ) )
         {
 
-            LiferayServerCore.updateConnectionSettings( (IRemoteServer) serverWC.loadAdapter(
-                IRemoteServer.class, null ) );
+            LiferayServerCore.updateConnectionSettings(
+                (IRemoteServer) serverWC.loadAdapter( IRemoteServer.class, null ) );
         }
     }
 
@@ -223,27 +224,26 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         SWTUtil.createHyperLink( this, SWT.NONE, marketplaceLinkLabel, 1, appUrl );
 
         final String installLabel = NLS.bind( "<a>{0}</a>", Msgs.clickHereLink ); //$NON-NLS-1$
-        final String installUrl = "{0}/group/control_panel/manage?p_p_id=1_WAR_marketplaceportlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&appId=15193785";  //$NON-NLS-1$
+        final String installUrl =
+            "{0}/group/control_panel/manage?p_p_id=1_WAR_marketplaceportlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&appId=15193785"; //$NON-NLS-1$
         final Link installLink = SWTUtil.createLink( this, SWT.NONE, installLabel, 1 );
-        installLink.addSelectionListener
-        (
-            new SelectionAdapter()
+        installLink.addSelectionListener( new SelectionAdapter()
+        {
+
+            public void widgetSelected( SelectionEvent e )
             {
-                public void widgetSelected(SelectionEvent e)
+                try
                 {
-                    try
-                    {
-                        final String url =
-                            MessageFormat.format( installUrl, "http://" + textHostname.getText() + ":" + textHTTP.getText() ); //$NON-NLS-1$ //$NON-NLS-2$
-                        PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL( new URL( url ) );
-                    }
-                    catch ( Exception e1 )
-                    {
-                        LiferayUIPlugin.logError( "Could not open external browser.", e1 ); //$NON-NLS-1$
-                    }
-                };
-            }
-        );
+                    final String url = MessageFormat.format(
+                        installUrl, "http://" + textHostname.getText() + ":" + textHTTP.getText() ); //$NON-NLS-1$ //$NON-NLS-2$
+                    PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL( new URL( url ) );
+                }
+                catch( Exception e1 )
+                {
+                    LiferayUIPlugin.logError( "Could not open external browser.", e1 ); //$NON-NLS-1$
+                }
+            };
+        } );
 
         Composite validateComposite = new Composite( this, SWT.NONE );
         validateComposite.setLayoutData( new GridData( SWT.LEFT, SWT.BOTTOM, false, true ) );
@@ -285,7 +285,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         {
             ignoreModifyEvents = true;
             this.textHostname.setText( this.serverWC.getHost() );
-            this.textHTTP.setText( this.remoteServerWC.getHTTPPort() );
+            this.textHTTP.setText( String.valueOf( this.remoteServerWC.getHttpPort() ) );
             this.textLiferayPortalContextPath.setText( this.remoteServerWC.getLiferayPortalContextPath() );
             this.textServerManagerContextPath.setText( this.remoteServerWC.getServerManagerContextPath() );
             // this.checkboxSecurity.setSelection( this.remoteServerWC.getSecurityEnabled() );
@@ -331,6 +331,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
 
                     RemoteServerComposite.this.getDisplay().syncExec( new Runnable()
                     {
+
                         public void run()
                         {
                             if( updateStatus == null || updateStatus.isOK() )
@@ -338,7 +339,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
                                 wizard.setMessage( null, IMessageProvider.NONE );
                             }
                             else if( updateStatus.getSeverity() == IStatus.WARNING ||
-                                     updateStatus.getSeverity() == IStatus.ERROR )
+                                updateStatus.getSeverity() == IStatus.ERROR )
                             {
                                 if( updateStatus.getMessage().contains( "Your license key has expired" ) ||
                                     updateStatus.getMessage().contains( "Register Your Server or Application" ) )
@@ -356,7 +357,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
                             wizard.update();
 
                         }
-                    });
+                    } );
                 }
             };
 
@@ -403,9 +404,9 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
             return LiferayServerUI.createErrorStatus( Msgs.specifyUsernamePassword );
         }
 
-        String port = remoteServerWC.getHTTPPort();
+        int port = remoteServerWC.getHttpPort();
 
-        if( CoreUtil.isNullOrEmpty( port ) )
+        if( port < 0 )
         {
             return LiferayServerUI.createErrorStatus( Msgs.specifyHTTPPort );
         }
@@ -427,6 +428,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
 
     private static class Msgs extends NLS
     {
+
         public static String clickHereLink;
         public static String connectionSettings;
         public static String hostname;

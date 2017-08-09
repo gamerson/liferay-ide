@@ -17,27 +17,28 @@ import com.liferay.ide.server.core.portal.PortalServerDelegate;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 
 /**
+ * @author Joye Luo
  * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerHttpPortCommand extends AbstractSetPortCommond
+public class SetPortalServerJmxPortCommand extends AbstractSetPortCommond
 {
 
-    public SetPortalServerHttpPortCommand( IServerWorkingCopy server, int port )
+    public SetPortalServerJmxPortCommand( IServerWorkingCopy server, int port )
     {
         super( server, port );
     }
 
     public void execute()
     {
-        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getHttpPort();
+        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getJmxPort();
 
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setHttpPort( port );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( port );
     }
 
     public void undo()
     {
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setHttpPort( oldPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setJmxPort( oldPort );
     }
 
 }

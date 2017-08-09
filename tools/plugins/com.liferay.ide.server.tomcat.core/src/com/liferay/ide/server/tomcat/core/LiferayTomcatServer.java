@@ -85,7 +85,7 @@ public class LiferayTomcatServer extends TomcatServer
 
         try
         {
-            String version = LiferayTomcatUtil.getVersion( ((ILiferayRuntime)getServer().getRuntime() ) );
+            String version = LiferayTomcatUtil.getVersion( ( (ILiferayRuntime) getServer().getRuntime() ) );
             Version portalVersion = Version.parseVersion( version );
 
             if( CoreUtil.compareVersions( portalVersion, ILiferayConstants.V620 ) < 0 )
@@ -126,15 +126,15 @@ public class LiferayTomcatServer extends TomcatServer
     }
 
     @Override
-    public String getHttpPort()
+    public int getHttpPort()
     {
         try
         {
-            return String.valueOf( getTomcatConfiguration().getMainPort().getPort() );
+            return getTomcatConfiguration().getMainPort().getPort();
         }
         catch( CoreException e )
         {
-            return null;
+            return 8080;
         }
     }
 
@@ -199,11 +199,14 @@ public class LiferayTomcatServer extends TomcatServer
                     path = folder.getFullPath().toOSString();
                     IProject project = folder.getProject();
                     if( project != null && project.exists() && !project.isOpen() )
-                        throw new CoreException( new Status( IStatus.ERROR, TomcatPlugin.PLUGIN_ID, 0, NLS.bind(
-                            Msgs.errorConfigurationProjectClosed, path, project.getName() ), null ) );
+                        throw new CoreException(
+                            new Status(
+                                IStatus.ERROR, TomcatPlugin.PLUGIN_ID, 0,
+                                NLS.bind( Msgs.errorConfigurationProjectClosed, path, project.getName() ), null ) );
                 }
-                throw new CoreException( new Status( IStatus.ERROR, TomcatPlugin.PLUGIN_ID, 0, NLS.bind(
-                    Msgs.errorNoConfiguration, path ), null ) );
+                throw new CoreException(
+                    new Status(
+                        IStatus.ERROR, TomcatPlugin.PLUGIN_ID, 0, NLS.bind( Msgs.errorNoConfiguration, path ), null ) );
             }
 
             String id = getServer().getServerType().getId();
@@ -342,7 +345,8 @@ public class LiferayTomcatServer extends TomcatServer
         //
         // if (existingSetting != Server.AUTO_PUBLISH_DISABLE) {
         // LiferayTomcatUtil.displayToggleMessage(
-        // "The Ext plugin Automatic publishing has been set to disabled since an Ext plugin has been added.  This setting will be restored once the Ext plugin is removed.",
+        // "The Ext plugin Automatic publishing has been set to disabled since an Ext plugin has been added. This
+        // setting will be restored once the Ext plugin is removed.",
         // LiferayTomcatPlugin.PREFERENCES_ADDED_EXT_PLUGIN_TOGGLE_KEY);
         // }
         //
@@ -382,7 +386,8 @@ public class LiferayTomcatServer extends TomcatServer
 
         if( serverInfo != null && expectedServerInfo != null )
         {
-            if( serverInfo.contains( Msgs.enterpriseEdition ) && !( expectedServerInfo.contains( Msgs.enterpriseEdition ) ) )
+            if( serverInfo.contains( Msgs.enterpriseEdition ) &&
+                !( expectedServerInfo.contains( Msgs.enterpriseEdition ) ) )
             {
                 LiferayTomcatUtil.displayToggleMessage(
                     Msgs.switchRuntimeType, LiferayTomcatPlugin.PREFERENCES_EE_UPGRADE_MSG_TOGGLE_KEY );
@@ -457,6 +462,7 @@ public class LiferayTomcatServer extends TomcatServer
 
     private static class Msgs extends NLS
     {
+
         public static String enterpriseEdition;
         public static String errorConfigurationProjectClosed;
         public static String errorNoConfiguration;
@@ -468,4 +474,5 @@ public class LiferayTomcatServer extends TomcatServer
             initializeMessages( LiferayTomcatServer.class.getName(), Msgs.class );
         }
     }
+
 }

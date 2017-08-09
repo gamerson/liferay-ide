@@ -61,6 +61,7 @@ import org.eclipse.wst.server.ui.editor.ServerEditorSection;
  */
 public class RemoteSettingsEditorSection extends ServerEditorSection
 {
+
     protected Button adjustTimestamp;
     protected PropertyChangeListener listener;
     protected RemoteServer remoteServer;
@@ -107,7 +108,7 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
                 }
 
                 updating = true;
-                execute( new SetHttpPortCommand( remoteServer, textHttpPort.getText().trim() ) );
+                execute( new SetHttpPortCommand( remoteServer, Integer.valueOf( textHttpPort.getText().trim() ) ) );
                 updating = false;
                 // validate();
             }
@@ -160,7 +161,8 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
 
         } );
 
-        Label labelLiferayPortalContextPath = createLabel( toolkit, settingsComposite, Msgs.liferayPortalContextPathLabel );
+        Label labelLiferayPortalContextPath =
+            createLabel( toolkit, settingsComposite, Msgs.liferayPortalContextPathLabel );
         labelLiferayPortalContextPath.setLayoutData( new GridData( SWT.BEGINNING, SWT.CENTER, false, false ) );
 
         textLiferayPortalContextPath = toolkit.createText( settingsComposite, null );
@@ -176,14 +178,16 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
                 }
 
                 updating = true;
-                execute( new SetLiferayPortalContextPathCommand(
-                    remoteServer, textLiferayPortalContextPath.getText().trim() ) );
+                execute(
+                    new SetLiferayPortalContextPathCommand(
+                        remoteServer, textLiferayPortalContextPath.getText().trim() ) );
                 updating = false;
                 // validate();
             }
         } );
 
-        Label labelServerManagerContextPath = createLabel( toolkit, settingsComposite, Msgs.serverManagerContextPathLabel );
+        Label labelServerManagerContextPath =
+            createLabel( toolkit, settingsComposite, Msgs.serverManagerContextPathLabel );
         labelServerManagerContextPath.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, false, false ) );
 
         textServerManagerContextPath = toolkit.createText( settingsComposite, null );
@@ -199,16 +203,15 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
                 }
 
                 updating = true;
-                execute( new SetServerManagerContextPathCommand(
-                    remoteServer, textServerManagerContextPath.getText().trim() ) );
+                execute(
+                    new SetServerManagerContextPathCommand(
+                        remoteServer, textServerManagerContextPath.getText().trim() ) );
                 updating = false;
                 // validate();
             }
         } );
 
-        adjustTimestamp =
-            toolkit.createButton(
-                settingsComposite, Msgs.adjustDeploymentTimestamps, SWT.CHECK );
+        adjustTimestamp = toolkit.createButton( settingsComposite, Msgs.adjustDeploymentTimestamps, SWT.CHECK );
         GridData gd = new GridData( SWT.FILL, SWT.CENTER, true, false );
         gd.horizontalSpan = 2;
         adjustTimestamp.setLayoutData( gd );
@@ -358,8 +361,9 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
 
     protected Section createSettingsSection( Composite parent, FormToolkit toolkit )
     {
-        return toolkit.createSection( parent, ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED |
-            ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.FOCUS_TITLE );
+        return toolkit.createSection(
+            parent, ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED | ExpandableComposite.TITLE_BAR |
+                Section.DESCRIPTION | ExpandableComposite.FOCUS_TITLE );
     }
 
     protected void initialize()
@@ -372,7 +376,7 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
 
         updating = true;
 
-        textHttpPort.setText( remoteServer.getHTTPPort() );
+        textHttpPort.setText( String.valueOf( remoteServer.getHttpPort() ) );
 
         textUsername.setText( remoteServer.getUsername() );
 
@@ -414,6 +418,7 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
 
     private static class Msgs extends NLS
     {
+
         public static String adjustDeploymentTimestamps;
         public static String httpPortLabel;
         public static String liferayPortalContextPathLabel;

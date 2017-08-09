@@ -25,18 +25,23 @@ import org.eclipse.core.runtime.IPath;
  */
 public interface PortalBundle extends ILiferayPortal
 {
-
-    IPath getAutoDeployPath();
+    int getAjpPort();
 
     IPath getAppServerDeployDir();
 
     IPath getAppServerLibGlobalDir();
 
-    int getJmxRemotePort();
+    IPath getAppServerDir();
+
+    IPath getAutoDeployPath();
+
+    IPath[] getBundleDependencyJars();
+
+    String getDisplayName();
+
+    int getHttpPort();
 
     IPath getLiferayHome();
-
-    IPath getAppServerDir();
 
     String getMainClass();
 
@@ -54,16 +59,19 @@ public interface PortalBundle extends ILiferayPortal
 
     String[] getRuntimeStopProgArgs();
 
+    int getShutdownPort();
+
+    int getTelnetPort();
+
     String getType();
-
-    String getDisplayName();
-
-    IPath[] getBundleDependencyJars();
 
     IPath[] getUserLibs();
 
-    String getHttpPort();
+    void setAjpPort( int port );
 
-    void setHttpPort( String port );
+    void setHttpPort( int port );
 
+    void setShutdownPort( int port );
+
+    void setTelnetPort( int port );
 }

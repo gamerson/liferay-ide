@@ -31,17 +31,23 @@ public interface ILiferayServer
 
     IEclipsePreferences defaultPrefs = DefaultScope.INSTANCE.getNode( LiferayServerCore.PLUGIN_ID );
 
+    String ATTR_HTTP_PORT = "http-port";
+
     String ATTR_PASSWORD = "password";
 
     String ATTR_USERNAME = "username";
 
-    String ATTR_HTTP_PORT = "http-port";
+    int DEFAULT_HTTP_PORT = Integer.parseInt( defaultPrefs.get( "default.http.port", StringPool.EMPTY ) );
 
     String DEFAULT_PASSWORD = defaultPrefs.get( "default.password", StringPool.EMPTY );
 
     String DEFAULT_USERNAME = defaultPrefs.get( "default.username", StringPool.EMPTY );
 
-    URL getWebServicesListURL();
+    String getId();
+
+    int getHttpPort();
+
+    String getHost();
 
     String getPassword();
 
@@ -51,9 +57,6 @@ public interface ILiferayServer
 
     String getUsername();
 
-    String getHttpPort();
+    URL getWebServicesListURL();
 
-    String getId();
-
-    String getHost();
 }

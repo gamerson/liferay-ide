@@ -17,27 +17,28 @@ import com.liferay.ide.server.core.portal.PortalServerDelegate;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 
 /**
+ * @author Joye Luo
  * @author Terry Jia
  */
 @SuppressWarnings( "restriction" )
-public class SetPortalServerHttpPortCommand extends AbstractSetPortCommond
+public class SetPortalServerShutdownPortCommand extends AbstractSetPortCommond
 {
 
-    public SetPortalServerHttpPortCommand( IServerWorkingCopy server, int port )
+    public SetPortalServerShutdownPortCommand( IServerWorkingCopy server, int port )
     {
         super( server, port );
     }
 
     public void execute()
     {
-        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getHttpPort();
+        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getShutdownPort();
 
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setHttpPort( port );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setShutdownPort( port );
     }
 
     public void undo()
     {
-        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setHttpPort( oldPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setShutdownPort( oldPort );
     }
 
 }

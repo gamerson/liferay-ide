@@ -15,7 +15,7 @@
 
 package com.liferay.ide.server.ui.action;
 
-import com.liferay.ide.server.core.ILiferayServer;
+import com.liferay.ide.server.core.portal.PortalServer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +38,9 @@ public class OpenGogoShellAction extends AbstractServerRunningAction
         super();
     }
 
-    protected ILiferayServer getLiferayServer()
+    protected PortalServer getPortalServer()
     {
-        return (ILiferayServer) selectedServer.loadAdapter( ILiferayServer.class, null );
+        return (PortalServer) selectedServer.loadAdapter( PortalServer.class, null );
     }
 
     @Override
@@ -53,8 +53,6 @@ public class OpenGogoShellAction extends AbstractServerRunningAction
     {
         if( selectedServer != null )
         {
-            final String host = selectedServer.getHost();
-
             final ILauncherDelegate delegate =
                 LauncherDelegateManager.getInstance().getLauncherDelegate(
                     "org.eclipse.tm.terminal.connector.telnet.launcher.telnet", false );
@@ -65,11 +63,11 @@ public class OpenGogoShellAction extends AbstractServerRunningAction
                 "org.eclipse.tm.terminal.connector.telnet.TelnetConnector");
             properties.put( ITerminalsConnectorConstants.PROP_DELEGATE_ID,
                 "org.eclipse.tm.terminal.connector.telnet.launcher.telnet" );
-            properties.put( ITerminalsConnectorConstants.PROP_IP_HOST, host );
-            properties.put( ITerminalsConnectorConstants.PROP_IP_PORT, 11311 );
+            properties.put( ITerminalsConnectorConstants.PROP_IP_HOST, getPortalServer().getHost() );
+            properties.put( ITerminalsConnectorConstants.PROP_IP_PORT, getPortalServer().getTelnetPort() );
             properties.put( ITerminalsConnectorConstants.PROP_TIMEOUT, 5 );
             properties.put( ITerminalsConnectorConstants.PROP_ENCODING, null ); // null specifies default
-            properties.put( ITerminalsConnectorConstants.PROP_TITLE, "Liferay Gogo Shell" );
+            properties.put( ITerminalsConnectorConstants.PROP_TITLE, selectedServer.getName() + " Gogo Shell" );
 
             delegate.execute( properties, (Done) null );
         }

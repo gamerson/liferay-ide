@@ -15,43 +15,34 @@
 
 package com.liferay.ide.server.ui.cmd;
 
-import com.liferay.ide.server.remote.IRemoteServerWorkingCopy;
+import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.core.portal.PortalServerDelegate;
 
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 
 /**
- * @author Greg Amerson
+ * @author Joye Luo
+ * @author Terry Jia
  */
-public class SetHttpPortCommand extends RemoteServerCommand
+@SuppressWarnings( "restriction" )
+public class SetPortalServerAjpPortCommand extends AbstractSetPortCommond
 {
 
-    protected int oldHttpPort;
-    protected int httpPort;
-
-    public SetHttpPortCommand( IRemoteServerWorkingCopy server, int httpPort )
+    public SetPortalServerAjpPortCommand( IServerWorkingCopy server, int port )
     {
-        super( server, Msgs.setHttpPort );
-        this.httpPort = httpPort;
+        super( server, port );
     }
 
     public void execute()
     {
-        oldHttpPort = server.getHttpPort();
-        server.setHttpPort( httpPort );
+        oldPort = ( (PortalServer) server.loadAdapter( PortalServer.class, null ) ).getAjpPort();
+
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAjpPort( port );
     }
 
     public void undo()
     {
-        server.setHttpPort( oldHttpPort );
+        ( (PortalServerDelegate) server.loadAdapter( PortalServer.class, null ) ).setAjpPort( oldPort );
     }
 
-    private static class Msgs extends NLS
-    {
-        public static String setHttpPort;
-
-        static
-        {
-            initializeMessages( SetHttpPortCommand.class.getName(), Msgs.class );
-        }
-    }
 }

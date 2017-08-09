@@ -211,7 +211,7 @@ public abstract class AbstractPortalServerEditorSection extends ServerEditorSect
 
     protected void initialize()
     {
-        if( portalServer == null || portalBundle == null)
+        if( portalServer == null || portalBundle == null )
         {
             return;
         }

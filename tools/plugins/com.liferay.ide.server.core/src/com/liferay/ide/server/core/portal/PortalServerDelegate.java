@@ -15,11 +15,8 @@
 
 package com.liferay.ide.server.core.portal;
 
-import aQute.remote.api.Agent;
-
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.server.core.ILiferayServerBehavior;
 import com.liferay.ide.server.core.LiferayServerCore;
 
 import java.net.MalformedURLException;
@@ -41,6 +38,7 @@ import org.eclipse.wst.server.core.model.ServerDelegate;
  * @author Gregory Amerson
  * @author Terry Jia
  * @author Simon Jiang
+ * @author Joye Luo
  */
 @SuppressWarnings( "restriction" )
 public class PortalServerDelegate extends ServerDelegate implements PortalServerWorkingCopy
@@ -74,15 +72,24 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         return retval;
     }
 
-    public int getAutoPublishTime()
+    @Override
+    public int getAgentPort()
     {
-        return getAttribute( Server.PROP_AUTO_PUBLISH_TIME, 0 );
+        return getAttribute( ATTR_AGENT_PORT, DEFAULT_AGENT_PORT );
     }
 
     @Override
-    public String getHttpPort()
+    public int getAjpPort()
     {
-        return getAttribute( ATTR_HTTP_PORT, DEFAULT_HTTP_PORT );
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getAjpPort();
+    }
+
+    public int getAutoPublishTime()
+    {
+        return getAttribute( Server.PROP_AUTO_PUBLISH_TIME, 0 );
     }
 
     @Override
@@ -114,15 +121,18 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         return getAttribute( PROPERTY_EXTERNAL_PROPERTIES, StringPool.EMPTY );
     }
 
-    @Override
-    public boolean getLaunchSettings()
-    {
-        return getAttribute( PROPERTY_LAUNCH_SETTINGS, PortalServerConstants.DEFAULT_LAUNCH_SETTING );
-    }
-
     public String getHost()
     {
         return getServer().getHost();
+    }
+
+    @Override
+    public int getHttpPort()
+    {
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getHttpPort();
     }
 
     public String getId()
@@ -131,9 +141,15 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     }
 
     @Override
-    public void setLaunchSettings( boolean launchSettings )
+    public int getJmxPort()
     {
-        setAttribute( PROPERTY_LAUNCH_SETTINGS, launchSettings );
+        return getAttribute( ATTR_JMX_PORT, DEFAULT_JMX_PORT );
+    }
+
+    @Override
+    public boolean getLaunchSettings()
+    {
+        return getAttribute( PROPERTY_LAUNCH_SETTINGS, PortalServerConstants.DEFAULT_LAUNCH_SETTING );
     }
 
     public String[] getMemoryArgs()
@@ -194,6 +210,24 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         return new IModule[] { module };
     }
 
+    @Override
+    public int getShutdownPort()
+    {
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getShutdownPort();
+    }
+
+    @Override
+    public int getTelnetPort()
+    {
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        return runtime.getPortalBundle().getTelnetPort();
+    }
+
     public String getUsername()
     {
         return getAttribute( ATTR_USERNAME, DEFAULT_USERNAME );
@@ -219,11 +253,30 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     {
     }
 
+    public void setAgentPort( int port )
+    {
+        setAttribute( ATTR_AGENT_PORT, port );
+    }
+
+    public void setAjpPort( int port )
+    {
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        runtime.getPortalBundle().setAjpPort( port );
+    }
+
     @Override
     public void setDefaults( IProgressMonitor monitor )
     {
         setAttribute( Server.PROP_AUTO_PUBLISH_TIME, getAutoPublishTime() );
-        setAttribute( ILiferayServerBehavior.AGENT_PORT, Agent.DEFAULT_PORT );
+
+        setAgentPort( DEFAULT_AGENT_PORT );
+        setAjpPort( DEFAULT_AJP_PORT );
+        setHttpPort( DEFAULT_HTTP_PORT );
+        setJmxPort( DEFAULT_JMX_PORT );
+        setTelnetPort( DEFAULT_TELNET_PORT );
+        setShutdownPort( DEFAULT_SHUTDOWN_PORT );
     }
 
     @Override
@@ -237,6 +290,25 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         setAttribute( PROPERTY_EXTERNAL_PROPERTIES, externalProperties );
     }
 
+    public void setHttpPort( int port )
+    {
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        runtime.getPortalBundle().setHttpPort( port );
+    }
+
+    public void setJmxPort( int port )
+    {
+        setAttribute( ATTR_JMX_PORT, port );
+    }
+
+    @Override
+    public void setLaunchSettings( boolean launchSettings )
+    {
+        setAttribute( PROPERTY_LAUNCH_SETTINGS, launchSettings );
+    }
+
     public void setMemoryArgs( String memoryArgs )
     {
         setAttribute( PROPERTY_MEMORY_ARGS, memoryArgs );
@@ -247,19 +319,25 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         setAttribute( ATTR_PASSWORD, password );
     }
 
-    public void setUsername( String username )
+    public void setShutdownPort( int port )
     {
-        setAttribute( ATTR_USERNAME, username );
-    }
-
-    public void setHttpPort( String httpPort )
-    {
-        setAttribute( ATTR_HTTP_PORT, httpPort );
-
         PortalRuntime runtime =
             (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
 
-        runtime.getPortalBundle().setHttpPort( httpPort );
+        runtime.getPortalBundle().setShutdownPort( port );
+    }
+
+    public void setTelnetPort( int port )
+    {
+        PortalRuntime runtime =
+            (PortalRuntime) getServer().getRuntime().loadAdapter( PortalRuntime.class, new NullProgressMonitor() );
+
+        runtime.getPortalBundle().setTelnetPort( port );
+    }
+
+    public void setUsername( String username )
+    {
+        setAttribute( ATTR_USERNAME, username );
     }
 
 }

@@ -14,12 +14,19 @@ package com.liferay.ide.server.ui.editor;
 
 import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
-import com.liferay.ide.server.core.portal.PortalServerConstants;
+import com.liferay.ide.server.ui.cmd.SetPortalServerAgentPortCommand;
+import com.liferay.ide.server.ui.cmd.SetPortalServerAjpPortCommand;
 import com.liferay.ide.server.ui.cmd.SetPortalServerHttpPortCommand;
+import com.liferay.ide.server.ui.cmd.SetPortalServerJmxPortCommand;
+import com.liferay.ide.server.ui.cmd.SetPortalServerShutdownPortCommand;
+import com.liferay.ide.server.ui.cmd.SetPortalServerTelnetPortCommand;
+import com.liferay.ide.server.util.ServerUtil;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -36,7 +43,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSection
 {
 
+    protected Text agentPort;
+    protected Text ajpPort;
+    protected Text jmxPort;
     protected Text httpPort;
+    protected Text shutdownPort;
+    protected Text telnetPort;
 
     public PortalServerPortsEditorSection()
     {
@@ -45,35 +57,214 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
     protected void addPropertyListeners( PropertyChangeEvent event )
     {
+        String newValue = (String) event.getNewValue();
+
         if( PortalServer.ATTR_HTTP_PORT.equals( event.getPropertyName() ) )
         {
-            String s = (String) event.getNewValue();
-            PortalServerPortsEditorSection.this.httpPort.setText( s );
+            httpPort.setText( newValue );
             validate();
         }
     }
 
+    private boolean checkPorts()
+    {
+        return checkPort( agentPort ) && checkPort( ajpPort ) && checkPort( httpPort ) && checkPort( jmxPort ) &&
+            checkPort( shutdownPort ) && checkPort( telnetPort );
+    }
+
+    private boolean checkPort( Text text )
+    {
+        int port = -1;
+
+        String portValue = text.getText().trim();
+
+        try
+        {
+            port = Integer.parseInt( portValue );
+
+            if( port < 0 || port > 65535 )
+            {
+                getManagedForm().getMessageManager().addMessage(
+                    text, "Port must to be a number from 1~65535", null, IMessageProvider.ERROR, text );
+
+                return false;
+            }
+        }
+        catch( Exception e )
+        {
+            getManagedForm().getMessageManager().addMessage(
+                text, "Port must to be a number from 1~65535", null, IMessageProvider.ERROR, text );
+
+            return false;
+        }
+
+        final Map<String, String> usingPorts = ServerUtil.checkUsingPorts( server.getName(), port );
+        if( usingPorts.size() > 0 )
+        {
+            StringBuffer sb = new StringBuffer();
+
+            sb.append( port );
+            sb.append( " is being used at: " );
+
+            for( String serverName : usingPorts.keySet() )
+            {
+                sb.append( serverName );
+                sb.append( "-" );
+                sb.append( usingPorts.get( serverName ) );
+                sb.append( " " );
+            }
+
+            getManagedForm().getMessageManager().addMessage(
+                text, sb.toString(), null, IMessageProvider.WARNING, text );
+        }
+        else
+        {
+            getManagedForm().getMessageManager().removeMessage( text, text );
+        }
+
+        return true;
+    }
+
     protected void createEditorSection( FormToolkit toolkit, Composite composite )
     {
-        Label label = createLabel( toolkit, composite, Msgs.httpPort );
+        Label label = createLabel( toolkit, composite, Msgs.agentPort );
         GridData data = new GridData( SWT.BEGINNING, SWT.CENTER, false, false );
         label.setLayoutData( data );
 
-        httpPort = toolkit.createText( composite, null );
-        httpPort.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
-        httpPort.addModifyListener( new ModifyListener()
+        agentPort = toolkit.createText( composite, null );
+        agentPort.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 2, 1 ) );
+        agentPort.addModifyListener( new ModifyListener()
         {
 
             public void modifyText( ModifyEvent e )
             {
-                if( updating )
+                if( updating || agentPort.getText().trim().equals( "" ) || !checkPorts() )
                 {
                     return;
                 }
 
                 updating = true;
 
-                execute( new SetPortalServerHttpPortCommand( server, httpPort.getText().trim() ) );
+                execute(
+                    new SetPortalServerAgentPortCommand( server, Integer.parseInt( agentPort.getText().trim() ) ) );
+
+                updating = false;
+            }
+        } );
+
+        label = createLabel( toolkit, composite, Msgs.ajpPort );
+        label.setLayoutData( data );
+
+        ajpPort = toolkit.createText( composite, null );
+        ajpPort.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 2, 1 ) );
+        ajpPort.addModifyListener( new ModifyListener()
+        {
+
+            public void modifyText( ModifyEvent e )
+            {
+                if( updating || ajpPort.getText().trim().equals( "" ) || !checkPorts() )
+                {
+                    return;
+                }
+
+                updating = true;
+
+                execute( new SetPortalServerAjpPortCommand( server, Integer.parseInt( ajpPort.getText().trim() ) ) );
+
+                updating = false;
+            }
+        } );
+
+        label = createLabel( toolkit, composite, Msgs.httpPort );
+        label.setLayoutData( data );
+
+        httpPort = toolkit.createText( composite, null );
+        httpPort.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 2, 1 ) );
+        httpPort.addModifyListener( new ModifyListener()
+        {
+
+            public void modifyText( ModifyEvent e )
+            {
+                if( updating || httpPort.getText().trim().equals( "" ) || !checkPorts() )
+                {
+                    return;
+                }
+
+                updating = true;
+
+                execute( new SetPortalServerHttpPortCommand( server, Integer.parseInt( httpPort.getText().trim() ) ) );
+
+                updating = false;
+            }
+        } );
+
+        label = createLabel( toolkit, composite, Msgs.jmxPort );
+        label.setLayoutData( data );
+
+        jmxPort = toolkit.createText( composite, null );
+        jmxPort.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 2, 1 ) );
+        jmxPort.addModifyListener( new ModifyListener()
+        {
+
+            public void modifyText( ModifyEvent e )
+            {
+                if( updating || jmxPort.getText().trim().equals( "" ) || !checkPorts() )
+                {
+                    return;
+                }
+
+                updating = true;
+
+                execute( new SetPortalServerJmxPortCommand( server, Integer.parseInt( jmxPort.getText().trim() ) ) );
+
+                updating = false;
+            }
+        } );
+
+        label = createLabel( toolkit, composite, Msgs.telnetPort );
+        label.setLayoutData( data );
+
+        telnetPort = toolkit.createText( composite, null );
+        telnetPort.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 2, 1 ) );
+        telnetPort.addModifyListener( new ModifyListener()
+        {
+
+            public void modifyText( ModifyEvent e )
+            {
+                if( updating || jmxPort.getText().trim().equals( "" ) || !checkPorts() )
+                {
+                    return;
+                }
+
+                updating = true;
+
+                execute(
+                    new SetPortalServerTelnetPortCommand( server, Integer.parseInt( telnetPort.getText().trim() ) ) );
+
+                updating = false;
+            }
+        } );
+
+        label = createLabel( toolkit, composite, Msgs.shutdownPort );
+        label.setLayoutData( data );
+
+        shutdownPort = toolkit.createText( composite, null );
+        shutdownPort.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false, 2, 1 ) );
+        shutdownPort.addModifyListener( new ModifyListener()
+        {
+
+            public void modifyText( ModifyEvent e )
+            {
+                if( updating || jmxPort.getText().trim().equals( "" ) || !checkPorts() )
+                {
+                    return;
+                }
+
+                updating = true;
+
+                execute(
+                    new SetPortalServerShutdownPortCommand(
+                        server, Integer.parseInt( shutdownPort.getText().trim() ) ) );
 
                 updating = false;
             }
@@ -87,20 +278,49 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
     protected void initProperties()
     {
-        httpPort.setText( portalBundle.getHttpPort() );
+        agentPort.setText( String.valueOf( portalServer.getAgentPort() ) );
+        ajpPort.setText( String.valueOf( portalServer.getAjpPort() ) );
+        httpPort.setText( String.valueOf( portalServer.getHttpPort() ) );
+        jmxPort.setText( String.valueOf( portalServer.getJmxPort() ) );
+        shutdownPort.setText( String.valueOf( portalServer.getShutdownPort() ) );
+        telnetPort.setText( String.valueOf( portalServer.getTelnetPort() ) );
+
+        checkPorts();
     }
 
     protected void setDefault()
     {
-        execute( new SetPortalServerHttpPortCommand( server, PortalServerConstants.DEFAULT_HTTP_PORT ) );
-        httpPort.setText( PortalServerConstants.DEFAULT_HTTP_PORT );
+        execute( new SetPortalServerAgentPortCommand( server, PortalServer.DEFAULT_AGENT_PORT ) );
+        agentPort.setText( String.valueOf( PortalServer.DEFAULT_AGENT_PORT ) );
+
+        execute( new SetPortalServerAjpPortCommand( server, PortalServer.DEFAULT_AJP_PORT ) );
+        ajpPort.setText( String.valueOf( PortalServer.DEFAULT_AJP_PORT ) );
+
+        execute( new SetPortalServerHttpPortCommand( server, PortalServer.DEFAULT_HTTP_PORT ) );
+        httpPort.setText( String.valueOf( PortalServer.DEFAULT_HTTP_PORT ) );
+
+        execute( new SetPortalServerJmxPortCommand( server, PortalServer.DEFAULT_JMX_PORT ) );
+        jmxPort.setText( String.valueOf( PortalServer.DEFAULT_JMX_PORT ) );
+
+        execute( new SetPortalServerShutdownPortCommand( server, PortalServer.DEFAULT_SHUTDOWN_PORT ) );
+        shutdownPort.setText( String.valueOf( PortalServer.DEFAULT_SHUTDOWN_PORT ) );
+
+        execute( new SetPortalServerTelnetPortCommand( server, PortalServer.DEFAULT_TELNET_PORT ) );
+        telnetPort.setText( String.valueOf( PortalServer.DEFAULT_TELNET_PORT ) );
+
+        checkPorts();
     }
 
     private static class Msgs extends NLS
     {
 
+        public static String agentPort;
+        public static String ajpPort;
         public static String httpPort;
+        public static String jmxPort;
         public static String ports;
+        public static String shutdownPort;
+        public static String telnetPort;
 
         static
         {

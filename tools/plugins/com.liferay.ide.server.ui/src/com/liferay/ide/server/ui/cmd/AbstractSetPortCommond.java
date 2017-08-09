@@ -11,33 +11,29 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  *
- * Contributors:
- * 		Gregory Amerson - initial implementation and ongoing maintenance
  *******************************************************************************/
 
-package com.liferay.ide.core.remote;
+package com.liferay.ide.server.ui.cmd;
+
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.ui.internal.Messages;
+import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
- * @author Gregory Amerson
+ * @author Terry Jia
  */
-public interface IRemoteConnection
+@SuppressWarnings( "restriction" )
+public abstract class AbstractSetPortCommond extends ServerCommand
 {
 
-    String _API = "/api/jsonws"; //$NON-NLS-1$
+    protected int oldPort;
+    protected int port;
 
-    String getHost();
+    public AbstractSetPortCommond( IServerWorkingCopy server, int port )
+    {
+        super( server, Messages.editorResourceModifiedTitle );
 
-    int getHttpPort();
+        this.port = port;
+    }
 
-    String getPassword();
-
-    String getUsername();
-
-    void setHost( String host );
-
-    void setHttpPort( int httpPort );
-
-    void setPassword( String password );
-
-    void setUsername( String username );
 }

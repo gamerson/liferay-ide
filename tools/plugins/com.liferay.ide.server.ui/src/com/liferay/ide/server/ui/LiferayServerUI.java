@@ -91,6 +91,11 @@ public class LiferayServerUI extends AbstractUIPlugin
         getDefault().getLog().log( createErrorStatus( msg, ex ) );
     }
 
+    public static void logWarning( String msg )
+    {
+        getDefault().getLog().log( new Status( IStatus.WARNING, PLUGIN_ID, msg, null ) );
+    }
+
     public static IStatus createErrorStatus( String msg )
     {
         return new Status( IStatus.ERROR, PLUGIN_ID, msg, null );

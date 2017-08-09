@@ -26,16 +26,14 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
  */
 public interface PortalServerConstants
 {
-    IEclipsePreferences _defaultPrefs = DefaultScope.INSTANCE.getNode( LiferayServerCore.PLUGIN_ID );
+    IEclipsePreferences defaultPrefs = DefaultScope.INSTANCE.getNode( LiferayServerCore.PLUGIN_ID );
 
     boolean DEFAULT_DEVELOPER_MODE = false;
 
     boolean DEFAULT_LAUNCH_SETTING = true;
 
-    String DEFAULT_MEMORY_ARGS = _defaultPrefs.get( "default.memory.args", "-Xmx1024m" );
+    String DEFAULT_MEMORY_ARGS = defaultPrefs.get( "default.memory.args", "-Xmx1024m" );
 
     String DEFAULT_USERNAME = "test@liferay.com";
-
-    String DEFAULT_HTTP_PORT = "8080";
 
 }
