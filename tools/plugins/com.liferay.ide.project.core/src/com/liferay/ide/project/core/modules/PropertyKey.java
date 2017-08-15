@@ -12,6 +12,8 @@
  * details.
  *
  *******************************************************************************/
+
+
 package com.liferay.ide.project.core.modules;
 
 import org.eclipse.sapphire.Element;
@@ -21,29 +23,32 @@ import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.annotations.Label;
 import org.eclipse.sapphire.modeling.annotations.Required;
 
-
 /**
  * @author Simon Jiang
  */
 public interface PropertyKey extends Element
 {
+
     ElementType TYPE = new ElementType( PropertyKey.class );
-    
+
     // *** Name ***
-   
+
     @Label( standard = "name" )
     @Required
     ValueProperty PROP_NAME = new ValueProperty( TYPE, "Name" );
-    
+
     void setName( String value );
-    Value<String> getName( );
-    
+
+    Value<String> getName();
+
     // *** Value ***
-    
+
     @Label( standard = "value" )
     @Required
     ValueProperty PROP_Value = new ValueProperty( TYPE, "Value" );
-    
+
     void setValue( String value );
-    Value<String> getValue( );
+
+    Value<String> getValue();
+
 }

@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sapphire.platform.PathBridge;
 
 /**
@@ -50,8 +51,7 @@ public class GradleModuleFragmentProjectProvider extends AbstractLiferayProjectP
         return null; // this only provides new projects
     }
 
-
-	@Override
+    @Override
     public IStatus createNewProject( NewModuleFragmentOp op, IProgressMonitor monitor ) throws CoreException
     {
         IStatus retval = Status.OK_STATUS;
@@ -121,14 +121,34 @@ public class GradleModuleFragmentProjectProvider extends AbstractLiferayProjectP
             }
         }
 
-        if( ( hasGradleWorkspace && useDefaultLocation ) || inWorkspacePath )
+        final boolean isInWorkspace = inWorkspacePath;
+
+        new Job( "creating module fragment project" )
         {
-            GradleUtil.refreshGradleProject( liferayWorkspaceProject );
-        }
-        else
-        {
-            GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
-        }
+
+            @Override
+            protected IStatus run( IProgressMonitor monitor )
+            {
+                try
+                {
+                    if( ( hasGradleWorkspace && useDefaultLocation ) || isInWorkspace )
+                    {
+                        GradleUtil.refreshGradleProject( liferayWorkspaceProject );
+                    }
+                    else
+                    {
+                        GradleUtil.importGradleProject( projecLocation.toFile(), monitor );
+                    }
+                }
+                catch( CoreException e )
+                {
+                    return GradleCore.createErrorStatus( "Unable to create module fragment project", e );
+                }
+
+                return Status.OK_STATUS;
+            }
+
+        }.schedule();
 
         return retval;
     }

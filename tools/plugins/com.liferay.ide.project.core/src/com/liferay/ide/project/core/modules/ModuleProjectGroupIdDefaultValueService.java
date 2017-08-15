@@ -12,12 +12,17 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.modules;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
 
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -33,6 +38,7 @@ import org.eclipse.sapphire.modeling.Path;
  */
 public class ModuleProjectGroupIdDefaultValueService extends DefaultValueService
 {
+
     @Override
     protected String compute()
     {
@@ -47,7 +53,7 @@ public class ModuleProjectGroupIdDefaultValueService extends DefaultValueService
             final IPath parentProjectOsPath = org.eclipse.core.runtime.Path.fromOSString( parentProjectLocation );
             final String projectName = op().getProjectName().content();
 
-            groupId = NewLiferayModuleProjectOpMethods.getMavenParentPomGroupId( op, projectName, parentProjectOsPath );
+            groupId = getMavenParentPomGroupId( op, projectName, parentProjectOsPath );
         }
 
         if( groupId == null )
@@ -66,10 +72,31 @@ public class ModuleProjectGroupIdDefaultValueService extends DefaultValueService
     private String getDefaultMavenGroupId()
     {
         final IScopeContext[] prefContexts = { DefaultScope.INSTANCE, InstanceScope.INSTANCE };
-        final String defaultMavenGroupId =
-            Platform.getPreferencesService().getString(
-                ProjectCore.PLUGIN_ID, ProjectCore.PREF_DEFAULT_MODULE_PROJECT_MAVEN_GROUPID, null, prefContexts );
+        final String defaultMavenGroupId = Platform.getPreferencesService().getString(
+            ProjectCore.PLUGIN_ID, ProjectCore.PREF_DEFAULT_MODULE_PROJECT_MAVEN_GROUPID, null, prefContexts );
+
         return defaultMavenGroupId;
+    }
+
+    public String getMavenParentPomGroupId( NewLiferayModuleProjectOp op, String projectName, IPath path )
+    {
+        String retval = null;
+
+        final File parentProjectDir = path.toFile();
+        final IStatus locationStatus = op.getProjectProvider().content().validateProjectLocation( projectName, path );
+
+        if( locationStatus.isOK() && parentProjectDir.exists() && parentProjectDir.list().length > 0 )
+        {
+            List<String> groupId =
+                op.getProjectProvider().content().getData( "parentGroupId", String.class, parentProjectDir );
+
+            if( !CoreUtil.isNullOrEmpty( groupId ) )
+            {
+                retval = groupId.get( 0 );
+            }
+        }
+
+        return retval;
     }
 
     @Override
@@ -79,6 +106,7 @@ public class ModuleProjectGroupIdDefaultValueService extends DefaultValueService
 
         final Listener listener = new FilteredListener<PropertyContentEvent>()
         {
+
             @Override
             protected void handleTypedEvent( PropertyContentEvent event )
             {
@@ -95,4 +123,5 @@ public class ModuleProjectGroupIdDefaultValueService extends DefaultValueService
     {
         return context( NewLiferayModuleProjectOp.class );
     }
- }
+
+}

@@ -15,12 +15,14 @@
 
 package com.liferay.ide.maven.core;
 
+import com.liferay.ide.core.util.ASTUtil;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.model.ProjectName;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.PropertyKey;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -28,11 +30,13 @@ import java.util.Properties;
 import org.apache.maven.archetype.catalog.Archetype;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
@@ -44,23 +48,25 @@ import org.eclipse.sapphire.platform.PathBridge;
  * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
-public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider implements NewLiferayProjectProvider<NewLiferayModuleProjectOp>
+public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider
+    implements NewLiferayProjectProvider<NewLiferayModuleProjectOp>
 {
+
     @Override
     public IStatus createNewProject( NewLiferayModuleProjectOp op, IProgressMonitor monitor ) throws CoreException
     {
-        IStatus retval = null;
-
         final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
 
         IPath location = PathBridge.create( op.getLocation().content() );
 
         final String groupId = op.getGroupId().content();
+        final String projectName = op.getProjectName().content();
         final String artifactId = op.getProjectName().content();
         final String version = op.getArtifactVersion().content();
         final String javaPackage = op.getPackageName().content();
         final String className = op.getComponentName().content();
         final String serviceName = op.getServiceName().content();
+        ElementList<PropertyKey> propertyKeys = op.getPropertyKeys();
 
         final String archetypeArtifactId = op.getArchetype().content();
 
@@ -76,7 +82,7 @@ public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider i
 
         final Properties properties = new Properties();
 
-        if( archetype.getArtifactId().endsWith( "service.builder") )
+        if( archetype.getArtifactId().endsWith( "service.builder" ) )
         {
             String apiPath = ":" + artifactId + "-api";
 
@@ -105,42 +111,105 @@ public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider i
             properties.put( "service", serviceName );
         }
 
-        final ResolverConfiguration resolverConfig = new ResolverConfiguration();
-        ProjectImportConfiguration configuration = new ProjectImportConfiguration( resolverConfig );
+        IPath projectLocation = location;
 
-        final List<IProject> newProjects =
-            projectConfigurationManager.createArchetypeProjects(
-                location, archetype, groupId, artifactId, version, javaPackage, properties, configuration, monitor );
+        final String lastSegment = location.lastSegment();
 
-        ElementList<ProjectName> projectNames = op.getProjectNames();
-
-        if( newProjects == null || newProjects.size() == 0 )
+        if( location != null && location.segmentCount() > 0 )
         {
-            retval = LiferayMavenCore.createErrorStatus( "Unable to create project from archetype." );
-        }
-        else
-        {
-            for( IProject newProject : newProjects )
+            if( !lastSegment.equals( projectName ) )
             {
-                projectNames.insert().setName( newProject.getName() );
+                projectLocation = location.append( projectName );
+            }
+        }
 
-                String[] gradleFiles = new String[] { "build.gradle", "settings.gradle" };
+        final List<String> moduleProperties = new ArrayList<String>();
 
-                for( String path : gradleFiles )
+        for( PropertyKey propertyKey : propertyKeys )
+        {
+            moduleProperties.add(
+                propertyKey.getName().content( true ) + "=" + propertyKey.getValue().content( true ) );
+        }
+
+        final IPath projectPath = projectLocation;
+
+        new Job( "creating project" )
+        {
+
+            @Override
+            protected IStatus run( IProgressMonitor monitor )
+            {
+                try
                 {
-                    IFile gradleFile = newProject.getFile( path );
+                    final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
+                        location, archetype, groupId, artifactId, version, javaPackage, properties,
+                        new ProjectImportConfiguration( new ResolverConfiguration() ), monitor );
 
-                    if( gradleFile.exists() )
+                    try
                     {
-                        gradleFile.delete( true, monitor );
+                        ASTUtil.addProperties( projectPath, moduleProperties );
                     }
+                    catch( Exception e1 )
+                    {
+                        LiferayMavenCore.logError( e1 );;
+                    }
+
+                    ElementList<ProjectName> projectNames = op.getProjectNames();
+
+                    if( newProjects == null || newProjects.size() == 0 )
+                    {
+                        return LiferayMavenCore.createErrorStatus( "Unable to create project from archetype." );
+                    }
+                    else
+                    {
+                        for( IProject newProject : newProjects )
+                        {
+                            projectNames.insert().setName( newProject.getName() );
+
+                            String[] gradleFiles = new String[] { "build.gradle", "settings.gradle" };
+
+                            for( String path : gradleFiles )
+                            {
+                                IFile gradleFile = newProject.getFile( path );
+
+                                if( gradleFile.exists() )
+                                {
+                                    gradleFile.delete( true, monitor );
+                                }
+                            }
+                        }
+                    }
+
+                    CoreUtil.getProject( projectName ).refreshLocal( IResource.DEPTH_INFINITE, monitor );
                 }
+                catch( CoreException e )
+                {
+                    return LiferayMavenCore.createErrorStatus( "Unable to create project", e );
+                }
+
+                return Status.OK_STATUS;
             }
 
-            retval = Status.OK_STATUS;
-        }
+        }.schedule();
 
-        return retval;
+        return Status.OK_STATUS;
+    }
+
+    public void deleteGradleFiles( File folder )
+    {
+        File[] files = folder.listFiles();
+
+        for( File file : files )
+        {
+            if( file.isDirectory() )
+            {
+                deleteGradleFiles( file );
+            }
+            else if( file.getName().equals( "build.gradle" ) || file.getName().equals( "settings.gradle" ) )
+            {
+                file.delete();
+            }
+        }
     }
 
     @Override
@@ -152,7 +221,8 @@ public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider i
 
             String templateName = params[0].toString();
 
-            String gav = LiferayMavenCore.getPreferenceString( LiferayMavenCore.PREF_ARCHETYPE_PROJECT_TEMPLATE_PREFIX + templateName, "");
+            String gav = LiferayMavenCore.getPreferenceString(
+                LiferayMavenCore.PREF_ARCHETYPE_PROJECT_TEMPLATE_PREFIX + templateName, "" );
 
             if( CoreUtil.empty( gav ) )
             {

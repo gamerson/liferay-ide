@@ -12,9 +12,16 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.modules;
 
+import com.liferay.ide.core.util.CoreUtil;
+
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sapphire.DefaultValueService;
 import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.Listener;
@@ -26,6 +33,7 @@ import org.eclipse.sapphire.modeling.Path;
  */
 public class ModuleProjectArtifactVersionDefaultValueService extends DefaultValueService
 {
+
     @Override
     protected String compute()
     {
@@ -40,7 +48,7 @@ public class ModuleProjectArtifactVersionDefaultValueService extends DefaultValu
             final IPath parentProjectOsPath = org.eclipse.core.runtime.Path.fromOSString( parentProjectLocation );
             final String projectName = op().getProjectName().content();
 
-            data = NewLiferayModuleProjectOpMethods.getMavenParentPomVersion( op, projectName, parentProjectOsPath );
+            data = getMavenParentPomVersion( op, projectName, parentProjectOsPath );
         }
 
         if( data == null )
@@ -51,6 +59,27 @@ public class ModuleProjectArtifactVersionDefaultValueService extends DefaultValu
         return data;
     }
 
+    public String getMavenParentPomVersion( NewLiferayModuleProjectOp op, String projectName, IPath path )
+    {
+        String retval = null;
+
+        final File parentProjectDir = path.toFile();
+        final IStatus locationStatus = op.getProjectProvider().content().validateProjectLocation( projectName, path );
+
+        if( locationStatus.isOK() && parentProjectDir.exists() && parentProjectDir.list().length > 0 )
+        {
+            List<String> version =
+                op.getProjectProvider().content().getData( "parentVersion", String.class, parentProjectDir );
+
+            if( !CoreUtil.isNullOrEmpty( version ) )
+            {
+                retval = version.get( 0 );
+            }
+        }
+
+        return retval;
+    }
+
     @Override
     protected void initDefaultValueService()
     {
@@ -58,6 +87,7 @@ public class ModuleProjectArtifactVersionDefaultValueService extends DefaultValu
 
         final Listener listener = new FilteredListener<PropertyContentEvent>()
         {
+
             @Override
             protected void handleTypedEvent( PropertyContentEvent event )
             {
@@ -73,4 +103,5 @@ public class ModuleProjectArtifactVersionDefaultValueService extends DefaultValu
     {
         return context( NewLiferayModuleProjectOp.class );
     }
+
 }
