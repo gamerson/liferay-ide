@@ -30,12 +30,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 
 /**
  * @author Andy Wu
  */
 public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter
 {
+
     private IProject refreshProject = null;
 
     @Override
@@ -68,8 +70,8 @@ public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter
                             refreshProject = ifile.getProject();
 
                             retval = new Status(
-                                IStatus.WARNING, GradleCore.PLUGIN_ID,
-                                "Project is inside \"" + refreshProject.getName() + "\" project. we will just refresh to import" );
+                                IStatus.WARNING, GradleCore.PLUGIN_ID, "Project is inside \"" +
+                                    refreshProject.getName() + "\" project. we will just refresh to import" );
                         }
                         else
                         {
@@ -127,17 +129,36 @@ public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter
     @Override
     public List<IProject> importProjects( String location, IProgressMonitor monitor ) throws CoreException
     {
-        if( refreshProject != null )
-        {
-            GradleUtil.refreshGradleProject( refreshProject );
-            refreshProject = null;
-        }
-        else
-        {
-            GradleUtil.importGradleProject( new File( location ), monitor );
-        }
 
-        //To-Do need return the projects added
+        new Job( "importing module project" )
+        {
+
+            @Override
+            protected IStatus run( IProgressMonitor monitor )
+            {
+                try
+                {
+                    if( refreshProject != null )
+                    {
+                        GradleUtil.refreshGradleProject( refreshProject );
+                        refreshProject = null;
+                    }
+                    else
+                    {
+                        GradleUtil.importGradleProject( new File( location ), monitor );
+                    }
+                }
+                catch( CoreException e )
+                {
+                    return GradleCore.createErrorStatus( "Unable to import module project", e );
+                }
+
+                return Status.OK_STATUS;
+            }
+
+        }.schedule();
+
+        // To-Do need return the projects added
 
         return new ArrayList<>();
     }
