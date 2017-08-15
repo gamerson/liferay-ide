@@ -1,16 +1,3 @@
-/**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- */
 
 package com.liferay.ide.project.ui.quickfix;
 
@@ -42,224 +29,240 @@ import org.eclipse.jdt.ui.text.java.IQuickFixProcessor;
 import org.eclipse.jdt.ui.text.java.correction.CUCorrectionProposal;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.graphics.Image;
-
 import org.osgi.framework.Version;
 
 /**
  * @author Simon Jiang
  */
-@SuppressWarnings("restriction")
-public class LiferayDependencyQuickFix implements IQuickFixProcessor {
 
-	@Override
-	public IJavaCompletionProposal[] getCorrections(IInvocationContext context, IProblemLocation[] locations)
-		throws CoreException {
+@SuppressWarnings( "restriction" )
+public class LiferayDependencyQuickFix implements IQuickFixProcessor
+{
 
-		if ((locations == null) || (locations.length == 0)) {
-			return null;
-		}
+    @Override
+    public boolean hasCorrections( ICompilationUnit unit, int problemId )
+    {
+        switch( problemId )
+        {
+        case IProblem.ImportNotFound:
+        case IProblem.UndefinedType:
+            return true;
+        default:
+            return false;
+        }
+    }
 
-		List<IJavaCompletionProposal> resultingCollections = new ArrayList<>();
+    @Override
+    public IJavaCompletionProposal[] getCorrections( IInvocationContext context, IProblemLocation[] locations )
+        throws CoreException
+    {
+        if( locations == null || locations.length == 0 )
+        {
+            return null;
+        }
 
-		for (int i = 0; i < locations.length; i++) {
-			IProblemLocation curr = locations[i];
+        List<IJavaCompletionProposal> resultingCollections = new ArrayList<IJavaCompletionProposal>();
 
-			List<IJavaCompletionProposal> newProposals = _process(context, curr);
+        for( int i = 0; i < locations.length; i++ )
+        {
+            IProblemLocation curr = locations[i];
+            List<IJavaCompletionProposal> newProposals = process( context, curr );
+            
+            for( IJavaCompletionProposal newProposal : newProposals)
+            {
+                boolean existed = false;
+                for( IJavaCompletionProposal existedProposal : resultingCollections )
+                {
+                    if ( existedProposal.getDisplayString().equals( newProposal.getDisplayString() ) ) 
+                    {
+                        existed = true;
+                    }
+                }   
+                
+                if ( existed == false )
+                {
+                    resultingCollections.add( newProposal );
+                }
+            }
+        }
 
-			for (IJavaCompletionProposal newProposal : newProposals) {
-				boolean existed = false;
+        return resultingCollections.toArray( new IJavaCompletionProposal[resultingCollections.size()] );
+    }
 
-				for (IJavaCompletionProposal existedProposal : resultingCollections) {
-					if (existedProposal.getDisplayString().equals(newProposal.getDisplayString())) {
-						existed = true;
-					}
-				}
+    private List<IJavaCompletionProposal> process( IInvocationContext context, IProblemLocation problem )
+    {
+        int id = problem.getProblemId();
 
-				if (existed == false) {
-					resultingCollections.add(newProposal);
-				}
-			}
-		}
+        if( id == 0 )
+        {
+            return null;
+        }
+        List<IJavaCompletionProposal> proposals = new ArrayList<IJavaCompletionProposal>();
+        switch( id )
+        {
+        case IProblem.ImportNotFound:
+            proposals = processImportNotFoundProposals( context, problem );
+            break;
+        case IProblem.UndefinedType:
+            proposals = processUndefinedTypeProposals( context, problem );
+            break;
+        }
 
-		return resultingCollections.toArray(new IJavaCompletionProposal[resultingCollections.size()]);
-	}
+        return proposals;
+    }
 
-	@Override
-	public boolean hasCorrections(ICompilationUnit unit, int problemId) {
-		switch (problemId) {
-			case IProblem.ImportNotFound:
-			case IProblem.UndefinedType:
-				return true;
-			default:
-				return false;
-		}
-	}
+    private List<IJavaCompletionProposal> processImportNotFoundProposals(
+        IInvocationContext context, IProblemLocation problem )
+    {
+        ASTNode selectedNode = problem.getCoveringNode( context.getASTRoot() );
 
-	private IJavaCompletionProposal _createDepProposal(IInvocationContext context, ServiceContainer bundle) {
-		final String bundleGroup = bundle.getBundleGroup();
-		final String bundleName = bundle.getBundleName();
-		final String bundleVersion = bundle.getBundleVersion();
+        if( selectedNode == null )
+        {
+            return null;
+        }
 
-		return new CUCorrectionProposal("Add module dependency " + bundleName, context.getCompilationUnit(), null, -0) {
+        ImportDeclaration importDeclaration =
+            (ImportDeclaration) ASTNodes.getParent( selectedNode, ASTNode.IMPORT_DECLARATION );
 
-			@Override
-			public void apply(IDocument document) {
-				try {
-					IJavaProject javaProject = context.getCompilationUnit().getJavaProject();
+        if( importDeclaration == null )
+        {
+            return null;
+        }
 
-					IProject project = javaProject.getProject();
+        String importName = importDeclaration.getName().toString();
+        List<String> serviceWrapperList;
+        List<String> servicesList;
+        List<IJavaCompletionProposal> proposals = new ArrayList<IJavaCompletionProposal>();
+        try
+        {
+            serviceWrapperList = TargetPlatformUtil.getServiceWrapperDependencyList().getServiceList();
+            servicesList = TargetPlatformUtil.getServiceDependencyList().getServiceList();
 
-					ILiferayProject liferayProject = LiferayCore.create(project);
+            if( serviceWrapperList.contains( importName ) )
+            {
+                ServiceContainer bundle = TargetPlatformUtil.getServiceWrapperBundle( importName );
+                proposals.add( createDepProposal( context, bundle ) );
+            }
 
-					final IProjectBuilder builder = liferayProject.adapt(IProjectBuilder.class);
+            if( servicesList.contains( importName ) )
+            {
+                ServiceContainer bundle = TargetPlatformUtil.getServiceBundle( importName );
+                proposals.add( createDepProposal( context, bundle ) );
+            }
 
-					if (builder != null) {
-						Version retriveVersion = new Version(bundleVersion);
+            if( TargetPlatformUtil.getThirdPartyBundleList( importName ) != null )
+            {
+                ServiceContainer bundle = TargetPlatformUtil.getThirdPartyBundleList( importName );
+                proposals.add( createDepProposal( context, bundle ) );
+            }
+        }
+        catch( Exception e )
+        {
+            ProjectCore.logError( "Error processing import not found proposals", e );
+        }
 
-						String[] dependency = {
-							bundleGroup, bundleName, retriveVersion.getMajor() + "." + retriveVersion.getMinor() + ".0"
-						};
+        return proposals;
+    }
 
-						List<String[]> dependencyList = new ArrayList<>();
+    private List<IJavaCompletionProposal> processUndefinedTypeProposals(
+        IInvocationContext context, IProblemLocation problem )
+    {
+        ASTNode selectedNode = problem.getCoveringNode( context.getASTRoot() );
+        String fullyQualifiedName = null;
 
-						dependencyList.add(dependency);
-						builder.updateProjectDependency(project, dependencyList);
-					}
-				}
-				catch (Exception e) {
-					ProjectUI.logError("Error adding module dependency", e);
-				}
-			}
+        if( selectedNode instanceof Name )
+        {
+            Name node = (Name) selectedNode;
+            fullyQualifiedName = node.getFullyQualifiedName();
+        }
 
-			@Override
-			public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
-				return "Add module dependency";
-			}
+        List<String> serviceWrapperList;
+        List<String> servicesList;
+        boolean depWrapperCanFixed = false;
+        List<IJavaCompletionProposal> proposals = new ArrayList<IJavaCompletionProposal>();
 
-			@Override
-			public Image getImage() {
-				return ProjectUI.getPluginImageRegistry().get(ProjectUI.MODULE_DEPENDENCY_IAMGE_ID);
-			}
+        try
+        {
+            serviceWrapperList = TargetPlatformUtil.getServiceWrapperDependencyList().getServiceList();
+            servicesList = TargetPlatformUtil.getServiceDependencyList().getServiceList();
 
-		};
-	}
+            for( String wrapper : serviceWrapperList )
+            {
+                if( wrapper.endsWith( fullyQualifiedName ) )
+                {
+                    ServiceContainer bundle = TargetPlatformUtil.getServiceWrapperBundle( wrapper );
+                    proposals.add( createDepProposal( context, bundle ) );
+                }
+            }
 
-	private List<IJavaCompletionProposal> _process(IInvocationContext context, IProblemLocation problem) {
-		int id = problem.getProblemId();
+            if( !depWrapperCanFixed )
+            {
+                for( String service : servicesList )
+                {
+                    if( service.endsWith( fullyQualifiedName ) )
+                    {
+                        ServiceContainer bundle = TargetPlatformUtil.getServiceBundle( service );
+                        proposals.add( createDepProposal( context, bundle ) );
+                    }
+                }
+            }
+        }
+        catch( Exception e )
+        {
+            ProjectCore.logError( "Error processing undefined type proposals", e );
+        }
 
-		if (id == 0) {
-			return null;
-		}
+        return proposals;
+    }
 
-		List<IJavaCompletionProposal> proposals = new ArrayList<>();
+    private IJavaCompletionProposal createDepProposal( IInvocationContext context, ServiceContainer bundle )
+    {
+        final String bundleGroup = bundle.getBundleGroup();
+        final String bundleName = bundle.getBundleName();
+        final String bundleVersion = bundle.getBundleVersion();
 
-		switch (id) {
-			case IProblem.ImportNotFound:
-				proposals = _processImportNotFoundProposals(context, problem);
-				break;
-			case IProblem.UndefinedType:
-				proposals = _processUndefinedTypeProposals(context, problem);
-				break;
-		}
+        return new CUCorrectionProposal( "Add module dependency " + bundleName, context.getCompilationUnit(), null, -0)
+        {
 
-		return proposals;
-	}
+            @Override
+            public void apply( IDocument document )
+            {
+                try
+                {
+                    IJavaProject javaProject = context.getCompilationUnit().getJavaProject();
+                    IProject project = javaProject.getProject();
 
-	private List<IJavaCompletionProposal> _processImportNotFoundProposals(
-		IInvocationContext context, IProblemLocation problem) {
+                    ILiferayProject liferayProject = LiferayCore.create( project );
+                    final IProjectBuilder builder = liferayProject.adapt( IProjectBuilder.class );
 
-		ASTNode selectedNode = problem.getCoveringNode(context.getASTRoot());
+                    if( builder != null )
+                    {
+                        Version retriveVersion = new Version( bundleVersion );
 
-		if (selectedNode == null) {
-			return null;
-		}
+                        String[] dependency = new String[] { bundleGroup, bundleName,
+                            retriveVersion.getMajor() + "." + retriveVersion.getMinor() + ".0" };
+                        List<String[]> dependencyList = new ArrayList<String[]>();
+                        dependencyList.add( dependency );
+                        builder.updateProjectDependency( project, dependencyList );
+                    }
+                }
+                catch( Exception e )
+                {
+                    ProjectUI.logError( "Error adding module dependency", e );
+                }
+            }
 
-		ImportDeclaration importDeclaration = (ImportDeclaration)ASTNodes.getParent(
-			selectedNode, ASTNode.IMPORT_DECLARATION);
+            @Override
+            public Object getAdditionalProposalInfo( IProgressMonitor monitor )
+            {
+                return "Add module dependency";
+            }
 
-		if (importDeclaration == null) {
-			return null;
-		}
-
-		String importName = importDeclaration.getName().toString();
-		List<String> serviceWrapperList;
-		List<String> servicesList;
-		List<IJavaCompletionProposal> proposals = new ArrayList<>();
-
-		try {
-			serviceWrapperList = TargetPlatformUtil.getServiceWrapperList().getServiceList();
-
-			servicesList = TargetPlatformUtil.getServicesList().getServiceList();
-
-			if (serviceWrapperList.contains(importName)) {
-				ServiceContainer bundle = TargetPlatformUtil.getServiceWrapperBundle(importName);
-
-				proposals.add(_createDepProposal(context, bundle));
-			}
-
-			if (servicesList.contains(importName)) {
-				ServiceContainer bundle = TargetPlatformUtil.getServiceBundle(importName);
-
-				proposals.add(_createDepProposal(context, bundle));
-			}
-
-			if (TargetPlatformUtil.getThirdPartyBundleList(importName) != null) {
-				ServiceContainer bundle = TargetPlatformUtil.getThirdPartyBundleList(importName);
-
-				proposals.add(_createDepProposal(context, bundle));
-			}
-		}
-		catch (Exception e) {
-			ProjectCore.logError("Error processing import not found proposals", e);
-		}
-
-		return proposals;
-	}
-
-	private List<IJavaCompletionProposal> _processUndefinedTypeProposals(
-		IInvocationContext context, IProblemLocation problem) {
-
-		ASTNode selectedNode = problem.getCoveringNode(context.getASTRoot());
-		String fullyQualifiedName = null;
-
-		if (selectedNode instanceof Name) {
-			Name node = (Name)selectedNode;
-
-			fullyQualifiedName = node.getFullyQualifiedName();
-		}
-
-		List<String> serviceWrapperList;
-		List<String> servicesList;
-		boolean depWrapperCanFixed = false;
-		List<IJavaCompletionProposal> proposals = new ArrayList<>();
-
-		try {
-			serviceWrapperList = TargetPlatformUtil.getServiceWrapperList().getServiceList();
-			servicesList = TargetPlatformUtil.getServicesList().getServiceList();
-
-			for (String wrapper : serviceWrapperList) {
-				if (wrapper.endsWith(fullyQualifiedName)) {
-					ServiceContainer bundle = TargetPlatformUtil.getServiceWrapperBundle(wrapper);
-
-					proposals.add(_createDepProposal(context, bundle));
-				}
-			}
-
-			if (!depWrapperCanFixed) {
-				for (String service : servicesList) {
-					if (service.endsWith(fullyQualifiedName)) {
-						ServiceContainer bundle = TargetPlatformUtil.getServiceBundle(service);
-
-						proposals.add(_createDepProposal(context, bundle));
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			ProjectCore.logError("Error processing undefined type proposals", e);
-		}
-
-		return proposals;
-	}
-
+            @Override
+            public Image getImage()
+            {
+                return ProjectUI.getDefault().getImageRegistry().get( ProjectUI.MODULE_DEPENDENCY_IAMGE_ID );
+            }
+        };
+    }
 }
