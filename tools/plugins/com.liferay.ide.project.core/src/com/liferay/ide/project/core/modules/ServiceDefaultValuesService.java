@@ -15,42 +15,26 @@
 package com.liferay.ide.project.core.modules;
 
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.server.core.portal.PortalServer;
 
 import org.eclipse.sapphire.DefaultValueService;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
 
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class ServiceDefaultValuesService extends DefaultValueService {
 
 	@Override
 	protected String compute() {
-		NewLiferayModuleProjectOp op = _op();
+		final NewLiferayModuleProjectOp op = _op();
 
-		String template = op.getProjectTemplateName().content(true);
-
-		IServer runningServer = null;
-
-		IServer[] servers = ServerCore.getServers();
+		final String template = op.getProjectTemplateName().content(true);
 
 		String retVal = "";
 
 		if (template.equals("service-wrapper")) {
-			for (IServer server : servers) {
-				String serverId = server.getServerType().getId();
-
-				if (serverId.equals(PortalServer.ID)) {
-					runningServer = server;
-
-					break;
-				}
-			}
-
 			try {
-				ServiceContainer serviceWrapperList = new ServiceWrapperCommand(runningServer).execute();
+				ServiceContainer serviceWrapperList = new ServiceWrapperCommand().execute();
 
 				retVal = serviceWrapperList.getServiceList().get(0);
 			}
@@ -59,18 +43,8 @@ public class ServiceDefaultValuesService extends DefaultValueService {
 			}
 		}
 		else if (template.equals("service")) {
-			for (IServer server : servers) {
-				String serverId = server.getServerType().getId();
-
-				if ((server.getServerState() == IServer.STATE_STARTED) && serverId.equals(PortalServer.ID)) {
-					runningServer = server;
-
-					break;
-				}
-			}
-
 			try {
-				ServiceCommand serviceCommand = new ServiceCommand(runningServer);
+				ServiceCommand serviceCommand = new ServiceCommand();
 
 				ServiceContainer allServices = serviceCommand.execute();
 
