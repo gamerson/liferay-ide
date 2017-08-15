@@ -76,47 +76,63 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
         archetype.setArtifactId( gav[1] );
         archetype.setVersion( archetypeVersion );
 
-        final Properties properties = new Properties();
-
-        final ResolverConfiguration resolverConfig = new ResolverConfiguration();
-        ProjectImportConfiguration configuration = new ProjectImportConfiguration( resolverConfig );
-
-        final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
-            location, archetype, groupId, artifactId, version, javaPackage, properties, configuration, monitor );
-
-        if( newProjects == null || newProjects.size() == 0 )
+        new Job( "creating liferay workspace project" )
         {
-            retval = LiferayMavenCore.createErrorStatus( "Unable to create liferay workspace project from archetype." );
-        }
-        else
-        {
-            for( IProject newProject : newProjects )
+
+            @Override
+            protected IStatus run( IProgressMonitor monitor )
             {
-                String[] gradleFiles = new String[] { "build.gradle", "settings.gradle", "gradle.properties" };
-
-                for( String path : gradleFiles )
+                try
                 {
-                    IFile gradleFile = newProject.getFile( path );
+                    final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
+                        location, archetype, groupId, artifactId, version, javaPackage, new Properties(),
+                        new ProjectImportConfiguration( new ResolverConfiguration() ), monitor );
 
-                    if( gradleFile.exists() )
+                    if( newProjects == null || newProjects.size() == 0 )
                     {
-                        gradleFile.delete( true, monitor );
+                        return LiferayMavenCore.createErrorStatus(
+                            "Unable to create liferay workspace project from archetype." );
+                    }
+                    else
+                    {
+                        for( IProject newProject : newProjects )
+                        {
+                            String[] gradleFiles =
+                                new String[] { "build.gradle", "settings.gradle", "gradle.properties" };
+
+                            for( String path : gradleFiles )
+                            {
+                                IFile gradleFile = newProject.getFile( path );
+
+                                if( gradleFile.exists() )
+                                {
+                                    gradleFile.delete( true, monitor );
+                                }
+                            }
+                        }
+                    }
+
+                    boolean isInitBundle = op.getProvisionLiferayBundle().content();
+
+                    if( retval.isOK() && isInitBundle )
+                    {
+                        IProject workspaceProject = ProjectUtil.getProject( projectName );
+                        String bundleUrl = op.getBundleUrl().content();
+
+                        final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+
+                         mavenProjectBuilder.initBundle( workspaceProject, bundleUrl, monitor );
                     }
                 }
+                catch( CoreException e )
+                {
+                    return LiferayMavenCore.createErrorStatus( "Unable to create liferay workspace project ", e );
+                }
+
+                return Status.OK_STATUS;
             }
-        }
 
-        boolean isInitBundle = op.getProvisionLiferayBundle().content();
-
-        if( retval.isOK() && isInitBundle )
-        {
-            IProject workspaceProject = ProjectUtil.getProject( projectName );
-            String bundleUrl = op.getBundleUrl().content();
-
-            final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
-
-            mavenProjectBuilder.initBundle( workspaceProject, bundleUrl, monitor );
-        }
+        }.schedule();
 
         return retval;
     }
