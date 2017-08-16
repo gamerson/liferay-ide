@@ -17,9 +17,11 @@ package com.liferay.ide.maven.core;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceProjectProvider;
+import com.liferay.ide.server.util.ServerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
@@ -75,47 +78,63 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
         archetype.setArtifactId( gav[1] );
         archetype.setVersion( archetypeVersion );
 
-        final Properties properties = new Properties();
-
-        final ResolverConfiguration resolverConfig = new ResolverConfiguration();
-        ProjectImportConfiguration configuration = new ProjectImportConfiguration( resolverConfig );
-
-        final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
-            location, archetype, groupId, artifactId, version, javaPackage, properties, configuration, monitor );
-
-        if( newProjects == null || newProjects.size() == 0 )
+        new Job( "creating liferay workspace project" )
         {
-            retval = LiferayMavenCore.createErrorStatus( "Unable to create liferay workspace project from archetype." );
-        }
-        else
-        {
-            for( IProject newProject : newProjects )
+
+            @Override
+            protected IStatus run( IProgressMonitor monitor )
             {
-                String[] gradleFiles = new String[] { "build.gradle", "settings.gradle", "gradle.properties" };
-
-                for( String path : gradleFiles )
+                try
                 {
-                    IFile gradleFile = newProject.getFile( path );
+                    final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
+                        location, archetype, groupId, artifactId, version, javaPackage, new Properties(),
+                        new ProjectImportConfiguration( new ResolverConfiguration() ), monitor );
 
-                    if( gradleFile.exists() )
+                    if( newProjects == null || newProjects.size() == 0 )
                     {
-                        gradleFile.delete( true, monitor );
+                        return LiferayMavenCore.createErrorStatus(
+                            "Unable to create liferay workspace project from archetype." );
+                    }
+                    else
+                    {
+                        for( IProject newProject : newProjects )
+                        {
+                            String[] gradleFiles =
+                                new String[] { "build.gradle", "settings.gradle", "gradle.properties" };
+
+                            for( String path : gradleFiles )
+                            {
+                                IFile gradleFile = newProject.getFile( path );
+
+                                if( gradleFile.exists() )
+                                {
+                                    gradleFile.delete( true, monitor );
+                                }
+                            }
+                        }
+                    }
+
+                    boolean isInitBundle = op.getProvisionLiferayBundle().content();
+
+                    if( retval.isOK() && isInitBundle )
+                    {
+                        IProject workspaceProject = ProjectUtil.getProject( projectName );
+                        String bundleUrl = op.getBundleUrl().content();
+
+                        final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+
+                        mavenProjectBuilder.execInitBundle( workspaceProject, "init-bundle", bundleUrl, monitor );
                     }
                 }
+                catch( CoreException e )
+                {
+                    return LiferayMavenCore.createErrorStatus( "Unable to create liferay workspace project ", e );
+                }
+
+                return Status.OK_STATUS;
             }
-        }
 
-        boolean isInitBundle = op.getProvisionLiferayBundle().content();
-
-        if( retval.isOK() && isInitBundle )
-        {
-            IProject workspaceProject = ProjectUtil.getProject( projectName );
-            String bundleUrl = op.getBundleUrl().content();
-
-            final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
-
-            mavenProjectBuilder.execInitBundle( workspaceProject, "init-bundle", bundleUrl, monitor );
-        }
+        }.schedule();
 
         return retval;
     }
@@ -144,7 +163,8 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
     }
 
     @Override
-    public IStatus importProject( String location, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
+    public IStatus importProject(
+        String location, String serverName, IProgressMonitor monitor, boolean initBundle, String bundleUrl )
     {
         IStatus retval = Status.OK_STATUS;
 
@@ -158,11 +178,38 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
 
             if( initBundle )
             {
-                IProject workspaceProject = ProjectUtil.getProject( projectName );
+                new Job( "init liferay bundle" )
+                {
 
-                final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+                    @Override
+                    protected IStatus run( IProgressMonitor monitor )
+                    {
+                        IProject workspaceProject = ProjectUtil.getProject( projectName );
 
-                mavenProjectBuilder.execInitBundle( workspaceProject, "init-bundle", bundleUrl, monitor );
+                        final MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder( workspaceProject );
+
+                        try
+                        {
+                            IStatus status = mavenProjectBuilder.execInitBundle(
+                                workspaceProject, "init-bundle", bundleUrl, monitor );
+
+                            final IPath bundlesLocation = LiferayWorkspaceUtil.getHomeLocation( location );
+
+                            if( bundlesLocation.toFile().exists() )
+                            {
+                                ServerUtil.addPortalRuntimeAndServer( serverName, bundlesLocation, monitor );
+                            }
+
+                            return status;
+                        }
+                        catch( CoreException e )
+                        {
+                            return LiferayMavenCore.createErrorStatus( "Unable to download liferay bundle", e );
+                        }
+                    }
+
+                }.schedule();
+
             }
         }
         catch( Exception e )

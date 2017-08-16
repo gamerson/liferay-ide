@@ -100,7 +100,8 @@ public class GradleProjectBuilder extends AbstractProjectBuilder
     }
 
     @Override
-    public IStatus execInitBundle( IProject project, String taskName,  String bundleUrl, IProgressMonitor monitor ) throws CoreException
+    public IStatus execInitBundle( IProject project, String taskName, String bundleUrl, IProgressMonitor monitor )
+        throws CoreException
     {
         String bundleUrlProperty = "\n\nliferay.workspace.bundle.url=" + bundleUrl;
 

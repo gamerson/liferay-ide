@@ -18,6 +18,8 @@ package com.liferay.ide.gradle.core;
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.util.ASTUtil;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.model.ProjectName;
 import com.liferay.ide.project.core.modules.BladeCLI;
@@ -32,11 +34,13 @@ import java.util.List;
 
 import org.eclipse.buildship.core.configuration.GradleProjectNature;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
 
@@ -165,6 +169,8 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
                 }
             }
 
+            ASTUtil.addProperties( projectLocation, properties );
+
             boolean hasGradleWorkspace = LiferayWorkspaceUtil.hasGradleWorkspace();
             boolean useDefaultLocation = op.getUseDefaultLocation().content( true );
             boolean inWorkspacePath = false;
@@ -181,14 +187,38 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
                 }
             }
 
-            if( ( hasGradleWorkspace && useDefaultLocation ) || inWorkspacePath )
+            final boolean isInWorkspace = inWorkspacePath;
+            final File projectDir = projectLocation.toFile();
+
+            new Job( "creating project" )
             {
-                GradleUtil.refreshGradleProject( liferayWorkspaceProject );
-            }
-            else
-            {
-                GradleUtil.importGradleProject( projectLocation.toFile(), monitor );
-            }
+
+                @Override
+                protected IStatus run( IProgressMonitor monitor )
+                {
+                    try
+                    {
+                        if( ( hasGradleWorkspace && useDefaultLocation ) || isInWorkspace )
+                        {
+                            GradleUtil.refreshGradleProject( liferayWorkspaceProject );
+                        }
+                        else
+                        {
+                            GradleUtil.importGradleProject( projectDir, monitor );
+                        }
+
+                        CoreUtil.getProject( projectName ).refreshLocal( IResource.DEPTH_INFINITE, monitor );
+
+                    }
+                    catch( CoreException e )
+                    {
+                        return GradleCore.createErrorStatus( "Unable to create project", e );
+                    }
+
+                    return Status.OK_STATUS;
+                }
+
+            }.schedule();
         }
         catch( Exception e )
         {
@@ -197,8 +227,6 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
 
         return retval;
     }
-
-
 
     @Override
     public IStatus validateProjectLocation( String projectName, IPath path )

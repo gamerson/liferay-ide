@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
@@ -50,8 +51,6 @@ public class MavenModuleFragmentProjectProvider extends LiferayMavenProjectProvi
     @Override
     public IStatus createNewProject( NewModuleFragmentOp op, IProgressMonitor monitor ) throws CoreException
     {
-        IStatus retval = Status.OK_STATUS;
-
         final String projectName = op.getProjectName().content();
 
         IPath location = PathBridge.create( op.getLocation().content() );
@@ -83,41 +82,61 @@ public class MavenModuleFragmentProjectProvider extends LiferayMavenProjectProvi
         properties.put( "buildType", "maven" );
         properties.put( "projectType", "standalone" );
 
-        final IProjectConfigurationManager projectConfigurationManager = MavenPlugin.getProjectConfigurationManager();
-
-        final ResolverConfiguration resolverConfig = new ResolverConfiguration();
-        ProjectImportConfiguration configuration = new ProjectImportConfiguration( resolverConfig );
-
-        final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
-            location, archetype, groupId, artifactId, version, javaPackage, properties, configuration, monitor );
-
-        NewModuleFragmentOpMethods.copyOverrideFiles( op );
-
-        if( newProjects == null || newProjects.size() == 0 )
+        new Job( "creating module fragment project" )
         {
-            return LiferayMavenCore.createErrorStatus( "Unable to create fragment project from archetype." );
-        }
-        else
-        {
-            for( IProject newProject : newProjects )
+
+            @Override
+            protected IStatus run( IProgressMonitor monitor )
             {
-                String[] gradleFiles = new String[] { "build.gradle", "settings.gradle" };
-
-                for( String path : gradleFiles )
+                try
                 {
-                    IFile gradleFile = newProject.getFile( path );
 
-                    if( gradleFile.exists() )
+                    final IProjectConfigurationManager projectConfigurationManager =
+                        MavenPlugin.getProjectConfigurationManager();
+
+                    final List<IProject> newProjects = projectConfigurationManager.createArchetypeProjects(
+                        location, archetype, groupId, artifactId, version, javaPackage, properties,
+                        new ProjectImportConfiguration( new ResolverConfiguration() ), monitor );
+
+                    NewModuleFragmentOpMethods.copyOverrideFiles( op );
+
+                    if( newProjects == null || newProjects.size() == 0 )
                     {
-                        gradleFile.delete( true, monitor );
+                        return LiferayMavenCore.createErrorStatus(
+                            "Unable to create fragment project from archetype." );
                     }
+                    else
+                    {
+                        for( IProject newProject : newProjects )
+                        {
+                            String[] gradleFiles = new String[] { "build.gradle", "settings.gradle" };
+
+                            for( String path : gradleFiles )
+                            {
+                                IFile gradleFile = newProject.getFile( path );
+
+                                if( gradleFile.exists() )
+                                {
+                                    gradleFile.delete( true, monitor );
+                                }
+                            }
+
+                            newProject.refreshLocal( IResource.DEPTH_INFINITE, null );
+                        }
+                    }
+
+                }
+                catch( CoreException e )
+                {
+                    return LiferayMavenCore.createErrorStatus( "Unable to create module fragment project", e );
                 }
 
-                newProject.refreshLocal( IResource.DEPTH_INFINITE, null );
+                return Status.OK_STATUS;
             }
-        }
 
-        return retval;
+        }.schedule();
+
+        return Status.OK_STATUS;
     }
 
     @Override
@@ -148,4 +167,5 @@ public class MavenModuleFragmentProjectProvider extends LiferayMavenProjectProvi
     {
         return Status.OK_STATUS;
     }
+
 }
