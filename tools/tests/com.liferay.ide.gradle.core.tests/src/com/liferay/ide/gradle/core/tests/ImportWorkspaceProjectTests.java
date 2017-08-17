@@ -47,6 +47,7 @@ import org.junit.Test;
  */
 public class ImportWorkspaceProjectTests
 {
+
     @Before
     public void clearWorkspace() throws Exception
     {
@@ -81,10 +82,10 @@ public class ImportWorkspaceProjectTests
 
         Util.waitForBuildAndValidation();
 
-        assertNotLiferayProject("liferay-workspace-ee");
-        assertNotLiferayProject("aws");
-        assertNotLiferayProject("docker");
-        assertNotLiferayProject("jenkins");
+        assertNotLiferayProject( "liferay-workspace-ee" );
+        assertNotLiferayProject( "aws" );
+        assertNotLiferayProject( "docker" );
+        assertNotLiferayProject( "jenkins" );
     }
 
     @Test
@@ -105,13 +106,13 @@ public class ImportWorkspaceProjectTests
 
         op.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) );
 
+        Util.waitForBuildAndValidation();
+
         IProject eeProject = CoreUtil.getProject( "testWorkspace" );
 
         assertNotNull( eeProject );
 
-        Util.waitForBuildAndValidation();
-
-        assertNotLiferayProject("testWorkspace");
+        assertNotLiferayProject( "testWorkspace" );
         assertLiferayProject( "sample-portlet" );
 
         File originalProperities = new File( "projects/testWorkspace/gradle.properties" );
@@ -152,11 +153,11 @@ public class ImportWorkspaceProjectTests
 
         op.execute( ProgressMonitorBridge.create( monitor ) );
 
+        Util.waitForBuildAndValidation();
+
         IProject eeProject = CoreUtil.getProject( "testWorkspace" );
 
         assertNotNull( eeProject );
-
-        Util.waitForBuildAndValidation();
 
         eeProject.refreshLocal( IResource.DEPTH_INFINITE, monitor );
 

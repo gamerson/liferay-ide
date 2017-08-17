@@ -27,6 +27,7 @@ import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.tests.ProjectCoreBase;
+import com.liferay.ide.project.core.tests.modules.Util;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
@@ -91,13 +92,13 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
 
         assertNotNull( message );
 
-        assertEquals( "A project with that name(ignore case) already exists.", message );
+        assertEquals( "Target project folder is not empty.", message );
 
         op.setWorkspaceName( "ExistingProject" );
 
         message = op.validation().message();
 
-        assertTrue( message.equals( "A project with that name(ignore case) already exists." ) );
+        assertEquals( "Target project folder is not empty.", message );
 
         String projectName = "test-liferay-workspace";
 
@@ -108,6 +109,8 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
         op.setLocation( workspaceLocation.toPortableString() );
 
         op.execute( new ProgressMonitor() );
+
+        Util.waitForBuildAndValidation();
 
         String wsLocation = workspaceLocation.append( projectName ).toPortableString();
 
@@ -126,6 +129,10 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
 
         moduleProjectOp.setProjectName( "testThemeWarDefault" );
         moduleProjectOp.setProjectTemplateName( "theme" );
+
+        String location = moduleProjectOp.getLocation().content().toOSString();
+
+        assertEquals( new File( wsFile, "wars" ).getPath(), location );
 
         moduleProjectOp.execute( new ProgressMonitor() );
 

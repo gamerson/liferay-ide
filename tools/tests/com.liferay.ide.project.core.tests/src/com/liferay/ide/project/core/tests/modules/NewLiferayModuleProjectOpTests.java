@@ -207,6 +207,7 @@ public class NewLiferayModuleProjectOpTests
 
         assertEquals( "OK", exStatus.message() );
 
+        Util.waitForBuildAndValidation();
         IProject modPorject = CoreUtil.getProject( op.getProjectName().content() );
         modPorject.open( new NullProgressMonitor() );
 
@@ -239,6 +240,8 @@ public class NewLiferayModuleProjectOpTests
             NewLiferayModuleProjectOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
 
         assertTrue( exStatus.message(), exStatus.ok() );
+
+        Util.waitForBuildAndValidation();
 
         IProject modPorject = CoreUtil.getProject( op.getProjectName().content() );
         modPorject.open( new NullProgressMonitor() );

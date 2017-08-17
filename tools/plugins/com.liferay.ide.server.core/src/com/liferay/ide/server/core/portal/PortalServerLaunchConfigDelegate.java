@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.core.util.CoreUtil;
@@ -31,7 +32,6 @@ import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-
 
 /**
  * @author Gregory Amerson

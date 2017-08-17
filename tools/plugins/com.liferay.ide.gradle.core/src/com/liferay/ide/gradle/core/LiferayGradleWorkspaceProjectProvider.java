@@ -109,6 +109,11 @@ public class LiferayGradleWorkspaceProjectProvider extends AbstractLiferayProjec
                     return Status.OK_STATUS;
                 }
 
+                @Override
+                public boolean belongsTo( Object family )
+                {
+                    return family != null && family.toString().equals( GradleCore.CreateLiferayWorkspaceJobFamilyId );
+                }
             }.schedule();
 
             if( initBundle )
@@ -166,6 +171,11 @@ public class LiferayGradleWorkspaceProjectProvider extends AbstractLiferayProjec
                         return Status.OK_STATUS;
                     }
 
+                    @Override
+                    public boolean belongsTo( Object family )
+                    {
+                        return family != null && family.toString().equals( GradleCore.InitBundleJobFamilyId );
+                    }
                 }.schedule();
             }
         }

@@ -81,19 +81,19 @@ public class ImportPluginsSDKProjectTests extends ProjectCoreBase
     @Override
     protected IPath getLiferayPluginsSdkDir()
     {
-        return ProjectCore.getDefault().getStateLocation().append( "com.liferay.portal.plugins.sdk-7.0" );
+        return ProjectCore.getDefault().getStateLocation().append( "com.liferay.portal.plugins.sdk-1.0.11-withdependencies" );
     }
 
     @Override
     protected IPath getLiferayPluginsSDKZip()
     {
-        return getLiferayBundlesPath().append( "com.liferay.portal.plugins.sdk-7.0-ga3-20160804222206210.zip" );
+        return getLiferayBundlesPath().append( "com.liferay.portal.plugins.sdk-1.0.11-withdependencies-20170613175008905.zip" );
     }
 
     @Override
     protected String getLiferayPluginsSdkZipFolder()
     {
-        return "com.liferay.portal.plugins.sdk-7.0/";
+        return "com.liferay.portal.plugins.sdk-1.0.11-withdependencies/";
     }
 
 

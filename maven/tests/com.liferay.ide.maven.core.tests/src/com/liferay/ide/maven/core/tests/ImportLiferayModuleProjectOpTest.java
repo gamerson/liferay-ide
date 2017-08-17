@@ -99,6 +99,8 @@ public class ImportLiferayModuleProjectOpTest
         assertTrue( importOp.validation().ok() );
         assertTrue( importOp.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) ).ok() );
 
+        Util.waitForBuildAndValidation();
+
         IProject project = ProjectUtil.getProject( projectName );
         assertTrue( project.exists() );
 

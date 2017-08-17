@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
+import com.liferay.ide.project.core.tests.modules.Util;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
@@ -47,6 +48,8 @@ public class LiferayWorkspaceUtilTests
         {
             op.execute( new ProgressMonitor() );
         }
+
+        Util.waitForBuildAndValidation();
 
         IProject workspaceProject = CoreUtil.getProject( "test-liferay-workspace" );
 

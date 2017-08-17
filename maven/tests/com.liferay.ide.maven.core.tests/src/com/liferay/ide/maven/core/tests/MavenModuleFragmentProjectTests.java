@@ -133,6 +133,8 @@ public class MavenModuleFragmentProjectTests extends ServerCoreBase
 
                 assertTrue( gradleExeStatus.ok() );
 
+                Util.waitForBuildAndValidation();
+
                 IProject existedGradleProject = CoreUtil.getProject( op.getProjectName().content() );
 
                 assertNotNull( existedGradleProject );
@@ -159,6 +161,8 @@ public class MavenModuleFragmentProjectTests extends ServerCoreBase
                     NewModuleFragmentOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
 
                 assertTrue( mavenExeStatus.ok() );
+
+                Util.waitForBuildAndValidation();
 
                 IProject existedMavenProject = CoreUtil.getProject( op.getProjectName().content() );
 

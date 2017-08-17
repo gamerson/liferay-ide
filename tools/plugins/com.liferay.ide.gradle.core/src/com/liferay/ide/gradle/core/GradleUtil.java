@@ -126,8 +126,6 @@ public class GradleUtil
 
         build.synchronize( NewProjectHandler.IMPORT_AND_MERGE, AsyncHandler.NO_OP );
 
-        waitImport();
-
         return Status.OK_STATUS;
     }
 

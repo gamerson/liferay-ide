@@ -44,6 +44,8 @@ public class GradleCore extends Plugin
     public static final String PLUGIN_ID = "com.liferay.ide.gradle.core";
 
     public static final String JobFamilyId = "CheckingGradleConfiguration";
+    public static final String CreateLiferayWorkspaceJobFamilyId = "CreateLiferayWorkspaceFs";
+    public static final String InitBundleJobFamilyId = "InitBundle";
 
     public static final File customModelCache = LiferayCore.GLOBAL_SETTINGS_PATH.toFile();
     

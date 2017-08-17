@@ -132,6 +132,11 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
                 return Status.OK_STATUS;
             }
 
+            @Override
+            public boolean belongsTo( Object family )
+            {
+                return family != null && family.toString().equals( LiferayMavenCore.JobFamilyId );
+            }
         }.schedule();
 
         return retval;

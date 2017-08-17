@@ -43,17 +43,17 @@ public class NewLiferayPluginProjectOp7sp3Tests extends NewLiferayPluginProjectO
 
     protected IPath getLiferayPluginsSdkDir()
     {
-        return ProjectCore.getDefault().getStateLocation().append( "com.liferay.portal.plugins.sdk-1.0.9-withdependencies" );
+        return ProjectCore.getDefault().getStateLocation().append( "com.liferay.portal.plugins.sdk-1.0.11-withdependencies" );
     }
 
     protected IPath getLiferayPluginsSDKZip()
     {
-        return getLiferayBundlesPath().append( "com.liferay.portal.plugins.sdk-1.0.9-withdependencies.zip" );
+        return getLiferayBundlesPath().append( "com.liferay.portal.plugins.sdk-1.0.11-withdependencies-20170613175008905.zip" );
     }
 
     protected String getLiferayPluginsSdkZipFolder()
     {
-        return "com.liferay.portal.plugins.sdk-1.0.9-withdependencies/";
+        return "com.liferay.portal.plugins.sdk-1.0.11-withdependencies/";
     }
 
     @AfterClass

@@ -71,7 +71,6 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
                 hasLiferayWorkspace = LiferayWorkspaceUtil.hasWorkspace();
                 hasGradleWorkspace = LiferayWorkspaceUtil.hasGradleWorkspace();
                 hasMavenWorkspace = LiferayWorkspaceUtil.hasMavenWorkspace();
-
             }
             catch( Exception e )
             {

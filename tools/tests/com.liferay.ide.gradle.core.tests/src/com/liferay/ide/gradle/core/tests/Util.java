@@ -47,7 +47,7 @@ public class Util
 
     public static void deleteAllWorkspaceProjects() throws Exception
     {
-        for( IProject project : CoreUtil.getAllProjects())
+        for( IProject project : CoreUtil.getAllProjects() )
         {
             project.delete( true, new NullProgressMonitor() );
         }
@@ -81,18 +81,16 @@ public class Util
         }
     }
 
-    public static void waitForBuildAndValidation() throws Exception
+    public static void waitForInitBundle() throws Exception
     {
         IWorkspaceRoot root = null;
 
         try
         {
             ResourcesPlugin.getWorkspace().checkpoint( true );
-            Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
-            Job.getJobManager().join( ResourcesPlugin.FAMILY_MANUAL_BUILD, new NullProgressMonitor() );
-            Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
-            Job.getJobManager().join( CorePlugin.GRADLE_JOB_FAMILY, new NullProgressMonitor() );
-            Job.getJobManager().join( GradleCore.JobFamilyId, new NullProgressMonitor() );
+
+            Job.getJobManager().join( GradleCore.CreateLiferayWorkspaceJobFamilyId, new NullProgressMonitor() );
+            Job.getJobManager().join( GradleCore.InitBundleJobFamilyId, new NullProgressMonitor() );
             Thread.sleep( 200 );
             Job.getJobManager().beginRule( root = ResourcesPlugin.getWorkspace().getRoot(), null );
         }
@@ -116,7 +114,44 @@ public class Util
             }
         }
     }
-    
+
+    public static void waitForBuildAndValidation() throws Exception
+    {
+        IWorkspaceRoot root = null;
+
+        try
+        {
+            ResourcesPlugin.getWorkspace().checkpoint( true );
+            Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
+            Job.getJobManager().join( ResourcesPlugin.FAMILY_MANUAL_BUILD, new NullProgressMonitor() );
+            Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
+            Job.getJobManager().join( CorePlugin.GRADLE_JOB_FAMILY, new NullProgressMonitor() );
+            Job.getJobManager().join( GradleCore.CreateLiferayWorkspaceJobFamilyId, new NullProgressMonitor() );
+            Job.getJobManager().join( GradleCore.InitBundleJobFamilyId, new NullProgressMonitor() );
+            Thread.sleep( 200 );
+            Job.getJobManager().beginRule( root = ResourcesPlugin.getWorkspace().getRoot(), null );
+        }
+        catch( InterruptedException e )
+        {
+            failTest( e );
+        }
+        catch( IllegalArgumentException e )
+        {
+            failTest( e );
+        }
+        catch( OperationCanceledException e )
+        {
+            failTest( e );
+        }
+        finally
+        {
+            if( root != null )
+            {
+                Job.getJobManager().endRule( root );
+            }
+        }
+    }
+
     public static void failTest( Exception e )
     {
         StringWriter s = new StringWriter();

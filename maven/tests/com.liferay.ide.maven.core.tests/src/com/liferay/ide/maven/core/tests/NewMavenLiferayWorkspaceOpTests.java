@@ -49,6 +49,8 @@ public class NewMavenLiferayWorkspaceOpTests
 
         op.execute( new ProgressMonitor() );
 
+        Util.waitForBuildAndValidation();
+
         String projectLocation = workspaceLocation.append( projectName ).toPortableString();
 
         File pomFile = new File( projectLocation, "pom.xml" );

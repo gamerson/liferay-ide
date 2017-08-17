@@ -46,6 +46,8 @@ public class LiferayMavenCore extends Plugin
     // set maven project context root with suffix
     public static final String PREF_ADD_MAVEN_PLUGIN_SUFFIX = "add-maven-plugin-suffix";
 
+    public static final String JobFamilyId = "CreatingMavenProject";
+
     public static final String PREF_ARCHETYPE_GAV_EXT = "archetype-gav-ext";
     public static final String PREF_ARCHETYPE_GAV_HOOK = "archetype-gav-hook";
     public static final String PREF_ARCHETYPE_GAV_ICEFACES = "archetype-gav-icefaces";

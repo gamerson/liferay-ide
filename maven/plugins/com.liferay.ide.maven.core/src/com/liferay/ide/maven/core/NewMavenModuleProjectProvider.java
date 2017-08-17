@@ -190,6 +190,11 @@ public class NewMavenModuleProjectProvider extends LiferayMavenProjectProvider
                 return Status.OK_STATUS;
             }
 
+            @Override
+            public boolean belongsTo( Object family )
+            {
+                return family != null && family.toString().equals( LiferayMavenCore.JobFamilyId );
+            }
         }.schedule();
 
         return Status.OK_STATUS;

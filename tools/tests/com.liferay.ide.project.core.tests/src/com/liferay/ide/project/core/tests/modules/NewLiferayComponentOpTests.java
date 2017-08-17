@@ -12,6 +12,7 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.tests.modules;
 
 import static org.junit.Assert.assertEquals;
@@ -24,7 +25,6 @@ import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.NewLiferayComponentOp;
 import com.liferay.ide.project.core.modules.NewLiferayComponentOpMethods;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
-import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -131,9 +131,10 @@ public class NewLiferayComponentOpTests
         pop.setProjectTemplateName( "portlet" );
         pop.setProjectProvider( "gradle-module" );
 
-        Status modulePorjectStatus = NewLiferayModuleProjectOpMethods.execute( pop, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+        Status modulePorjectStatus = pop.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) );
         assertTrue( modulePorjectStatus.ok() );
 
+        Util.waitForBuildAndValidation();
         IProject modPorject = CoreUtil.getProject( pop.getProjectName().content() );
         modPorject.open( new NullProgressMonitor() );
 

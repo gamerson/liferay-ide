@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -146,6 +147,7 @@ public class LiferayMavenProjectTests extends LiferayMavenProjectTestCase
     }
 
     @Test
+    @Ignore
     public void testNewLiferayThemeProject() throws Exception
     {
         NewLiferayPluginProjectOp op = NewLiferayPluginProjectOp.TYPE.instantiate();

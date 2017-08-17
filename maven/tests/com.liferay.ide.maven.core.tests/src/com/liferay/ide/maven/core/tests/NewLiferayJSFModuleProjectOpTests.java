@@ -23,6 +23,7 @@ import com.liferay.ide.core.ILiferayProjectImporter;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.maven.core.LiferayMavenCore;
 import com.liferay.ide.project.core.jsf.NewLiferayJSFModuleProjectOp;
 import com.liferay.ide.project.core.jsf.NewLiferayJSFModuleProjectOpMethods;
 import com.liferay.ide.project.core.tests.ProjectCoreBase;
@@ -195,6 +196,8 @@ public class NewLiferayJSFModuleProjectOpTests extends ProjectCoreBase
             existedProjectop, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
         assertTrue( exStatus.ok() );
 
+        waitForBuildAndValidation2();
+
         IProject existedProject = CoreUtil.getProject( existedProjectop.getProjectName().content() );
         assertNotNull( existedProject );
     }
@@ -218,12 +221,16 @@ public class NewLiferayJSFModuleProjectOpTests extends ProjectCoreBase
     public void testNewLiferayJSFWarWorkspaceMavenJsfProject() throws Exception
     {
         importWorkspaceProject( "testWorkspace" );
+
+        waitForBuildAndValidation2();
+
         IProject workspaceProject = CoreUtil.getProject( "testWorkspace" );
         assertNotNull( workspaceProject );
         NewLiferayJSFModuleProjectOp op = NewLiferayJSFModuleProjectOp.TYPE.instantiate();
         op.setProjectProvider( "maven-jsf" );
         op.setProjectName( "Test13" );
         op.setTemplateName( "jsf" );
+
         assertNotNull( workspaceProject.getLocation() );
         op.setLocation( workspaceProject.getLocation().append( "wars" ).toOSString() );
         Status status = NewLiferayJSFModuleProjectOpMethods.execute(
@@ -354,6 +361,7 @@ public class NewLiferayJSFModuleProjectOpTests extends ProjectCoreBase
             Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
             Job.getJobManager().join( ValidatorManager.VALIDATOR_JOB_FAMILY, new NullProgressMonitor() );
             Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
+            Job.getJobManager().join( LiferayMavenCore.JobFamilyId, new NullProgressMonitor() );
             Thread.sleep( 800 );
             Job.getJobManager().beginRule( root = ResourcesPlugin.getWorkspace().getRoot(), null );
         }

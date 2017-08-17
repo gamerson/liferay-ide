@@ -190,7 +190,7 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
             final boolean isInWorkspace = inWorkspacePath;
             final File projectDir = projectLocation.toFile();
 
-            new Job( "creating project" )
+            Job job = new Job( "creating project" )
             {
 
                 @Override
@@ -218,7 +218,14 @@ public class GradleProjectProvider extends AbstractLiferayProjectProvider
                     return Status.OK_STATUS;
                 }
 
-            }.schedule();
+                @Override
+                public boolean belongsTo( Object family )
+                {
+                    return family != null && family.toString().equals( GradleCore.JobFamilyId );
+                }
+            };
+
+            job.schedule();
         }
         catch( Exception e )
         {
