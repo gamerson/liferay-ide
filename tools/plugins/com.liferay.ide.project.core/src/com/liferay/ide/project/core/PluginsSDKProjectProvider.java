@@ -14,24 +14,6 @@
  *******************************************************************************/
 package com.liferay.ide.project.core;
 
-import com.liferay.ide.core.AbstractLiferayProjectProvider;
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
-import com.liferay.ide.project.core.model.PluginType;
-import com.liferay.ide.project.core.model.ProjectName;
-import com.liferay.ide.project.core.util.ClasspathUtil;
-import com.liferay.ide.project.core.util.ProjectImportUtil;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.project.core.util.WizardUtil;
-import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.server.core.ILiferayRuntime;
-import com.liferay.ide.server.core.portal.PortalBundle;
-import com.liferay.ide.server.util.ServerUtil;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +39,24 @@ import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.platform.PathBridge;
 import org.eclipse.wst.server.core.IRuntime;
 import org.osgi.framework.Version;
+
+import com.liferay.ide.core.AbstractLiferayProjectProvider;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
+import com.liferay.ide.project.core.model.NewLiferayPluginProjectOpMethods;
+import com.liferay.ide.project.core.model.PluginType;
+import com.liferay.ide.project.core.model.ProjectName;
+import com.liferay.ide.project.core.util.ClasspathUtil;
+import com.liferay.ide.project.core.util.ProjectImportUtil;
+import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.core.util.WizardUtil;
+import com.liferay.ide.sdk.core.ISDKConstants;
+import com.liferay.ide.sdk.core.SDK;
+import com.liferay.ide.sdk.core.SDKUtil;
+import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.core.portal.PortalBundle;
+import com.liferay.ide.server.util.ServerUtil;
 
 
 /**
@@ -230,45 +230,53 @@ public class PluginsSDKProjectProvider extends AbstractLiferayProjectProvider im
         return retval;
     }
 
-    private static SDK getSDK( NewLiferayPluginProjectOp op ) throws CoreException
+    private static SDK getSDK( NewLiferayPluginProjectOp op )
     {
-        boolean validateSDK = false;
-
-        SDK sdk = SDKUtil.getWorkspaceSDK();
-
-        if( sdk != null )
+        SDK sdk = null;
+        try
         {
-            IStatus sdkStatus = sdk.validate();
+            boolean validateSDK = false;
 
-            if( sdkStatus.isOK() )
+            sdk = SDKUtil.getWorkspaceSDK();
+
+            if( sdk != null )
             {
-                validateSDK = true;
-            }
-        }
+                IStatus sdkStatus = sdk.validate();
 
-        if( validateSDK == false )
-        {
-            Path sdkLocation = op.getSdkLocation().content( true );
-
-            if( sdkLocation != null )
-            {
-                sdk = SDKUtil.createSDKFromLocation( PathBridge.create( sdkLocation ) );
-
-                if( sdk != null )
+                if( sdkStatus.isOK() )
                 {
-                    IStatus sdkStatus = sdk.validate();
+                    validateSDK = true;
+                }
+            }
 
-                    if( sdkStatus.isOK() )
+            if( validateSDK == false )
+            {
+                Path sdkLocation = op.getSdkLocation().content( true );
+
+                if( sdkLocation != null )
+                {
+                    sdk = SDKUtil.createSDKFromLocation( PathBridge.create( sdkLocation ) );
+
+                    if( sdk != null )
                     {
-                        validateSDK = true;
+                        IStatus sdkStatus = sdk.validate();
+
+                        if( sdkStatus.isOK() )
+                        {
+                            validateSDK = true;
+                        }
                     }
                 }
             }
-        }
 
-        if( sdk == null || !validateSDK )
+            if ( !validateSDK )
+            {
+                return null;
+            }
+        }
+        catch( CoreException e)
         {
-            throw new CoreException( ProjectCore.createErrorStatus( "Can't get correct sdk." ) );
+            return null;
         }
 
         return sdk;
@@ -296,6 +304,11 @@ public class PluginsSDKProjectProvider extends AbstractLiferayProjectProvider im
         final boolean separateJRE = true;
 
         SDK sdk = getSDK( op );
+
+        if ( sdk == null )
+        {
+            return ProjectCore.createErrorStatus( "Can not get correct SDK for " + fixedProjectName + ", Please check SDK configuration setting." );
+        }
 
         // workingDir should always be the directory of the type of plugin /sdk/portlets/ for a portlet, etc
         String workingDir = null;

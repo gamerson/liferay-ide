@@ -77,7 +77,9 @@ public class SDKClasspathContainerInitializer extends ClasspathContainerInitiali
         if ( bundle == null )
         {
             final String msg = "Invalid sdk properties setting.";
-            throw new CoreException( ProjectCore.createErrorStatus( msg ) );
+            //throw new CoreException( ProjectCore.createWarningStatus( msg ) );
+            ProjectCore.logError( ProjectCore.createWarningStatus( msg ) );
+            return;
         }
 
         IPath globalDir = bundle.getAppServerLibGlobalDir();
