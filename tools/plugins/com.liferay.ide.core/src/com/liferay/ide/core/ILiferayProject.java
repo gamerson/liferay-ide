@@ -14,6 +14,8 @@
  *******************************************************************************/
 package com.liferay.ide.core;
 
+import java.nio.file.Path;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
@@ -37,4 +39,5 @@ public interface ILiferayProject
 
     IFolder[] getSourceFolders();
 
+    Path[] getExternalUserLibs();
 }

@@ -15,18 +15,6 @@
 
 package com.liferay.ide.gradle.core;
 
-import aQute.bnd.osgi.Jar;
-
-import com.liferay.blade.gradle.model.CustomModel;
-import com.liferay.ide.core.BaseLiferayProject;
-import com.liferay.ide.core.IBundleProject;
-import com.liferay.ide.core.IResourceBundleProject;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.PropertiesUtil;
-import com.liferay.ide.project.core.IProjectBuilder;
-import com.liferay.ide.project.core.util.ProjectUtil;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +36,23 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.ModelBuilder;
 import org.gradle.tooling.ProjectConnection;
+import org.gradle.tooling.model.DomainObjectSet;
+import org.gradle.tooling.model.eclipse.EclipseExternalDependency;
+import org.gradle.tooling.model.eclipse.EclipseProject;
+
+import com.liferay.blade.gradle.model.CustomModel;
+import com.liferay.ide.core.BaseLiferayProject;
+import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.IResourceBundleProject;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.PropertiesUtil;
+import com.liferay.ide.project.core.IProjectBuilder;
+import com.liferay.ide.project.core.util.ProjectUtil;
+
+import aQute.bnd.osgi.Jar;
 
 /**
  * @author Gregory Amerson
@@ -290,6 +294,29 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
     public IPath getLibraryPath( String filename )
     {
         return null;
+    }
+
+    @Override
+    public java.nio.file.Path[] getExternalUserLibs()
+    {
+        ProjectConnection connection = null;
+
+        final List<java.nio.file.Path> libs = new ArrayList<java.nio.file.Path>();
+        GradleConnector connector =
+                GradleConnector.newConnector().forProjectDirectory( getProject().getLocation().toFile() );
+
+        connection = connector.connect();
+
+        ModelBuilder<EclipseProject> modelBuilder = connection.model( EclipseProject.class );
+        EclipseProject project = modelBuilder.get();
+        DomainObjectSet<? extends EclipseExternalDependency> classpathes = project.getClasspath();
+        for( EclipseExternalDependency dependency : classpathes )
+        {
+            java.nio.file.Path path = dependency.getSource().toPath();
+            libs.add( path );
+        }
+
+        return libs.toArray( new java.nio.file.Path[ libs.size() ] );
     }
 
     @Override

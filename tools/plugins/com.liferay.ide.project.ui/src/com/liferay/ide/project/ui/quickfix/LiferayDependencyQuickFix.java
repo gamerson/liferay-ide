@@ -188,7 +188,7 @@ public class LiferayDependencyQuickFix implements IQuickFixProcessor
 
             for( String wrapper : serviceWrapperList )
             {
-                if( wrapper.endsWith( fullyQualifiedName ) )
+                if( fullyQualifiedName != null && wrapper.endsWith( fullyQualifiedName ) )
                 {
                     ServiceContainer bundle = TargetPlatformUtil.getServiceWrapperBundle( wrapper );
                     proposals.add( createDepProposal( context, bundle ) );
