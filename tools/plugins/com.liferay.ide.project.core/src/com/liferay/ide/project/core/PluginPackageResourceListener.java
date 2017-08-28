@@ -264,7 +264,7 @@ public class PluginPackageResourceListener implements IResourceChangeListener, I
 
                 IPath portalDir = ServerUtil.getPortalDir( project );
 
-                final List<IPath> tldFilesToCopy = new ArrayList<IPath>();
+                final List<IPath> tldFilesToCopy = new ArrayList<>();
 
                 if( portalDir != null )
                 {
@@ -325,7 +325,7 @@ public class PluginPackageResourceListener implements IResourceChangeListener, I
             return;
         }
 
-        final List<IVirtualReference> removeRefs = new ArrayList<IVirtualReference>();
+        final List<IVirtualReference> removeRefs = new ArrayList<>();
 
         final IClasspathContainer webAppLibrariesContainer =
             J2EEComponentClasspathContainerUtils.getInstalledWebAppLibrariesContainer( project );
@@ -359,7 +359,7 @@ public class PluginPackageResourceListener implements IResourceChangeListener, I
             }
         }
 
-        final List<IVirtualReference> addRefs = new ArrayList<IVirtualReference>();
+        final List<IVirtualReference> addRefs = new ArrayList<>();
 
         String requiredDeploymenContexts = props.getProperty( "required-deployment-contexts" ); //$NON-NLS-1$
 
@@ -413,6 +413,13 @@ public class PluginPackageResourceListener implements IResourceChangeListener, I
 
     protected void processPropertiesFile( IFile pluginPackagePropertiesFile ) throws CoreException
     {
+        if ( !pluginPackagePropertiesFile.exists() )
+        {
+            ProjectCore.logError( ProjectCore.createErrorStatus( pluginPackagePropertiesFile + "does not exists." ) );
+
+            return;
+        }
+
         IProject project = pluginPackagePropertiesFile.getProject();
 
         IJavaProject javaProject = JavaCore.create( project );
@@ -549,7 +556,7 @@ public class PluginPackageResourceListener implements IResourceChangeListener, I
         if( container == null )
         {
             return;
-        }        
+        }
 
         IClasspathEntry[] webappEntries = container.getClasspathEntries();
 
