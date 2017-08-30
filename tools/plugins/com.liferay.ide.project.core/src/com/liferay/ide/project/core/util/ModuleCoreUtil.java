@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.gradle.core;
+package com.liferay.ide.project.core.util;
 
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
