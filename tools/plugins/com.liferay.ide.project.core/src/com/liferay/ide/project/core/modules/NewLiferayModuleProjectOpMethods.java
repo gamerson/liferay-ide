@@ -12,12 +12,14 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.modules;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.util.ModuleCoreUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,6 +61,7 @@ import org.eclipse.text.edits.TextEdit;
  */
 public class NewLiferayModuleProjectOpMethods
 {
+
     public static final Status execute( final NewLiferayModuleProjectOp op, final ProgressMonitor pm )
     {
         final IProgressMonitor monitor = ProgressMonitorBridge.create( pm );
@@ -93,8 +96,13 @@ public class NewLiferayModuleProjectOpMethods
                 }
             }
 
+            if( op.getAddJspValidationSupport().content() )
+            {
+                ModuleCoreUtil.addFacetsIfNeeded( projectLocation.toFile(), new NullProgressMonitor() );
+            }
 
-            final List<IPath> finalClassPaths = getClassFilePath( projectName, className, packageName, projectTemplateName, projectLocation );
+            final List<IPath> finalClassPaths =
+                getClassFilePath( projectName, className, packageName, projectTemplateName, projectLocation );
 
             for( IPath classFilePath : finalClassPaths )
             {
@@ -108,12 +116,14 @@ public class NewLiferayModuleProjectOpMethods
 
                     for( PropertyKey propertyKey : propertyKeys )
                     {
-                        properties.add( propertyKey.getName().content( true ) + "=" + propertyKey.getValue().content( true ) );
+                        properties.add(
+                            propertyKey.getName().content( true ) + "=" + propertyKey.getValue().content( true ) );
                     }
 
                     NewLiferayModuleProjectOpMethods.addProperties( finalClassFile, properties );
 
-                    CoreUtil.getProject( op.getProjectName().content() ).refreshLocal( IResource.DEPTH_INFINITE, monitor );
+                    CoreUtil.getProject( op.getProjectName().content() ).refreshLocal(
+                        IResource.DEPTH_INFINITE, monitor );
                 }
             }
 

@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.gradle.core;
+package com.liferay.ide.project.core.util;
 
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
@@ -34,9 +34,14 @@ import org.eclipse.core.runtime.OperationCanceledException;
 
 /**
  * @author Andy Wu
+ * @author Terry Jia
  */
 public class ModuleCoreUtil
 {
+
+    public static String[] TEMPLATES_WITH_JSP =
+        new String[] { "content-targeting-report", "content-targeting-rule", "content-targeting-tracking-action",
+            "panel-app", "portlet-provider", "simulation-panel-entry", "mvc-portlet", "portlet", "spring-mvc-portlet" };
 
     public static void addFacetsIfNeeded( final File projectLocation, IProgressMonitor monitor ) throws CoreException
     {
@@ -133,7 +138,7 @@ public class ModuleCoreUtil
 
                         File childFile = childProject.toFile().getCanonicalFile();
 
-                        //don't check child project
+                        // don't check child project
                         if( childFile.exists() && !projectFile.equals( childFile ) )
                         {
                             return false;
