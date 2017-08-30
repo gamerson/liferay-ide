@@ -34,7 +34,7 @@
                 </property-editor>
                 <property-editor>
                     <property>Location</property>
-                </property-editor>   
+                </property-editor>
                 <spacer/>
                 <property-editor>
                     <property>ProjectProvider</property>
@@ -74,6 +74,9 @@
                 <property-editor>
                     <visible-when>${ ProjectTemplateName == 'service-wrapper' || ProjectTemplateName == 'service' }</visible-when>
                     <property>ServiceName</property>
+                </property-editor>
+                <property-editor>
+                    <property>addJspValidationSupport</property>
                 </property-editor>
                  <property-editor>
                      <span>false</span>

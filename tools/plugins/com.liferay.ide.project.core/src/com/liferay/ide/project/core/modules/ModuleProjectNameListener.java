@@ -41,11 +41,20 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
     protected void handleTypedEvent( PropertyContentEvent event )
     {
         updateLocation( op( event ) );
+
+        updateAddJspValidationSupport( op( event ) );
     }
 
     protected NewLiferayModuleProjectOp op( PropertyContentEvent event )
     {
         return event.property().element().nearest( NewLiferayModuleProjectOp.class );
+    }
+
+    public static void updateAddJspValidationSupport( final NewLiferayModuleProjectOp op )
+    {
+        final String templateName = op.getProjectTemplateName().content( true );
+
+        op.setAddJspValidationSupport( templateName.equals( "mvc-portlet" ) || templateName.equals( "portlet" ) );
     }
 
     public static void updateLocation( final NewLiferayModuleProjectOp op )
@@ -128,8 +137,7 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
                     {
                         if( isThemeProject )
                         {
-                            String[] warsNames =
-                                LiferayWorkspaceUtil.getWarsDirs( liferayWorkspaceProject );
+                            String[] warsNames = LiferayWorkspaceUtil.getWarsDirs( liferayWorkspaceProject );
 
                             // use the first configured wars fodle name
                             newLocationBase =
@@ -137,8 +145,7 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
                         }
                         else
                         {
-                            String folder =
-                                LiferayWorkspaceUtil.getModulesDir( liferayWorkspaceProject );
+                            String folder = LiferayWorkspaceUtil.getModulesDir( liferayWorkspaceProject );
 
                             if( folder != null )
                             {
