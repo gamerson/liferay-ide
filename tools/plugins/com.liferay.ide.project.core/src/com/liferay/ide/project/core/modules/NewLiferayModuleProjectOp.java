@@ -143,6 +143,17 @@ public interface NewLiferayModuleProjectOp extends BaseModuleOp
     @Service( impl = ModuleProjectProviderDefaultValueService.class )
     ValueProperty PROP_PROJECT_PROVIDER = new ValueProperty( TYPE, BaseModuleOp.PROP_PROJECT_PROVIDER );
 
+    @Type( base = Boolean.class )
+    @Label( standard = "add jsp validation support" )
+    @Service( impl = AddJspValidationSupportDefaultValueService.class )
+    ValueProperty PROP_ADD_JSP_VALIDATION_SUPPORT = new ValueProperty( TYPE, "addJspValidationSupport" );
+
+    Value<Boolean> getAddJspValidationSupport();
+
+    void setAddJspValidationSupport( String value );
+
+    void setAddJspValidationSupport( Boolean value );
+
     // *** Method: execute ***
 
     @Override
