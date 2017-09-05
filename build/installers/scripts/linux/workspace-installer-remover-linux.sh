@@ -1,5 +1,4 @@
-#Add properties here
-workspaceDir="/home/liferay/liferay-workspace"
+source ../common/env.properties
 
 #1 remove blade cache
 rm -rf ~/.blade
@@ -14,4 +13,4 @@ rm -rf ~/.liferay/token
 rm -rf ~/.liferay/bundles
 
 #5 remove liferay workspce
-rm -rf ${workspaceDir}
+rm -rf $HOME/${liferayWsDir}

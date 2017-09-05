@@ -1,5 +1,4 @@
-#Add properties here
-workspaceDir="/Users/liferay_cn/liferay-workspace"
+source ../config/env.properties 
 
 #1 remove blade cache
 rm -rf ~/.blade
@@ -14,7 +13,7 @@ rm -rf ~/.liferay/token
 rm -rf ~/.liferay/bundles
 
 #5 remove liferay workspce
-rm -rf $workspaceDir
+rm -rf $HOME/$liferayWsDir
 
 #6 eject liferay workspace
 hdiutil eject "/Volumes/Liferay Workspace"
