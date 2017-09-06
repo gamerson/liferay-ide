@@ -481,7 +481,15 @@ public class MigrationUtil
         marker.setAttribute( "migrationProblem.autoCorrectContext", problem.getAutoCorrectContext() );
 
         marker.setAttribute( IMarker.LOCATION, problem.file.getName() );
-        marker.setAttribute( IMarker.SEVERITY, IMarker.SEVERITY_ERROR );
+
+        if( problem.summary.contains( "@deprecated As of 7.0.0" ) )
+        {
+            marker.setAttribute( IMarker.SEVERITY, IMarker.SEVERITY_WARNING );
+        }
+        else
+        {
+            marker.setAttribute( IMarker.SEVERITY, IMarker.SEVERITY_ERROR );
+        }
     }
 
     public static boolean removeMigrationProblems( MigrationProblems migrationProblems )
