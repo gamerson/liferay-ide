@@ -15,7 +15,7 @@
 
 package com.liferay.ide.gradle.ui.action;
 
-import com.liferay.ide.gradle.core.ModuleCoreUtil;
+import com.liferay.ide.project.core.util.ModuleCoreUtil;
 import com.liferay.ide.ui.action.AbstractObjectAction;
 
 import org.eclipse.core.resources.IProject;

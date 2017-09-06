@@ -12,23 +12,37 @@
  * details.
  *
  *******************************************************************************/
+
 package com.liferay.ide.project.core.tests.modules;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
 import com.liferay.ide.project.core.modules.PropertyKey;
+import com.liferay.ide.project.core.util.ModuleCoreUtil;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
 import org.junit.Ignore;
@@ -37,7 +51,9 @@ import org.junit.Test;
 /**
  * @author Simon Jiang
  * @author Andy Wu
+ * @author Terry Jia
  */
+@SuppressWarnings( "restriction" )
 public class NewLiferayModuleProjectOpTests
 {
 
@@ -222,6 +238,69 @@ public class NewLiferayModuleProjectOpTests
     }
 
     @Test
+    public void testJspValidationSupportDefaultValue() throws Exception
+    {
+        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+
+        op.setProjectName( "test-jsp-validation-support" );
+
+        final List<String> templates = Arrays.asList( BladeCLI.getProjectTemplates() );
+
+        for( String template : templates )
+        {
+            if( template.equals( "fragment" ) )
+            {
+                continue;
+            }
+
+            op.setProjectTemplateName( template );
+
+            assertEquals(
+                op.getAddJspValidationSupport().content(),
+                Arrays.asList( ModuleCoreUtil.TEMPLATES_WITH_JSP ).contains( template ) );
+        }
+    }
+
+    @Test
+    public void testJspValidationSupportAdded() throws Exception
+    {
+        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+
+        op.setProjectName( "test-jsp-validation-support-added" );
+
+        final String[] templatesWithJsp = ModuleCoreUtil.TEMPLATES_WITH_JSP;
+
+        final Random random = new Random();
+
+        final int randomIndex = random.nextInt( templatesWithJsp.length );
+
+        op.setProjectTemplateName( templatesWithJsp[randomIndex] );
+
+        final Status status =
+            NewLiferayModuleProjectOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+
+        waitForBuildAndValidation();
+
+        assertTrue( status.ok() );
+
+        final String projectName = op.getProjectName().content();
+
+        final IProject project = CoreUtil.getProject( projectName );
+
+        assertTrue( project.hasNature( "org.eclipse.wst.common.modulecore.ModuleCoreNature" ) );
+        assertTrue( project.hasNature( "org.eclipse.wst.common.project.facet.core.nature" ) );
+
+        final File configFile =
+            project.getLocation().append( ".settings" ).append( "org.eclipse.wst.common.component" ).toFile();
+
+        assertTrue( configFile.exists() );
+
+        assertEquals(
+            FileUtil.readContents( configFile, true ),
+            ModuleCoreUtil.wstConfigContent.replace( "PROJECT_NAME", projectName ) );
+    }
+
+    @Test
     public void testNewLiferayPortletProviderNewProperties() throws Exception
     {
         NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -243,8 +322,8 @@ public class NewLiferayModuleProjectOpTests
         IProject modPorject = CoreUtil.getProject( op.getProjectName().content() );
         modPorject.open( new NullProgressMonitor() );
 
-        IFile testAddPortletProvider =
-            modPorject.getFile( "src/main/java/test/properties/in/portlet/provider/portlet/TestAddPortletProvider.java" );
+        IFile testAddPortletProvider = modPorject.getFile(
+            "src/main/java/test/properties/in/portlet/provider/portlet/TestAddPortletProvider.java" );
 
         assertTrue( testAddPortletProvider.exists() );
 
@@ -259,4 +338,43 @@ public class NewLiferayModuleProjectOpTests
         assertTrue( actual.contains( "property-test-key=property-test-value" ) );
     }
 
+    protected void waitForBuildAndValidation() throws Exception
+    {
+        IWorkspaceRoot root = null;
+
+        try
+        {
+            ResourcesPlugin.getWorkspace().checkpoint( true );
+
+            Job.getJobManager().join( "CheckingGradleConfiguration", new NullProgressMonitor() );
+
+            Job.getJobManager().beginRule( root = ResourcesPlugin.getWorkspace().getRoot(), null );
+        }
+        catch( InterruptedException e )
+        {
+            failTest( e );
+        }
+        catch( IllegalArgumentException e )
+        {
+            failTest( e );
+        }
+        catch( OperationCanceledException e )
+        {
+            failTest( e );
+        }
+        finally
+        {
+            if( root != null )
+            {
+                Job.getJobManager().endRule( root );
+            }
+        }
+    }
+
+    protected static void failTest( Exception e )
+    {
+        StringWriter s = new StringWriter();
+        e.printStackTrace( new PrintWriter( s ) );
+        fail( s.toString() );
+    }
 }

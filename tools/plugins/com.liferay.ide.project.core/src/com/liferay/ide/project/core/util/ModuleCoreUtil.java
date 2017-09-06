@@ -13,7 +13,7 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.gradle.core;
+package com.liferay.ide.project.core.util;
 
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
@@ -34,9 +34,22 @@ import org.eclipse.core.runtime.OperationCanceledException;
 
 /**
  * @author Andy Wu
+ * @author Terry Jia
  */
 public class ModuleCoreUtil
 {
+
+    public static String[] TEMPLATES_WITH_JSP =
+        new String[] { "content-targeting-report", "content-targeting-rule", "content-targeting-tracking-action",
+            "panel-app", "portlet-provider", "simulation-panel-entry", "mvc-portlet", "portlet", "spring-mvc-portlet" };
+
+    public static String wstConfigContent =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty( "line.separator" ) +
+            "<project-modules id=\"moduleCoreId\" project-version=\"1.5.0\">" + System.getProperty( "line.separator" ) +
+            "<wb-module deploy-name=\"PROJECT_NAME\">" + System.getProperty( "line.separator" ) +
+            "<wb-resource deploy-path=\"/\" " + "source-path=\"/src/main/resources/META-INF/resources\" " +
+            "tag=\"defaultRootSource\"/>" + System.getProperty( "line.separator" ) + "</wb-module>" +
+            System.getProperty( "line.separator" ) + "</project-modules>" + System.getProperty( "line.separator" );
 
     public static void addFacetsIfNeeded( final File projectLocation, IProgressMonitor monitor ) throws CoreException
     {
@@ -65,13 +78,7 @@ public class ModuleCoreUtil
 
     private static void addConfigFile( final IProject project ) throws CoreException
     {
-        String content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<project-modules id=\"moduleCoreId\" project-version=\"1.5.0\">\n" +
-            "<wb-module deploy-name=\"PROJECT_NAME\">\n" + "<wb-resource deploy-path=\"/\" " +
-            "source-path=\"/src/main/resources/META-INF/resources\" " + "tag=\"defaultRootSource\"/>\n" +
-            "</wb-module>\n</project-modules>";
-
-        String finalContent = content.replace( "PROJECT_NAME", project.getName() );
+        String finalContent = wstConfigContent.replace( "PROJECT_NAME", project.getName() );
 
         File compoment = new File( project.getLocation().toFile(), ".settings/org.eclipse.wst.common.component" );
 
@@ -133,7 +140,7 @@ public class ModuleCoreUtil
 
                         File childFile = childProject.toFile().getCanonicalFile();
 
-                        //don't check child project
+                        // don't check child project
                         if( childFile.exists() && !projectFile.equals( childFile ) )
                         {
                             return false;
