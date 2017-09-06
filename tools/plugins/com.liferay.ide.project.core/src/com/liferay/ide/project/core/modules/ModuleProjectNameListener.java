@@ -19,6 +19,9 @@ import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
+import com.liferay.ide.project.core.util.ModuleCoreUtil;
+
+import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -31,6 +34,7 @@ import org.eclipse.sapphire.platform.PathBridge;
  * @author Simon Jiang
  * @author Andy Wu
  * @author Joye Luo
+ * @author Terry Jia
  */
 public class ModuleProjectNameListener extends FilteredListener<PropertyContentEvent>
 {
@@ -41,11 +45,20 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
     protected void handleTypedEvent( PropertyContentEvent event )
     {
         updateLocation( op( event ) );
+
+        updateAddJspValidationSupport( op( event ) );
     }
 
     protected NewLiferayModuleProjectOp op( PropertyContentEvent event )
     {
         return event.property().element().nearest( NewLiferayModuleProjectOp.class );
+    }
+
+    public static void updateAddJspValidationSupport( final NewLiferayModuleProjectOp op )
+    {
+        final String templateName = op.getProjectTemplateName().content( true );
+
+        op.setAddJspValidationSupport( Arrays.asList( ModuleCoreUtil.TEMPLATES_WITH_JSP ).contains( templateName ) );
     }
 
     public static void updateLocation( final NewLiferayModuleProjectOp op )
@@ -128,8 +141,7 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
                     {
                         if( isThemeProject )
                         {
-                            String[] warsNames =
-                                LiferayWorkspaceUtil.getWarsDirs( liferayWorkspaceProject );
+                            String[] warsNames = LiferayWorkspaceUtil.getWarsDirs( liferayWorkspaceProject );
 
                             // use the first configured wars fodle name
                             newLocationBase =
@@ -137,8 +149,7 @@ public class ModuleProjectNameListener extends FilteredListener<PropertyContentE
                         }
                         else
                         {
-                            String folder =
-                                LiferayWorkspaceUtil.getModulesDir( liferayWorkspaceProject );
+                            String folder = LiferayWorkspaceUtil.getModulesDir( liferayWorkspaceProject );
 
                             if( folder != null )
                             {
