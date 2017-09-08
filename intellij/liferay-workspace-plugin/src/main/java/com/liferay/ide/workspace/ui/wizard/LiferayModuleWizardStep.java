@@ -65,16 +65,15 @@ public class LiferayModuleWizardStep extends ModuleWizardStep {
             public void valueChanged(TreeSelectionEvent e) {
                 String type = e.getNewLeadSelectionPath().getLastPathComponent().toString();
 
-                if (type.equals("theme") || type.equals("layout-template")) {
+                if (type.equals("theme-contributor") || type.equals("theme") || type.equals("layout-template")) {
                     packageName.setEditable(false);
                     className.setEditable(false);
-                    packageName.setEnabled(false);
-                    className.setEnabled(false);
+                } else if (type.equals("service-builder")) {
+                    packageName.setEditable(true);
+                    className.setEditable(false);
                 } else {
                     packageName.setEditable(true);
                     className.setEditable(true);
-                    packageName.setEnabled(true);
-                    className.setEnabled(true);
                 }
             }
         });
@@ -120,15 +119,13 @@ public class LiferayModuleWizardStep extends ModuleWizardStep {
         String packageNameValue = getPackageName();
         String classNameValue = getClassName();
 
-        if (!packageName.isEnabled() && !packageName.isEditable() && !className.isEnabled() && !className.isEditable()) {
-            return true;
-        }
-
-        if (!CoreUtil.isNullOrEmpty(packageNameValue) && !PsiDirectoryFactory.getInstance(workspaceProject).isValidPackageName(packageNameValue)) {
+        if (!CoreUtil.isNullOrEmpty(packageNameValue) &&
+                !PsiDirectoryFactory.getInstance(workspaceProject).isValidPackageName(packageNameValue)) {
             throw new ConfigurationException(packageNameValue + " is not a valid package name", validationTitle);
         }
 
-        if (!CoreUtil.isNullOrEmpty(classNameValue) && !PsiNameHelper.getInstance(workspaceProject).isQualifiedName(classNameValue)) {
+        if (!CoreUtil.isNullOrEmpty(classNameValue) &&
+                !PsiNameHelper.getInstance(workspaceProject).isQualifiedName(classNameValue)) {
             throw new ConfigurationException(classNameValue + " is not a valid java class name", validationTitle);
         }
 
@@ -146,11 +143,11 @@ public class LiferayModuleWizardStep extends ModuleWizardStep {
     }
 
     public String getPackageName() {
-        return packageName.getText();
+        return packageName.isEditable() ? packageName.getText() : null;
     }
 
     public String getClassName() {
-        return className.getText();
+        return className.isEditable() ? className.getText() : null;
     }
 
 }
