@@ -61,6 +61,24 @@ public class LiferayModuleWizardStep extends ModuleWizardStep {
         typesTree.setShowsRootHandles(true);
         typesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
+        typesTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) {
+                String type = e.getNewLeadSelectionPath().getLastPathComponent().toString();
+
+                if (type.equals("theme") || type.equals("layout-template")) {
+                    packageName.setEditable(false);
+                    className.setEditable(false);
+                    packageName.setEnabled(false);
+                    className.setEnabled(false);
+                } else {
+                    packageName.setEditable(true);
+                    className.setEditable(true);
+                    packageName.setEnabled(true);
+                    className.setEnabled(true);
+                }
+            }
+        });
+
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("root", true);
 
         for (String type : BladeCLI.getProjectTemplates()) {
@@ -101,6 +119,10 @@ public class LiferayModuleWizardStep extends ModuleWizardStep {
 
         String packageNameValue = getPackageName();
         String classNameValue = getClassName();
+
+        if (!packageName.isEnabled() && !packageName.isEditable() && !className.isEnabled() && !className.isEditable()) {
+            return true;
+        }
 
         if (!CoreUtil.isNullOrEmpty(packageNameValue) && !PsiDirectoryFactory.getInstance(workspaceProject).isValidPackageName(packageNameValue)) {
             throw new ConfigurationException(packageNameValue + " is not a valid package name", validationTitle);
