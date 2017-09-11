@@ -30,7 +30,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.liferay.ide.idea.ui.LiferayIdeaUI;
 import com.liferay.ide.idea.util.LiferayWorkspaceUtil;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -45,20 +44,20 @@ public class NewLiferayModuleAction extends AnAction implements DumbAware {
     }
 
     @Override
-    public void actionPerformed(AnActionEvent e) {
-        final Project project = getEventProject(e);
+    public void actionPerformed(final AnActionEvent event) {
+        final Project project = getEventProject(event);
 
         if (!_isValidWorkspaceLocation(project)) {
             Messages.showErrorDialog(
-            	"Unable to detect current project as a Liferay workspace", 
-            	"No Liferay workspace");
+                    "Unable to detect current project as a Liferay workspace",
+                    "No Liferay workspace");
 
             return;
         }
 
         String defaultPath = null;
 
-        final VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+        final VirtualFile virtualFile = event.getData(CommonDataKeys.VIRTUAL_FILE);
 
         if (virtualFile != null && virtualFile.isDirectory()) {
             defaultPath = virtualFile.getPath();
@@ -71,12 +70,8 @@ public class NewLiferayModuleAction extends AnAction implements DumbAware {
         }
     }
 
-    private boolean _isValidWorkspaceLocation(Project project) {
-    	return project != null && LiferayWorkspaceUtil.isValidGradleWorkspaceLocation(project.getBasePath());
-	}
-
-	@Nullable
-    public Module createModuleFromWizard(Project project, AbstractProjectWizard wizard) {
+    @Nullable
+    public Module createModuleFromWizard(final Project project, final AbstractProjectWizard wizard) {
         final ProjectBuilder builder = wizard.getProjectBuilder();
 
         if (builder instanceof ModuleBuilder) {
@@ -99,8 +94,7 @@ public class NewLiferayModuleAction extends AnAction implements DumbAware {
 
         if (builder instanceof ModuleBuilder) {
             module = ((ModuleBuilder) builder).commitModule(project, null);
-        } 
-        else {
+        } else {
             List<Module> modules = builder.commit(project, null, new DefaultModulesProvider(project));
 
             if (builder.isOpenProjectSettingsAfter()) {
@@ -116,9 +110,14 @@ public class NewLiferayModuleAction extends AnAction implements DumbAware {
     }
 
     @Override
-    public void update(AnActionEvent e) {
-        super.update(e);
+    public void update(final AnActionEvent event) {
+        super.update(event);
 
-        e.getPresentation().setEnabled(_isValidWorkspaceLocation(getEventProject(e)));
+        event.getPresentation().setEnabled(_isValidWorkspaceLocation(getEventProject(event)));
     }
+
+    private boolean _isValidWorkspaceLocation(final Project project) {
+        return project != null && LiferayWorkspaceUtil.isValidGradleWorkspaceLocation(project.getBasePath());
+    }
+
 }

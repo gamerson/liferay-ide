@@ -27,16 +27,13 @@ import com.intellij.openapi.module.StdModuleTypes;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.projectImport.ProjectImportProvider;
 import com.liferay.ide.idea.ui.LiferayIdeaUI;
 import com.liferay.ide.idea.util.BladeCLI;
-
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.stream.Stream;
 
 /**
  * @author Terry Jia
@@ -50,36 +47,22 @@ public class LiferayWorkspaceBuilder extends ModuleBuilder {
     }
 
     @Override
-    public void setupRootModel(ModifiableRootModel model) throws ConfigurationException {
-        final Project project = model.getProject();
-
-        _initWorkspace(project);
+    public String getBuilderId() {
+        return getClass().getName();
     }
 
-	private void _initWorkspace(final Project project) {
-		StringBuilder sb = new StringBuilder();
-
-        sb.append("-b ");
-        sb.append("\"" + project.getBasePath() + "\"");
-        sb.append(" ");
-        sb.append("init ");
-        sb.append("-f");
-
-        BladeCLI.execute(sb.toString());
-	}
+    @Override
+    public String getDescription() {
+        return _LIFERAY_WORKSPACE;
+    }
 
     public ModuleType getModuleType() {
         return StdModuleTypes.JAVA;
     }
 
     @Override
-    public String getBuilderId() {
-        return getClass().getName();
-    }
-
-    @Override
-    public String getPresentableName() {
-        return _LIFERAY_WORKSPACE;
+    public Icon getNodeIcon() {
+        return LiferayIdeaUI.LIFERAY_ICON;
     }
 
     @Override
@@ -88,30 +71,43 @@ public class LiferayWorkspaceBuilder extends ModuleBuilder {
     }
 
     @Override
-    public String getDescription() {
+    public String getPresentableName() {
         return _LIFERAY_WORKSPACE;
     }
 
     @Override
-    public Icon getNodeIcon() {
-        return LiferayIdeaUI.LIFERAY_ICON;
+    public void setupRootModel(final ModifiableRootModel model) throws ConfigurationException {
+        _initWorkspace(model.getProject());
     }
 
-    static class LiferayWorkpaceBuilderListener implements ModuleBuilderListener {
+    private void _initWorkspace(final Project project) {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("-b ");
+        sb.append("\"" + project.getBasePath() + "\"");
+        sb.append(" ");
+        sb.append("init ");
+        sb.append("-f");
+
+        BladeCLI.execute(sb.toString());
+    }
+
+    private class LiferayWorkpaceBuilderListener implements ModuleBuilderListener {
         @Override
-        public void moduleCreated(@NotNull Module module) {
-            Project project = module.getProject();
-            ProjectImportProvider[] importProviders = ProjectImportProvider.PROJECT_IMPORT_PROVIDER.getExtensions();
+        public void moduleCreated(@NotNull final Module module) {
+            final Project project = module.getProject();
+
+            final ProjectImportProvider[] importProviders = ProjectImportProvider.PROJECT_IMPORT_PROVIDER.getExtensions();
 
             Stream.of(
-                importProviders
+                    importProviders
             ).filter(
-                importProvider -> importProvider.getId().equals("Gradle")
+                    importProvider -> importProvider.getId().equals("Gradle")
             ).findFirst(
             ).ifPresent(importProvider -> {
-                AddModuleWizard wizard = new AddModuleWizard(project, project.getBasePath(), importProvider);
+                final AddModuleWizard wizard = new AddModuleWizard(project, project.getBasePath(), importProvider);
 
-                Application application = ApplicationManager.getApplication();
+                final Application application = ApplicationManager.getApplication();
 
                 application.invokeLater(new Runnable() {
                     @Override
@@ -124,7 +120,7 @@ public class LiferayWorkspaceBuilder extends ModuleBuilder {
             });
         }
     }
-    
+
     private final static String _LIFERAY_WORKSPACE = "Liferay Workspace";
 
 }

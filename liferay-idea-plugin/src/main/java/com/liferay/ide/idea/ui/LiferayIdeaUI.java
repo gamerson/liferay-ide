@@ -17,13 +17,38 @@ package com.liferay.ide.idea.ui;
 
 import com.intellij.openapi.util.IconLoader;
 
-import javax.swing.Icon;
+import javax.swing.*;
+import java.io.File;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 public class LiferayIdeaUI {
 
-	public static final Icon LIFERAY_ICON = IconLoader.getIcon("/icons/liferay.png");
+    public static final Icon LIFERAY_ICON = IconLoader.getIcon("/icons/liferay.png");
+
+    public static File getUserBundlesDir() {
+        _liferayIdeBundleDir = new File(getUserTempDir(), "bundles");
+
+        if (!_liferayIdeBundleDir.exists()) {
+            _liferayIdeBundleDir.mkdirs();
+        }
+
+        return _liferayIdeBundleDir;
+    }
+
+    public static File getUserTempDir() {
+        _liferayIdeTempDir = new File(System.getProperties().getProperty("user.home"), ".liferay-ide");
+
+        if (!_liferayIdeTempDir.exists()) {
+            _liferayIdeTempDir.mkdirs();
+        }
+
+        return _liferayIdeTempDir;
+    }
+
+    private static File _liferayIdeBundleDir = null;
+    private static File _liferayIdeTempDir = null;
 
 }

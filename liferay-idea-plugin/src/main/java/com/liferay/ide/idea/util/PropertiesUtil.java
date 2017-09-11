@@ -25,10 +25,10 @@ import java.util.Properties;
  */
 public class PropertiesUtil {
 
-    public static Properties loadProperties(final File f) {
+    public static Properties loadProperties(final File file) {
         final Properties properties = new Properties();
 
-        try (FileInputStream stream = new FileInputStream(f)) {
+        try (FileInputStream stream = new FileInputStream(file)) {
             properties.load(stream);
 
             return properties;

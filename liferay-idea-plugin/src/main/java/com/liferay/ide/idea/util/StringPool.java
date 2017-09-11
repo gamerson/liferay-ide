@@ -18,8 +18,8 @@ package com.liferay.ide.idea.util;
  * @author Gregory Amerson
  * @author Kuo Zhang
  */
-public class StringPool
-{
+public class StringPool {
+
     public static final String ASTERISK = "*";
     public static final String BLANK = "";
     public static final String COLON = ":";
@@ -36,4 +36,5 @@ public class StringPool
     public static final char SINGLE_QUOTE_CHAR = '\'';
     public static final String SPACE = " ";
     public static final String UNDERSCORE = "_";
+
 }

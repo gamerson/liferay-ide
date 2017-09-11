@@ -23,7 +23,6 @@ import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.StdModuleTypes;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -39,55 +38,66 @@ import java.io.File;
  */
 public class LiferayModuleBuilder extends ModuleBuilder {
 
-    private String type;
-    private String className;
-    private String packageName;
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
     @Override
     public String getBuilderId() {
         return getClass().getName();
     }
 
-    private VirtualFile createAndGetContentEntry() {
-        final String path = FileUtil.toSystemIndependentName(getContentEntryPath());
-
-        new File(path).mkdirs();
-
-        return LocalFileSystem.getInstance().refreshAndFindFileByPath(path);
+    public ModuleWizardStep getCustomOptionsStep(final WizardContext context, final Disposable parentDisposable) {
+        return new LiferayModuleWizardStep(context, this);
     }
 
     @Override
-    public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
-        final VirtualFile moduleDir = createAndGetContentEntry();
+    public String getDescription() {
+        return _LIFERAY_MODULES;
+    }
 
-        StringBuilder sb = new StringBuilder();
+    public ModuleType getModuleType() {
+        return StdModuleTypes.JAVA;
+    }
+
+    @Override
+    public Icon getNodeIcon() {
+        return LiferayIdeaUI.LIFERAY_ICON;
+    }
+
+    @Override
+    public String getPresentableName() {
+        return _LIFERAY_MODULES;
+    }
+
+    public String getType() {
+        return _type;
+    }
+
+    public void setClassName(final String className) {
+        _className = className;
+    }
+
+    public void setPackageName(final String packageName) {
+        _packageName = packageName;
+    }
+
+    public void setType(final String type) {
+        _type = type;
+    }
+
+    @Override
+    public void setupRootModel(final ModifiableRootModel rootModel) throws ConfigurationException {
+        final VirtualFile moduleDir = _createAndGetContentEntry();
+
+        final StringBuilder sb = new StringBuilder();
 
         sb.append("create ");
         sb.append("-d \"" + moduleDir.getParent().getPath() + "\" ");
-        sb.append("-t " + type + " ");
+        sb.append("-t " + _type + " ");
 
-        if (!CoreUtil.isNullOrEmpty(className)) {
-            sb.append("-c " + className + " ");
+        if (!CoreUtil.isNullOrEmpty(_className)) {
+            sb.append("-c " + _className + " ");
         }
 
-        if (!CoreUtil.isNullOrEmpty(packageName)) {
-            sb.append("-p " + packageName + " ");
+        if (!CoreUtil.isNullOrEmpty(_packageName)) {
+            sb.append("-p " + _packageName + " ");
         }
 
         sb.append("\"" + moduleDir.getName() + "\" ");
@@ -104,28 +114,17 @@ public class LiferayModuleBuilder extends ModuleBuilder {
 
     }
 
-    public ModuleType getModuleType() {
-        return StdModuleTypes.JAVA;
-    }
+    private VirtualFile _createAndGetContentEntry() {
+        final String path = FileUtil.toSystemIndependentName(getContentEntryPath());
 
-    @Override
-    public String getPresentableName() {
-        return _LIFERAY_MODULES;
-    }
+        new File(path).mkdirs();
 
-    @Override
-    public String getDescription() {
-        return _LIFERAY_MODULES;
-    }
-
-    public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-        return new LiferayModuleWizardStep(this);
-    }
-
-    @Override
-    public Icon getNodeIcon() {
-        return LiferayIdeaUI.LIFERAY_ICON;
+        return LocalFileSystem.getInstance().refreshAndFindFileByPath(path);
     }
 
     private final static String _LIFERAY_MODULES = "Liferay Modules";
+    private String _className;
+    private String _packageName;
+    private String _type;
+
 }

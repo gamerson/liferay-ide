@@ -30,61 +30,10 @@ import java.util.jar.JarFile;
  */
 public class ServerUtil {
 
-    private static String[] osgiBundleDirs = new String[]{"core", "modules", "portal", "static"};
+    public static File[] getMarketplaceLpkgFiles(final File runtime) {
+        final File marketplace = new File(new File(runtime, "osgi"), "marketplace");
 
-    public static List<String> getModuleFileListFrom70Server(File runtime) {
-        final List<String> bundles = new ArrayList<>();
-
-        try {
-            for (String dir : osgiBundleDirs) {
-                final File dirFile = new File(new File(runtime, "osgi"), dir);
-
-                if (dirFile.exists()) {
-                    final File[] files = dirFile.listFiles(new FilenameFilter() {
-
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return name.matches(".*\\.jar");
-                        }
-                    });
-
-                    if (files != null && files.length > 0) {
-                        for (final File file : files) {
-                            bundles.add(file.getName());
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        final File[] files = getMarketplaceLpkgFiles(runtime);
-
-        for (File file : files) {
-            try (JarFile jar = new JarFile(file)) {
-                Enumeration<JarEntry> enu = jar.entries();
-
-                while (enu.hasMoreElements()) {
-                    JarEntry entry = enu.nextElement();
-
-                    String name = entry.getName();
-
-                    if (name.endsWith(".jar")) {
-                        bundles.add(name);
-                    }
-                }
-            } catch (IOException e) {
-            }
-        }
-
-        return bundles;
-    }
-
-    public static File[] getMarketplaceLpkgFiles(File runtime) {
-        File marketplace = new File(new File(runtime, "osgi"), "marketplace");
-
-        File[] files = marketplace.listFiles(new FilenameFilter() {
+        final File[] files = marketplace.listFiles(new FilenameFilter() {
 
             @Override
             public boolean accept(File dir, String name) {
@@ -95,10 +44,10 @@ public class ServerUtil {
         return files;
     }
 
-    public static File getModuleFileFrom70Server(File runtime, String hostOsgiBundle, File temp) {
+    public static File getModuleFileFrom70Server(final File runtime, final String hostOsgiBundle, final File temp) {
         File moduleOsgiBundle = null;
 
-        for (String dir : osgiBundleDirs) {
+        for (final String dir : _osgiBundleDirs) {
             moduleOsgiBundle = new File(new File(new File(runtime, "osgi"), dir), hostOsgiBundle);
 
             if (moduleOsgiBundle.exists()) {
@@ -114,14 +63,14 @@ public class ServerUtil {
             return f;
         }
 
-        File[] files = getMarketplaceLpkgFiles(runtime);
+        final File[] files = getMarketplaceLpkgFiles(runtime);
 
         InputStream in = null;
 
         try {
             boolean found = false;
 
-            for (File file : files) {
+            for (final File file : files) {
                 try (JarFile jar = new JarFile(file)) {
                     Enumeration<JarEntry> enu = jar.entries();
 
@@ -157,5 +106,54 @@ public class ServerUtil {
 
         return f;
     }
+
+    public static List<String> getModuleFileListFrom70Server(final File runtime) {
+        final List<String> bundles = new ArrayList<>();
+
+        try {
+            for (final String dir : _osgiBundleDirs) {
+                final File dirFile = new File(new File(runtime, "osgi"), dir);
+
+                if (dirFile.exists()) {
+                    final File[] files = dirFile.listFiles(new FilenameFilter() {
+
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return name.matches(".*\\.jar");
+                        }
+                    });
+
+                    if (files != null && files.length > 0) {
+                        for (final File file : files) {
+                            bundles.add(file.getName());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        final File[] files = getMarketplaceLpkgFiles(runtime);
+
+        for (final File file : files) {
+            try (final JarFile jar = new JarFile(file)) {
+                Enumeration<JarEntry> enu = jar.entries();
+
+                while (enu.hasMoreElements()) {
+                    String name = enu.nextElement().getName();
+
+                    if (name.endsWith(".jar")) {
+                        bundles.add(name);
+                    }
+                }
+            } catch (IOException e) {
+            }
+        }
+
+        return bundles;
+    }
+
+    private static String[] _osgiBundleDirs = new String[]{"core", "modules", "portal", "static"};
 
 }

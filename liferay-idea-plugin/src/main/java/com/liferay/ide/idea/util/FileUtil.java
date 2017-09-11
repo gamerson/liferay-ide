@@ -24,6 +24,90 @@ import java.util.List;
  */
 public class FileUtil {
 
+    public static void copyFile(File src, File dest) {
+        if (src == null || (!src.exists()) || dest == null || dest.isDirectory()) {
+            return;
+        }
+
+        byte[] buf = new byte[4096];
+
+        OutputStream out = null;
+        FileInputStream in = null;
+
+        try {
+            out = new FileOutputStream(dest);
+            in = new FileInputStream(src);
+
+            int avail = in.read(buf);
+            while (avail > 0) {
+                out.write(buf, 0, avail);
+                avail = in.read(buf);
+            }
+        } catch (Exception e) {
+        } finally {
+            try {
+                if (in != null)
+                    in.close();
+            } catch (Exception ex) {
+                // ignore
+            }
+            try {
+                if (out != null)
+                    out.close();
+            } catch (Exception ex) {
+                // ignore
+            }
+        }
+    }
+
+    public static void copyFileToDir(File src, File dir) {
+        copyFileToDir(src, src.getName(), dir);
+    }
+
+    public static void copyFileToDir(File src, String newName, File dir) {
+        copyFile(src, new File(dir, newName));
+    }
+
+    public static String readContents(File file, boolean includeNewlines) {
+        if (file == null) {
+            return null;
+        }
+
+        if (!file.exists()) {
+            return null;
+        }
+
+        StringBuffer contents = new StringBuffer();
+        BufferedReader bufferedReader = null;
+
+        try {
+            FileReader fileReader = new FileReader(file);
+
+            bufferedReader = new BufferedReader(fileReader);
+
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                contents.append(line);
+
+                if (includeNewlines) {
+                    contents.append(System.getProperty("line.separator"));
+                }
+            }
+        } catch (Exception e) {
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    // best effort no need to log
+                }
+            }
+        }
+
+        return contents.toString();
+    }
+
     public static String[] readLinesFromFile(File file) {
         return readLinesFromFile(file, false);
     }
@@ -68,50 +152,6 @@ public class FileUtil {
         }
 
         return lines.toArray(new String[lines.size()]);
-    }
-
-    public static void copyFileToDir(File src, File dir) {
-        copyFileToDir(src, src.getName(), dir);
-    }
-
-    public static void copyFileToDir(File src, String newName, File dir) {
-        copyFile(src, new File(dir, newName));
-    }
-
-    public static void copyFile(File src, File dest) {
-        if (src == null || (!src.exists()) || dest == null || dest.isDirectory()) {
-            return;
-        }
-
-        byte[] buf = new byte[4096];
-
-        OutputStream out = null;
-        FileInputStream in = null;
-
-        try {
-            out = new FileOutputStream(dest);
-            in = new FileInputStream(src);
-
-            int avail = in.read(buf);
-            while (avail > 0) {
-                out.write(buf, 0, avail);
-                avail = in.read(buf);
-            }
-        } catch (Exception e) {
-        } finally {
-            try {
-                if (in != null)
-                    in.close();
-            } catch (Exception ex) {
-                // ignore
-            }
-            try {
-                if (out != null)
-                    out.close();
-            } catch (Exception ex) {
-                // ignore
-            }
-        }
     }
 
     public static void writeFile(final File f, final byte[] contents, final String expectedProjectName) {
@@ -163,45 +203,5 @@ public class FileUtil {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static String readContents(File file, boolean includeNewlines) {
-        if (file == null) {
-            return null;
-        }
-
-        if (!file.exists()) {
-            return null;
-        }
-
-        StringBuffer contents = new StringBuffer();
-        BufferedReader bufferedReader = null;
-
-        try {
-            FileReader fileReader = new FileReader(file);
-
-            bufferedReader = new BufferedReader(fileReader);
-
-            String line;
-
-            while ((line = bufferedReader.readLine()) != null) {
-                contents.append(line);
-
-                if (includeNewlines) {
-                    contents.append(System.getProperty("line.separator"));
-                }
-            }
-        } catch (Exception e) {
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    // best effort no need to log
-                }
-            }
-        }
-
-        return contents.toString();
     }
 }

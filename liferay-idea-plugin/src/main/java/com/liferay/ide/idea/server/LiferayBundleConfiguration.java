@@ -33,7 +33,6 @@ import com.intellij.util.xmlb.SkipDefaultValuesSerializationFilters;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.liferay.ide.idea.util.LiferayWorkspaceUtil;
-
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,16 +47,47 @@ import java.util.Map;
  */
 public class LiferayBundleConfiguration extends LocatableConfigurationBase implements CommonJavaRunConfigurationParameters, SearchScopeProvidingRunProfile {
 
-    private LiferayBundleConfig config = new LiferayBundleConfig();
-    private Map<String, String> envs = new LinkedHashMap<>();
-    private JavaRunConfigurationModule configurationModule;
-
-    public LiferayBundleConfiguration(Project project, ConfigurationFactory factory, String name) {
+    public LiferayBundleConfiguration(final Project project, final ConfigurationFactory factory, final String name) {
         super(project, factory, name);
 
-        configurationModule = new JavaRunConfigurationModule(project, true);
-        config.liferayBundle = Paths.get(project.getBasePath(), LiferayWorkspaceUtil.getHomeDir(project.getBasePath())).toString();
-        config.vmParameters = "-Xmx1024m";
+        _configurationModule = new JavaRunConfigurationModule(project, true);
+        _config.liferayBundle = Paths.get(project.getBasePath(), LiferayWorkspaceUtil.getHomeDir(project.getBasePath())).toString();
+        _config.vmParameters = "-Xmx1024m";
+    }
+
+    @Override
+    public void checkConfiguration() throws RuntimeConfigurationException {
+        JavaParametersUtil.checkAlternativeJRE(this);
+
+        ProgramParametersUtil.checkWorkingDirectoryExist(this, getProject(), null);
+
+        final File liferayHome = new File(getLiferayBundle());
+
+        if (!liferayHome.exists()) {
+            throw new RuntimeConfigurationWarning(
+                    "Unable to detect liferay bundle from '" + liferayHome.toPath() +
+                            "', you need to run gradle task 'initBundle' first.");
+        }
+
+        JavaRunConfigurationExtensionManager.checkConfigurationIsValid(this);
+    }
+
+    @Override
+    public RunConfiguration clone() {
+        final LiferayBundleConfiguration clone = (LiferayBundleConfiguration) super.clone();
+
+        clone._envs = new LinkedHashMap<>(_envs);
+        clone._configurationModule = new JavaRunConfigurationModule(getProject(), true);
+        clone._configurationModule.setModule(_configurationModule.getModule());
+        clone._config = XmlSerializerUtil.createCopy(_config);
+
+        return clone;
+    }
+
+    @Nullable
+    @Override
+    public String getAlternativeJrePath() {
+        return _config.alternativeJrePath;
     }
 
     @NotNull
@@ -74,110 +104,37 @@ public class LiferayBundleConfiguration extends LocatableConfigurationBase imple
         return group;
     }
 
+    @NotNull
     @Override
-    public void readExternal(Element element) throws InvalidDataException {
-        super.readExternal(element);
-
-        JavaRunConfigurationExtensionManager.getInstance().readExternal(this, element);
-        XmlSerializer.deserializeInto(config, element);
-        EnvironmentVariablesComponent.readExternal(element, getEnvs());
-
-        configurationModule.readExternal(element);
+    public Map<String, String> getEnvs() {
+        return _envs;
     }
 
-    @Override
-    public RunConfiguration clone() {
-        LiferayBundleConfiguration clone = (LiferayBundleConfiguration) super.clone();
-        clone.envs = new LinkedHashMap<>(envs);
-        clone.configurationModule = new JavaRunConfigurationModule(getProject(), true);
-        clone.configurationModule.setModule(configurationModule.getModule());
-        clone.config = XmlSerializerUtil.createCopy(config);
-        return clone;
-    }
-
-    public void setModule(Module module) {
-        configurationModule.setModule(module);
+    public String getLiferayBundle() {
+        return _config.liferayBundle;
     }
 
     public Module getModule() {
-        return configurationModule.getModule();
-    }
-
-    @Override
-    public void writeExternal(Element element) throws WriteExternalException {
-        super.writeExternal(element);
-        JavaRunConfigurationExtensionManager.getInstance().writeExternal(this, element);
-        XmlSerializer.serializeInto(config, element, new SkipDefaultValuesSerializationFilters());
-        EnvironmentVariablesComponent.writeExternal(element, getEnvs());
-        if (configurationModule.getModule() != null) {
-            configurationModule.writeExternal(element);
-        }
-    }
-
-    @Override
-    public void checkConfiguration() throws RuntimeConfigurationException {
-        JavaParametersUtil.checkAlternativeJRE(this);
-
-        ProgramParametersUtil.checkWorkingDirectoryExist(this, getProject(), null);
-
-        File liferayHome = new File(getLiferayBundle());
-
-        if (!liferayHome.exists()) {
-            throw new RuntimeConfigurationWarning(
-                    "Unable to detect liferay bundle from '" + liferayHome.toPath() +
-                            "', you need to run gradle task 'initBundle' first.");
-        }
-
-        JavaRunConfigurationExtensionManager.checkConfigurationIsValid(this);
+        return _configurationModule.getModule();
     }
 
     @NotNull
     public Module[] getModules() {
-        Module module = configurationModule.getModule();
+        final Module module = _configurationModule.getModule();
+
         return module != null ? new Module[]{module} : Module.EMPTY_ARRAY;
     }
 
     @Nullable
     @Override
-    public GlobalSearchScope getSearchScope() {
-        return SearchScopeProvider.createSearchScope(getModules());
+    public String getPackage() {
+        return null;
     }
 
     @Nullable
     @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-        return new LiferayBundleCommandLineState(this, environment);
-    }
-
-    @Override
-    public void setVMParameters(String value) {
-        config.vmParameters = value;
-    }
-
-    @Override
-    public String getVMParameters() {
-        return config.vmParameters;
-    }
-
-    @Override
-    public boolean isAlternativeJrePathEnabled() {
-        return config.alternativeJrePathEnabled;
-    }
-
-    @Override
-    public void setAlternativeJrePathEnabled(boolean enabled) {
-        config.alternativeJrePathEnabled = enabled;
-    }
-
-    @Nullable
-    @Override
-    public String getAlternativeJrePath() {
-        return config.alternativeJrePath;
-    }
-
-    @Override
-    public void setAlternativeJrePath(String path) {
-        config.alternativeJrePath = path;
+    public String getProgramParameters() {
+        return null;
     }
 
     @Nullable
@@ -188,22 +145,21 @@ public class LiferayBundleConfiguration extends LocatableConfigurationBase imple
 
     @Nullable
     @Override
-    public String getPackage() {
-        return null;
-    }
-
-    @Override
-    public void setProgramParameters(@Nullable String value) {
+    public GlobalSearchScope getSearchScope() {
+        return SearchScopeProvider.createSearchScope(getModules());
     }
 
     @Nullable
     @Override
-    public String getProgramParameters() {
-        return null;
+    public RunProfileState getState(@NotNull final Executor executor, @NotNull final ExecutionEnvironment environment)
+            throws ExecutionException {
+
+        return new LiferayBundleCommandLineState(this, environment);
     }
 
     @Override
-    public void setWorkingDirectory(@Nullable String value) {
+    public String getVMParameters() {
+        return _config.vmParameters;
     }
 
     @Nullable
@@ -213,41 +169,95 @@ public class LiferayBundleConfiguration extends LocatableConfigurationBase imple
     }
 
     @Override
-    public void setEnvs(@NotNull Map<String, String> envs) {
-        this.envs.clear();
-        this.envs.putAll(envs);
-    }
-
-    public String getLiferayBundle() {
-        return config.liferayBundle;
-    }
-
-    public void setLiferayBundle(String liferayBundle) {
-        config.liferayBundle = liferayBundle;
-    }
-
-    @NotNull
-    @Override
-    public Map<String, String> getEnvs() {
-        return envs;
-    }
-
-    @Override
-    public void setPassParentEnvs(boolean passParentEnvs) {
-        config.passParentEnvs = passParentEnvs;
+    public boolean isAlternativeJrePathEnabled() {
+        return _config.alternativeJrePathEnabled;
     }
 
     @Override
     public boolean isPassParentEnvs() {
-        return config.passParentEnvs;
+        return _config.passParentEnvs;
+    }
+
+    @Override
+    public void readExternal(final Element element) throws InvalidDataException {
+        super.readExternal(element);
+
+        JavaRunConfigurationExtensionManager.getInstance().readExternal(this, element);
+
+        XmlSerializer.deserializeInto(_config, element);
+
+        EnvironmentVariablesComponent.readExternal(element, getEnvs());
+
+        _configurationModule.readExternal(element);
+    }
+
+    @Override
+    public void setAlternativeJrePath(final String path) {
+        _config.alternativeJrePath = path;
+    }
+
+    @Override
+    public void setAlternativeJrePathEnabled(final boolean enabled) {
+        _config.alternativeJrePathEnabled = enabled;
+    }
+
+    @Override
+    public void setEnvs(@NotNull final Map<String, String> envs) {
+        _envs.clear();
+        _envs.putAll(envs);
+    }
+
+    public void setLiferayBundle(final String liferayBundle) {
+        _config.liferayBundle = liferayBundle;
+    }
+
+    public void setModule(final Module module) {
+        _configurationModule.setModule(module);
+    }
+
+    @Override
+    public void setPassParentEnvs(final boolean passParentEnvs) {
+        _config.passParentEnvs = passParentEnvs;
+    }
+
+    @Override
+    public void setProgramParameters(@Nullable final String value) {
+    }
+
+    @Override
+    public void setVMParameters(final String value) {
+        _config.vmParameters = value;
+    }
+
+    @Override
+    public void setWorkingDirectory(@Nullable final String value) {
+    }
+
+    @Override
+    public void writeExternal(final Element element) throws WriteExternalException {
+        super.writeExternal(element);
+
+        JavaRunConfigurationExtensionManager.getInstance().writeExternal(this, element);
+
+        XmlSerializer.serializeInto(_config, element, new SkipDefaultValuesSerializationFilters());
+
+        EnvironmentVariablesComponent.writeExternal(element, getEnvs());
+
+        if (_configurationModule.getModule() != null) {
+            _configurationModule.writeExternal(element);
+        }
     }
 
     private static class LiferayBundleConfig {
-        public String liferayBundle = "";
-        public String vmParameters = "";
-        public boolean alternativeJrePathEnabled;
         public String alternativeJrePath = "";
+        public boolean alternativeJrePathEnabled;
+        public String liferayBundle = "";
         public boolean passParentEnvs = true;
+        public String vmParameters = "";
     }
+
+    private LiferayBundleConfig _config = new LiferayBundleConfig();
+    private JavaRunConfigurationModule _configurationModule;
+    private Map<String, String> _envs = new LinkedHashMap<>();
 
 }

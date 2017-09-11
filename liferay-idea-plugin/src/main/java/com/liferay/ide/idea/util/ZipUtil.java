@@ -47,8 +47,6 @@ public class ZipUtil {
         try {
             final Enumeration<? extends ZipEntry> entries = zip.entries();
 
-            final int totalWork = zip.size();
-
             int c = 0;
             boolean foundStartEntry = entryToStart == null;
 
@@ -121,7 +119,7 @@ public class ZipUtil {
         }
     }
 
-    private static void mkdir(File dir) throws IOException {
+    private static void mkdir(final File dir) throws IOException {
         if (!dir.exists() && !dir.mkdirs()) {
             final String msg = "Could not create dir: " + dir.getPath();
             throw new IOException(msg);

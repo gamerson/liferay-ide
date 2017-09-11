@@ -15,52 +15,24 @@
 
 package com.liferay.ide.idea.ui.modules;
 
-import com.intellij.ide.IdeBundle;
-import com.intellij.ide.projectWizard.ChooseTemplateStep;
-import com.intellij.ide.projectWizard.NewProjectWizard;
-import com.intellij.ide.projectWizard.ProjectSettingsStep;
-import com.intellij.ide.projectWizard.ProjectTypeStep;
 import com.intellij.ide.util.newProjectWizard.AbstractProjectWizard;
 import com.intellij.ide.util.newProjectWizard.StepSequence;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.util.Disposer;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
 
 /**
  * @author Terry Jia
  */
 public class NewLiferayModuleWizard extends AbstractProjectWizard {
 
-    private final StepSequence mySequence = new StepSequence();
-
-    public NewLiferayModuleWizard(@Nullable Project project, @NotNull ModulesProvider modulesProvider, @Nullable String defaultPath) {
+    public NewLiferayModuleWizard(@Nullable final Project project, @NotNull final ModulesProvider modulesProvider, @Nullable final String defaultPath) {
         super("New Liferay Modules", project, defaultPath);
 
         init(modulesProvider);
-    }
-
-    protected void init(@NotNull ModulesProvider modulesProvider) {
-        myWizardContext.setModulesProvider(modulesProvider);
-
-        final LiferayProjectTypeStep projectTypeStep = new LiferayProjectTypeStep(myWizardContext, this, modulesProvider);
-
-        Disposer.register(getDisposable(), projectTypeStep);
-
-        mySequence.addCommonStep(projectTypeStep);
-
-        mySequence.addCommonFinishingStep(new LiferayProjectSettingsStep(myWizardContext), null);
-
-        for (ModuleWizardStep step : mySequence.getAllSteps()) {
-            addStep(step);
-        }
-
-        super.init();
     }
 
     @Nullable
@@ -71,7 +43,27 @@ public class NewLiferayModuleWizard extends AbstractProjectWizard {
 
     @Override
     public StepSequence getSequence() {
-        return mySequence;
+        return _sequence;
     }
+
+    protected void init(@NotNull final ModulesProvider modulesProvider) {
+        myWizardContext.setModulesProvider(modulesProvider);
+
+        final LiferayProjectTypeStep projectTypeStep = new LiferayProjectTypeStep(myWizardContext, this, modulesProvider);
+
+        Disposer.register(getDisposable(), projectTypeStep);
+
+        _sequence.addCommonStep(projectTypeStep);
+
+        _sequence.addCommonFinishingStep(new LiferayProjectSettingsStep(myWizardContext), null);
+
+        for (final ModuleWizardStep step : _sequence.getAllSteps()) {
+            addStep(step);
+        }
+
+        super.init();
+    }
+
+    private final StepSequence _sequence = new StepSequence();
 
 }

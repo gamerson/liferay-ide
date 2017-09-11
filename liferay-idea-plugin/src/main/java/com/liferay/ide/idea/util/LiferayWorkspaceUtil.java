@@ -24,19 +24,18 @@ import java.util.regex.Pattern;
  */
 public class LiferayWorkspaceUtil {
 
-    private final static Pattern PATTERN_WORKSPACE_PLUGIN = Pattern.compile(
-            ".*apply.*plugin.*:.*[\'\"]com\\.liferay\\.workspace[\'\"].*", Pattern.MULTILINE | Pattern.DOTALL);
+    public static String getHomeDir(final String location) {
+        final String result = getGradleProperty(location, "liferay.workspace.home.dir", "bundles");
 
-    private static final String _GRADLE_PROPERTIES_FILE_NAME = "gradle.properties";
-    private static final String _SETTINGS_GRADLE_FILE_NAME = "settings.gradle";
-    private static final String _BUILD_GRADLE_FILE_NAME = "build.gradle";
+        return (result == null || result.equals("")) ? "bundles" : result;
+    }
 
-    public static boolean isValidGradleWorkspaceLocation(String location) {
-        File workspaceDir = new File(location);
+    public static boolean isValidGradleWorkspaceLocation(final String location) {
+        final File workspaceDir = new File(location);
 
-        File buildGradle = new File(workspaceDir, _BUILD_GRADLE_FILE_NAME);
-        File settingsGradle = new File(workspaceDir, _SETTINGS_GRADLE_FILE_NAME);
-        File gradleProperties = new File(workspaceDir, _GRADLE_PROPERTIES_FILE_NAME);
+        final File buildGradle = new File(workspaceDir, _BUILD_GRADLE_FILE_NAME);
+        final File settingsGradle = new File(workspaceDir, _SETTINGS_GRADLE_FILE_NAME);
+        final File gradleProperties = new File(workspaceDir, _GRADLE_PROPERTIES_FILE_NAME);
 
         if (!(buildGradle.exists() && settingsGradle.exists() && gradleProperties.exists())) {
             return false;
@@ -44,16 +43,10 @@ public class LiferayWorkspaceUtil {
 
         final String settingsContent = FileUtil.readContents(settingsGradle, true);
 
-        return settingsContent != null && PATTERN_WORKSPACE_PLUGIN.matcher(settingsContent).matches();
+        return settingsContent != null && _PATTERN_WORKSPACE_PLUGIN.matcher(settingsContent).matches();
     }
 
-    public static String getHomeDir(String location) {
-        final String result = getGradleProperty(location, "liferay.workspace.home.dir", "bundles");
-
-        return (result == null || result.equals("")) ? "bundles" : result;
-    }
-
-    private static String getGradleProperty(String projectLocation, String key, String defaultValue) {
+    private static String getGradleProperty(final String projectLocation, final String key, final String defaultValue) {
         final File gradleProperties = new File(projectLocation, "gradle.properties");
 
         if (gradleProperties.exists()) {
@@ -64,5 +57,11 @@ public class LiferayWorkspaceUtil {
 
         return "";
     }
+
+    private static final String _BUILD_GRADLE_FILE_NAME = "build.gradle";
+    private static final String _GRADLE_PROPERTIES_FILE_NAME = "gradle.properties";
+    private final static Pattern _PATTERN_WORKSPACE_PLUGIN = Pattern.compile(
+            ".*apply.*plugin.*:.*[\'\"]com\\.liferay\\.workspace[\'\"].*", Pattern.MULTILINE | Pattern.DOTALL);
+    private static final String _SETTINGS_GRADLE_FILE_NAME = "settings.gradle";
 
 }

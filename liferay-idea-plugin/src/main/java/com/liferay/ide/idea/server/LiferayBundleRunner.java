@@ -25,15 +25,15 @@ import org.jetbrains.annotations.NotNull;
  */
 public class LiferayBundleRunner extends DefaultProgramRunner {
 
+    @Override
+    public boolean canRun(@NotNull final String executorId, @NotNull final RunProfile profile) {
+        return DefaultRunExecutor.EXECUTOR_ID.equals(executorId) && profile instanceof LiferayBundleConfiguration;
+    }
+
     @NotNull
     @Override
     public String getRunnerId() {
         return "LiferayBundleRunner";
-    }
-
-    @Override
-    public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
-        return DefaultRunExecutor.EXECUTOR_ID.equals(executorId) && profile instanceof LiferayBundleConfiguration;
     }
 
 }

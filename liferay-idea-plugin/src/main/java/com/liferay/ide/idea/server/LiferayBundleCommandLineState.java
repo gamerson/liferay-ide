@@ -40,7 +40,7 @@ public class LiferayBundleCommandLineState extends BaseJavaApplicationCommandLin
     protected JavaParameters createJavaParameters() throws ExecutionException {
         final JavaParameters params = new JavaParameters();
 
-        LiferayBundleConfiguration configuration = getConfiguration();
+        final LiferayBundleConfiguration configuration = getConfiguration();
 
 		final String jreHome = configuration.isAlternativeJrePathEnabled() ? configuration.getAlternativeJrePath() : null;
 
@@ -48,7 +48,7 @@ public class LiferayBundleCommandLineState extends BaseJavaApplicationCommandLin
 
         final String tomcat = configuration.getLiferayBundle() + "/tomcat-8.0.32";
 
-        PathsList classPath = params.getClassPath();
+        final PathsList classPath = params.getClassPath();
 
 		classPath.add(new File(tomcat + "/bin/tomcat-juli.jar"));
         classPath.add(new File(tomcat + "/bin/bootstrap.jar"));
@@ -56,7 +56,7 @@ public class LiferayBundleCommandLineState extends BaseJavaApplicationCommandLin
 
         params.setMainClass("org.apache.catalina.startup.Bootstrap");
 
-        ParametersList vmParametersList = params.getVMParametersList();
+        final ParametersList vmParametersList = params.getVMParametersList();
 
 		vmParametersList.addParametersString(configuration.getVMParameters());
 

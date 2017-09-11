@@ -20,6 +20,7 @@ import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
+import com.liferay.ide.idea.ui.LiferayIdeaUI;
 import com.liferay.ide.idea.util.*;
 
 import javax.swing.*;
@@ -37,21 +38,13 @@ import java.util.jar.JarFile;
  * @author Terry Jia
  */
 public class LiferayModuleFragmentWizardStep extends ModuleWizardStep {
-    private JPanel mainPanel;
-    private JPanel jspsPanel;
-    private JComboBox osgiHost;
-    private final LiferayModuleFragmentBuilder builder;
-    private final Tree jspsTree;
-    private WizardContext wizardContext;
-    private File temp = new File(new File(System.getProperties().getProperty("user.home"), ".liferay-ide"), "bundles");
 
-    public LiferayModuleFragmentWizardStep(WizardContext wizardContext, LiferayModuleFragmentBuilder builder) {
-        this.wizardContext = wizardContext;
-        this.builder = builder;
+    public LiferayModuleFragmentWizardStep(final WizardContext wizardContext, final LiferayModuleFragmentBuilder builder) {
+        _builder = builder;
+
         jspsTree = new Tree();
         jspsTree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode()));
-        temp.mkdirs();
-        JScrollPane typesScrollPane = ScrollPaneFactory.createScrollPane(jspsTree);
+        final JScrollPane typesScrollPane = ScrollPaneFactory.createScrollPane(jspsTree);
 
         jspsPanel.add(typesScrollPane, "archetypes");
         jspsTree.setRootVisible(false);
@@ -63,8 +56,8 @@ public class LiferayModuleFragmentWizardStep extends ModuleWizardStep {
         if (!liferayHomeDir.exists()) {
             osgiHost.addItem("unable to get liferay bundle");
 
-            DefaultMutableTreeNode root = new DefaultMutableTreeNode("root", true);
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode("unable to get liferay bundle", true);
+            final DefaultMutableTreeNode root = new DefaultMutableTreeNode("root", true);
+            final DefaultMutableTreeNode node = new DefaultMutableTreeNode("unable to get liferay bundle", true);
 
             root.add(node);
 
@@ -75,37 +68,36 @@ public class LiferayModuleFragmentWizardStep extends ModuleWizardStep {
             return;
         }
 
-        List<String> bundles = ServerUtil.getModuleFileListFrom70Server(liferayHomeDir);
+        final List<String> bundles = ServerUtil.getModuleFileListFrom70Server(liferayHomeDir);
 
-        for (String bundle : bundles) {
+        for (final String bundle : bundles) {
             osgiHost.addItem(bundle);
         }
 
         osgiHost.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                DefaultMutableTreeNode root = new DefaultMutableTreeNode("root", true);
+            public void actionPerformed(ActionEvent event) {
+                final DefaultMutableTreeNode root = new DefaultMutableTreeNode("root", true);
 
-                ServerUtil.getModuleFileFrom70Server(liferayHomeDir, osgiHost.getSelectedItem().toString(), temp);
+                ServerUtil.getModuleFileFrom70Server(liferayHomeDir, osgiHost.getSelectedItem().toString(), LiferayIdeaUI.getUserBundlesDir());
 
-                File currentOsgiBundle = new File(temp, osgiHost.getSelectedItem().toString());
+                final File currentOsgiBundle = new File(LiferayIdeaUI.getUserBundlesDir(), osgiHost.getSelectedItem().toString());
 
                 if (currentOsgiBundle.exists()) {
-                    try (JarFile jar = new JarFile(currentOsgiBundle)) {
-                        Enumeration<JarEntry> enu = jar.entries();
+                    try (final JarFile jar = new JarFile(currentOsgiBundle)) {
+                        final Enumeration<JarEntry> enu = jar.entries();
 
                         while (enu.hasMoreElements()) {
-                            JarEntry entry = enu.nextElement();
-                            String name = entry.getName();
+                            final String name = enu.nextElement().getName();
 
                             if ((name.startsWith("META-INF/resources/") &&
                                     (name.endsWith(".jsp") || name.endsWith(".jspf"))) ||
                                     name.equals("portlet.properties") || name.equals("resource-actions/default.xml")) {
-                                DefaultMutableTreeNode node1 = new DefaultMutableTreeNode(name, true);
-                                root.add(node1);
+
+                                root.add(new DefaultMutableTreeNode(name, true));
                             }
                         }
-                    } catch (IOException e1) {
+                    } catch (IOException e) {
                     }
                 }
 
@@ -114,44 +106,11 @@ public class LiferayModuleFragmentWizardStep extends ModuleWizardStep {
         });
     }
 
-
-    public JComponent getComponent() {
-        return mainPanel;
-    }
-
-    @Override
-    public void updateDataModel() {
-        builder.setFragmentHost(getOsgiHost());
-        builder.setOverrideFiles(getSelectedJsps());
-        String[] bsnAndVerion = getBsnAndVersion(getOsgiHost());
-        builder.setBsnName(bsnAndVerion[0]);
-        builder.setVersion(bsnAndVerion[1]);
-    }
-
-    public String[] getSelectedJsps() {
-        TreePath[] paths = jspsTree.getSelectionPaths();
-
-        if (CoreUtil.isNullOrEmpty(paths)) {
-            return null;
-        }
-
-        String[] jsps = new String[paths.length];
-
-        for (int i = 0; i < paths.length; i++) {
-            jsps[i] = paths[i].getLastPathComponent().toString();
-        }
-        return jsps;
-    }
-
-    public String getOsgiHost() {
-        return osgiHost.getSelectedItem().toString();
-    }
-
-    public String[] getBsnAndVersion(String hostBundleName) {
-        final File tempBundle = new File(temp, hostBundleName.substring(0, hostBundleName.lastIndexOf(".jar")));
+    public String[] getBsnAndVersion(final String hostBundleName) {
+        final File tempBundle = new File(LiferayIdeaUI.getUserBundlesDir(), hostBundleName.substring(0, hostBundleName.lastIndexOf(".jar")));
 
         if (!tempBundle.exists()) {
-            File hostBundle = new File(temp, hostBundleName);
+            File hostBundle = new File(LiferayIdeaUI.getUserBundlesDir(), hostBundleName);
 
             try {
                 ZipUtil.unzip(hostBundle, tempBundle);
@@ -182,15 +141,53 @@ public class LiferayModuleFragmentWizardStep extends ModuleWizardStep {
         return new String[]{bundleSymbolicName, version};
     }
 
+    public JComponent getComponent() {
+        return mainPanel;
+    }
+
+    public String getOsgiHost() {
+        return osgiHost.getSelectedItem().toString();
+    }
+
+    public String[] getSelectedJsps() {
+        final TreePath[] paths = jspsTree.getSelectionPaths();
+
+        if (CoreUtil.isNullOrEmpty(paths)) {
+            return null;
+        }
+
+        final String[] jsps = new String[paths.length];
+
+        for (int i = 0; i < paths.length; i++) {
+            jsps[i] = paths[i].getLastPathComponent().toString();
+        }
+
+        return jsps;
+    }
+
+    @Override
+    public void updateDataModel() {
+        final String[] bsnAndVerion = getBsnAndVersion(getOsgiHost());
+
+        _builder.setFragmentHost(getOsgiHost());
+        _builder.setOverrideFiles(getSelectedJsps());
+        _builder.setBsnName(bsnAndVerion[0]);
+        _builder.setVersion(bsnAndVerion[1]);
+    }
+
     @Override
     public boolean validate() throws ConfigurationException {
-        String validationTitle = "Validation Error";
-
         if (CoreUtil.isNullOrEmpty(getSelectedJsps())) {
-            throw new ConfigurationException("At least select one jsp to override", validationTitle);
+            throw new ConfigurationException("At least select one jsp to override", "Validation Error");
         }
 
         return true;
     }
+
+    private final LiferayModuleFragmentBuilder _builder;
+    private JPanel jspsPanel;
+    private final Tree jspsTree;
+    private JPanel mainPanel;
+    private JComboBox osgiHost;
 
 }

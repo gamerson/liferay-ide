@@ -15,6 +15,7 @@
 
 package com.liferay.ide.idea.util;
 
+import com.liferay.ide.idea.ui.LiferayIdeaUI;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
@@ -31,7 +32,7 @@ import java.util.Scanner;
  */
 public class BladeCLI {
 
-    public static String[] execute(String args) {
+    public static String[] execute(final String args) {
         final Project project = new Project();
         final Java javaTask = new Java();
 
@@ -39,9 +40,7 @@ public class BladeCLI {
         javaTask.setFork(true);
         javaTask.setFailonerror(true);
 
-        File temp = new File(System.getProperties().getProperty("user.home"), ".liferay-ide");
-
-        File bladeJar = new File(temp, "com.liferay.blade.cli.jar");
+        final File bladeJar = new File(LiferayIdeaUI.getUserTempDir(), "com.liferay.blade.cli.jar");
 
         if (!bladeJar.exists()) {
             try (InputStream in = BladeCLI.class.getClassLoader().getResourceAsStream("/libs/com.liferay.blade.cli.jar")) {
@@ -61,7 +60,7 @@ public class BladeCLI {
         logger.setOutputPrintStream(new PrintStream(out));
         logger.setMessageOutputLevel(Project.MSG_INFO);
 
-        int returnCode = javaTask.executeJava();
+        javaTask.executeJava();
 
         final java.util.List<String> lines = new ArrayList<>();
         final Scanner scanner = new Scanner(out.toString());
@@ -90,9 +89,9 @@ public class BladeCLI {
     public static synchronized String[] getProjectTemplates() {
         java.util.List<String> templateNames = new ArrayList<>();
 
-        String[] executeResult = execute("create -l");
+        final String[] executeResult = execute("create -l");
 
-        for (String name : executeResult) {
+        for (final String name : executeResult) {
             // for latest blade which print template descriptor
             if (name.trim().indexOf(" ") != -1) {
                 templateNames.add(name.substring(0, name.indexOf(" ")));

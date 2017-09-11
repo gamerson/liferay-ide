@@ -13,56 +13,53 @@ import java.util.function.Predicate;
  */
 public class SwitchConsumer<T> implements Consumer<T> {
 
-	public SwitchConsumer(Map<Predicate<T>, Consumer<T>> cases, Consumer<T> defaultConsumer) {
-		_cases = cases;
-		_defaultConsumer = defaultConsumer;
-	}
+    public SwitchConsumer(Map<Predicate<T>, Consumer<T>> cases, Consumer<T> defaultConsumer) {
+        _cases = cases;
+        _defaultConsumer = defaultConsumer;
+    }
 
-	@Override
-	public void accept(T t) {
-		Optional<Entry<Predicate<T>, Consumer<T>>> matchingCase = 
-			_cases.entrySet().stream().filter(
-				e -> e.getKey().test(t)
-			).findFirst();
-		
-		if (matchingCase.isPresent()) {
-			matchingCase.get().getValue().accept(t);
-		}
-		else if (_defaultConsumer != null) {
-			_defaultConsumer.accept(t);
-		}
-	}
-	
-	public static <T> SwitchConsumerBuilder<T> newBuilder() {
-		return new SwitchConsumerBuilder<T>();
-	}
-	
-	public static <T> SwitchConsumerBuilder<T> newBuilder(Class<T> clazz) {
-		return new SwitchConsumerBuilder<T>();
-	}
+    @Override
+    public void accept(T t) {
+        Optional<Entry<Predicate<T>, Consumer<T>>> matchingCase =
+                _cases.entrySet().stream().filter(
+                        e -> e.getKey().test(t)
+                ).findFirst();
 
-	public static class SwitchConsumerBuilder<T> {
-		private Map<Predicate<T>, Consumer<T>> _cases = new LinkedHashMap<>();
+        if (matchingCase.isPresent()) {
+            matchingCase.get().getValue().accept(t);
+        } else if (_defaultConsumer != null) {
+            _defaultConsumer.accept(t);
+        }
+    }
 
-		private Consumer<T> _default;
+    public static <T> SwitchConsumerBuilder<T> newBuilder() {
+        return new SwitchConsumerBuilder<T>();
+    }
 
-		public SwitchConsumerBuilder<T> addCase(Predicate<T> p, Consumer<T> c) {
-			_cases.put(p, c);
+    public static <T> SwitchConsumerBuilder<T> newBuilder(Class<T> clazz) {
+        return new SwitchConsumerBuilder<T>();
+    }
 
-			return this;
-		}
+    public static class SwitchConsumerBuilder<T> {
+        public SwitchConsumerBuilder<T> addCase(Predicate<T> p, Consumer<T> c) {
+            _cases.put(p, c);
 
-		public SwitchConsumerBuilder<T> setDefault(Consumer<T> c) {
-			_default = c;
+            return this;
+        }
 
-			return this;
-		}
+        public SwitchConsumer<T> build() {
+            return new SwitchConsumer<T>(_cases, _default);
+        }
 
-		public SwitchConsumer<T> build() {
-			return new SwitchConsumer<T>(_cases, _default);
-		}
-	}
+        public SwitchConsumerBuilder<T> setDefault(Consumer<T> c) {
+            _default = c;
 
-	private final Map<Predicate<T>, Consumer<T>> _cases;
-	private final Consumer<T> _defaultConsumer;
+            return this;
+        }
+        private Map<Predicate<T>, Consumer<T>> _cases = new LinkedHashMap<>();
+        private Consumer<T> _default;
+    }
+
+    private final Map<Predicate<T>, Consumer<T>> _cases;
+    private final Consumer<T> _defaultConsumer;
 }

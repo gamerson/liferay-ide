@@ -33,13 +33,6 @@ import javax.swing.*;
  */
 public class LiferayBundleConfigurable extends SettingsEditor<LiferayBundleConfiguration> implements PanelWithAnchor {
 
-    private LabeledComponent<ModulesComboBox> modules;
-    private JPanel mainPanel;
-    private JrePathEditor jrePath;
-    private JTextField vmParams;
-    private JTextField liferayBundle;
-    private JComponent anchor;
-
     public LiferayBundleConfigurable(final Project project) {
         ModulesComboBox modulesComboBox = modules.getComponent();
         modulesComboBox.allowEmptySelection("<whole project>");
@@ -58,13 +51,6 @@ public class LiferayBundleConfigurable extends SettingsEditor<LiferayBundleConfi
         configuration.setVMParameters(vmParams.getText());
     }
 
-    public void resetEditorFrom(@NotNull final LiferayBundleConfiguration configuration) {
-        vmParams.setText(configuration.getVMParameters());
-        liferayBundle.setText(configuration.getLiferayBundle());
-        jrePath.setPathOrName(configuration.getAlternativeJrePath(), configuration.isAlternativeJrePathEnabled());
-        modules.getComponent().setSelectedModule(configuration.getModule());
-    }
-
     @NotNull
     public JComponent createEditor() {
         return mainPanel;
@@ -75,10 +61,24 @@ public class LiferayBundleConfigurable extends SettingsEditor<LiferayBundleConfi
         return anchor;
     }
 
+    public void resetEditorFrom(@NotNull final LiferayBundleConfiguration configuration) {
+        vmParams.setText(configuration.getVMParameters());
+        liferayBundle.setText(configuration.getLiferayBundle());
+        jrePath.setPathOrName(configuration.getAlternativeJrePath(), configuration.isAlternativeJrePathEnabled());
+        modules.getComponent().setSelectedModule(configuration.getModule());
+    }
+
     @Override
-    public void setAnchor(@Nullable JComponent anchor) {
+    public void setAnchor(@Nullable final JComponent anchor) {
         this.anchor = anchor;
         jrePath.setAnchor(anchor);
     }
+
+    private JComponent anchor;
+    private JrePathEditor jrePath;
+    private JTextField liferayBundle;
+    private JPanel mainPanel;
+    private LabeledComponent<ModulesComboBox> modules;
+    private JTextField vmParams;
 
 }

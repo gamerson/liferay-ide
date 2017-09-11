@@ -33,7 +33,6 @@ import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.DocumentAdapter;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,69 +44,15 @@ import java.io.File;
  * @author Terry Jia
  */
 public class LiferayModuleNameLocationComponent {
-    private final WizardContext wizardContext;
-    private JTextField moduleName;
-    private TextFieldWithBrowseButton moduleContentRoot;
-    private TextFieldWithBrowseButton moduleFileLocation;
-    private JPanel modulePanel;
 
-    private boolean moduleNameChangedByUser = false;
-    private boolean moduleNameDocListenerEnabled = true;
-
-    private boolean contentRootChangedByUser = false;
-    private boolean contentRootDocListenerEnabled = true;
-
-    private boolean myImlLocationChangedByUser = false;
-    private boolean myImlLocationDocListenerEnabled = true;
-
-    public LiferayModuleNameLocationComponent(@NotNull WizardContext wizardContext) {
-        this.wizardContext = wizardContext;
-    }
-
-    @Nullable
-    public AbstractModuleBuilder getModuleBuilder() {
-        return ((AbstractModuleBuilder) wizardContext.getProjectBuilder());
-    }
-
-    public boolean validate() throws ConfigurationException {
-        AbstractModuleBuilder builder = getModuleBuilder();
-
-        if (builder != null && !builder.validateModuleName(getModuleName())) {
-            return false;
-        }
-
-        if (!validateModulePaths()) {
-            return false;
-        }
-
-        validateExistingModuleName();
-
-        return true;
-    }
-
-    public void updateDataModel() {
-        final AbstractModuleBuilder moduleBuilder = getModuleBuilder();
-
-        if (moduleBuilder == null) {
-            return;
-        }
-
-        final String moduleName = getModuleName();
-
-        moduleBuilder.setName(moduleName);
-        moduleBuilder.setModuleFilePath(
-                FileUtil.toSystemIndependentName(moduleFileLocation.getText()) + "/" + moduleName + ModuleFileType.DOT_DEFAULT_EXTENSION);
-        moduleBuilder.setContentEntryPath(FileUtil.toSystemIndependentName(getModuleContentRoot()));
-    }
-
-    public JPanel getModulePanel() {
-        return modulePanel;
+    public LiferayModuleNameLocationComponent(@NotNull final WizardContext wizardContext) {
+        _context = wizardContext;
     }
 
     public void bindModuleSettings(final LiferayNamePathComponent namePathComponent) {
         namePathComponent.getNameComponent().getDocument().addDocumentListener(new DocumentAdapter() {
             protected void textChanged(final DocumentEvent e) {
-                if (!moduleNameChangedByUser) {
+                if (!_moduleNameChangedByUser) {
                     setModuleName(namePathComponent.getNameValue());
                 }
             }
@@ -115,11 +60,11 @@ public class LiferayModuleNameLocationComponent {
 
         moduleContentRoot.addBrowseFolderListener(ProjectBundle.message("project.new.wizard.module.content.root.chooser.title"),
                 ProjectBundle.message("project.new.wizard.module.content.root.chooser.description"),
-                wizardContext.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
+                _context.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
 
         namePathComponent.getPathComponent().getDocument().addDocumentListener(new DocumentAdapter() {
             protected void textChanged(final DocumentEvent e) {
-                if (!contentRootChangedByUser) {
+                if (!_contentRootChangedByUser) {
                     setModuleContentRoot(namePathComponent.getPath());
                 }
             }
@@ -127,82 +72,118 @@ public class LiferayModuleNameLocationComponent {
 
         moduleName.getDocument().addDocumentListener(new DocumentAdapter() {
             protected void textChanged(final DocumentEvent e) {
-                if (moduleNameDocListenerEnabled) {
-                    moduleNameChangedByUser = true;
+                if (_moduleNameDocListenerEnabled) {
+                    _moduleNameChangedByUser = true;
                 }
-                String path = getDefaultBaseDir(wizardContext, namePathComponent);
+
+                String path = getDefaultBaseDir(_context, namePathComponent);
                 final String moduleName = getModuleName();
 
                 if (path.length() > 0 && !Comparing.strEqual(moduleName, namePathComponent.getNameValue())) {
                     path += "/" + getTargetFolderName() + "/" + moduleName;
                 }
 
-                if (!contentRootChangedByUser) {
-                    final boolean f = moduleNameChangedByUser;
-                    moduleNameChangedByUser = true;
+                if (!_contentRootChangedByUser) {
+                    final boolean f = _moduleNameChangedByUser;
+                    _moduleNameChangedByUser = true;
                     setModuleContentRoot(path);
-                    moduleNameChangedByUser = f;
+                    _moduleNameChangedByUser = f;
                 }
 
-                if (!myImlLocationChangedByUser) {
+                if (!_myImlLocationChangedByUser) {
                     setImlFileLocation(path);
                 }
             }
         });
+
         moduleContentRoot.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
             protected void textChanged(final DocumentEvent e) {
-                if (contentRootDocListenerEnabled) {
-                    contentRootChangedByUser = true;
+                if (_contentRootDocListenerEnabled) {
+                    _contentRootChangedByUser = true;
                 }
-                if (!myImlLocationChangedByUser) {
+                if (!_myImlLocationChangedByUser) {
                     setImlFileLocation(getModuleContentRoot());
                 }
-                if (!moduleNameChangedByUser) {
+                if (!_moduleNameChangedByUser) {
                     final String path = FileUtil.toSystemIndependentName(getModuleContentRoot());
                     final int idx = path.lastIndexOf("/");
 
-                    boolean f = contentRootChangedByUser;
-                    contentRootChangedByUser = true;
+                    boolean f = _contentRootChangedByUser;
+                    _contentRootChangedByUser = true;
 
-                    boolean i = myImlLocationChangedByUser;
-                    myImlLocationChangedByUser = true;
+                    boolean i = _myImlLocationChangedByUser;
+                    _myImlLocationChangedByUser = true;
 
                     setModuleName(idx >= 0 ? path.substring(idx + 1) : "");
 
-                    contentRootChangedByUser = f;
-                    myImlLocationChangedByUser = i;
+                    _contentRootChangedByUser = f;
+                    _myImlLocationChangedByUser = i;
                 }
             }
         });
 
         moduleFileLocation.addBrowseFolderListener(ProjectBundle.message("project.new.wizard.module.file.chooser.title"),
                 ProjectBundle.message("project.new.wizard.module.file.description"),
-                wizardContext.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
+                _context.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
         moduleFileLocation.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
             protected void textChanged(final DocumentEvent e) {
-                if (myImlLocationDocListenerEnabled) {
-                    myImlLocationChangedByUser = true;
+                if (_myImlLocationDocListenerEnabled) {
+                    _myImlLocationChangedByUser = true;
                 }
             }
         });
         namePathComponent.getPathComponent().getDocument().addDocumentListener(new DocumentAdapter() {
             protected void textChanged(final DocumentEvent e) {
-                if (!myImlLocationChangedByUser) {
+                if (!_myImlLocationChangedByUser) {
                     setImlFileLocation(namePathComponent.getPath());
                 }
             }
         });
     }
 
+    @Nullable
+    public AbstractModuleBuilder getModuleBuilder() {
+        return ((AbstractModuleBuilder) _context.getProjectBuilder());
+    }
+
+    public JTextField getModuleNameField() {
+        return moduleName;
+    }
+
+    public JPanel getModulePanel() {
+        return modulePanel;
+    }
+
+    public void setModuleName(String moduleName) {
+        _moduleNameDocListenerEnabled = false;
+        this.moduleName.setText(moduleName);
+        _moduleNameDocListenerEnabled = true;
+    }
+
+    public void updateDataModel() {
+        final AbstractModuleBuilder builder = getModuleBuilder();
+
+        if (builder == null) {
+            return;
+        }
+
+        final String moduleName = getModuleName();
+
+        builder.setName(moduleName);
+        builder.setModuleFilePath(
+                FileUtil.toSystemIndependentName(moduleFileLocation.getText()) + "/" + moduleName + ModuleFileType.DOT_DEFAULT_EXTENSION);
+        builder.setContentEntryPath(FileUtil.toSystemIndependentName(getModuleContentRoot()));
+    }
+
     public void updateLocations() {
-        final Project project = wizardContext.getProject();
+        final Project project = _context.getProject();
         assert project != null;
         final VirtualFile baseDir = project.getBaseDir();
 
         if (baseDir != null) { //e.g. was deleted
             final String baseDirPath = baseDir.getPath();
-            String moduleName = ProjectWizardUtil.findNonExistingFileName(baseDirPath, "untitled", "");
-            String contentRoot = baseDirPath + "/" + getTargetFolderName() + "/" + moduleName;
+            final String moduleName = ProjectWizardUtil.findNonExistingFileName(baseDirPath, "untitled", "");
+            final String contentRoot = baseDirPath + File.separator + getTargetFolderName() + File.separator + moduleName;
 
             setModuleName(moduleName);
             setModuleContentRoot(contentRoot);
@@ -212,8 +193,75 @@ public class LiferayModuleNameLocationComponent {
         }
     }
 
+    public boolean validate() throws ConfigurationException {
+        final AbstractModuleBuilder builder = getModuleBuilder();
+
+        if ((builder != null && !builder.validateModuleName(getModuleName())) || !validateModulePaths()) {
+            return false;
+        }
+
+        validateExistingModuleName();
+
+        return true;
+    }
+
+    private static String getDefaultBaseDir(final WizardContext wizardContext, final LiferayNamePathComponent namePathComponent) {
+        if (wizardContext.isCreatingNewProject()) {
+            return namePathComponent.getPath();
+        } else {
+            final Project project = wizardContext.getProject();
+
+            assert project != null;
+
+            final VirtualFile baseDir = project.getBaseDir();
+
+            if (baseDir != null) {
+                return baseDir.getPath();
+            }
+
+            return "";
+        }
+    }
+
+    private String getModuleContentRoot() {
+        return moduleContentRoot.getText();
+    }
+
+    private String getModuleName() {
+        return moduleName.getText().trim();
+    }
+
+    private String getTargetFolderName() {
+        final AbstractModuleBuilder builder = getModuleBuilder();
+
+        String targetFolder = "modules";
+
+        if (builder instanceof LiferayModuleBuilder) {
+            String templateType = ((LiferayModuleBuilder) builder).getType();
+
+            if ("theme".equals(templateType) || "layout-template".equals(templateType)
+                    || "spring-mvc-portlet".equals(templateType)) {
+                targetFolder = "wars";
+            }
+        }
+
+        return targetFolder;
+    }
+
+    private void setImlFileLocation(final String path) {
+        _myImlLocationDocListenerEnabled = false;
+        moduleFileLocation.setText(FileUtil.toSystemDependentName(path));
+        _myImlLocationDocListenerEnabled = true;
+    }
+
+    private void setModuleContentRoot(final String path) {
+        _contentRootDocListenerEnabled = false;
+        moduleContentRoot.setText(FileUtil.toSystemDependentName(path));
+        _contentRootDocListenerEnabled = true;
+    }
+
     private void validateExistingModuleName() throws ConfigurationException {
-        final Project project = wizardContext.getProject();
+        final Project project = _context.getProject();
 
         if (project == null) {
             return;
@@ -248,12 +296,12 @@ public class LiferayModuleNameLocationComponent {
         }
 
         if (!ProjectWizardUtil.createDirectoryIfNotExists(IdeBundle.message("directory.module.file"), moduleFileDirectory,
-                myImlLocationChangedByUser)) {
+                _myImlLocationChangedByUser)) {
             return false;
         }
 
         if (!ProjectWizardUtil.createDirectoryIfNotExists(IdeBundle.message("directory.module.content.root"), moduleContentRoot.getText(),
-                contentRootChangedByUser)) {
+                _contentRootChangedByUser)) {
             return false;
         }
 
@@ -270,73 +318,16 @@ public class LiferayModuleNameLocationComponent {
 
         return true;
     }
-
-    private String getModuleContentRoot() {
-        return moduleContentRoot.getText();
-    }
-
-    private static String getDefaultBaseDir(WizardContext wizardContext, LiferayNamePathComponent namePathComponent) {
-        if (wizardContext.isCreatingNewProject()) {
-            return namePathComponent.getPath();
-        } else {
-            final Project project = wizardContext.getProject();
-
-            assert project != null;
-
-            final VirtualFile baseDir = project.getBaseDir();
-
-            if (baseDir != null) {
-                return baseDir.getPath();
-            }
-            return "";
-        }
-    }
-
-    private void setImlFileLocation(final String path) {
-        myImlLocationDocListenerEnabled = false;
-        moduleFileLocation.setText(FileUtil.toSystemDependentName(path));
-        myImlLocationDocListenerEnabled = true;
-    }
-
-    private void setModuleContentRoot(final String path) {
-        contentRootDocListenerEnabled = false;
-        moduleContentRoot.setText(FileUtil.toSystemDependentName(path));
-        contentRootDocListenerEnabled = true;
-    }
-
-    public void setModuleName(String moduleName) {
-        moduleNameDocListenerEnabled = false;
-        this.moduleName.setText(moduleName);
-        moduleNameDocListenerEnabled = true;
-    }
-
-    public JTextField getModuleNameField() {
-        return moduleName;
-    }
-
-    private String getModuleName() {
-        return moduleName.getText().trim();
-    }
-
-    private String getTargetFolderName() {
-        AbstractModuleBuilder builder = getModuleBuilder();
-        LiferayModuleBuilder liferayModuleBuilder = null;
-
-        if (builder instanceof LiferayModuleBuilder) {
-            liferayModuleBuilder = (LiferayModuleBuilder) builder;
-        }
-
-        String targetFolder = "modules";
-
-        if (liferayModuleBuilder != null) {
-            String templateType = liferayModuleBuilder.getType();
-            if ("theme".equals(templateType) || "layout-template".equals(templateType)
-                    || "spring-mvc-portlet".equals(templateType)) {
-                targetFolder = "wars";
-            }
-        }
-
-        return targetFolder;
-    }
+    private boolean _contentRootChangedByUser = false;
+    private boolean _contentRootDocListenerEnabled = true;
+    private boolean _moduleNameChangedByUser = false;
+    private boolean _moduleNameDocListenerEnabled = true;
+    private boolean _myImlLocationChangedByUser = false;
+    private boolean _myImlLocationDocListenerEnabled = true;
+    private final WizardContext _context;
+    private TextFieldWithBrowseButton moduleContentRoot;
+    private TextFieldWithBrowseButton moduleFileLocation;
+    private JTextField moduleName;
+    private JPanel modulePanel;
 
 }
