@@ -68,8 +68,8 @@ public abstract class GroovyScriptProxy implements InvocationHandler
         }
         catch( Throwable t )
         {
-            ScriptingCore.logError( "Error in script method " + method.getName(), t );
-            error = t;
+//            ScriptingCore.logError( "Error in script method " + method.getName(), t );
+//            error = t;
         }
         finally
         {
