@@ -1263,7 +1263,7 @@
             modes="run,debug"
             name="Liferay 7.x"
             public="true"
-            sourceLocatorId="com.liferay.ide.server.core.portal.sourceLocator"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="com.liferay.ide.server.core.portal.sourcePathComputer">
       </launchConfigurationType>
    </extension>
@@ -1363,14 +1363,6 @@
             id="com.liferay.ide.server.portal.publishTask"
             typeIds="com.liferay.ide.server.portal">
       </publishTask>
-   </extension>
-   <extension
-         point="org.eclipse.debug.core.sourceLocators">
-      <sourceLocator
-            class="com.liferay.ide.server.core.PortalSourceLookupDirector"
-            id="com.liferay.ide.server.core.portal.sourceLocator"
-            name="Portal Source Lookup Director">
-      </sourceLocator>
    </extension>
    <extension
          point="org.eclipse.debug.core.sourcePathComputers">
