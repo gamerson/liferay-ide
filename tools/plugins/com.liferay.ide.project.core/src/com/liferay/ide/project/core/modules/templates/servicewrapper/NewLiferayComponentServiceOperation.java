@@ -15,9 +15,9 @@
 
 package com.liferay.ide.project.core.modules.templates.servicewrapper;
 
-import com.liferay.ide.project.core.modules.ServiceContainer;
+import com.liferay.ide.core.ServiceContainer;
+import com.liferay.ide.core.util.TargetPlatformUtil;
 import com.liferay.ide.project.core.modules.templates.AbstractLiferayComponentTemplate;
-import com.liferay.ide.project.core.util.TargetPlatformUtil;
 
 import java.util.ArrayList;
 import java.util.List;
