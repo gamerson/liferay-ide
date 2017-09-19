@@ -1263,7 +1263,7 @@
             modes="run,debug"
             name="Liferay 7.x"
             public="true"
-            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourceLocatorId="com.liferay.ide.server.core.portal.LiferayTargetPlatformSourceLookupDirector"
             sourcePathComputerId="com.liferay.ide.server.core.portal.sourcePathComputer">
       </launchConfigurationType>
    </extension>
@@ -1394,4 +1394,33 @@
             type="jboss">
       </portalBundle>
    </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="com.liferay.ide.server.core.portal.LiferayTargetPlatformClasspathContainerInitializer"
+            id="com.liferay.ide.targetplatform.classpath.container">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="com.liferay.ide.server.core.portal.LiferayTargetPlatformClasspathContainerInitializer"
+            id="com.liferay.ide.targetplatform.classpath.container">
+      </classpathContainerInitializer>
+   </extension>
+   <extension point="org.eclipse.debug.core.sourceContainerTypes">
+      <sourceContainerType
+         id="com.liferay.ide.server.core.portal.sourceContainerTypes.liferayTargetPlatform"
+         name="Liferay Target Platform"
+         description=""
+         class="com.liferay.ide.server.core.portal.LiferayTargetPlatformSourceContainerType"
+      />
+   </extension>
+   <extension point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+         id="com.liferay.ide.server.core.portal.LiferayTargetPlatformSourceLookupDirector"
+         name="Liferay Source Lookup Director"
+         class="com.liferay.ide.server.core.portal.LiferayTargetPlatformSourceLookupDirector"
+      />
+   </extension>   
 </plugin>

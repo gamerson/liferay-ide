@@ -12,7 +12,7 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.modules;
+package com.liferay.ide.core;
 
 import java.util.List;
 

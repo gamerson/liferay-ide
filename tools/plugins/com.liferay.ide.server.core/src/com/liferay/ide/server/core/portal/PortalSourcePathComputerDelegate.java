@@ -81,7 +81,6 @@ public class PortalSourcePathComputerDelegate extends JavaSourcePathComputer
             }
         });
 
-        // TODO at least add a source container for the Liferay Target Platform
         return sourceContainers.toArray(new ISourceContainer[0]);
     }
 

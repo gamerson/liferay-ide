@@ -12,7 +12,7 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core;
+package com.liferay.ide.core;
 
 /**
  * @author Lovett Li
