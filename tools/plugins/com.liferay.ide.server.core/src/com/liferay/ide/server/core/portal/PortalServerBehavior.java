@@ -73,19 +73,16 @@ import org.osgi.framework.Version;
  * @author Simon Jiang
  * @author Terry Jia
  */
-@SuppressWarnings( {"restriction","rawtypes"} )
+@SuppressWarnings( { "restriction", "rawtypes" } )
 public class PortalServerBehavior extends ServerBehaviourDelegate
     implements ILiferayServerBehavior, IJavaLaunchConfigurationConstants
 {
+
     public static final String ATTR_STOP = "stop-server";
 
-    private static final String[] JMX_EXCLUDE_ARGS = new String []
-    {
-        "-Dcom.sun.management.jmxremote",
-        "-Dcom.sun.management.jmxremote.port=",
-        "-Dcom.sun.management.jmxremote.ssl=",
-        "-Dcom.sun.management.jmxremote.authenticate="
-    };
+    private static final String[] JMX_EXCLUDE_ARGS =
+        new String[] { "-Dcom.sun.management.jmxremote", "-Dcom.sun.management.jmxremote.port=",
+            "-Dcom.sun.management.jmxremote.ssl=", "-Dcom.sun.management.jmxremote.authenticate=" };
 
     private IAdaptable info;
     private transient PingThread ping = null;
@@ -105,6 +102,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         processListener = new IDebugEventSetListener()
         {
+
             public void handleDebugEvents( DebugEvent[] events )
             {
                 if( events != null )
@@ -307,9 +305,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         Collections.addAll( retval, getPortalRuntime().getPortalBundle().getRuntimeStartVMArgs() );
 
-        int agentPort = getServer().getAttribute( AGENT_PORT, Agent.DEFAULT_PORT );
+        retval.add( "-D" + Agent.AGENT_SERVER_PORT_KEY + "=" + getPortalServer().getAgentPort() );
 
-        retval.add( "-D" + Agent.AGENT_SERVER_PORT_KEY + "=" + agentPort );
+        retval.add( "-Dcom.sun.management.jmxremote.port=" + getPortalServer().getJmxPort() );
 
         return retval.toArray( new String[0] );
     }
@@ -344,7 +342,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         final IStatus status = getPortalRuntime().validate();
 
-        if( status != null && status.getSeverity() == IStatus.ERROR ) throw new CoreException( status );
+        if( status != null && status.getSeverity() == IStatus.ERROR )
+            throw new CoreException( status );
 
         setServerRestartState( false );
         setServerState( IServer.STATE_STARTING );
@@ -354,7 +353,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         {
             String url = "http://" + getServer().getHost();
 
-            final int port = Integer.parseInt( getPortalRuntime().getPortalBundle().getHttpPort() );
+            final int port = getPortalServer().getHttpPort();
 
             if( port != 80 )
             {
@@ -407,6 +406,19 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
                     if( index == 0 || ( index > 0 && Character.isWhitespace( retval.charAt( index - 1 ) ) ) )
                     {
+                        // replace
+                        String s = retval.substring( 0, index );
+                        int index2 = getNextToken( retval, index + ind + 1 );
+
+                        if( index2 >= 0 )
+                        {
+                            retval = s + newArgs[i] + retval.substring( index2 );
+                        }
+                        else
+                        {
+                            retval = s + newArgs[i];
+                        }
+
                         newArgs[i] = null;
                     }
                 }
@@ -416,6 +428,19 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
                     if( index == 0 || ( index > 0 && Character.isWhitespace( retval.charAt( index - 1 ) ) ) )
                     {
+                        // replace
+                        String s = retval.substring( 0, index );
+                        int index2 = getNextToken( retval, index );
+
+                        if( index2 >= 0 )
+                        {
+                            retval = s + newArgs[i] + retval.substring( index2 );
+                        }
+                        else
+                        {
+                            retval = s + newArgs[i];
+                        }
+
                         newArgs[i] = null;
                     }
                 }
@@ -425,7 +450,36 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
                     if( index == 0 || ( index > 0 && Character.isWhitespace( retval.charAt( index - 1 ) ) ) )
                     {
-                        newArgs[i] = null;
+                        // replace
+                        String s = retval.substring( 0, index );
+                        int index2 = getNextToken( retval, index );
+
+                        if( !keepActionLast || i < ( size - 1 ) )
+                        {
+                            if( index2 >= 0 )
+                            {
+                                retval = s + newArgs[i] + retval.substring( index2 );
+                            }
+                            else
+                            {
+                                retval = s + newArgs[i];
+                            }
+
+                            newArgs[i] = null;
+                        }
+                        else
+                        {
+                            // The last VM argument needs to remain last,
+                            // remove original arg and append the vmArg later
+                            if( index2 >= 0 )
+                            {
+                                retval = s + retval.substring( index2 );
+                            }
+                            else
+                            {
+                                retval = s;
+                            }
+                        }
                     }
                 }
             }
@@ -451,8 +505,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                             if( index2 >= 0 )
                             {
                                 // If remainder will become the first argument, remove leading blanks
-                                while( index2 < retval.length() &&
-                                    Character.isWhitespace( retval.charAt( index2 ) ) )
+                                while( index2 < retval.length() && Character.isWhitespace( retval.charAt( index2 ) ) )
                                     index2 += 1;
                                 retval = s + retval.substring( index2 );
                             }
@@ -473,8 +526,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                             if( index2 >= 0 )
                             {
                                 // If remainder will become the first argument, remove leading blanks
-                                while( index2 < retval.length() &&
-                                    Character.isWhitespace( retval.charAt( index2 ) ) )
+                                while( index2 < retval.length() && Character.isWhitespace( retval.charAt( index2 ) ) )
                                     index2 += 1;
                                 retval = s + retval.substring( index2 );
                             }
@@ -494,8 +546,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                             if( index2 >= 0 )
                             {
                                 // Remove leading blanks
-                                while( index2 < retval.length() &&
-                                    Character.isWhitespace( retval.charAt( index2 ) ) )
+                                while( index2 < retval.length() && Character.isWhitespace( retval.charAt( index2 ) ) )
                                     index2 += 1;
                                 retval = s + retval.substring( index2 );
                             }
@@ -538,7 +589,14 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                     xbootIndex = retval.lastIndexOf( "-Xbootclasspath" );
                 }
 
-                retval = retval + " " + xbootClasspath;
+                if( !Character.isWhitespace( retval.charAt( retval.length() - 1 ) ) )
+                {
+                    retval = retval + " " + xbootClasspath;
+                }
+                else
+                {
+                    retval = retval + xbootClasspath;
+                }
             }
         }
 
@@ -578,11 +636,10 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return;
     }
 
-
     @Override
     protected void publishServer( int kind, IProgressMonitor monitor ) throws CoreException
     {
-        setServerPublishState(IServer.PUBLISH_STATE_UNKNOWN);
+        setServerPublishState( IServer.PUBLISH_STATE_UNKNOWN );
     }
 
     @Override
@@ -592,6 +649,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         IAdaptable info = new IAdaptable()
         {
+
             @SuppressWarnings( "unchecked" )
             public Object getAdapter( Class adapter )
             {
@@ -632,7 +690,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         oldCp.add( 0, newJRECp );
     }
 
-    public void setModulePublishState2( IModule[] module, int state  )
+    public void setModulePublishState2( IModule[] module, int state )
     {
         super.setModulePublishState( module, state );
     }
@@ -652,7 +710,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         throws CoreException
     {
         final String existingProgArgs = launch.getAttribute( ATTR_PROGRAM_ARGUMENTS, (String) null );
-        launch.setAttribute( ATTR_PROGRAM_ARGUMENTS, mergeArguments( existingProgArgs, getRuntimeStartProgArgs(), null, true ) );
+        launch.setAttribute(
+            ATTR_PROGRAM_ARGUMENTS, mergeArguments( existingProgArgs, getRuntimeStartProgArgs(), null, true ) );
 
         final String existingVMArgs = launch.getAttribute( ATTR_VM_ARGUMENTS, (String) null );
 
@@ -664,7 +723,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         if( vmInstall != null )
         {
-            launch.setAttribute( ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath( vmInstall ).toPortableString() );
+            launch.setAttribute(
+                ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath( vmInstall ).toPortableString() );
         }
 
         final IRuntimeClasspathEntry[] orgClasspath = JavaRuntime.computeUnresolvedRuntimeClasspath( launch );
@@ -685,10 +745,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             try
             {
                 final String typeId = vmInstall.getVMInstallType().getId();
-                final IRuntimeClasspathEntry newJRECp =
-                    JavaRuntime.newRuntimeContainerClasspathEntry(
-                        new Path( JavaRuntime.JRE_CONTAINER ).append( typeId ).append( vmInstall.getName() ),
-                        IRuntimeClasspathEntry.BOOTSTRAP_CLASSES );
+                final IRuntimeClasspathEntry newJRECp = JavaRuntime.newRuntimeContainerClasspathEntry(
+                    new Path( JavaRuntime.JRE_CONTAINER ).append( typeId ).append( vmInstall.getName() ),
+                    IRuntimeClasspathEntry.BOOTSTRAP_CLASSES );
                 replaceJREConatiner( oldCp, newJRECp );
             }
             catch( Exception e )
@@ -738,9 +797,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         {
             try
             {
-                if ( entry.getClasspathEntry().getEntryKind() !=  IClasspathEntry.CPE_CONTAINER)
+                if( entry.getClasspathEntry().getEntryKind() != IClasspathEntry.CPE_CONTAINER )
                 {
-                    entry = new LiferayRuntimeClasspathEntry(entry.getClasspathEntry());
+                    entry = new LiferayRuntimeClasspathEntry( entry.getClasspathEntry() );
                 }
                 cp.add( entry.getMemento() );
             }
@@ -796,8 +855,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         try
         {
             embeddedAgentFile = new File(
-                FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
-                    "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
+                FileLocator.toFileURL(
+                    LiferayServerCore.getDefault().getBundle().getEntry(
+                        "bundles/biz.aQute.remote.agent.jar" ) ).getFile() );
         }
         catch( IOException e )
         {
@@ -907,8 +967,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                 try
                 {
                     final File file = new File(
-                        FileLocator.toFileURL( LiferayServerCore.getDefault().getBundle().getEntry(
-                            "bundles/" + ariesJxmBundleFullNames[i] ) ).getFile() );
+                        FileLocator.toFileURL(
+                            LiferayServerCore.getDefault().getBundle().getEntry(
+                                "bundles/" + ariesJxmBundleFullNames[i] ) ).getFile() );
 
                     FileUtil.copyFile( file, bundleFile );
                 }
@@ -1078,11 +1139,11 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         int state = getServer().getServerState();
 
         // If stopped or stopping, no need to run stop command again
-        if (state == IServer.STATE_STOPPED || state == IServer.STATE_STOPPING)
+        if( state == IServer.STATE_STOPPED || state == IServer.STATE_STOPPING )
         {
             return;
         }
-        else if (state == IServer.STATE_STARTING)
+        else if( state == IServer.STATE_STARTING )
         {
             terminate();
             return;
