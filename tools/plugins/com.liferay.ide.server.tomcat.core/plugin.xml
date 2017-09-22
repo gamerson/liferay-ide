@@ -305,33 +305,33 @@
             runtimeTypeId="com.liferay.ide.server.62.tomcat.runtime.70">
       </liferayPluginPublisher>
    </extension>
- <extension
-       point="com.liferay.ide.server.core.runtimeStubs">
-       <!--
-    <liferayRuntimeStub
-          name="Liferay v6.0 (Tomcat 6) Bundle"
-          runtimeTypeId="com.liferay.ide.eclipse.server.tomcat.runtime.60">
-    </liferayRuntimeStub>
-    <liferayRuntimeStub
-          default="true"
-          name="Liferay v6.1 (Tomcat 7) Bundle"
-          runtimeTypeId="com.liferay.ide.eclipse.server.tomcat.runtime.70">
-    </liferayRuntimeStub>
-    -->
-    <liferayRuntimeStub
-          name="Liferay v6.2 (Tomcat 7) Bundle"
-          runtimeTypeId="com.liferay.ide.server.62.tomcat.runtime.70">
-    </liferayRuntimeStub>
- </extension>
- <extension
-       point="org.eclipse.debug.core.sourceLocators">
-    <sourceLocator
-          class="com.liferay.ide.server.core.PortalSourceLookupDirector"
-          id="com.liferay.ide.server.tomcat.sourceLookupDirector"
-          name="%liferay.portal.source.locator.name">
-    </sourceLocator>
- </extension>
- <extension
+	 <extension
+	   point="com.liferay.ide.server.core.runtimeStubs">
+	   <!--
+	<liferayRuntimeStub
+	      name="Liferay v6.0 (Tomcat 6) Bundle"
+	      runtimeTypeId="com.liferay.ide.eclipse.server.tomcat.runtime.60">
+	</liferayRuntimeStub>
+	<liferayRuntimeStub
+	      default="true"
+	      name="Liferay v6.1 (Tomcat 7) Bundle"
+	      runtimeTypeId="com.liferay.ide.eclipse.server.tomcat.runtime.70">
+	</liferayRuntimeStub>
+	-->
+	<liferayRuntimeStub
+	      name="Liferay v6.2 (Tomcat 7) Bundle"
+	      runtimeTypeId="com.liferay.ide.server.62.tomcat.runtime.70">
+	</liferayRuntimeStub>
+	 </extension>
+	 <extension
+	   point="org.eclipse.debug.core.sourceLocators">
+	    <sourceLocator
+	      class="com.liferay.ide.server.core.PortalSourceLookupDirector"
+	      id="com.liferay.ide.server.tomcat.sourceLookupDirector"
+	      name="%liferay.portal.source.locator.name">
+	    </sourceLocator>
+	 </extension>
+ 	<extension
          point="com.liferay.ide.server.core.portalBundles">
       <portalBundle
             class="com.liferay.ide.server.tomcat.core.PortalTomcatBundleFactory"

@@ -14,6 +14,10 @@
  *******************************************************************************/
 package com.liferay.ide.project.ui.pref;
 
+import com.liferay.ide.core.ITargetPlatformConstant;
+import com.liferay.ide.core.util.TargetPlatformUtil;
+import com.liferay.ide.project.core.ProjectCore;
+
 import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -32,10 +36,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-
-import com.liferay.ide.project.core.ITargetPlatformConstant;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.util.TargetPlatformUtil;
 
 /**
  * @author Lovett Li
