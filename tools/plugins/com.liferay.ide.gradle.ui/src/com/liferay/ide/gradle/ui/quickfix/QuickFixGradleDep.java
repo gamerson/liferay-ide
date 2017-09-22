@@ -14,13 +14,13 @@
  *******************************************************************************/
 package com.liferay.ide.gradle.ui.quickfix;
 
+import com.liferay.ide.core.ServiceContainer;
+import com.liferay.ide.core.util.TargetPlatformUtil;
 import com.liferay.ide.gradle.core.GradleCore;
 import com.liferay.ide.gradle.core.GradleUtil;
 import com.liferay.ide.gradle.core.parser.GradleDependency;
 import com.liferay.ide.gradle.core.parser.GradleDependencyUpdater;
 import com.liferay.ide.gradle.ui.GradleUI;
-import com.liferay.ide.project.core.modules.ServiceContainer;
-import com.liferay.ide.project.core.util.TargetPlatformUtil;
 import com.liferay.ide.ui.util.UIUtil;
 
 import java.io.IOException;

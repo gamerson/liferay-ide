@@ -22,6 +22,8 @@ import com.liferay.ide.project.core.modules.IComponentTemplate;
 import com.liferay.ide.project.core.modules.LiferayComponentTemplateReader;
 import com.liferay.ide.project.core.upgrade.ILiferayLegacyProjectUpdater;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
+import com.liferay.ide.server.core.portal.LiferayTargetPlatformClasspathContainer;
+import com.liferay.ide.server.core.portal.LiferayTargetPlatformManager;
 import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.util.ServerUtil;
 
@@ -40,13 +42,24 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -457,6 +470,19 @@ public class ProjectCore extends Plugin
                 return;
             }
         }, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE );
+
+        WorkspaceJob workspaceJob = new WorkspaceJob( "Creating Liferay Debug Libraies Project")
+        {
+
+            @Override
+            public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
+            {
+                createLiferayTargetPlatformProject(monitor);    
+                return Status.OK_STATUS;
+            }
+        };
+        workspaceJob.setRule( CoreUtil.getWorkspaceRoot() );
+        workspaceJob.schedule();
     }
 
     /*
@@ -508,4 +534,38 @@ public class ProjectCore extends Plugin
 
         return componentTemplateReader.getComponentTemplates();
     }
+    
+	public IWorkspace getWorkspace() {
+		return ResourcesPlugin.getWorkspace();
+	}
+
+	public IProject createLiferayTargetPlatformProject(IProgressMonitor monitor) throws CoreException {
+		IWorkspaceRoot root = getWorkspace().getRoot();
+		IProject project = root.getProject(LiferayTargetPlatformManager.LIFERAY_TARGET_PLATFORM_PROJECT_NAME);
+		if (project.exists()) {
+			if (!project.isOpen()) {
+				project.open(monitor);
+			}
+			return project;
+		}
+
+		monitor.beginTask("Creating Liferay target platform project...", 5);
+		project.create(new SubProgressMonitor(monitor, 1));
+		project.open(new SubProgressMonitor(monitor, 1));
+		CoreUtil.addNaturesToProject(project, new String[] { JavaCore.NATURE_ID }, new SubProgressMonitor(monitor, 1));
+		IJavaProject jProject = JavaCore.create(project);
+		jProject.setOutputLocation(project.getFullPath(), new SubProgressMonitor(monitor, 1));
+		computeClasspath(jProject, new SubProgressMonitor(monitor, 1));
+		return project;
+	}
+
+	private void computeClasspath(IJavaProject project, IProgressMonitor monitor) {
+		IClasspathEntry[] classpath = new IClasspathEntry[2];
+		classpath[0] = JavaCore.newContainerEntry(JavaRuntime.newDefaultJREContainerPath());
+		classpath[1] = JavaCore.newContainerEntry(LiferayTargetPlatformClasspathContainer.CONTAINER_PATH);
+		try {
+			project.setRawClasspath(classpath, monitor);
+		} catch (JavaModelException e) {
+		}
+	}
 }

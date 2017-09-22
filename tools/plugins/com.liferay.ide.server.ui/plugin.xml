@@ -647,4 +647,44 @@
             serverTypes="com.liferay.ide.server.portal">
       </serverToolTip>
    </extension>
+   <extension point="org.eclipse.debug.ui.sourceContainerPresentations">
+      <sourceContainerPresentation
+         id="com.liferay.ide.server.core.portal.sourceContainerTypes.liferayTargetPlatform.presentation"
+         containerTypeID="com.liferay.ide.server.core.portal.sourceContainerTypes.liferayTargetPlatform"
+         icon="icons/liferay_logo_16.png"
+      />
+   </extension>
+  
+   <extension
+         point="org.eclipse.jdt.ui.javaElementFilters">
+      <filter
+            class="com.liferay.ide.server.ui.portal.LiferayTargetPlatformViewFilter"
+            enabled="true"
+            id="com.liferay.ide.server.ui.poral.packageview.liferaytargetplaformFilter"
+            description="Hides Lifereay Target Platform projects"
+            name="Lifereay Target Platform">
+      </filter>
+   </extension>
+   <extension
+          point="org.eclipse.ui.navigator.navigatorContent">
+       <commonFilter
+             id="com.liferay.ide.server.ui.poral.projectview.liferaytargetplaformFilter"
+             class="com.liferay.ide.server.ui.portal.LiferayTargetPlatformViewFilter"
+             name="Lifereay Target Platform "
+             description="Hides Lifereay Target Platform projects"
+             activeByDefault="true"
+             visibleInUI="true">
+       </commonFilter>
+    </extension>
+    <extension
+          point="org.eclipse.ui.navigator.viewer">
+       <viewerContentBinding
+             viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+          <includes>
+             <contentExtension
+                   pattern="com.liferay.ide.server.ui.poral.projectview.liferaytargetplaformFilter">
+             </contentExtension>
+          </includes>
+       </viewerContentBinding>
+    </extension>    
 </plugin>

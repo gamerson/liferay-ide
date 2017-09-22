@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.ant.core,
  org.apache.commons.logging,
  org.apache.commons.lang,
  org.apache.commons.collections,
- org.json
+ org.json,
+ org.codehaus.jackson.mapper
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.core,
@@ -104,4 +105,6 @@ Bundle-ClassPath: .,
  lib/commons-configuration-1.6.jar,
  lib/org.apache.httpcomponents.httpclient_4.2.1.jar,
  lib/org.apache.httpcomponents.httpcore_4.2.1.jar,
- lib/org.apache.httpcomponents.httpmime_4.2.1.jar
+ lib/org.apache.httpcomponents.httpmime_4.2.1.jar,
+ lib/jackson-core-asl-1.9.13.jar,
+ lib/jackson-mapper-asl-1.9.13.jar
