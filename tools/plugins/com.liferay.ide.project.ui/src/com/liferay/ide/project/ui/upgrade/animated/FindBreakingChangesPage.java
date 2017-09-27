@@ -114,6 +114,9 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
     private MigratorComparator _comparator;
     private TreeViewer _treeViewer;
 
+    private Button findbreakingchangesButton;
+    private Button correctAllImportIssuesButton;
+
     public FindBreakingChangesPage( Composite parent, int style, LiferayUpgradeDataModel dataModel )
     {
         super( parent, style, dataModel, FINDBREACKINGCHANGES_PAGE_ID, true );
@@ -240,8 +243,7 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
         buttonContainer.setLayout( buttonContainerLayout );
         buttonContainer.setLayoutData( new GridData( SWT.FILL, SWT.TOP, false, false, 1, 1 ) );
 
-        Button findbreakingchangesButton = new Button( buttonContainer, SWT.NONE );
-
+        findbreakingchangesButton = new Button( buttonContainer, SWT.NONE );
         findbreakingchangesButton.setImage( getImage( "migration-tasks.png" ) );
         findbreakingchangesButton.setToolTipText( "Find Breaking Changes" );
 
@@ -256,8 +258,7 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
             }
         } );
 
-        Button correctAllImportIssuesButton = new Button( buttonContainer, SWT.NONE );
-
+        correctAllImportIssuesButton = new Button( buttonContainer, SWT.NONE );
         correctAllImportIssuesButton.setImage( getImage( "bandaid.gif" ) );
         correctAllImportIssuesButton.setToolTipText( "Automatically Correct Problems" );
 
@@ -270,6 +271,15 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
                 new AutoCorrectAllAction( getInitialInput() ).run();
             }
         } );
+
+        if( migrationContentProvider != null && migrationContentProvider.getProblemsCount() > 0 )
+        {
+            correctAllImportIssuesButton.setEnabled( true );
+        }
+        else
+        {
+            correctAllImportIssuesButton.setEnabled( false );
+        }
 
         Button expendAll = new Button( buttonContainer, SWT.NONE );
 
@@ -686,6 +696,21 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
     public TableViewer get_problemsViewer()
     {
         return _problemsViewer;
+    }
+
+    public void setButtonState( boolean state )
+    {
+        findbreakingchangesButton.setEnabled( state );
+
+        if( migrationContentProvider != null )
+        {
+            correctAllImportIssuesButton.setEnabled(
+                ( state == true && migrationContentProvider.getProblemsCount() > 0 ) ? true : false );
+        }
+        else
+        {
+            correctAllImportIssuesButton.setEnabled( false );
+        }
     }
 
 }
