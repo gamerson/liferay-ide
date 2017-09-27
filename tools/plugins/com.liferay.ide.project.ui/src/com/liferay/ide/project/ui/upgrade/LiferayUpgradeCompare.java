@@ -71,6 +71,7 @@ public class LiferayUpgradeCompare
             final CompareConfiguration configuration = new CompareConfiguration();
             configuration.setLeftLabel( "Original File" );
             configuration.setRightLabel( "Upgraded File" );
+            configuration.setProperty( CompareConfiguration.IGNORE_WHITESPACE, true );
 
             CompareEditorInput editorInput = new CompareEditorInput( configuration )
             {
