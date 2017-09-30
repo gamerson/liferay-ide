@@ -15,15 +15,18 @@
 
 package com.liferay.ide.project.ui.upgrade.animated;
 
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.ui.util.SWTUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,6 +68,10 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
         { "liferay-portlet-ext.xml", "/icons/e16/ext.png" } 
     };
 
+    private static final Pattern ENCODING_PATTERN = Pattern.compile(
+        "<\\?xml.*encoding[\\s]*=[\\s]*((?:\".[^\"]*\")|(?:'.[^']*'))",
+        Pattern.MULTILINE);
+
     private final static String PUBLICID_REGREX =
         "-\\//(?:[a-z][a-z]+)\\//(?:[a-z][a-z]+)[\\s+(?:[a-z][a-z0-9_]*)]*\\s+(\\d\\.\\d\\.\\d)\\//(?:[a-z][a-z]+)";
 
@@ -100,6 +107,40 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
         return 2;
     }
 
+    public boolean checkDefineEncoding( File srcFile )
+    {
+        try
+        {
+            BufferedReader bReader = new BufferedReader( new StringReader( FileUtil.readContents( srcFile ) ) );
+            StringBuffer prolog = new StringBuffer();
+            String line = bReader.readLine();
+
+            while( line != null )
+            {
+                prolog.append( line );
+
+                if( line.indexOf( '>' ) > 0 )
+                {
+                    break;
+                }
+                line = bReader.readLine();
+            }
+
+            Matcher m = ENCODING_PATTERN.matcher( prolog );
+
+            if( m.find() )
+            {
+                return true;
+            }
+        }
+        catch( IOException e )
+        {
+            ProjectCore.logError( e );
+        }
+
+        return false;
+    }
+
     @Override
     protected void createTempFile( File srcFile, File templateFile, String projectName )
     {
@@ -111,6 +152,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
 
         try( FileInputStream ivyInput = new FileInputStream( srcFile ) )
         {
+            boolean hasDefineEncoding = checkDefineEncoding( srcFile );
             Document doc = builder.build( ivyInput );
             DocType docType = doc.getDocType();
 
@@ -134,7 +176,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
 
             templateFile.createNewFile();
 
-            saveXML( templateFile, doc );
+            saveXML( templateFile, doc, hasDefineEncoding );
         }
         catch( JDOMException | IOException e )
         {
@@ -153,7 +195,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
 
         try(FileInputStream ivyInput = new FileInputStream( srcFile ) )
         {
-
+            boolean hasDefineEncoding = checkDefineEncoding( srcFile );
             Document doc = builder.build( ivyInput );
             DocType docType = doc.getDocType();
 
@@ -170,7 +212,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
 
             removeLayoutWapNode( srcFile, doc );
 
-            saveXML( srcFile, doc );
+            saveXML( srcFile, doc, hasDefineEncoding );
         }
         catch( Exception e )
         {
@@ -329,14 +371,24 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
         }
     }
 
-    private void saveXML( File templateFile, Document doc )
+    private void saveXML( File templateFile, Document doc, boolean hasEncoding )
     {
         XMLOutputter out = new XMLOutputter();
+        Format rawFormat = Format.getRawFormat();
+
+        if( hasEncoding )
+        {
+            rawFormat.setOmitEncoding( false );
+        }
+        else
+        {
+            rawFormat.setOmitEncoding( true );
+        }
 
         try(FileOutputStream fos = new FileOutputStream( templateFile );)
         {
-            Format fm = Format.getPrettyFormat();
-            out.setFormat( fm );
+
+            out.setFormat( rawFormat );
             out.output( doc, fos );
         }
         catch( Exception e )
@@ -344,5 +396,4 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
             ProjectUI.logError( e );
         }
     }
-    
 }
