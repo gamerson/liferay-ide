@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,8 +10,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.hook.ui.wizard;
 
@@ -21,6 +20,7 @@ import com.liferay.ide.ui.wizard.ExternalFileSelectionDialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,203 +43,180 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 /**
  * @author Greg Amerson
  */
-public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection
-{
+public class CustomJSPsTableWizardSection extends StringArrayTableWizardSection {
 
-    protected static class JSPFileViewerFilter extends ViewerFilter
-    {
-        protected File base;
+	public CustomJSPsTableWizardSection(
+		Composite parent, String componentLabel, String dialogTitle, String addButtonLabel, String editButtonLabel,
+		String removeButtonLabel, String[] columnTitles, String[] fieldLabels, Image labelProviderImage,
+		IDataModel model, String propertyName) {
 
-        protected List<File> cachedDirs = new ArrayList<File>();
+		super(
+			parent, componentLabel, dialogTitle, addButtonLabel, editButtonLabel, removeButtonLabel, columnTitles,
+			fieldLabels, labelProviderImage, model, propertyName);
+	}
 
-        protected String[] roots = null;
+	public void setPortalDir(File dir) {
+		portalDir = dir;
+	}
 
-        protected IPath[] validRoots;
+	@Override
+	protected void addButtonsToButtonComposite(
+		Composite buttonCompo, String addButtonLabel, String editButtonLabel, String removeButtonLabel) {
 
-        public JSPFileViewerFilter( File base, String[] roots )
-        {
-            this.base = base;
+		GridData gridData = new GridData(GridData.VERTICAL_ALIGN_BEGINNING | GridData.HORIZONTAL_ALIGN_FILL);
 
-            this.roots = roots;
+		addFromPortalButton = new Button(buttonCompo, SWT.PUSH);
 
-            this.validRoots = new IPath[roots.length];
+		addFromPortalButton.setText(Msgs.addFromLiferay);
+		addFromPortalButton.setLayoutData(gridData);
+		addFromPortalButton.addSelectionListener(
+			new SelectionListener() {
 
-            for( int i = 0; i < roots.length; i++ )
-            {
-                File fileRoot = new File( base, roots[i] );
+				public void widgetDefaultSelected(SelectionEvent event) {
+				}
 
-                if( fileRoot.exists() )
-                {
-                    validRoots[i] = new Path( fileRoot.getPath() );
-                }
-            }
-        }
+				public void widgetSelected(SelectionEvent event) {
+					handleAddFromPortalButtonSelected();
+				}
 
-        @Override
-        public boolean select( Viewer viewer, Object parent, Object element )
-        {
-            if( element instanceof File )
-            {
-                File file = (File) element;
+			});
 
-                IPath filePath = new Path( file.getPath() );
+		super.addButtonsToButtonComposite(buttonCompo, addButtonLabel, editButtonLabel, removeButtonLabel);
+	}
 
-                boolean validRootFound = false;
+	protected void handleAddFromPortalButtonSelected() {
+		if ((portalDir == null) || !portalDir.exists()) {
+			MessageDialog.openWarning(getShell(), Msgs.addJSP, Msgs.couldNotFindPortalRoot);
 
-                for( IPath validRoot : validRoots )
-                {
-                    if( validRoot.isPrefixOf( filePath ) )
-                    {
-                        validRootFound = true;
+			return;
+		}
 
-                        break;
-                    }
-                }
+		IPath rootPath = new Path(portalDir.getPath());
 
-                if( !validRootFound )
-                {
-                    return false;
-                }
+		ExternalFileSelectionDialog dialog = new ExternalFileSelectionDialog(getShell(),
+			new JSPFileViewerFilter(portalDir, new String[] {"html"}), true, false);
 
-                if( cachedDirs.contains( file ) )
-                {
-                    return true;
-                }
-                else if( file.isDirectory() )
-                {
-                    // we only want to show the directory if it had children
-                    // that have jsps
-                    if( directoryContainsFiles( file, "jsp", viewer ) ) //$NON-NLS-1$
-                    {
-                        cachedDirs.add( file );
+		dialog.setTitle(Msgs.liferayCustomJSP);
+		dialog.setMessage(Msgs.selectJSPToCustomize);
+		dialog.setInput(portalDir);
 
-                        return true;
-                    }
-                }
-                else
-                {
-                    if( filePath.getFileExtension().contains( "jsp" ) ) //$NON-NLS-1$
-                    {
-                        return true;
-                    }
-                }
-            }
+		if (dialog.open() == Window.OK) {
+			Object[] selected = dialog.getResult();
 
-            return false;
-        }
+			for (int i = 0; i < selected.length; i++) {
+				IPath filePath = Path.fromOSString(((File)selected[i]).getPath());
 
-        protected boolean directoryContainsFiles( File dir, String ext, Viewer viewer )
-        {
-            try
-            {
-                List<File> files = FileListing.getFileListing( dir );
+				addStringArray(new String[] {"/" + filePath.makeRelativeTo(rootPath).toPortableString()});
+			}
+		}
+	}
 
-                for( File file : files )
-                {
-                    IPath filePath = new Path( file.getPath() );
+	protected Button addFromPortalButton;
+	protected File portalDir;
 
-                    if( filePath.getFileExtension() != null && filePath.getFileExtension().contains( ext ) )
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch( FileNotFoundException e )
-            {
-                // do nothing
-            }
+	protected static class JSPFileViewerFilter extends ViewerFilter {
 
-            return false;
-        }
+		public JSPFileViewerFilter(File base, String[] roots) {
+			this.base = base;
 
-    }
+			this.roots = roots;
 
-    protected Button addFromPortalButton;
+			validRoots = new IPath[roots.length];
 
-    protected File portalDir;
+			for (int i = 0; i < roots.length; i++) {
+				File fileRoot = new File(base, roots[i]);
 
-    public CustomJSPsTableWizardSection(
-        Composite parent, String componentLabel, String dialogTitle, String addButtonLabel, String editButtonLabel,
-        String removeButtonLabel, String[] columnTitles, String[] fieldLabels, Image labelProviderImage,
-        IDataModel model, String propertyName )
-    {
+				if (fileRoot.exists()) {
+					validRoots[i] = new Path(fileRoot.getPath());
+				}
+			}
+		}
 
-        super( parent, componentLabel, dialogTitle, addButtonLabel, editButtonLabel, removeButtonLabel, columnTitles, fieldLabels, labelProviderImage, model, propertyName );
-    }
+		@Override
+		public boolean select(Viewer viewer, Object parent, Object element) {
+			if (element instanceof File) {
+				File file = (File)element;
 
-    public void setPortalDir( File dir )
-    {
-        this.portalDir = dir;
-    }
+				IPath filePath = new Path(file.getPath());
 
-    @Override
-    protected void addButtonsToButtonComposite(
-        Composite buttonCompo, String addButtonLabel, String editButtonLabel, String removeButtonLabel )
-    {
+				boolean validRootFound = false;
 
-        addFromPortalButton = new Button( buttonCompo, SWT.PUSH );
-        addFromPortalButton.setText( Msgs.addFromLiferay );
-        addFromPortalButton.setLayoutData( new GridData( GridData.VERTICAL_ALIGN_BEGINNING |
-            GridData.HORIZONTAL_ALIGN_FILL ) );
-        addFromPortalButton.addSelectionListener( new SelectionListener()
-        {
+				for (IPath validRoot : validRoots) {
+					if (validRoot.isPrefixOf(filePath)) {
+						validRootFound = true;
 
-            public void widgetDefaultSelected( SelectionEvent event )
-            {
-                // Do nothing
-            }
+						break;
+					}
+				}
 
-            public void widgetSelected( SelectionEvent event )
-            {
-                handleAddFromPortalButtonSelected();
-            }
-        } );
+				if (!validRootFound) {
+					return false;
+				}
 
-        super.addButtonsToButtonComposite( buttonCompo, addButtonLabel, editButtonLabel, removeButtonLabel );
-    }
+				if (cachedDirs.contains(file)) {
+					return true;
+				}
+				else if (file.isDirectory()) {
 
-    protected void handleAddFromPortalButtonSelected()
-    {
-        if( portalDir == null || !portalDir.exists() )
-        {
-            MessageDialog.openWarning( getShell(), Msgs.addJSP, Msgs.couldNotFindPortalRoot );
+					// we only want to show the directory if it had children
+					// that have jsps
 
-            return;
-        }
+					if (directoryContainsFiles(file, "jsp", viewer)) {
+						cachedDirs.add(file);
 
-        IPath rootPath = new Path( portalDir.getPath() );
+						return true;
+					}
+				}
+				else {
+					if (filePath.getFileExtension().contains("jsp")) {
+						return true;
+					}
+				}
+			}
 
-        ExternalFileSelectionDialog dialog =
-            new ExternalFileSelectionDialog(
-                getShell(), new JSPFileViewerFilter( portalDir, new String[] { "html" } ), true, false ); //$NON-NLS-1$
-        dialog.setTitle( Msgs.liferayCustomJSP );
-        dialog.setMessage( Msgs.selectJSPToCustomize );
-        dialog.setInput( portalDir );
+			return false;
+		}
 
-        if( dialog.open() == Window.OK )
-        {
-            Object[] selected = dialog.getResult();
+		protected boolean directoryContainsFiles(File dir, String ext, Viewer viewer) {
+			try {
+				List<File> files = FileListing.getFileListing(dir);
 
-            for( int i = 0; i < selected.length; i++ )
-            {
-                IPath filePath = Path.fromOSString( ( (File) selected[i] ).getPath() );
+				for (File file : files) {
+					IPath filePath = new Path(file.getPath());
 
-                addStringArray( new String[] { "/" + filePath.makeRelativeTo( rootPath ).toPortableString() } ); //$NON-NLS-1$
-            }
-        }
-    }
+					if ((filePath.getFileExtension() != null) && filePath.getFileExtension().contains(ext)) {
+						return true;
+					}
+				}
+			}
+			catch (FileNotFoundException fnfe) {
 
-    private static class Msgs extends NLS
-    {
-        public static String addFromLiferay;
-        public static String addJSP;
-        public static String couldNotFindPortalRoot;
-        public static String liferayCustomJSP;
-        public static String selectJSPToCustomize;
+				// do nothing
 
-        static
-        {
-            initializeMessages( CustomJSPsTableWizardSection.class.getName(), Msgs.class );
-        }
-    }
+			}
+
+			return false;
+		}
+
+		protected File base;
+		protected List<File> cachedDirs = new ArrayList<>();
+		protected String[] roots = null;
+		protected IPath[] validRoots;
+
+	}
+
+	private static class Msgs extends NLS {
+
+		public static String addFromLiferay;
+		public static String addJSP;
+		public static String couldNotFindPortalRoot;
+		public static String liferayCustomJSP;
+		public static String selectJSPToCustomize;
+
+		static {
+			initializeMessages(CustomJSPsTableWizardSection.class.getName(), Msgs.class);
+		}
+
+	}
+
 }

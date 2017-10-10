@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,8 +10,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.hook.ui.wizard;
 
@@ -38,90 +37,84 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
  * @author Greg Amerson
  * @author Simon Jiang
  */
-@SuppressWarnings( "restriction" )
-public class NewServiceWrapperClassDialog extends NewEventActionClassDialog
-{
+@SuppressWarnings("restriction")
+public class NewServiceWrapperClassDialog extends NewEventActionClassDialog {
 
-    protected String serviceType;
-    protected Text superclassText;
-    protected String wrapperType;
+	public NewServiceWrapperClassDialog(Shell shell, IDataModel model, String serviceType, String wrapperType) {
+		super(shell, model);
 
-    public NewServiceWrapperClassDialog( Shell shell, IDataModel model, String serviceType, String wrapperType )
-    {
-        super( shell, model );
+		this.serviceType = serviceType;
+		this.wrapperType = wrapperType;
+	}
 
-        this.serviceType = serviceType;
-        this.wrapperType = wrapperType;
-    }
+	@Override
+	protected Button createButton(Composite parent, int id, String label, boolean defaultButton) {
+		Button button = super.createButton(parent, id, label, defaultButton);
 
-    @Override
-    protected Button createButton( Composite parent, int id, String label, boolean defaultButton )
-    {
-        Button button = super.createButton( parent, id, label, defaultButton );
+		if (IDialogConstants.OK_ID == id) {
+			String defaultClassname = "Ext" +
+				this.serviceType.substring(this.serviceType.lastIndexOf('.') + 1, this.serviceType.length());
 
-        if( IDialogConstants.OK_ID == id )
-        {
-            String defaultClassname =
-                "Ext" + this.serviceType.substring( this.serviceType.lastIndexOf( '.' ) + 1, this.serviceType.length() ); //$NON-NLS-1$
+			classText.setText(defaultClassname);
 
-            classText.setText( defaultClassname );
-            button.setEnabled( true );
-        }
+			button.setEnabled(true);
+		}
 
-        return button;
-    }
+		return button;
+	}
 
-    protected void createSuperclassGroup( Composite parent )
-    {
-        // superclass
-        superLabel = new Label( parent, SWT.LEFT );
-        superLabel.setText( J2EEUIMessages.SUPERCLASS_LABEL );
-        superLabel.setLayoutData( new GridData( GridData.HORIZONTAL_ALIGN_FILL ) );
+	protected void createSuperclassGroup(Composite parent) {
 
-        superclassText = new Text( parent, SWT.SINGLE | SWT.BORDER );
-        superclassText.setLayoutData( new GridData( GridData.FILL_HORIZONTAL ) );
-        superclassText.setText( this.wrapperType );
-        superclassText.addModifyListener
-        (
-            new ModifyListener()
-            {
-                public void modifyText( ModifyEvent e )
-                {
-                    qualifiedSuperclassname = classText.getText();
-                }
-            }
-        );
+		// superclass
 
-        superclassText.setEditable( false );
+		superLabel = new Label(parent, SWT.LEFT);
 
-        superclassText.setEditable( false );
+		superLabel.setText(J2EEUIMessages.SUPERCLASS_LABEL);
+		superLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
-        new Label( parent, SWT.NONE );
+		superclassText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 
-    }
+		superclassText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		superclassText.setText(wrapperType);
+		superclassText.addModifyListener(new ModifyListener() {
 
-    @Override
-    protected void okPressed()
-    {
-        // Create the class
-        IDataModel dataModel =
-            DataModelFactory.createDataModel( new NewServiceWrapperClassDataModelProvider(
-                model, getQualifiedClassname(), superclassText.getText() ) );
+			public void modifyText(ModifyEvent e) {
+				qualifiedSuperclassname = classText.getText();
+			}
 
-        NewServiceWrapperClassOperation operation = new NewServiceWrapperClassOperation( dataModel );
+		});
 
-        try
-        {
-            operation.execute( null, null );
-        }
-        catch( ExecutionException e )
-        {
-            HookUI.logError( "Unable to create class", e );
-        }
+		superclassText.setEditable(false);
 
-        setReturnCode( OK );
+		superclassText.setEditable(false);
 
-        close();
-    }
+		new Label(parent, SWT.NONE);
+	}
+
+	@Override
+	protected void okPressed() {
+
+		// Create the class
+
+		IDataModel dataModel = DataModelFactory.createDataModel(
+			new NewServiceWrapperClassDataModelProvider(model, getQualifiedClassname(), superclassText.getText()));
+
+		NewServiceWrapperClassOperation operation = new NewServiceWrapperClassOperation(dataModel);
+
+		try {
+			operation.execute(null, null);
+		}
+		catch (ExecutionException ee) {
+			HookUI.logError("Unable to create class", ee);
+		}
+
+		setReturnCode(OK);
+
+		close();
+	}
+
+	protected String serviceType;
+	protected Text superclassText;
+	protected String wrapperType;
 
 }

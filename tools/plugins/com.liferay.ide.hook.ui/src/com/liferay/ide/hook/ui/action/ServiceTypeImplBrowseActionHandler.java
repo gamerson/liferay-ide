@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,10 +10,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- * Contributors:
- * 		Gregory Amerson - initial implementation and ongoing maintenance
- *******************************************************************************/
+ */
 
 package com.liferay.ide.hook.ui.action;
 
@@ -44,143 +41,136 @@ import org.eclipse.sapphire.ui.SapphireAction;
 import org.eclipse.sapphire.ui.def.ActionHandlerDef;
 import org.eclipse.sapphire.ui.forms.BrowseActionHandler;
 import org.eclipse.sapphire.ui.forms.swt.SwtPresentation;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.SelectionDialog;
 
 /**
  * @author Gregory Amerson
  */
-public final class ServiceTypeImplBrowseActionHandler extends BrowseActionHandler
-{
+public final class ServiceTypeImplBrowseActionHandler extends BrowseActionHandler {
 
-    public static final String ID = "ServiceTypeImpl.Browse.Java.Type"; //$NON-NLS-1$
+	public static final String ID = "ServiceTypeImpl.Browse.Java.Type";
 
-    private int browseDialogStyle;
+	@Override
+	public String browse(final Presentation context) {
+		Element element = getModelElement();
+		Property property = property();
+		IProject project = element.adapt(IProject.class);
 
-    private String kind;
+		try {
+			IJavaSearchScope scope = null;
 
-    @Override
-    public String browse( final Presentation context )
-    {
-        final Element element = getModelElement();
-        final Property property = property();
-        final IProject project = element.adapt( IProject.class );
+			TypeSelectionExtension extension = null;
 
-        try
-        {
-            IJavaSearchScope scope = null;
+			if ("type".equals(_kind)) {
+				scope = SearchEngine.createJavaSearchScope(new IJavaProject[] {JavaCore.create(project)});
 
-            TypeSelectionExtension extension = null;
+				extension = new TypeSelectionExtension() {
 
-            if( "type".equals( kind ) ) //$NON-NLS-1$
-            {
-                scope = SearchEngine.createJavaSearchScope( new IJavaProject[] { JavaCore.create( project ) } );
+					@Override
+					public ITypeInfoFilterExtension getFilterExtension() {
+						return new ITypeInfoFilterExtension() {
 
-                extension = new TypeSelectionExtension()
-                {
-                    @Override
-                    public ITypeInfoFilterExtension getFilterExtension()
-                    {
-                        return new ITypeInfoFilterExtension()
-                        {
-                            public boolean select( ITypeInfoRequestor typeInfoRequestor )
-                            {
-                                return typeInfoRequestor.getPackageName().startsWith( "com.liferay" ) && //$NON-NLS-1$
-                                    typeInfoRequestor.getTypeName().endsWith( "Service" ); //$NON-NLS-1$
-                            }
-                        };
-                    }
-                };
-            }
-            else if( "impl".equals( kind ) ) //$NON-NLS-1$
-            {
-                String serviceType = getServiceType( element, property );
+							public boolean select(ITypeInfoRequestor typeInfoRequestor) {
+								if (typeInfoRequestor.getPackageName().startsWith("com.liferay") &&
+									typeInfoRequestor.getTypeName().endsWith("Service")) {
 
-                if( serviceType != null )
-                {
-                    String wrapperType = serviceType + "Wrapper"; //$NON-NLS-1$
+									return true;
+								}
 
-                    scope = SearchEngine.createHierarchyScope( JavaCore.create( project ).findType( wrapperType ) );
-                }
-                else
-                {
-                    MessageDialog.openInformation(
-                        ((SwtPresentation)context).shell(), Msgs.serviceImplBrowse,
-                        Msgs.validServiceTypeProperty );
+								return false;
+							}
 
-                    return null;
-                }
-            }
+						};
+					}
 
-            final SelectionDialog dlg =
-                JavaUI.createTypeDialog(
-                    ((SwtPresentation)context).shell(), null, scope, this.browseDialogStyle, false, StringPool.DOUBLE_ASTERISK, extension );
+				};
+			}
+			else if ("impl".equals(_kind)) {
+				String serviceType = _getServiceType(element);
 
-            final String title = property.definition().getLabel( true, CapitalizationType.TITLE_STYLE, false );
-            dlg.setTitle( Msgs.select + title );
+				if (serviceType != null) {
+					String wrapperType = serviceType + "Wrapper";
 
-            if( dlg.open() == SelectionDialog.OK )
-            {
-                Object results[] = dlg.getResult();
-                assert results != null && results.length == 1;
+					scope = SearchEngine.createHierarchyScope(JavaCore.create(project).findType(wrapperType));
+				}
+				else {
+					MessageDialog.openInformation(((SwtPresentation)context).shell(), Msgs.serviceImplBrowse,
+						Msgs.validServiceTypeProperty);
 
-                if( results[0] instanceof IType )
-                {
-                    return ( (IType) results[0] ).getFullyQualifiedName();
-                }
-            }
-        }
-        catch( JavaModelException e )
-        {
-            HookUI.logError( e );
-        }
+					return null;
+				}
+			}
 
-        return null;
-    }
+			Shell shell = ((SwtPresentation)context).shell();
 
-    private String getServiceType( Element element, Property property )
-    {
-        String retval = null;
+			SelectionDialog dlg = JavaUI.createTypeDialog(
+				shell, null, scope, _browseDialogStyle, false, StringPool.DOUBLE_ASTERISK, extension);
 
-        ServiceWrapper service = element.nearest( ServiceWrapper.class );
+			String title = property.definition().getLabel(true, CapitalizationType.TITLE_STYLE, false);
 
-        JavaTypeName javaTypeName = service.getServiceType().content( false );
+			dlg.setTitle(Msgs.select + title);
 
-        if( javaTypeName != null )
-        {
-            retval = javaTypeName.qualified();
-        }
+			if (dlg.open() == SelectionDialog.OK) {
+				Object[] results = dlg.getResult();
 
-        return retval;
-    }
+				assert (results != null) && (results.length == 1);
 
-    @Override
-    public void init( final SapphireAction action, final ActionHandlerDef def )
-    {
-        super.init( action, def );
+				if (results[0] instanceof IType) {
+					return ((IType)results[0]).getFullyQualifiedName();
+				}
+			}
+		}
+		catch (JavaModelException jme) {
+			HookUI.logError(jme);
+		}
 
-        setId( ID );
+		return null;
+	}
 
-        this.kind = def.getParam( "kind" ); //$NON-NLS-1$
+	@Override
+	public void init(final SapphireAction action, final ActionHandlerDef def) {
+		super.init(action, def);
 
-        if( "type".equals( kind ) ) //$NON-NLS-1$
-        {
-            this.browseDialogStyle = IJavaElementSearchConstants.CONSIDER_INTERFACES;
-        }
-        else if( "impl".equals( kind ) ) //$NON-NLS-1$
-        {
-            this.browseDialogStyle = IJavaElementSearchConstants.CONSIDER_CLASSES;
-        }
-    }
+		setId(ID);
 
-    private static class Msgs extends NLS
-    {
-        public static String select;
-        public static String serviceImplBrowse;
-        public static String validServiceTypeProperty;
+		_kind = def.getParam("kind");
 
-        static
-        {
-            initializeMessages( ServiceTypeImplBrowseActionHandler.class.getName(), Msgs.class );
-        }
-    }
+		if ("type".equals(_kind)) {
+			_browseDialogStyle = IJavaElementSearchConstants.CONSIDER_INTERFACES;
+		}
+		else if ("impl".equals(_kind)) {
+			_browseDialogStyle = IJavaElementSearchConstants.CONSIDER_CLASSES;
+		}
+	}
+
+	private String _getServiceType(Element element) {
+		String retval = null;
+
+		ServiceWrapper service = element.nearest(ServiceWrapper.class);
+
+		JavaTypeName javaTypeName = service.getServiceType().content(false);
+
+		if (javaTypeName != null) {
+			retval = javaTypeName.qualified();
+		}
+
+		return retval;
+	}
+
+	private int _browseDialogStyle;
+	private String _kind;
+
+	private static class Msgs extends NLS {
+
+		public static String select;
+		public static String serviceImplBrowse;
+		public static String validServiceTypeProperty;
+
+		static {
+			initializeMessages(ServiceTypeImplBrowseActionHandler.class.getName(), Msgs.class);
+		}
+
+	}
+
 }
