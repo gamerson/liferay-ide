@@ -50,6 +50,6 @@ public class Dialog extends CancelableShell {
 		return new Button(bot, _confirmBtnLabel);
 	}
 
-	private String _confirmBtnLabel = OK;
+	private String _confirmBtnLabel = APPLY_AND_CLOSE;
 
 }

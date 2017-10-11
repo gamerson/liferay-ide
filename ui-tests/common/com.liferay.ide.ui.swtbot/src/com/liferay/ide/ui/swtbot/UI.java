@@ -67,6 +67,8 @@ public interface UI {
 
 	public final String APPLICATION_CLASS = "Application class:";
 
+	public final String APPLY_AND_CLOSE = "Apply and Close";
+
 	public final String ARCHETYPE = "Archetype:";
 
 	public final String AUTH_FAILURES = "Auth Failures";
