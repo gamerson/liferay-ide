@@ -73,7 +73,7 @@ import org.eclipse.ui.part.FileEditorInput;
 public class HookXmlEditor extends SapphireEditorForXml {
 
 	public HookXmlEditor() {
-		super(Hook6xx.ELEMENT_TYPE, null);
+		super(Hook6xx.TYPE, null);
 	}
 
 	@Override
