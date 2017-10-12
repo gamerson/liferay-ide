@@ -208,7 +208,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return -1;
     }
 
-    private PortalRuntime getPortalRuntime()
+    public PortalRuntime getPortalRuntime()
     {
         PortalRuntime retval = null;
 
@@ -340,7 +340,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
         final IStatus status = getPortalRuntime().validate();
 
-        if( status != null && status.getSeverity() == IStatus.ERROR ) throw new CoreException( status );
+        if( status != null && status.getSeverity() == IStatus.ERROR )
+            throw new CoreException( status );
 
         setServerRestartState( false );
         setServerState( IServer.STATE_STARTING );
@@ -357,7 +358,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
                 url += ":" + port;
             }
 
-            ping = new PingThread( getServer(), url, -1, this );
+            ping = getPortalRuntime().getPortalBundle().createPingThread( getServer(), url, this );
         }
         catch( Exception e )
         {
