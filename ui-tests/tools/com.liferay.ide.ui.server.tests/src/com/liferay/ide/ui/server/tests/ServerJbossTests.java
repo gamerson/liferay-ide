@@ -14,9 +14,9 @@
 
 package com.liferay.ide.ui.server.tests;
 
-import com.liferay.ide.ui.liferay.SwtbotBase;
-
 import org.junit.Test;
+
+import com.liferay.ide.ui.liferay.SwtbotBase;
 
 /**
  * @author Terry Jia
@@ -24,7 +24,6 @@ import org.junit.Test;
 public class ServerJbossTests extends SwtbotBase {
 
 	@Test
-	public void addLiferayRuntime() {
-	}
-
+	public void addLiferay7RuntimeFromPreferences() {
+	}	
 }
