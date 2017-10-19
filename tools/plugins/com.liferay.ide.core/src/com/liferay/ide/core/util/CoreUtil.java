@@ -586,6 +586,12 @@ public class CoreUtil
         return true;
     }
 
+    public static boolean isVersion( String str )
+    {
+        String reg = "^((\\d+)\\.(\\d+)\\.(\\d+))(\\.(\\w|-)+)?";
+        return str.matches( reg );
+    }
+
     public static boolean isWindows()
     {
         return Platform.OS_WIN32.equals( Platform.getOS() );
