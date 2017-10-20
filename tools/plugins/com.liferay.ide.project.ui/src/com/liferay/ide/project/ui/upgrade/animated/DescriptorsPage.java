@@ -15,6 +15,11 @@
 
 package com.liferay.ide.project.ui.upgrade.animated;
 
+import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.util.SearchFilesVisitor;
+import com.liferay.ide.project.ui.ProjectUI;
+import com.liferay.ide.ui.util.SWTUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,11 +47,6 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.util.SearchFilesVisitor;
-import com.liferay.ide.project.ui.ProjectUI;
-import com.liferay.ide.ui.util.SWTUtil;
 
 /**
  * @author Andy Wu
