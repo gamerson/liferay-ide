@@ -21,9 +21,10 @@ import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.ui.util.SWTUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -109,7 +110,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
         builder.setFeature( "http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false );
         builder.setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false ); 
 
-        try( FileInputStream ivyInput = new FileInputStream( srcFile ) )
+        try( InputStream ivyInput = Files.newInputStream( srcFile.toPath() ) )
         {
             Document doc = builder.build( ivyInput );
             DocType docType = doc.getDocType();
@@ -151,7 +152,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
         builder.setFeature( "http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false );
         builder.setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false );
 
-        try(FileInputStream ivyInput = new FileInputStream( srcFile ) )
+        try( InputStream ivyInput = Files.newInputStream( srcFile.toPath() ) )
         {
 
             Document doc = builder.build( ivyInput );
@@ -273,7 +274,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
         builder.setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false );
 
 
-        try( FileInputStream ivyInput = new FileInputStream( srcFile ))
+        try( InputStream ivyInput = Files.newInputStream( srcFile.toPath() ) )
         {
             Document doc = builder.build( ivyInput );
             DocType docType = doc.getDocType();
@@ -333,7 +334,7 @@ public class DescriptorsPage extends AbstractLiferayTableViewCustomPart
     {
         XMLOutputter out = new XMLOutputter();
 
-        try(FileOutputStream fos = new FileOutputStream( templateFile );)
+        try(OutputStream fos = Files.newOutputStream( templateFile.toPath() );)
         {
             Format fm = Format.getPrettyFormat();
             out.setFormat( fm );
