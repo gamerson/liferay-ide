@@ -21,6 +21,6 @@ public interface ITargetPlatformConstant
 {
 
     String CURRENT_TARGETFORM_VERSION = "current_targetplatform_version";
-    String DEFAULT_TARGETFORM_VERSION = "CE-7.0.0-GA2";
+    String DEFAULT_TARGETFORM_VERSION = "CE-7.0-GA2";
 
 }
