@@ -105,7 +105,12 @@ public class BundlePublishFullRemove extends BundlePublishOperation
         {
             bundleSupervisor = createBundleSupervisor();
 
-            String error = bundleSupervisor.uninstall( bundleProject, outputJar );
+            String error = null;
+            
+            if( outputJar != null )
+            {
+                error = bundleSupervisor.uninstall( bundleProject, outputJar );
+            }
 
             if( error == null )
             {
