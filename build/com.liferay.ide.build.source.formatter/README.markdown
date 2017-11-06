@@ -17,6 +17,8 @@ The following folders are already applied to portal code style:
 4. /tools/plugins/com.liferay.ide.gradle.ui
 5. /tools/plugins/com.liferay.ide.hook.core
 6. /tools/plugins/com.liferay.ide.hook.ui
+6. /tools/plugins/com.liferay.ide.ui.notifications
+6. /enterprise/plugins/com.liferay.ide.studio.ui
 
 ## Something you had better to do firstly by yourself before you run source-formatter:
 1. remove all of *//$NON-NLS-1$* *//$NON-NLS-2$* ...
@@ -55,4 +57,4 @@ So add it into source-formatter.perperties to exclude if the class have it, see 
     ```
       //here is my comment
     ```
-    You can reference this [***link***](https://github.com/liferay/liferay-portal/blob/master/portal-kernel/src/com/liferay/portal/kernel/cal/Recurrence.java) 
+    You can reference this [***link***](https://github.com/liferay/liferay-portal/blob/master/portal-kernel/src/com/liferay/portal/kernel/cal/Recurrence.java)
