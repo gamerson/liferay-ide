@@ -132,7 +132,7 @@ public class MavenModuleFragmentProjectProvider extends LiferayMavenProjectProvi
 
             if( CoreUtil.empty( gav ) )
             {
-                gav = "com.liferay:com.liferay.project.templates.fragment" + ":1.0.1";
+                gav = "com.liferay:com.liferay.project.templates.fragment" + ":1.0.4";
             }
 
             retval.add( type.cast( gav ) );

@@ -132,7 +132,7 @@ public class LiferayMavenWorkspaceProjectProvider extends LiferayMavenProjectPro
 
             if( CoreUtil.empty( gav ) )
             {
-                gav = "com.liferay:com.liferay.project.templates.workspace" + ":1.0.2";
+                gav = "com.liferay:com.liferay.project.templates.workspace" + ":1.0.5";
             }
 
             retval.add( type.cast( gav ) );
