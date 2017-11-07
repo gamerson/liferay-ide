@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,8 +10,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.modules;
 
@@ -27,58 +26,54 @@ import org.eclipse.sapphire.services.ValidationService;
 /**
  * @author Andy Wu
  */
-public class ImportModuleProjectLocationValidationService extends ValidationService
-{
+public class ImportModuleProjectLocationValidationService extends ValidationService {
 
-    @Override
-    protected Status compute()
-    {
-        Status retval = Status.createOkStatus();
+	@Override
+	protected Status compute() {
+		Status retval = Status.createOkStatus();
 
-        Path path = op().getLocation().content();
+		ImportLiferayModuleProjectOp op = _op();
 
-        if( path != null && !path.isEmpty() )
-        {
-            String location = path.toOSString();
+		Path path = op.getLocation().content();
 
-            retval = StatusBridge.create( ProjectImportUtil.validatePath( location ) );
+		if ((path == null) || path.isEmpty()) {
+			return retval;
+		}
 
-            if( !retval.ok() )
-            {
-                return retval;
-            }
+		String location = path.toOSString();
 
-            if( LiferayWorkspaceUtil.isValidWorkspaceLocation( location ) )
-            {
-                retval = Status.createErrorStatus(
-                    "Can't import Liferay Workspace, please use Import Liferay Workspace Project wizard." );
+		retval = StatusBridge.create(ProjectImportUtil.validatePath(location));
 
-                return retval;
-            }
+		if (!retval.ok()) {
+			return retval;
+		}
 
-            retval = StatusBridge.create( ImportLiferayModuleProjectOpMethods.getBuildType( location ) );
+		if (LiferayWorkspaceUtil.isValidWorkspaceLocation(location)) {
+			retval = Status.createErrorStatus(
+				"Can't import Liferay Workspace, please use Import Liferay Workspace Project wizard.");
 
-            if( retval.severity() == Status.Severity.ERROR )
-            {
-                return retval;
-            }
+			return retval;
+		}
 
-            String projectName = path.lastSegment();
+		retval = StatusBridge.create(ImportLiferayModuleProjectOpMethods.getBuildType(location));
 
-            if( CoreUtil.getProject( projectName ).exists() )
-            {
-                retval = Status.createErrorStatus( "A project with that name already exists." );
+		if (retval.severity() == Status.Severity.ERROR) {
+			return retval;
+		}
 
-                return retval;
-            }
-        }
+		String projectName = path.lastSegment();
 
-        return retval;
-    }
+		if (CoreUtil.getProject(projectName).exists()) {
+			retval = Status.createErrorStatus("A project with that name already exists.");
 
-    private ImportLiferayModuleProjectOp op()
-    {
-        return context( ImportLiferayModuleProjectOp.class );
-    }
+			return retval;
+		}
+
+		return retval;
+	}
+
+	private ImportLiferayModuleProjectOp _op() {
+		return context(ImportLiferayModuleProjectOp.class);
+	}
 
 }
