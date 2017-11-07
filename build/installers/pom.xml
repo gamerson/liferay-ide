@@ -51,6 +51,7 @@
     <modules>
         <module>liferay-workspace</module>
         <module>liferay-developer-studio</module>
+        <module>installers-tests</module>
     </modules>
 
     <build>
