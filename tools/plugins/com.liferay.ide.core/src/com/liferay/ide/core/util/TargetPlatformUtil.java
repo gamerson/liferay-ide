@@ -12,7 +12,11 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.project.core.util;
+package com.liferay.ide.core.util;
+
+import com.liferay.ide.core.ITargetPlatformConstant;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.ServiceContainer;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -26,10 +30,6 @@ import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-
-import com.liferay.ide.project.core.ITargetPlatformConstant;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.modules.ServiceContainer;
 
 /**
  * @author Lovett Li
@@ -65,10 +65,10 @@ public class TargetPlatformUtil
         return getBundleAndVersion( tpIndexFile, servicewrapperName );
     }
 
-    private static File checkCurrentTargetPlatform( String type ) throws IOException
+    public static File checkCurrentTargetPlatform( String type ) throws IOException
     {
         String currentVersion = Platform.getPreferencesService().getString(
-            ProjectCore.PLUGIN_ID, ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION,
+            LiferayCore.PLUGIN_ID, ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION,
             ITargetPlatformConstant.DEFAULT_TARGETFORM_VERSION, null );
 
         currentVersion = currentVersion.replace( "[", "" ).replace( "]", "" ).toLowerCase();
@@ -76,11 +76,20 @@ public class TargetPlatformUtil
         return useSpecificTargetPlatform( currentVersion, type );
     }
 
+    public static String getCurrentTargetPlatform() throws IOException
+    {
+        String currentVersion = Platform.getPreferencesService().getString(
+            LiferayCore.PLUGIN_ID, ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION,
+            ITargetPlatformConstant.DEFAULT_TARGETFORM_VERSION, null );
+
+        return currentVersion.replace( "[", "" ).replace( "]", "" ).toLowerCase();
+    }    
+    
     private static File useSpecificTargetPlatform( String currentVersion, String type ) throws IOException
     {
         URL url;
         url = FileLocator.toFileURL(
-            ProjectCore.getDefault().getBundle().getEntry( "OSGI-INF/target-platform/liferay-" + currentVersion ) );
+            LiferayCore.getDefault().getBundle().getEntry( "OSGI-INF/target-platform/liferay-" + currentVersion ) );
         final File tpFolder = new File( url.getFile() );
 
         File[] listFiles = tpFolder.listFiles( new FilenameFilter()
@@ -97,6 +106,10 @@ public class TargetPlatformUtil
                 {
                     return true;
                 }
+                if( type.equals( "dependency" ) && name.endsWith( "dependency.xml" ) )
+                {
+                    return true;
+                }                
                 return false;
             }
         } );
@@ -108,7 +121,7 @@ public class TargetPlatformUtil
     public static List<String> getAllTargetPlatfromVersions() throws IOException
     {
         final URL url =
-            FileLocator.toFileURL( ProjectCore.getDefault().getBundle().getEntry( "OSGI-INF/target-platform" ) );
+            FileLocator.toFileURL( LiferayCore.getDefault().getBundle().getEntry( "OSGI-INF/target-platform" ) );
         final File targetPlatfolder = new File( url.getFile() );
         final List<String> tpVersionList = new ArrayList<>();
 
@@ -160,7 +173,7 @@ public class TargetPlatformUtil
     public static ServiceContainer getThirdPartyBundleList( String _serviceName ) throws Exception
     {
         final URL url = FileLocator.toFileURL(
-            ProjectCore.getDefault().getBundle().getEntry(
+            LiferayCore.getDefault().getBundle().getEntry(
                 "OSGI-INF/liferay-thirdparty-bundles.json" ) );
         final File tpFile = new File( url.getFile() );
         final ObjectMapper mapper = new ObjectMapper();

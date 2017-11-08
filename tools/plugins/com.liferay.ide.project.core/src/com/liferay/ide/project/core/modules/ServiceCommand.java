@@ -17,7 +17,8 @@ package com.liferay.ide.project.core.modules;
 
 import aQute.remote.api.Agent;
 
-import com.liferay.ide.project.core.util.TargetPlatformUtil;
+import com.liferay.ide.core.ServiceContainer;
+import com.liferay.ide.core.util.TargetPlatformUtil;
 import com.liferay.ide.server.core.portal.BundleSupervisor;
 import com.liferay.ide.server.core.portal.PortalServerBehavior;
 

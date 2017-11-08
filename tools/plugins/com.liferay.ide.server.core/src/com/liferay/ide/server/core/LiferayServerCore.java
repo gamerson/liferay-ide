@@ -21,6 +21,7 @@ import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.sdk.core.ISDKListener;
 import com.liferay.ide.sdk.core.SDKManager;
 import com.liferay.ide.server.core.portal.AbstractPortalBundleFactory;
+import com.liferay.ide.server.core.portal.LiferayTargetPlatformManager;
 import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.core.portal.PortalBundleFactory;
 import com.liferay.ide.server.remote.IRemoteServer;
@@ -74,7 +75,7 @@ public class LiferayServerCore extends Plugin
 {
 
     public static final String BUNDLE_OUTPUT_ERROR_MARKER_TYPE = "com.liferay.ide.server.core.BundleOutputErrorMarker";
-
+    private LiferayTargetPlatformManager debugManager;
     private static Map<String, IServerManagerConnection> connections = null;
 
     // The shared instance
@@ -889,6 +890,7 @@ public class LiferayServerCore extends Plugin
 
         ServerCore.addRuntimeLifecycleListener( this.runtimeLifecycleListener );
         ServerCore.addServerLifecycleListener( this.serverLifecycleListener );
+        this.debugManager = new LiferayTargetPlatformManager();
     }
 
     /*
@@ -906,4 +908,8 @@ public class LiferayServerCore extends Plugin
         ServerCore.removeServerLifecycleListener( serverLifecycleListener );
     }
 
+    public LiferayTargetPlatformManager getDebugManager()
+    {
+        return this.debugManager;
+    }
 }

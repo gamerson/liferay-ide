@@ -3,10 +3,10 @@ package com.liferay.ide.project.ui.quickfix;
 
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.ServiceContainer;
+import com.liferay.ide.core.util.TargetPlatformUtil;
 import com.liferay.ide.project.core.IProjectBuilder;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.modules.ServiceContainer;
-import com.liferay.ide.project.core.util.TargetPlatformUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 
 import java.util.ArrayList;
@@ -188,7 +188,7 @@ public class LiferayDependencyQuickFix implements IQuickFixProcessor
 
             for( String wrapper : serviceWrapperList )
             {
-                if( wrapper.endsWith( fullyQualifiedName ) )
+                if( fullyQualifiedName != null && wrapper.endsWith( fullyQualifiedName ) )
                 {
                     ServiceContainer bundle = TargetPlatformUtil.getServiceWrapperBundle( wrapper );
                     proposals.add( createDepProposal( context, bundle ) );
