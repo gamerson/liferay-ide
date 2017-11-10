@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,8 +10,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.modules.fragment;
 
@@ -26,56 +25,54 @@ import org.eclipse.sapphire.DefaultValueService;
  * @author Terry Jia
  * @author Andy Wu
  */
-public class HostOSGiBundleDefaultValueService extends DefaultValueService
-{
+public class HostOSGiBundleDefaultValueService extends DefaultValueService {
 
-    @Override
-    protected String compute()
-    {
-        String projectName = op().getProjectName().content();
+	@Override
+	protected String compute() {
+		NewModuleFragmentFilesOp op = _op();
 
-        if( !CoreUtil.empty( projectName ) )
-        {
-            IProject project = CoreUtil.getProject( projectName );
-            IFile bndFile = project.getFile( "bnd.bnd" );
+		String projectName = op.getProjectName().content();
 
-            if( bndFile.exists() )
-            {
-                String fragmentFlag = "Fragment-Host:";
+		if (!CoreUtil.empty(projectName)) {
+			IProject project = CoreUtil.getProject(projectName);
 
-                String[] lines = FileUtil.readLinesFromFile( bndFile.getLocation().toFile() );
-                for( String line : lines )
-                {
-                    if( line.startsWith( fragmentFlag ) )
-                    {
-                        String[] s = line.split( ":" );
+			IFile bndFile = project.getFile("bnd.bnd");
 
-                        if( !s[1].contains( ";" ) )
-                        {
-                            return s[1];
-                        }
-                        else
-                        {
-                            String[] f = s[1].split( ";" );
+			if (bndFile.exists()) {
+				String fragmentFlag = "Fragment-Host:";
 
-                            String hostName = f[0];
+				String[] lines = FileUtil.readLinesFromFile(bndFile.getLocation().toFile());
 
-                            String bundleVersion = f[1];
-                            String b[] = bundleVersion.split( "=" );
-                            String version = b[1].substring( 1, b[1].length() - 1 );
-                            return hostName + "-" + version;
-                        }
-                    }
-                }
-            }
-        }
+				for (String line : lines) {
+					if (line.startsWith(fragmentFlag)) {
+						String[] s = line.split(":");
 
-        return null;
-    }
+						if (!s[1].contains(";")) {
+							return s[1];
+						}
+						else {
+							String[] f = s[1].split(";");
 
-    private NewModuleFragmentFilesOp op()
-    {
-        return context( NewModuleFragmentFilesOp.class );
-    }
+							String hostName = f[0];
+
+							String bundleVersion = f[1];
+
+							String[] b = bundleVersion.split("=");
+
+							String version = b[1].substring(1, b[1].length() - 1);
+
+							return hostName + "-" + version;
+						}
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private NewModuleFragmentFilesOp _op() {
+		return context(NewModuleFragmentFilesOp.class);
+	}
 
 }

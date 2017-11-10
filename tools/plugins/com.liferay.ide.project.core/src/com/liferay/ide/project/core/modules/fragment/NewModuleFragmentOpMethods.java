@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,8 +10,7 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.modules.fragment;
 
@@ -27,6 +26,7 @@ import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -46,245 +46,232 @@ import org.eclipse.wst.server.core.IRuntime;
 /**
  * @author Terry Jia
  */
-public class NewModuleFragmentOpMethods
-{
+public class NewModuleFragmentOpMethods {
 
-    public static final Status execute( final NewModuleFragmentOp op, final ProgressMonitor pm )
-    {
-        final IProgressMonitor monitor = ProgressMonitorBridge.create( pm );
+	public static void copyOverrideFiles(NewModuleFragmentOp op) {
+		String hostBundleName = op.getHostOsgiBundle().content();
 
-        monitor.beginTask( "Creating Liferay module fragment project (this process may take several minutes)", 100 );
+		IPath projectCoreLocation = ProjectCore.getDefault().getStateLocation();
 
-        Status retval = null;
+		IPath temp = projectCoreLocation.append(hostBundleName.substring(0, hostBundleName.lastIndexOf(".jar")));
 
-        try
-        {
-            final NewLiferayProjectProvider<BaseModuleOp> projectProvider =
-                op.getProjectProvider().content( true );
+		String projectName = op.getProjectName().content();
 
-            final IStatus status = projectProvider.createNewProject( op, monitor );
+		IPath location = PathBridge.create(op.getLocation().content());
 
-            retval = StatusBridge.create( status );
+		ElementList<OverrideFilePath> files = op.getOverrideFiles();
 
-            if( retval.ok() )
-            {
-                updateBuildPrefs( op );
-            }
-        }
-        catch( Exception e )
-        {
-            final String msg = "Error creating Liferay module fragment project.";
-            ProjectCore.logError( msg, e );
+		for (OverrideFilePath file : files) {
+			File fragmentFile = temp.append(file.getValue().content()).toFile();
 
-            return Status.createErrorStatus( msg + " Please see Eclipse error log for more details.", e );
-        }
+			if (fragmentFile.exists()) {
+				File folder = null;
 
-        return retval;
-    }
+				if (fragmentFile.getName().equals("portlet.properties")) {
+					IPath path = location.append(projectName).append("src/main/java");
 
-    public static void copyOverrideFiles( NewModuleFragmentOp op )
-    {
-        final String hostBundleName = op.getHostOsgiBundle().content();
+					folder = path.toFile();
 
-        final IPath temp = ProjectCore.getDefault().getStateLocation().append(
-            hostBundleName.substring( 0, hostBundleName.lastIndexOf( ".jar" ) ) );
+					FileUtil.copyFileToDir(fragmentFile, "portlet-ext.properties", folder);
+				}
+				else if (fragmentFile.getName().contains("default.xml")) {
+					String parent = fragmentFile.getParentFile().getPath();
 
-        final String projectName = op.getProjectName().content();
+					parent = parent.replaceAll("\\\\", "/");
 
-        final IPath location = PathBridge.create( op.getLocation().content() );
+					String metaInfResources = "resource-actions";
 
-        final ElementList<OverrideFilePath> files = op.getOverrideFiles();
+					parent = parent.substring(parent.indexOf(metaInfResources) + metaInfResources.length());
 
-        for( OverrideFilePath file : files )
-        {
-            File fragmentFile = temp.append( file.getValue().content() ).toFile();
+					IPath resources = location.append(projectName).append("src/main/resources/resource-actions");
 
-            if( fragmentFile.exists() )
-            {
-                File folder = null;
+					folder = resources.toFile();
 
-                if( fragmentFile.getName().equals( "portlet.properties" ) )
-                {
-                    folder = location.append( projectName ).append( "src/main/java" ).toFile();
+					folder.mkdirs();
 
-                    FileUtil.copyFileToDir( fragmentFile, "portlet-ext.properties", folder );
-                }
-                else if( fragmentFile.getName().contains( "default.xml" ) )
-                {
-                    String parent = fragmentFile.getParentFile().getPath();
-                    parent = parent.replaceAll( "\\\\", "/" );
-                    String metaInfResources = "resource-actions";
+					if (!parent.equals("resource-actions") && !parent.equals("")) {
+						folder = resources.append(parent).toFile();
 
-                    parent = parent.substring( parent.indexOf( metaInfResources ) + metaInfResources.length() );
+						folder.mkdirs();
+					}
 
-                    IPath resources = location.append( projectName ).append( "src/main/resources/resource-actions" );
+					FileUtil.copyFileToDir(fragmentFile, "default-ext.xml", folder);
 
-                    folder = resources.toFile();
-                    folder.mkdirs();
+					try {
+						File ext = new File(
+							location.append(projectName).append("src/main/resources") + "/portlet-ext.properties");
 
-                    if( !parent.equals( "resource-actions" ) && !parent.equals( "" ) )
-                    {
-                        folder = resources.append( parent ).toFile();
-                        folder.mkdirs();
-                    }
+						ext.createNewFile();
 
-                    FileUtil.copyFileToDir( fragmentFile, "default-ext.xml", folder );
+						String extFileContent =
+							"resource.actions.configs=resource-actions/default.xml,resource-actions/default-ext.xml";
 
-                    try
-                    {
-                        File ext = new File(
-                            location.append( projectName ).append( "src/main/resources" ) + "/portlet-ext.properties" );
+						FileUtil.writeFile(ext, extFileContent, null);
+					}
+					catch (Exception e) {
+					}
+				}
+				else {
+					String parent = fragmentFile.getParentFile().getPath();
 
-                        ext.createNewFile();
+					parent = parent.replaceAll("\\\\", "/");
 
-                        String extFileContent =
-                            "resource.actions.configs=resource-actions/default.xml,resource-actions/default-ext.xml";
+					String metaInfResources = "META-INF/resources";
 
-                        FileUtil.writeFile( ext, extFileContent, null );
-                    }
-                    catch( Exception e )
-                    {
-                    }
-                }
-                else
-                {
-                    String parent = fragmentFile.getParentFile().getPath();
-                    parent = parent.replaceAll( "\\\\", "/" );
-                    String metaInfResources = "META-INF/resources";
+					parent = parent.substring(parent.indexOf(metaInfResources) + metaInfResources.length());
 
-                    parent = parent.substring( parent.indexOf( metaInfResources ) + metaInfResources.length() );
+					IPath resources = location.append(projectName).append("src/main/resources/META-INF/resources");
 
-                    IPath resources = location.append( projectName ).append( "src/main/resources/META-INF/resources" );
+					folder = resources.toFile();
 
-                    folder = resources.toFile();
-                    folder.mkdirs();
+					folder.mkdirs();
 
-                    if( !parent.equals( "resources" ) && !parent.equals( "" ) )
-                    {
-                        folder = resources.append( parent ).toFile();
-                        folder.mkdirs();
-                    }
+					if (!parent.equals("resources") && !parent.equals("")) {
+						folder = resources.append(parent).toFile();
 
-                    FileUtil.copyFileToDir( fragmentFile, folder );
-                }
-            }
-        }
-    }
+						folder.mkdirs();
+					}
 
-    public static String[] getBsnAndVersion( NewModuleFragmentOp op ) throws CoreException
-    {
-        final String hostBundleName = op.getHostOsgiBundle().content();
+					FileUtil.copyFileToDir(fragmentFile, folder);
+				}
+			}
+		}
+	}
 
-        final IPath temp = ProjectCore.getDefault().getStateLocation().append(
-            hostBundleName.substring( 0, hostBundleName.lastIndexOf( ".jar" ) ) );
+	public static final Status execute(NewModuleFragmentOp op, ProgressMonitor pm) {
+		IProgressMonitor monitor = ProgressMonitorBridge.create(pm);
 
-        if( !temp.toFile().exists() )
-        {
-            final IRuntime runtime = ServerUtil.getRuntime( op.getLiferayRuntimeName().content() );
+		monitor.beginTask("Creating Liferay module fragment project (this process may take several minutes)", 100);
 
-            final PortalBundle portalBundle = LiferayServerCore.newPortalBundle( runtime.getLocation() );
+		Status retval = null;
 
-            File hostBundle = portalBundle.getOSGiBundlesDir().append( "modules" ).append( hostBundleName ).toFile();
+		try {
+			NewLiferayProjectProvider<BaseModuleOp> projectProvider = op.getProjectProvider().content(true);
 
-            if( !hostBundle.exists() )
-            {
-                hostBundle = ProjectCore.getDefault().getStateLocation().append( hostBundleName ).toFile();
-            }
+			IStatus status = projectProvider.createNewProject(op, monitor);
 
-            try
-            {
-                ZipUtil.unzip( hostBundle, temp.toFile() );
-            }
-            catch( IOException e )
-            {
-                throw new CoreException( ProjectCore.createErrorStatus( e ) );
-            }
-        }
+			retval = StatusBridge.create(status);
 
-        String bundleSymbolicName = "";
-        String version = "";
+			if (retval.ok()) {
+				_updateBuildPrefs(op);
+			}
+		}
+		catch (Exception e) {
+			String msg = "Error creating Liferay module fragment project.";
 
-        if( temp.toFile().exists() )
-        {
-            final File file = temp.append( "META-INF/MANIFEST.MF" ).toFile();
-            final String[] contents = FileUtil.readLinesFromFile( file );
+			ProjectCore.logError(msg, e);
 
-            for( String content : contents )
-            {
-                if( content.contains( "Bundle-SymbolicName:" ) )
-                {
-                    bundleSymbolicName = content.substring(
-                        content.indexOf( "Bundle-SymbolicName:" ) + "Bundle-SymbolicName:".length() );
-                }
+			return Status.createErrorStatus(msg + " Please see Eclipse error log for more details.", e);
+		}
 
-                if( content.contains( "Bundle-Version:" ) )
-                {
-                    version =
-                        content.substring( content.indexOf( "Bundle-Version:" ) + "Bundle-Version:".length() ).trim();
-                }
-            }
-        }
+		return retval;
+	}
 
-        return new String[] { bundleSymbolicName, version };
-    }
+	public static String[] getBsnAndVersion(NewModuleFragmentOp op) throws CoreException {
+		String hostBundleName = op.getHostOsgiBundle().content();
 
-    public static String getMavenParentPomGroupId( NewModuleFragmentOp op, String projectName, IPath path )
-    {
-        String retval = null;
+		IPath path = ProjectCore.getDefault().getStateLocation();
 
-        final File parentProjectDir = path.toFile();
-        final IStatus locationStatus = op.getProjectProvider().content().validateProjectLocation( projectName, path );
+		IPath temp = path.append(hostBundleName.substring(0, hostBundleName.lastIndexOf(".jar")));
 
-        if( locationStatus.isOK() && parentProjectDir.exists() && parentProjectDir.list().length > 0 )
-        {
-            List<String> groupId =
-                op.getProjectProvider().content().getData( "parentGroupId", String.class, parentProjectDir );
+		if (!temp.toFile().exists()) {
+			IRuntime runtime = ServerUtil.getRuntime(op.getLiferayRuntimeName().content());
 
-            if( !CoreUtil.isNullOrEmpty( groupId ) )
-            {
-                retval = groupId.get( 0 );
-            }
-        }
+			PortalBundle portalBundle = LiferayServerCore.newPortalBundle(runtime.getLocation());
 
-        return retval;
-    }
+			IPath modulesPath = portalBundle.getOSGiBundlesDir().append("modules");
 
-    public static String getMavenParentPomVersion( NewModuleFragmentOp op, String projectName, IPath path )
-    {
-        String retval = null;
+			File hostBundle = modulesPath.append(hostBundleName).toFile();
 
-        final File parentProjectDir = path.toFile();
-        final IStatus locationStatus = op.getProjectProvider().content().validateProjectLocation( projectName, path );
+			if (!hostBundle.exists()) {
+				hostBundle = path.append(hostBundleName).toFile();
+			}
 
-        if( locationStatus.isOK() && parentProjectDir.exists() && parentProjectDir.list().length > 0 )
-        {
-            List<String> version =
-                op.getProjectProvider().content().getData( "parentVersion", String.class, parentProjectDir );
+			try {
+				ZipUtil.unzip(hostBundle, temp.toFile());
+			}
+			catch (IOException ioe) {
+				throw new CoreException(ProjectCore.createErrorStatus(ioe));
+			}
+		}
 
-            if( !CoreUtil.isNullOrEmpty( version ) )
-            {
-                retval = version.get( 0 );
-            }
-        }
+		String bundleSymbolicName = "";
+		String version = "";
 
-        return retval;
-    }
+		if (temp.toFile().exists()) {
+			File file = temp.append("META-INF/MANIFEST.MF").toFile();
 
-    private static void updateBuildPrefs( final NewModuleFragmentOp op )
-    {
-        try
-        {
-            final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+			String[] contents = FileUtil.readLinesFromFile(file);
 
-            prefs.put( ProjectCore.PREF_DEFAULT_MODULE_FRAGMENT_PROJECT_BUILD_TYPE_OPTION,
-                op.getProjectProvider().text() );
+			for (String content : contents) {
+				if (content.contains("Bundle-SymbolicName:")) {
+					bundleSymbolicName = content.substring(
+						content.indexOf("Bundle-SymbolicName:") + "Bundle-SymbolicName:".length());
+				}
 
-            prefs.flush();
-        }
-        catch( Exception e )
-        {
-            final String msg = "Error updating default project build type.";
-            ProjectCore.logError( msg, e );
-        }
-    }
+				if (content.contains("Bundle-Version:")) {
+					version = content.substring(content.indexOf("Bundle-Version:") + "Bundle-Version:".length()).trim();
+				}
+			}
+		}
+
+		return new String[] {bundleSymbolicName, version};
+	}
+
+	public static String getMavenParentPomGroupId(NewModuleFragmentOp op, String projectName, IPath path) {
+		String retval = null;
+
+		File parentProjectDir = path.toFile();
+
+		NewLiferayProjectProvider<BaseModuleOp> provider = op.getProjectProvider().content();
+
+		IStatus locationStatus = provider.validateProjectLocation(projectName, path);
+
+		if (locationStatus.isOK() && parentProjectDir.exists() && (parentProjectDir.list().length > 0)) {
+			List<String> groupId = provider.getData("parentGroupId", String.class, parentProjectDir);
+
+			if (!CoreUtil.isNullOrEmpty(groupId)) {
+				retval = groupId.get(0);
+			}
+		}
+
+		return retval;
+	}
+
+	public static String getMavenParentPomVersion(NewModuleFragmentOp op, String projectName, IPath path) {
+		String retval = null;
+
+		File parentProjectDir = path.toFile();
+
+		NewLiferayProjectProvider<BaseModuleOp> provider = op.getProjectProvider().content();
+
+		IStatus locationStatus = provider.validateProjectLocation(projectName, path);
+
+		if (locationStatus.isOK() && parentProjectDir.exists() && (parentProjectDir.list().length > 0)) {
+			List<String> version = provider.getData("parentVersion", String.class, parentProjectDir);
+
+			if (!CoreUtil.isNullOrEmpty(version)) {
+				retval = version.get(0);
+			}
+		}
+
+		return retval;
+	}
+
+	private static void _updateBuildPrefs(NewModuleFragmentOp op) {
+		try {
+			IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
+
+			prefs.put(
+				ProjectCore.PREF_DEFAULT_MODULE_FRAGMENT_PROJECT_BUILD_TYPE_OPTION, op.getProjectProvider().text());
+
+			prefs.flush();
+		}
+		catch (Exception e) {
+			String msg = "Error updating default project build type.";
+
+			ProjectCore.logError(msg, e);
+		}
+	}
+
 }
