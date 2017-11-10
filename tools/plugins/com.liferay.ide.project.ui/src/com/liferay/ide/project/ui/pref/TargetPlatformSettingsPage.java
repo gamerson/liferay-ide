@@ -14,9 +14,10 @@
 
 package com.liferay.ide.project.ui.pref;
 
-import com.liferay.ide.project.core.ITargetPlatformConstant;
+import com.liferay.ide.core.ITargetPlatformConstant;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.TargetPlatformUtil;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.util.TargetPlatformUtil;
 
 import java.io.IOException;
 
@@ -40,100 +41,111 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 /**
  * @author Lovett Li
  */
-public class TargetPlatformSettingsPage extends PreferencePage implements IWorkbenchPreferencePage {
+public class TargetPlatformSettingsPage extends PreferencePage implements IWorkbenchPreferencePage
+{
 
-	public static final String PROJECT_UI_TARGETPLATFORM_PAGE_ID =
-		"com.liferay.ide.project.ui.targetPlatformSettingsPage";
+    public static final String PROJECT_UI_TARGETPLATFORM_PAGE_ID =
+        "com.liferay.ide.project.ui.targetPlatformSettingsPage";
+    private ComboViewer targetPlatFormVersion;
+    private ScopedPreferenceStore preferenceStore;
 
-	public TargetPlatformSettingsPage() {
-		_preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, ProjectCore.PLUGIN_ID);
-	}
+    public TargetPlatformSettingsPage()
+    {
+        super();
+        preferenceStore = new ScopedPreferenceStore( InstanceScope.INSTANCE, LiferayCore.PLUGIN_ID );
+    }
 
-	@Override
-	public void init(IWorkbench workbench) {
-	}
+    @Override
+    public void init( IWorkbench workbench )
+    {
+    }
 
-	@Override
-	public boolean performOk() {
-		boolean result = super.performOk();
-		_storeValues();
+    private void initvaules()
+    {
+        IPreferenceStore store = getPreStore();
+        String version;
 
-		return result;
-	}
+        if( store != null )
+        {
+            version = store.getString( ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION ).replace( "[", "" ).replace(
+                "]", "" );
 
-	@Override
-	protected Control createContents(Composite parent) {
-		Composite comp = new Composite(parent, SWT.NONE);
+            if( version == null || version.equals( "" ) )
+            {
+                version = ITargetPlatformConstant.DEFAULT_TARGETFORM_VERSION;
+            }
+        }
+        else
+        {
+            version = ITargetPlatformConstant.DEFAULT_TARGETFORM_VERSION;
+        }
 
-		GridLayout layout = new GridLayout(2, false);
+        final ISelection selection = new StructuredSelection( version );
+        targetPlatFormVersion.setSelection( selection );
+    }
 
-		layout.horizontalSpacing = 10;
-		comp.setLayout(layout);
+    @Override
+    protected Control createContents( Composite parent )
+    {
+        Composite comp = new Composite( parent, SWT.NONE );
 
-		new Label(comp, SWT.NONE).setText("Liferay Target Platform Version:");
+        GridLayout layout = new GridLayout( 2, false );
+        layout.horizontalSpacing = 10;
+        comp.setLayout( layout );
 
-		_targetPlatFormVersion = new ComboViewer(comp, SWT.READ_ONLY);
+        new Label( comp, SWT.NONE ).setText( "Liferay Target Platform Version:" );
 
-		_targetPlatFormVersion.setLabelProvider(
-			new LabelProvider() {
+        targetPlatFormVersion = new ComboViewer( comp, SWT.READ_ONLY );
+        targetPlatFormVersion.setLabelProvider( new LabelProvider()
+        {
 
-				@Override
-				public String getText(Object element) {
-					return element.toString();
-				}
+            @Override
+            public String getText( Object element )
+            {
+                return element.toString();
+            }
+        } );
+        targetPlatFormVersion.setContentProvider( new ArrayContentProvider() );
 
-			});
-		_targetPlatFormVersion.setContentProvider(new ArrayContentProvider());
+        try
+        {
+            targetPlatFormVersion.setInput( TargetPlatformUtil.getAllTargetPlatfromVersions() );
+        }
+        catch( IOException e )
+        {
+        }
 
-		try {
-			_targetPlatFormVersion.setInput(TargetPlatformUtil.getAllTargetPlatfromVersions());
-		}
-		catch (IOException ioe) {
-		}
+        initvaules();
 
-		_initvaules();
+        return comp;
+    }
 
-		return comp;
-	}
+    @Override
+    public boolean performOk()
+    {
+        boolean result = super.performOk();
+        storeValues();
 
-	private IPreferenceStore _getPreStore() {
-		return _preferenceStore;
-	}
+        return result;
+    }
 
-	private void _initvaules() {
-		IPreferenceStore store = _getPreStore();
-		String version;
+    private void storeValues()
+    {
+        preferenceStore.setValue(
+            ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION, targetPlatFormVersion.getSelection().toString() );
+        try
+        {
+            preferenceStore.save();
+        }
+        catch( IOException e )
+        {
+            ProjectCore.logError( "Can not save target platform preference", e );
+        }
+    }
 
-		if (store != null) {
-			String targetVersion = store.getString(ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION);
-
-			version = targetVersion.replace("[", "").replace("]", "");
-
-			if ((version == null) || version.equals("")) {
-				version = ITargetPlatformConstant.DEFAULT_TARGETFORM_VERSION;
-			}
-		}
-		else {
-			version = ITargetPlatformConstant.DEFAULT_TARGETFORM_VERSION;
-		}
-
-		final ISelection selection = new StructuredSelection(version);
-
-		_targetPlatFormVersion.setSelection(selection);
-	}
-
-	private void _storeValues() {
-		_preferenceStore.setValue(
-			ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION, _targetPlatFormVersion.getSelection().toString());
-		try {
-			_preferenceStore.save();
-		}
-		catch (IOException ioe) {
-			ProjectCore.logError("Can not save target platform preference", ioe);
-		}
-	}
-
-	private ScopedPreferenceStore _preferenceStore;
-	private ComboViewer _targetPlatFormVersion;
+    private IPreferenceStore getPreStore()
+    {
+        return preferenceStore;
+    }
 
 }
