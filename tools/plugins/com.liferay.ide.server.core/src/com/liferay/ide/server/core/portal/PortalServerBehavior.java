@@ -73,7 +73,7 @@ import org.osgi.framework.Version;
  * @author Simon Jiang
  * @author Terry Jia
  */
-@SuppressWarnings( {"restriction","rawtypes"} )
+@SuppressWarnings( { "restriction", "rawtypes" } )
 public class PortalServerBehavior extends ServerBehaviourDelegate
     implements ILiferayServerBehavior, IJavaLaunchConfigurationConstants
 {
@@ -88,8 +88,8 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
     };
 
     private IAdaptable info;
-    private transient PingThread ping = null;
-    private transient IDebugEventSetListener processListener;
+    protected transient PingThread ping = null;
+    protected transient IDebugEventSetListener processListener;
 
     public PortalServerBehavior()
     {
@@ -207,7 +207,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return -1;
     }
 
-    private PortalRuntime getPortalRuntime()
+    public PortalRuntime getPortalRuntime()
     {
         PortalRuntime retval = null;
 
@@ -219,7 +219,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return retval;
     }
 
-    private PortalServer getPortalServer()
+    protected PortalServer getPortalServer()
     {
         PortalServer retval = null;
 
@@ -231,12 +231,12 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return retval;
     }
 
-    private String[] getRuntimeStartProgArgs()
+    protected String[] getRuntimeStartProgArgs()
     {
         return getPortalRuntime().getPortalBundle().getRuntimeStartProgArgs();
     }
 
-    private String[] getRuntimeStartVMArguments()
+    protected String[] getRuntimeStartVMArguments()
     {
         if( !getPortalServer().getLaunchSettings() )
         {
@@ -314,12 +314,12 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         return retval.toArray( new String[0] );
     }
 
-    private String[] getRuntimeStopProgArgs()
+    protected String[] getRuntimeStopProgArgs()
     {
         return getPortalRuntime().getPortalBundle().getRuntimeStopProgArgs();
     }
 
-    private String[] getRuntimeStopVMArguments()
+    protected String[] getRuntimeStopVMArguments()
     {
         final List<String> retval = new ArrayList<>();
 
@@ -369,7 +369,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         }
     }
 
-    private String mergeArguments(
+    protected String mergeArguments(
         final String orgArgsString, final String[] newArgs, final String[] excludeArgs, boolean keepActionLast )
     {
         String retval = null;
@@ -614,7 +614,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         publish( IServer.PUBLISH_FULL, modules, null, info );
     }
 
-    private void replaceJREConatiner( List<IRuntimeClasspathEntry> oldCp, IRuntimeClasspathEntry newJRECp )
+    protected void replaceJREConatiner( List<IRuntimeClasspathEntry> oldCp, IRuntimeClasspathEntry newJRECp )
     {
         int size = oldCp.size();
 
@@ -758,12 +758,12 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         setupAriesJmxBundles();
     }
 
-    private void setupAgent()
+    protected void setupAgent()
     {
         // make sure that agent is either installed or will be installed in modules folder
 
         // delete legacy jar in static folder cause update the same jar in static will cause portal fail to start
-        final IPath staticPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/static" );
+        final IPath staticPath = getLiferayHome().append( "osgi/static" );
 
         if( staticPath.append( "biz.aQute.remote.agent.jar" ).toFile().exists() )
         {
@@ -778,7 +778,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         }
 
         // check current version of agent and delete old jar and copy latest
-        final IPath modulesPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/modules" );
+        final IPath modulesPath = getLiferayHome().append( "osgi/modules" );
         final IPath agentInstalledPath = modulesPath.append( "biz.aQute.remote.agent.jar" );
 
         File modulesDir = modulesPath.toFile();
@@ -854,7 +854,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         }
     }
 
-    private void setupAriesJmxBundles()
+    protected void setupAriesJmxBundles()
     {
         String[] ariesJmxBundleNames = new String[] { "org.apache.aries.jmx.api.jar", "org.apache.aries.jmx.core.jar",
             "org.apache.aries.util.jar" };
@@ -863,7 +863,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             "org.apache.aries.jmx.core-1.1.7.jar", "org.apache.aries.util-1.1.3.jar" };
 
         // delelte legacy jmx bundles in osgi/static
-        final IPath staticPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/static" );
+        final IPath staticPath = getLiferayHome().append( "osgi/static" );
 
         for( String bundleName : ariesJmxBundleNames )
         {
@@ -887,7 +887,7 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             return;
         }
 
-        final IPath modulesPath = getPortalRuntime().getPortalBundle().getLiferayHome().append( "osgi/modules" );
+        final IPath modulesPath = getLiferayHome().append( "osgi/modules" );
 
         File modulesDir = modulesPath.toFile();
 
@@ -921,10 +921,9 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
 
     private boolean shouldSetUpAriesJmxBundles()
     {
-        File portalImplFile =
-            getPortalRuntime().getAppServerPortalDir().append( "WEB-INF/lib/portal-impl.jar" ).toFile();
+        File portalImplFile = getPortalImplFile();
 
-        if( !portalImplFile.exists() )
+        if( portalImplFile == null || !portalImplFile.exists() )
         {
             return true;
         }
@@ -1103,16 +1102,17 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
             final String existingVMArgs =
                 wc.getAttribute( IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String) null );
 
-            if( existingVMArgs.indexOf( JMX_EXCLUDE_ARGS[0] ) >= 0 )
+            String[] vmExcludeArgs = getVMExcludeArgs();
+
+            if( existingVMArgs.indexOf( vmExcludeArgs[0] ) >= 0 )
             {
                 wc.setAttribute(
                     IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-                    mergeArguments( existingVMArgs, getRuntimeStopVMArguments(), JMX_EXCLUDE_ARGS, false ) );
+                    mergeArguments( existingVMArgs, getRuntimeStopVMArguments(), vmExcludeArgs, false ) );
             }
             else
             {
-                wc.setAttribute(
-                    IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
+                wc.setAttribute( IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
                     mergeArguments( existingVMArgs, getRuntimeStopVMArguments(), null, true ) );
             }
 
@@ -1169,11 +1169,45 @@ public class PortalServerBehavior extends ServerBehaviourDelegate
         }
 
         return buf.toString();
-    }
+    } 
 
     public BundleSupervisor createBundleSupervisor() throws Exception
     {
-        return ServerUtil.createBundleSupervisor( getPortalRuntime(), getServer() );
+        return ServerUtil.createBundleSupervisor( getPortalRuntime().getPortalBundle().getJmxRemotePort(), getServer());
     }
 
+    public IPath getAppServerDir()
+    {
+        return getPortalRuntime().getAppServerDir();
+    }
+
+    protected IPath getAutoDeployPath()
+    {
+        return getPortalRuntime().getPortalBundle().getAutoDeployPath();
+    }
+
+    protected IPath getModulePath()
+    {
+        return getPortalRuntime().getPortalBundle().getModulesPath();
+    }
+
+    protected IPath getLiferayHome()
+    {
+        return getPortalRuntime().getPortalBundle().getLiferayHome();
+    }
+
+    protected File getPortalImplFile()
+    {
+        return getPortalRuntime().getAppServerPortalDir().append( "WEB-INF/lib/portal-impl.jar" ).toFile();
+    }
+
+    protected String[] getVMExcludeArgs()
+    {
+        return JMX_EXCLUDE_ARGS;
+    }
+
+    public void setServerStoped()
+    {
+        setServerState( IServer.STATE_STOPPED );
+    }
 }
