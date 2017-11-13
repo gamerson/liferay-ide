@@ -12,10 +12,7 @@
  * details.
  *
  *******************************************************************************/
-package com.liferay.ide.server.core.portal;
-
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
+package com.liferay.ide.server.websphere.core;
 
 import java.io.File;
 import java.util.Map;
@@ -25,38 +22,59 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector;
-import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerListener;
-import org.eclipse.wst.server.core.ServerEvent;
-import org.eclipse.wst.server.core.ServerUtil;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.server.core.portal.PortalServerLaunchConfigDelegate;
 
 /**
- * @author Gregory Amerson
+ * @author Greg Amerson
+ * @author Simon Jiang
  */
-public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigurationDelegate
+public class WebsphereLaunchConfigDelegate extends PortalServerLaunchConfigDelegate
 {
 
-    public static final String ID = "com.liferay.ide.server.portal.launch";
+    public static final String SERVER_ID = "server-id";
 
-    @Override
-    public void launch( ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor )
-        throws CoreException
+    private IProcess createTerminateableStreamsProxyProcess(
+        IServer server, WebsphereServer websphereServer, final WebsphereServerBehavior websphereServerBehaviour,
+        ILaunch launch, boolean isDebug )
     {
-        final IServer server = ServerUtil.getServer( config );
-
-        if( server != null )
+        if( ( server == null ) || ( websphereServer == null ) || ( websphereServerBehaviour == null ) ||
+            ( launch == null ) )
         {
-            launchServer( server, config, mode, launch, monitor );
+            return null;
         }
+
+        ITerminateableStreamsProxy streamsProxy =
+            new WebsphereServerLogFileStreamsProxy( websphereServer, websphereServerBehaviour, launch );
+
+        IProcess retvalProcess  = websphereServerBehaviour.getProcess();
+
+        if ( retvalProcess == null )
+        {
+            retvalProcess = new WebsphereMonitorProcess( server, websphereServerBehaviour, launch, streamsProxy );
+
+            retvalProcess.setAttribute( IProcess.ATTR_PROCESS_TYPE, "java" );
+
+            retvalProcess.setAttribute( IProcess.ATTR_PROCESS_LABEL, server.getName() );
+
+            launch.addProcess( retvalProcess );
+        }
+        else
+        {
+            launch.addProcess( retvalProcess );
+        }
+
+        return retvalProcess;
     }
 
+    @Override
     protected void launchServer(
         final IServer server, final ILaunchConfiguration config, final String mode, final ILaunch launch,
         final IProgressMonitor monitor ) throws CoreException
@@ -67,6 +85,7 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
             vm.getVMRunner( mode ) != null ? vm.getVMRunner( mode ) : vm.getVMRunner( ILaunchManager.RUN_MODE );
 
         final File workingDir = verifyWorkingDirectory( config );
+        // final File workingDir = server.getRuntime().getLocation().toFile();
         final String workingDirPath = workingDir != null ? workingDir.getAbsolutePath() : null;
 
         final String progArgs = getProgramArguments( config );
@@ -77,10 +96,10 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 
         final Map<String, Object> vmAttributesMap = getVMSpecificAttributesMap( config );
 
-        final PortalServerBehavior portalServerBehavior =
-            (PortalServerBehavior) server.loadAdapter ( PortalServerBehavior.class, monitor );
+        final WebsphereServerBehavior portalServer =
+            (WebsphereServerBehavior) server.loadAdapter( WebsphereServerBehavior.class, monitor );
 
-        final String classToLaunch = portalServerBehavior.getClassToLaunch();
+        final String classToLaunch = portalServer.getClassToLaunch();
         final String[] classpath = getClasspath( config );
 
         final VMRunnerConfiguration runConfig = new VMRunnerConfiguration( classToLaunch, classpath );
@@ -90,59 +109,36 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
         runConfig.setEnvironment( envp );
         runConfig.setVMSpecificAttributesMap( vmAttributesMap );
 
+
         final String[] bootpath = getBootpath( config );
 
-        if( ! CoreUtil.isNullOrEmpty( bootpath ) )
+        if( !CoreUtil.isNullOrEmpty( bootpath ) )
         {
             runConfig.setBootClassPath( bootpath );
         }
 
-        portalServerBehavior.launchServer( launch, mode, monitor );
+        WebsphereServer websphereServer = (WebsphereServer) server.loadAdapter( WebsphereServer.class, monitor );
+        WebsphereServerBehavior websphereServerBehavior =
+            (WebsphereServerBehavior) server.loadAdapter( WebsphereServerBehavior.class, monitor );
 
-        server.addServerListener(new IServerListener()
+        IProcess streamProxyProcess = createTerminateableStreamsProxyProcess(
+            server, websphereServer, websphereServerBehavior, launch, "debug".equals( mode ) );
+
+        if( websphereServerBehavior.getProcess() == null )
         {
-            @Override
-            public void serverChanged( ServerEvent event )
-            {
-                if( ( event.getKind() & ServerEvent.MODULE_CHANGE ) > 0 )
-                {
-                    AbstractSourceLookupDirector sourceLocator = (AbstractSourceLookupDirector) launch.getSourceLocator();
+            websphereServerBehavior.setProcess( streamProxyProcess );
+        }
 
-                    try
-                    {
-                        final String memento =
-                            config.getAttribute( ILaunchConfiguration.ATTR_SOURCE_LOCATOR_MEMENTO, (String) null );
-
-                        if( memento != null )
-                        {
-                            sourceLocator.initializeFromMemento( memento );
-                        }
-                        else
-                        {
-                            sourceLocator.initializeDefaults( config );
-                        }
-                    }
-                    catch( CoreException e )
-                    {
-                        LiferayServerCore.logError( "Could not reinitialize source lookup director", e );
-                    }
-                }
-                else if((event.getKind() & ServerEvent.SERVER_CHANGE)>0 && event.getState() == IServer.STATE_STOPPED)
-                {
-                    server.removeServerListener( this );
-                }
-            }
-        });
+        portalServer.launchServer( launch, mode, monitor );
 
         try
         {
             runner.run( runConfig, launch, monitor );
-            portalServerBehavior.addProcessListener( launch.getProcesses()[0] );
+            portalServer.addProcessListener( launch.getProcesses()[1] );
         }
         catch( Exception e )
         {
-        	portalServerBehavior.cleanup();
+            portalServer.cleanup();
         }
     }
-
 }

@@ -1,0 +1,159 @@
+/*******************************************************************************
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ *******************************************************************************/
+
+package com.liferay.ide.server.websphere.core;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.wst.server.core.IServer;
+
+/**
+ * @author Simon Jiang
+ */
+
+public class ServerStateStartThread
+{
+
+    // delay before pinging starts
+    private static final int PING_DELAY = 2000;
+
+    // delay between pings
+    private static final int PING_INTERVAL = 250;
+
+    private boolean stop = false;
+    private IProcess mointorProcess;
+    private WebsphereServerBehavior behaviour;
+    private IServer server;
+    private long defaultTimeout = 15 * 60 * 1000;
+    private long timeout = 0;
+    private long startedTime;
+    private IWebsphereServer websphereServer;
+    private URL liferayHomeUrl;
+
+    /**
+     * Create a new PingThread.
+     *
+     * @param server
+     * @param url
+     * @param maxPings
+     *            the maximum number of times to try pinging, or -1 to continue forever
+     * @param behaviour
+     */
+    public ServerStateStartThread( IServer server, WebsphereServerBehavior behaviour )
+    {
+        super();
+        this.server = server;
+        this.behaviour = behaviour;
+        this.mointorProcess = behaviour.getProcess();
+        this.websphereServer = (IWebsphereServer) this.server.loadAdapter( IWebsphereServer.class, null );
+
+        int serverStartTimeout = server.getStartTimeout();
+
+        if( serverStartTimeout < defaultTimeout / 1000 )
+        {
+            this.timeout = defaultTimeout;
+        }
+        else
+        {
+            this.timeout = serverStartTimeout * 1000;
+        }
+
+        liferayHomeUrl = websphereServer.getPortalHomeUrl();
+
+        Thread t = new Thread( "Liferay WebsphereServerBehavior Start Thread")
+        {
+            public void run()
+            {
+                startedTime = System.currentTimeMillis();
+                startMonitor( );
+            }
+        };
+        t.setDaemon( true );
+        t.start();
+    }
+
+    /**
+     * Ping the server until it is started. Then set the server state to STATE_STARTED.
+     */
+    protected void startMonitor()
+    {
+        long currentTime = 0;
+        try
+        {
+            Thread.sleep( PING_DELAY );
+        }
+        catch( Exception e )
+        {
+        }
+        while( !stop )
+        {
+            try
+            {
+                currentTime = System.currentTimeMillis();
+                if( ( currentTime - startedTime ) > timeout )
+                {
+                    try
+                    {
+                        server.stop( false );
+                        mointorProcess.terminate();
+                    }
+                    catch( Exception e )
+                    {
+                    }
+                    stop = true;
+                    break;
+                }
+
+                URLConnection conn = liferayHomeUrl.openConnection();
+                ( (HttpURLConnection) conn ).setInstanceFollowRedirects( false );
+                int code = ( (HttpURLConnection) conn ).getResponseCode();
+
+                if( !stop && code != 404 )
+                {
+                    behaviour.setupAgentAndJMX();
+                    Thread.sleep( 200 );
+                    behaviour.setServerStarted();
+                    stop = true;
+                }
+
+                Thread.sleep( 1000 );
+            }
+            catch( Exception e )
+            {
+                if( !stop )
+                {
+                    try
+                    {
+                        Thread.sleep( PING_INTERVAL );
+                    }
+                    catch( InterruptedException e2 )
+                    {
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Tell the pinging to stop.
+     */
+    public void stop()
+    {
+        stop = true;
+    }
+}
