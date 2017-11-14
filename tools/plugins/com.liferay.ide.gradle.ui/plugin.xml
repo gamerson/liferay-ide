@@ -31,6 +31,10 @@
 				>
 				</groupMarker>
 				<groupMarker
+					name="build-wsdd"
+				>
+				</groupMarker>
+				<groupMarker
 					name="merge-lang"
 				>
 				</groupMarker>
@@ -79,6 +83,15 @@
 				id="com.liferay.ide.gradle.popup.action.buildservice"
 				label="build-service"
 				menubarPath="liferayPopupMenuCategory/build-service"
+			>
+			</action>
+			<action
+				class="com.liferay.ide.gradle.action.BuildWSDDTaskAction"
+				enablesFor="1"
+				icon="icons/e16/liferay_logo_16.png"
+				id="com.liferay.ide.gradle.popup.action.buildwsdd"
+				label="build-wsdd"
+				menubarPath="liferayPopupMenuCategory/build-wsdd"
 			>
 			</action>
 			<action

@@ -1,0 +1,12 @@
+import com.liferay.gradle.plugins.service.builder.ServiceBuilderPlugin
+import com.liferay.gradle.plugins.wsdd.builder.WSDDBuilderPlugin
+
+{content}
+
+gradle.beforeProject {
+	project ->
+
+	project.plugins.withType(ServiceBuilderPlugin) {
+		project.apply plugin: WSDDBuilderPlugin
+	}
+}
