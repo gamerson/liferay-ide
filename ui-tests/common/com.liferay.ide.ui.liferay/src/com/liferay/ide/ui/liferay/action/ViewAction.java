@@ -38,7 +38,9 @@ public class ViewAction extends UIAction {
 	}
 
 	public void deleteProject(String... items) {
-		getProjects().contextMenu(DELETE, items);
+		_getProjects().contextMenu(DELETE, items);
+
+		ide.sleep(500);
 
 		_deleteResourcesDialog.getDeleteFromDisk().select();
 
@@ -46,7 +48,7 @@ public class ViewAction extends UIAction {
 
 		long origin = SWTBotPreferences.TIMEOUT;
 
-		SWTBotPreferences.TIMEOUT = 2000;
+		SWTBotPreferences.TIMEOUT = 1000;
 
 		try {
 			_continueDeleteResourcesDialog.confirm();
@@ -63,15 +65,6 @@ public class ViewAction extends UIAction {
 		SWTBotPreferences.TIMEOUT = origin;
 	}
 
-	public Tree getProjects() {
-		try {
-			return _projectExplorerView.getProjects();
-		}
-		catch (Exception e) {
-			return _packageExplorerView.getProjects();
-		}
-	}
-
 	public void openAddAndRemoveDialog(String serverLabel) {
 		_serversView.getServers().contextMenu(ADD_AND_REMOVE, serverLabel);
 	}
@@ -83,7 +76,9 @@ public class ViewAction extends UIAction {
 	}
 
 	public void openProjectFile(String... files) {
-		getProjects().doubleClick(files);
+		ide.sleep();
+
+		_getProjects().doubleClick(files);
 	}
 
 	public void openServerEditor(String serverLabel) {
@@ -127,6 +122,21 @@ public class ViewAction extends UIAction {
 
 	public void showServersView() {
 		ide.showServersView();
+	}
+
+	public boolean visibleProjectFile(String... files) {
+		ide.sleep();
+
+		return _getProjects().isVisible(files);
+	}
+
+	private Tree _getProjects() {
+		try {
+			return _projectExplorerView.getProjects();
+		}
+		catch (Exception e) {
+			return _packageExplorerView.getProjects();
+		}
 	}
 
 	private boolean _hasConsoleLog(String content) {
