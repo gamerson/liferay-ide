@@ -43,7 +43,7 @@ public class NewLiferayComponentWizardTests extends SwtbotBase {
 		wizardAction.finishToWait();
 
 		Assert.assertTrue(
-			viewAction.getProjects().isVisible(
+			viewAction.visibleProjectFile(
 				projectName, "src/main/java", "test.component.maven.portlet", "TestComponentMavenModelListener.java"));
 
 		viewAction.deleteProject(projectName);
@@ -62,7 +62,7 @@ public class NewLiferayComponentWizardTests extends SwtbotBase {
 		wizardAction.finishToWait();
 
 		Assert.assertTrue(
-			viewAction.getProjects().isVisible(projectName, "src/main/java", "content", "TestComponentPortlet.java"));
+			viewAction.visibleProjectFile(projectName, "src/main/java", "content", "TestComponentPortlet.java"));
 
 		viewAction.deleteProject(projectName);
 	}
@@ -85,7 +85,7 @@ public class NewLiferayComponentWizardTests extends SwtbotBase {
 		wizardAction.finishToWait();
 
 		Assert.assertTrue(
-			viewAction.getProjects().isVisible(
+			viewAction.visibleProjectFile(
 				projectName, "src/main/java", "content", "TestComponentGradleServiceHook.java"));
 
 		viewAction.deleteProject(projectName);

@@ -48,8 +48,8 @@ public class ImportLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finishToWait();
 
-		Assert.assertTrue(viewAction.getProjects().isVisible(liferayWorkspaceName, "configs"));
-		Assert.assertTrue(viewAction.getProjects().isVisible(liferayWorkspaceName, "gradle"));
+		Assert.assertTrue(viewAction.visibleProjectFile(liferayWorkspaceName, "configs"));
+		Assert.assertTrue(viewAction.visibleProjectFile(liferayWorkspaceName, "gradle"));
 
 		viewAction.openProjectFile(liferayWorkspaceName, GRADLE_PROPERTIES);
 
@@ -83,9 +83,9 @@ public class ImportLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finishToWait();
 
-		Assert.assertTrue(viewAction.getProjects().isVisible(liferayWorkspaceName, "bundles"));
-		Assert.assertTrue(viewAction.getProjects().isVisible(liferayWorkspaceName, "configs"));
-		Assert.assertTrue(viewAction.getProjects().isVisible(liferayWorkspaceName, "gradle"));
+		Assert.assertTrue(viewAction.visibleProjectFile(liferayWorkspaceName, "bundles"));
+		Assert.assertTrue(viewAction.visibleProjectFile(liferayWorkspaceName, "configs"));
+		Assert.assertTrue(viewAction.visibleProjectFile(liferayWorkspaceName, "gradle"));
 
 		viewAction.deleteProject(liferayWorkspaceName);
 	}
