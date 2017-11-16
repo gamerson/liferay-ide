@@ -15,12 +15,10 @@
 package com.liferay.ide.gradle.core;
 
 import com.google.common.base.Optional;
-
 import com.gradleware.tooling.toolingutils.binding.Validator;
 import com.liferay.ide.core.util.FileUtil;
 
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -88,6 +86,7 @@ public class GradleUtil {
 		configuration.setApplyWorkingSets(false);
 		configuration.setBuildScansEnabled(gradleConfig.isBuildScansEnabled());
 		configuration.setOfflineMode(gradleConfig.isOffline());
+		configuration.setAutoSync(true);
 
 		BuildConfiguration buildConfig = configuration.toBuildConfig();
 
