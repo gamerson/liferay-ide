@@ -110,8 +110,8 @@ public class LiferayWorkspaceUtil {
 		return null;
 	}
 
-	public static String getGradleProperty(String projectLocation, String key, String defaultValue) {
-		File gradleProperties = new File(projectLocation, "gradle.properties");
+	public static String getGradleProperty(String workspaceLocation, String key, String defaultValue) {
+		File gradleProperties = new File(workspaceLocation, "gradle.properties");
 
 		String retVal = null;
 
