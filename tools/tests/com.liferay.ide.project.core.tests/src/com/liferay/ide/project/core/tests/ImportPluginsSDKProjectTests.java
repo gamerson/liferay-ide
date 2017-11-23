@@ -99,6 +99,24 @@ public class ImportPluginsSDKProjectTests extends ProjectCoreBase
         return "com.liferay.portal.plugins.sdk-1.0.16-withdependencies/";
     }
 
+    @Override
+	protected IPath getLiferayRuntimeDir()
+    {
+        return ProjectCore.getDefault().getStateLocation().append( "liferay-ce-portal-7.0-ga4/tomcat-8.0.32" );
+    }
+
+    @Override
+	protected IPath getLiferayRuntimeZip()
+    {
+        return getLiferayBundlesPath().append( "liferay-ce-portal-tomcat-7.0-ga4-20170613175008905.zip" );
+    }
+
+    @Override
+	public String getRuntimeVersion()
+    {
+        return "7.0.2";
+    }
+
     private IPath importProject( String pluginType, String name ) throws Exception
     {
         SDK sdk = SDKUtil.getWorkspaceSDK();
