@@ -101,8 +101,8 @@ public class NewModuleFragmentOpMethods {
 				FileUtil.copyFileToDir(fragmentFile, "default-ext.xml", folder);
 
 				try {
-					File ext =
-						new File(location.append(projectName).append("src/main/resources") + "/portlet-ext.properties");
+					File ext = new File(
+						location.append(projectName).append("src/main/resources") + "/portlet-ext.properties");
 
 					ext.createNewFile();
 
@@ -111,7 +111,8 @@ public class NewModuleFragmentOpMethods {
 
 					FileUtil.writeFile(ext, extFileContent, null);
 				}
-				catch (Exception e) {}
+				catch (Exception e) {
+				}
 			}
 			else {
 				String parent = fragmentFile.getParentFile().getPath();
