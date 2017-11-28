@@ -329,6 +329,8 @@ public interface UI {
 
 	public final String JSP_FOLDER = "JSP folder:";
 
+	public final String KALEO_DESIGNER = "Kaleo Designer";
+
 	public final String LANGUAGE_PROPERTIES = "Language properties";
 
 	public final String LANGUAGE_PROPERTY_FILES = "Language property files:";
@@ -434,6 +436,8 @@ public interface UI {
 	public final String NEW_LIFERAY_JSF_PORTLET = "New Liferay JSF Portlet";
 
 	public final String NEW_LIFERAY_JSF_PROJECT = "New Liferay JSF Project";
+
+	public final String NEW_LIFERAY_KALEO_WORKFLOW = "New Liferay Kaleo Workflow";
 
 	public final String NEW_LIFERAY_LAYOUT_TMEPLATE = "New Liferay Layout Template";
 
