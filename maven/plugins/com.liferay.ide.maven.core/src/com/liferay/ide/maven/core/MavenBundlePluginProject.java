@@ -14,24 +14,16 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.IBundleProject;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.maven.core.util.DefaultMaven2OsgiConverter;
-import com.liferay.ide.project.core.IProjectBuilder;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.server.remote.IRemoteServerPublisher;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -39,6 +31,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
+
+import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.maven.core.util.DefaultMaven2OsgiConverter;
+import com.liferay.ide.project.core.IProjectBuilder;
+import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.server.remote.IRemoteServerPublisher;
 
 /**
  * @author Gregory Amerson
@@ -112,15 +112,17 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
 			manifest.delete(true, monitor);
 		}
 
-		if (cleanBuild || !_isAutoBuild()) {
-			getProject().build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
-			getProject().build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-		}
-		else {
-			getProject().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+		List<String> goals = new ArrayList<>();
+
+		if (cleanBuild) {
+			goals.add("clean");
 		}
 
-		mavenProjectBuilder.execJarMojo(projectFacade, monitor);
+		goals.add("package");
+
+		for (String goal : goals) {
+			mavenProjectBuilder.runMavenGoal(getProject(), goal, monitor);
+		}
 
 		MavenProject mavenProject = projectFacade.getMavenProject(monitor);
 

@@ -312,32 +312,31 @@ public class BundleSupervisor extends AgentSupervisor<Supervisor, Agent> impleme
         return true;
     }
 
-    public String uninstall( IBundleProject bundleProject, IPath outputJar ) throws Exception
-    {
-        String retVal = null;
+	public String uninstall(IBundleProject bundleProject, IPath outputJar) throws Exception {
+		String retVal = null;
+		String fragmentHostName = null;
 
-        String fragmentHostName = ServerUtil.getFragemtHostName( outputJar.toFile() );
+		if (outputJar != null) {
+			fragmentHostName = ServerUtil.getFragemtHostName(outputJar.toFile());
+		}
 
-        boolean isFragment = ( fragmentHostName != null );
+		boolean isFragment = (fragmentHostName != null);
 
-        final String symbolicName = bundleProject.getSymbolicName();
+		final String symbolicName = bundleProject.getSymbolicName();
 
-        if( symbolicName != null )
-        {
-            long bundleId = getBundleId( symbolicName );
+		if (symbolicName != null) {
+			long bundleId = getBundleId(symbolicName);
 
-            if( bundleId > 0 )
-            {
-                retVal = getAgent().uninstall( bundleId );
+			if (bundleId > 0) {
+				retVal = getAgent().uninstall(bundleId);
 
-                if( isFragment )
-                {
-                    refreshHostBundle( fragmentHostName );
-                }
-            }
-        }
+				if (isFragment) {
+					refreshHostBundle(fragmentHostName);
+				}
+			}
+		}
 
-        return retVal;
-    }
+		return retVal;
+	}
 
 }
