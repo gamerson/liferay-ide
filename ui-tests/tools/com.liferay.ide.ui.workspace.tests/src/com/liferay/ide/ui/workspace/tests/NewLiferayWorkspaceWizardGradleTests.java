@@ -16,6 +16,7 @@ package com.liferay.ide.ui.workspace.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -84,6 +85,7 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		dialogAction.confirmPreferences();
 	}
 
+	@Ignore
 	@Test
 	public void createLiferayWorksapceWithDownloadBundleChangeBundleUrl() {
 		String workspaceName = "test-liferay-workspace-gradle-change-bundle-url";
