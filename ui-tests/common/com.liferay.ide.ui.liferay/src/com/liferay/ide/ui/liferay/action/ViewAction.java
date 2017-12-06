@@ -186,6 +186,10 @@ public class ViewAction extends UIAction {
 		_codeUpgradeView.getGear().clickGear(index);
 	}
 
+	public void switchKaleoDesignerPerspective() {
+		ide.getKaleoDesignerPerspective().activate();
+	}
+
 	public void switchLiferayPerspective() {
 		ide.getLiferayPerspective().activate();
 	}
@@ -232,6 +236,9 @@ public class ViewAction extends UIAction {
 			return _projectExplorerView.getProjects();
 		}
 		else if (perspectiveLabel.equals(LIFERAY_PLUGINS)) {
+			return _packageExplorerView.getProjects();
+		}
+		else if (perspectiveLabel.equals(KALEO_DESIGNER)) {
 			return _packageExplorerView.getProjects();
 		}
 
