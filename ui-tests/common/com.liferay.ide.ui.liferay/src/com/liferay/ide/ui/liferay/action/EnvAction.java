@@ -83,15 +83,12 @@ public class EnvAction extends UIAction {
 						int index = filePath.indexOf("/ui-tests/");
 
 						_liferayBundlesPath = new Path(filePath.substring(0, index) + "/tests-resources");
-					}
-					else {
+					} else {
 						_liferayBundlesPath = new Path(filePath).removeLastSegments(3).append("tests-resources");
 					}
+				} catch (IOException ioe) {
 				}
-				catch (IOException ioe) {
-				}
-			}
-			else {
+			} else {
 				_liferayBundlesPath = new Path(_liferayBundlesDir);
 			}
 		}
@@ -107,6 +104,10 @@ public class EnvAction extends UIAction {
 
 	public String getLiferayPluginServerName62() {
 		return _bundleInfos[1].getServerDir();
+	}
+
+	public String getLiferayWildflyPluginServerName() {
+		return _bundleInfos[2].getServerDir();
 	}
 
 	public IPath getLiferayPluginsSdk62Dir() {
@@ -161,12 +162,22 @@ public class EnvAction extends UIAction {
 		return bundlesPath.append(_bundleInfos[1].getBundleDir());
 	}
 
+	public IPath getLiferayWildflyServerDir() {
+		IPath bundlesPath = getLiferayBundlesPath().append("bundles");
+
+		return bundlesPath.append(_bundleInfos[2].getBundleDir());
+	}
+
 	public IPath getLiferayServerFullDir() {
 		return getLiferayServerDir().append(getLiferayPluginServerName());
 	}
 
 	public IPath getLiferayServerFullDir62() {
 		return getLiferayServerDir62().append(getLiferayPluginServerName62());
+	}
+
+	public IPath getLiferayWildflyServerFullDir() {
+		return getLiferayWildflyServerDir().append(getLiferayWildflyPluginServerName());
 	}
 
 	public IPath getLiferayServerZip() {
@@ -177,12 +188,20 @@ public class EnvAction extends UIAction {
 		return getLiferayBundlesPath().append(_bundleInfos[1].getBundleZip());
 	}
 
+	public IPath getLiferayWildflyServerZip() {
+		return getLiferayBundlesPath().append(_bundleInfos[2].getBundleZip());
+	}
+
 	public String getLiferayServerZipFolder() {
 		return _bundleInfos[0].getBundleDir();
 	}
 
 	public String getLiferayServerZipFolder62() {
 		return _bundleInfos[1].getBundleDir();
+	}
+
+	public String getLiferayWildflyServerZipFolder() {
+		return _bundleInfos[2].getBundleDir();
 	}
 
 	public IPath getProjectsFolder() {
@@ -232,11 +251,9 @@ public class EnvAction extends UIAction {
 			for (int t = 0; t < columns.length; t++) {
 				if (t == 0) {
 					validationMsgs[i].setInput(columns[t]);
-				}
-				else if (t == 1) {
+				} else if (t == 1) {
 					validationMsgs[i].setExpect(columns[t]);
-				}
-				else if (t == 2) {
+				} else if (t == 2) {
 					validationMsgs[i].setOs(columns[t]);
 				}
 			}
@@ -270,8 +287,7 @@ public class EnvAction extends UIAction {
 
 				Runtime.getRuntime().exec("taskkill /F /PID " + allGradleProcess[0]);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 	}
 
@@ -306,8 +322,7 @@ public class EnvAction extends UIAction {
 			String content = "filePath=" + getLiferayBundlesPath().toPortableString() + "/GeoLiteCity.dat";
 
 			FileUtils.write(content, dest);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 	}
 
@@ -324,8 +339,25 @@ public class EnvAction extends UIAction {
 
 		try {
 			FileUtil.copyFile(source, dest);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		catch (Exception e) {
+	}
+
+	public void preparePortalWildflyExtFile() {
+		String filename = "portal-ext.properties";
+
+		IPath sourcePortalExtPath = getLiferayBundlesPath().append(filename);
+
+		File source = sourcePortalExtPath.toFile();
+
+		IPath destPortalExtPath = getLiferayWildflyServerDir().append(filename);
+
+		File dest = destPortalExtPath.toFile();
+
+		try {
+			FileUtil.copyFile(source, dest);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -343,8 +375,7 @@ public class EnvAction extends UIAction {
 
 		try {
 			FileUtil.copyFile(source, dest);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -362,8 +393,25 @@ public class EnvAction extends UIAction {
 
 		try {
 			FileUtil.copyFile(source, dest);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		catch (Exception e) {
+	}
+
+	public void prepareWildflyPortalSetupWizardFile() {
+		String filename = "portal-setup-wizard.properties";
+
+		IPath sourcePortalSetupWizardPath = getLiferayBundlesPath().append(filename);
+
+		File source = sourcePortalSetupWizardPath.toFile();
+
+		IPath destPortalSetupWizardPath = getLiferayWildflyServerDir().append(filename);
+
+		File dest = destPortalSetupWizardPath.toFile();
+
+		try {
+			FileUtil.copyFile(source, dest);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -383,14 +431,13 @@ public class EnvAction extends UIAction {
 	public void unzipPluginsSDK() throws IOException {
 		File sdkDir = getLiferayPluginsSdkDir().toFile();
 
-		Assert.assertEquals(
-			"Expected file to be not exist:" + getLiferayPluginsSdkDir().toPortableString(), false, sdkDir.exists());
+		Assert.assertEquals("Expected file to be not exist:" + getLiferayPluginsSdkDir().toPortableString(), false,
+				sdkDir.exists());
 
 		File liferayPluginsSdkZipFile = getLiferayPluginsSDKZip().toFile();
 
-		Assert.assertEquals(
-			"Expected file to exist: " + liferayPluginsSdkZipFile.getAbsolutePath(), true,
-			liferayPluginsSdkZipFile.exists());
+		Assert.assertEquals("Expected file to exist: " + liferayPluginsSdkZipFile.getAbsolutePath(), true,
+				liferayPluginsSdkZipFile.exists());
 
 		sdkDir.mkdirs();
 
@@ -435,13 +482,13 @@ public class EnvAction extends UIAction {
 
 		File serverDir = getLiferayServerDir().toFile();
 
-		Assert.assertEquals(
-			"Expected file to be not exist:" + getLiferayServerDir().toPortableString(), false, serverDir.exists());
+		Assert.assertEquals("Expected file to be not exist:" + getLiferayServerDir().toPortableString(), false,
+				serverDir.exists());
 
 		File liferayServerZipFile = getLiferayServerZip().toFile();
 
-		Assert.assertEquals(
-			"Expected file to exist: " + liferayServerZipFile.getAbsolutePath(), true, liferayServerZipFile.exists());
+		Assert.assertEquals("Expected file to exist: " + liferayServerZipFile.getAbsolutePath(), true,
+				liferayServerZipFile.exists());
 
 		File liferayServerDirFile = getLiferayServerDir().toFile();
 
@@ -452,19 +499,40 @@ public class EnvAction extends UIAction {
 		ZipUtil.unzip(liferayServerZipFile, liferayServerZipFolder, liferayServerDirFile, new NullProgressMonitor());
 	}
 
+	public void unzipWildflyServer() throws IOException {
+		FileUtil.deleteDir(getLiferayWildflyServerDir().toFile(), true);
+
+		File serverDir = getLiferayWildflyServerDir().toFile();
+
+		Assert.assertEquals("Expected file to be not exist:" + getLiferayWildflyServerDir().toPortableString(), false,
+				serverDir.exists());
+
+		File liferayServerZipFile = getLiferayWildflyServerZip().toFile();
+
+		Assert.assertEquals("Expected file to exist: " + liferayServerZipFile.getAbsolutePath(), true,
+				liferayServerZipFile.exists());
+
+		File liferayServerDirFile = getLiferayWildflyServerDir().toFile();
+
+		liferayServerDirFile.mkdirs();
+
+		String liferayServerZipFolder = getLiferayWildflyServerZipFolder();
+
+		ZipUtil.unzip(liferayServerZipFile, liferayServerZipFolder, liferayServerDirFile, new NullProgressMonitor());
+	}
+
 	public void unzipServer62() throws IOException {
 		FileUtil.deleteDir(getLiferayServerDir62().toFile(), true);
 
 		File serverDir62 = getLiferayServerDir62().toFile();
 
-		Assert.assertEquals(
-			"Expected file to be not exist:" + getLiferayServerDir62().toPortableString(), false, serverDir62.exists());
+		Assert.assertEquals("Expected file to be not exist:" + getLiferayServerDir62().toPortableString(), false,
+				serverDir62.exists());
 
 		File liferayServerZipFile62 = getLiferayServerZip62().toFile();
 
-		Assert.assertEquals(
-			"Expected file to exist: " + liferayServerZipFile62.getAbsolutePath(), true,
-			liferayServerZipFile62.exists());
+		Assert.assertEquals("Expected file to exist: " + liferayServerZipFile62.getAbsolutePath(), true,
+				liferayServerZipFile62.exists());
 
 		File liferayServerDirFile62 = getLiferayServerDir62().toFile();
 
@@ -472,8 +540,8 @@ public class EnvAction extends UIAction {
 
 		String liferayServerZipFolder62 = getLiferayServerZipFolder62();
 
-		ZipUtil.unzip(
-			liferayServerZipFile62, liferayServerZipFolder62, liferayServerDirFile62, new NullProgressMonitor());
+		ZipUtil.unzip(liferayServerZipFile62, liferayServerZipFolder62, liferayServerDirFile62,
+				new NullProgressMonitor());
 	}
 
 	protected Logger log;
@@ -499,17 +567,13 @@ public class EnvAction extends UIAction {
 
 				if (t == 0) {
 					bundleInfos[i].setBundleZip(value);
-				}
-				else if (t == 1) {
+				} else if (t == 1) {
 					bundleInfos[i].setBundleDir(value);
-				}
-				else if (t == 2) {
+				} else if (t == 2) {
 					bundleInfos[i].setServerDir(value);
-				}
-				else if (t == 3) {
+				} else if (t == 3) {
 					bundleInfos[i].setType(value);
-				}
-				else if (t == 4) {
+				} else if (t == 4) {
 					bundleInfos[i].setVersion(value);
 				}
 			}
@@ -539,11 +603,9 @@ public class EnvAction extends UIAction {
 
 				if (t == 0) {
 					sdkInfos[i].setSdkZip(value);
-				}
-				else if (t == 1) {
+				} else if (t == 1) {
 					sdkInfos[i].setSdkDir(value);
-				}
-				else if (t == 2) {
+				} else if (t == 2) {
 					sdkInfos[i].setVersion(value);
 				}
 			}
