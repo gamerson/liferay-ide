@@ -61,14 +61,20 @@ public class TomcatDeployTests extends SwtbotBase {
 		wizardAction.finish();
 
 		// viewAction.serverStart(_serverStoppedLabel);
+
 		//
+
 		// jobAction.waitForServerStarted(_serverName);
+
 	}
 
 	@AfterClass
 	public static void stopServer() throws IOException {
+
 		// viewAction.serverStop(_serverStartedLabel);
+
 		//
+
 		// jobAction.waitForServerStopped(_serverName);
 
 		dialogAction.openPreferencesDialog();
