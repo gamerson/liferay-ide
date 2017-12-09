@@ -14,6 +14,9 @@
 
 package com.liferay.ide.ui.swtbot.page;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTableItem;
@@ -63,8 +66,22 @@ public class Table extends AbstractWidget {
 		bot.text(index).setText(text);
 	}
 
+	public void setText(String oldValue, String newValue) {
+		bot.text(oldValue).setText(newValue);
+	}
+
 	public int size() {
 		return getWidget().rowCount();
+	}
+	
+	public String[] getServerPortsInfo() {
+		List<String> portValues = new ArrayList<String>();
+		int rowCount = getWidget().rowCount();
+		
+		for( int i=0;i<rowCount;i++) {
+			portValues.add(getWidget().cell(i, 1));
+		}
+		return portValues.toArray(new String[portValues.size()]);
 	}
 
 	protected SWTBotTable getWidget() {

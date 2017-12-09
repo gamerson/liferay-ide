@@ -13,25 +13,29 @@
  *
  *******************************************************************************/
 
-package com.liferay.ide.server.remote;
+package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.server.core.ILiferayServerWorkingCopy;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 
 /**
- * @author Greg Amerson
+ * @author Simon Jiang
  */
-public interface IRemoteServerWorkingCopy extends ILiferayServerWorkingCopy, IRemoteServer
+
+public interface IPortalBundleConfiguration
 {
 
-    void setHttpPort( int httpPort );
+    public List<LiferayServerPort> getConfiguredServerPorts();
 
-    void setLiferayPortalContextPath( String path );
+    public void addPropertyChangeListener( PropertyChangeListener listener );
 
-    void setServerManagerContextPath( String path );
+    public void removePropertyChangeListener( PropertyChangeListener listener );
 
-    IStatus validate( IProgressMonitor monitor );
+    public void modifyServerPort( String id, int port );
 
+    public int getHttpPort();
+
+    public int getTelnetPort();
+
+    public List<LiferayServerPort> readDefaultPorts( PortalBundle bundle );
 }

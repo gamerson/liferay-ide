@@ -14,12 +14,20 @@
 
 package com.liferay.ide.ui.liferay.page.editor;
 
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.allOf;
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.widgetOfType;
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
+
+import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.hamcrest.Matcher;
+
 import com.liferay.ide.ui.swtbot.page.CheckBox;
 import com.liferay.ide.ui.swtbot.page.Editor;
 import com.liferay.ide.ui.swtbot.page.Radio;
+import com.liferay.ide.ui.swtbot.page.SWTBotHyperlink;
+import com.liferay.ide.ui.swtbot.page.Table;
 import com.liferay.ide.ui.swtbot.page.Text;
-
-import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
  * @author Terry Jia
@@ -42,8 +50,17 @@ public class ServerEditor extends Editor {
 		return new Text(getPart().bot(), "Http Port:");
 	}
 
-	public CheckBox getUseDeveloperMode() {
+	public CheckBox getUseDeveloperMode() {	
 		return new CheckBox(getPart().bot(), "Use developer mode");
 	}
 
+	public Table getServerPortTable() {
+		return new Table(getPart().bot(), 0);
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public SWTBotHyperlink getHyperlink() {
+		Matcher matcher = allOf(widgetOfType(Hyperlink.class), withMnemonic("Restore Default Setting"));
+		return new SWTBotHyperlink((Hyperlink) bot.widget(matcher, 0), matcher);
+	}
 }

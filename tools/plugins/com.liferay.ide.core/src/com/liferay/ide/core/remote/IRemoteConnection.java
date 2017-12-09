@@ -29,7 +29,7 @@ public interface IRemoteConnection {
 
 	public void setHost(String host);
 
-	public void setHttpPort(String httpPort);
+	public void setHttpPort(int httpPort);
 
 	public void setPassword(String password);
 

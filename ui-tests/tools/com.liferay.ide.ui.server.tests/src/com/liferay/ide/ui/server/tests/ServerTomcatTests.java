@@ -14,16 +14,18 @@
 
 package com.liferay.ide.ui.server.tests;
 
-import com.liferay.ide.ui.liferay.SwtbotBase;
-import com.liferay.ide.ui.liferay.page.editor.ServerEditor;
-
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IPath;
-
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.liferay.ide.ui.liferay.SwtbotBase;
+import com.liferay.ide.ui.liferay.page.editor.ServerEditor;
+import com.liferay.ide.ui.swtbot.page.SWTBotHyperlink;
+import com.liferay.ide.ui.swtbot.page.Table;
 
 /**
  * @author Terry Jia
@@ -464,5 +466,79 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		dialogAction.confirmPreferences();
 	}
+	
+	@Test
+	public void serverEditorServerPortChange() {
+		String serverName = "Liferay 7-server-port-change";
 
+		dialogAction.openPreferencesDialog();
+
+		dialogAction.openNewRuntimeWizard();
+
+		wizardAction.prepareLiferay7RuntimeType();
+
+		wizardAction.next();
+
+		wizardAction.prepareLiferay7RuntimeInfo(serverName, envAction.getLiferayServerFullDir().toOSString());
+
+		wizardAction.finish();
+
+		dialogAction.confirmPreferences();
+
+		wizardAction.openNewLiferayServerWizard();
+
+		wizardAction.prepareNewServer(serverName);
+
+		wizardAction.finish();
+
+		String serverStoppedLabel = serverName + "  [Stopped]";
+
+		viewAction.openServerEditor(serverStoppedLabel);
+
+		ServerEditor serverEditor = new ServerEditor(bot, serverName);
+
+		Table serverPortTable = serverEditor.getServerPortTable();
+		
+		String[] serverPortValues = serverPortTable.getServerPortsInfo();
+
+		String[] newPortValues = new String[serverPortValues.length];
+
+		for( int i=0;i<serverPortValues.length;i++) {
+			serverPortTable.click(i, 1);
+			Integer newPortValue = Integer.valueOf(serverPortValues[i])+1;
+			
+			serverPortTable.setText(serverPortValues[i],newPortValue.toString());
+			newPortValues[i] = newPortValue.toString();
+		}
+
+		editorAction.save();
+		editorAction.close();
+
+		viewAction.openServerEditor(serverStoppedLabel);
+		Table serverPortChangedTable = serverEditor.getServerPortTable();
+
+		String[] serverPortChangedValues = serverPortChangedTable.getServerPortsInfo();
+
+		Assert.assertArrayEquals(serverPortChangedValues, newPortValues);
+
+		SWTBotHyperlink resetHyperlink = serverEditor.getHyperlink();
+
+		resetHyperlink.click();
+
+		editorAction.save();			
+		editorAction.close();
+
+		viewAction.openServerEditor(serverStoppedLabel);
+		Table serverPortResetTable = serverEditor.getServerPortTable();
+
+		String[] serverPortResetValues = serverPortResetTable.getServerPortsInfo();
+
+		Assert.assertArrayEquals(serverPortResetValues, serverPortValues);
+
+//		dialogAction.openPreferencesDialog();
+//
+//		dialogAction.deleteRuntimeTryConfirm(serverName);
+//
+//		dialogAction.confirmPreferences();
+	}
 }
