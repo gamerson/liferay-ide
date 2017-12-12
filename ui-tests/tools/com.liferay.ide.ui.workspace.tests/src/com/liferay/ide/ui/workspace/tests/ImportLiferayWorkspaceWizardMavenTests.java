@@ -55,7 +55,7 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		viewAction.openProjectFile(workspaceName, "pom.xml");
 
-		editorAction.switchTabPomXml();
+		editorAction.pomXml.switchTabPomXml();
 
 		SWTBotAssert.assertContains(workspaceName, editorAction.getContent());
 		SWTBotAssert.assertContains("artifactId", editorAction.getContent());

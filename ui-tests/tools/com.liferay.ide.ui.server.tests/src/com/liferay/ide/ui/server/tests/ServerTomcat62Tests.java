@@ -66,17 +66,29 @@ public class ServerTomcat62Tests extends SwtbotBase {
 		wizardAction.finish();
 
 		// String serverStoppedLabel = serverName + " [Stopped]";
+
 		//
+
 		// viewAction.serverStart(serverStoppedLabel);
+
 		//
+
 		// jobAction.waitForServerStarted(serverName);
+
 		//
+
 		// String serverStartedLabel = serverName + " [Started, Synchronized]";
+
 		//
+
 		// viewAction.openLiferayPortalHome(serverStartedLabel);
+
 		//
+
 		// viewAction.serverStop(serverStartedLabel);
+
 		//
+
 		// jobAction.waitForServerStopped(serverName);
 
 		dialogAction.openPreferencesDialog();

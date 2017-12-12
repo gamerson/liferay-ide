@@ -89,11 +89,11 @@ public class EditorServiceBuilderTests extends SwtbotBase {
 
 		viewAction.openProjectFile(projectName, "docroot", "WEB-INF", "service.xml");
 
-		editorAction.switchTabDiagramServiceXml();
+		editorAction.serviceXml.switchTabDiagram();
 
-		editorAction.switchTabOverViewServiceXml();
+		editorAction.serviceXml.switchTabOverview();
 
-		editorAction.switchTabSourceServiceXml();
+		editorAction.serviceXml.switchTabSource();
 
 		viewAction.closeAndDeleteProject(projectName);
 	}

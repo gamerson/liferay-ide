@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -60,16 +59,16 @@ public class TomcatDeployTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		// viewAction.serverStart(_serverStoppedLabel);
-		//
-		// jobAction.waitForServerStarted(_serverName);
+		viewAction.serverStart(_serverStoppedLabel);
+
+		jobAction.waitForServerStarted(_serverName);
 	}
 
 	@AfterClass
 	public static void stopServer() throws IOException {
-		// viewAction.serverStop(_serverStartedLabel);
-		//
-		// jobAction.waitForServerStopped(_serverName);
+		viewAction.serverStop(_serverStartedLabel);
+
+		jobAction.waitForServerStopped(_serverName);
 
 		dialogAction.openPreferencesDialog();
 
@@ -78,7 +77,6 @@ public class TomcatDeployTests extends SwtbotBase {
 		dialogAction.confirmPreferences();
 	}
 
-	@Ignore("ignore to wait Terry finish the server start checker")
 	@Test
 	public void deploySampleProject() {
 		wizardAction.openNewLiferayModuleWizard();

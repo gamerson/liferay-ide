@@ -15,7 +15,6 @@
 package com.liferay.ide.ui.server.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
-import com.liferay.ide.ui.liferay.page.editor.ServerEditor;
 
 import java.io.IOException;
 
@@ -71,19 +70,19 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		// String serverStoppedLabel = serverName + " [Stopped]";
-		//
-		// viewAction.serverStart(serverStoppedLabel);
-		//
-		// jobAction.waitForServerStarted(serverName);
-		//
-		// String serverStartedLabel = serverName + " [Started]";
-		//
+		String serverStoppedLabel = serverName + "  [Stopped]";
+
+		viewAction.serverStart(serverStoppedLabel);
+
+		jobAction.waitForServerStarted(serverName);
+
+		String serverStartedLabel = serverName + "  [Started]";
+
 		// viewAction.openLiferayPortalHome(serverStartedLabel);
-		//
-		// viewAction.serverStop(serverStartedLabel);
-		//
-		// jobAction.waitForServerStopped(serverName);
+
+		viewAction.serverStop(serverStartedLabel);
+
+		jobAction.waitForServerStopped(serverName);
 
 		dialogAction.openPreferencesDialog();
 
@@ -176,22 +175,9 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		ServerEditor serverEditor = new ServerEditor(bot, serverName);
-		ServerEditor serverEditorWithLabel = new ServerEditor(bot, serverStoppedLabel);
+		editorAction.server.selectCustomLaunchSettings();
 
-		try {
-			serverEditor.getCustomLaunchSettings().click();
-		}
-		catch (Exception e) {
-			serverEditorWithLabel.getCustomLaunchSettings().click();
-		}
-
-		try {
-			serverEditor.getUseDeveloperMode().select();
-		}
-		catch (Exception e) {
-			serverEditorWithLabel.getUseDeveloperMode().select();
-		}
+		editorAction.server.selectUseDeveloperMode();
 
 		editorAction.save();
 
@@ -199,12 +185,7 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		try {
-			serverEditor.getDefaultLaunchSettings().click();
-		}
-		catch (Exception e) {
-			serverEditorWithLabel.getDefaultLaunchSettings().click();
-		}
+		editorAction.server.selectDefaultLaunchSettings();
 
 		editorAction.save();
 
@@ -217,7 +198,6 @@ public class ServerTomcatTests extends SwtbotBase {
 		dialogAction.confirmPreferences();
 	}
 
-	@Ignore("ignore to wait Terry finish the server start checker")
 	@Test
 	public void serverEditorCustomLaunchSettingsChangeAndStart() {
 		String serverName = "Liferay 7-custom-launch-settings-start";
@@ -246,22 +226,9 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		ServerEditor serverEditor = new ServerEditor(bot, serverName);
-		ServerEditor serverEditorWithLabelStopped = new ServerEditor(bot, serverStoppedLabel);
+		editorAction.server.selectCustomLaunchSettings();
 
-		try {
-			serverEditor.getCustomLaunchSettings().click();
-		}
-		catch (Exception e) {
-			serverEditorWithLabelStopped.getCustomLaunchSettings().click();
-		}
-
-		try {
-			serverEditor.getUseDeveloperMode().select();
-		}
-		catch (Exception e) {
-			serverEditorWithLabelStopped.getUseDeveloperMode().select();
-		}
+		editorAction.server.selectUseDeveloperMode();
 
 		editorAction.save();
 
@@ -279,12 +246,7 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		try {
-			serverEditor.getDefaultLaunchSettings().click();
-		}
-		catch (Exception e) {
-			serverEditorWithLabelStopped.getDefaultLaunchSettings().click();
-		}
+		editorAction.server.selectDefaultLaunchSettings();
 
 		editorAction.save();
 
@@ -326,15 +288,7 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		ServerEditor serverEditor = new ServerEditor(bot, serverName);
-		ServerEditor serverEditorWithLabel = new ServerEditor(bot, serverStoppedLabel);
-
-		try {
-			serverEditor.getHttpPort().setText("8081");
-		}
-		catch (Exception e) {
-			serverEditorWithLabel.getHttpPort().setText("8081");
-		}
+		editorAction.server.setHttpPort("8081");
 
 		editorAction.save();
 
@@ -342,12 +296,7 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		try {
-			serverEditor.getHttpPort().setText("8080");
-		}
-		catch (Exception e) {
-			serverEditorWithLabel.getHttpPort().setText("8080");
-		}
+		editorAction.server.setHttpPort("8080");
 
 		editorAction.save();
 
@@ -383,15 +332,7 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		ServerEditor serverEditor = new ServerEditor(bot, serverName);
-		ServerEditor serverEditorWithLabelStopped = new ServerEditor(bot, serverStoppedLabel);
-
-		try {
-			serverEditor.getHttpPort().setText("8082");
-		}
-		catch (Exception e) {
-			serverEditorWithLabelStopped.getHttpPort().setText("8082");
-		}
+		editorAction.server.setHttpPort("8082");
 
 		editorAction.save();
 
@@ -409,19 +350,13 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		viewAction.openServerEditor(serverStoppedLabel);
 
-		try {
-			serverEditor.getHttpPort().setText("8080");
-		}
-		catch (Exception e) {
-			serverEditorWithLabelStopped.getHttpPort().setText("8080");
-		}
+		editorAction.server.setHttpPort("8080");
 
 		editorAction.save();
 
 		editorAction.close();
 	}
 
-	@Ignore("ignore to wait Terry finish the server start checker")
 	@Test
 	public void testLiferay7ServerDebug() {
 		String serverName = "Liferay 7-debug";
