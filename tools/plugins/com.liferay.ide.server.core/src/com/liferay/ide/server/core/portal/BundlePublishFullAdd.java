@@ -34,12 +34,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.Server;
 import org.osgi.framework.dto.BundleDTO;
 
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
+@SuppressWarnings("restriction")
 public class BundlePublishFullAdd extends BundlePublishOperation
 {
 
@@ -83,7 +86,7 @@ public class BundlePublishFullAdd extends BundlePublishOperation
         return false;
     }
 
-    @Override
+	@Override
     public void execute( IProgressMonitor monitor, IAdaptable info ) throws CoreException
     {
         for( IModule module : modules )
@@ -129,6 +132,7 @@ public class BundlePublishFullAdd extends BundlePublishOperation
                     {
                         retval = LiferayServerCore.error( "Could not create output jar" );
                     }
+                    ((Server)server).getServerPublishInfo().fill(new IModule[] { module });
                 }
                 catch( Exception e )
                 {
@@ -157,6 +161,7 @@ public class BundlePublishFullAdd extends BundlePublishOperation
                 LiferayServerCore.logError( retval );
             }
         }
+        ((Server)server).getServerPublishInfo().save();
     }
 
     private String getBundleUrl( File bundleFile, String bsn ) throws MalformedURLException
