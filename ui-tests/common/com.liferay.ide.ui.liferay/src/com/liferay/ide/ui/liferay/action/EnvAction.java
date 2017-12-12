@@ -131,16 +131,6 @@ public class EnvAction extends UIAction {
 		return bundlesPath.append(sdkDir);
 	}
 
-	public boolean internal() {
-		//TODO also need to add ping checker to ensure the internal servers accessible
-
-		if ((_internal == null) || _internal.equals("") || _internal.equals("null")) {
-			return true;
-		}
-
-		return Boolean.parseBoolean(_internal);
-	}
-
 	public String getLiferayPluginsSdkName() {
 		return _sdkInfos[0].getSdkDir();
 	}
@@ -243,6 +233,16 @@ public class EnvAction extends UIAction {
 		}
 
 		return validationMsgs;
+	}
+
+	public boolean internal() {
+		//TODO also need to add ping checker to ensure the internal servers accessible
+
+		if ((_internal == null) || _internal.equals("") || _internal.equals("null")) {
+			return true;
+		}
+
+		return Boolean.parseBoolean(_internal);
 	}
 
 	public void killGradleProcess() throws IOException {
