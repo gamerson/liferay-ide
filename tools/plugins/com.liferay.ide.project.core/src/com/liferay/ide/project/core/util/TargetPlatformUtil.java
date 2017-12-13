@@ -38,17 +38,16 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author Lovett Li
+ * @author Simon Jiang
  */
 public class TargetPlatformUtil {
 
 	public static List<String> getAllTargetPlatfromVersions() throws IOException {
-		Bundle bundle = ProjectCore.getDefault().getBundle();
+		final URL url = FileLocator.toFileURL(_getProjectCoreBundle().getEntry("OSGI-INF/target-platform"));
 
-		URL url = FileLocator.toFileURL(bundle.getEntry("OSGI-INF/target-platform"));
+		final File targetPlatfolder = new File(url.getFile());
 
-		File targetPlatfolder = new File(url.getFile());
-
-		List<String> tpVersionList = new ArrayList<>();
+		final List<String> tpVersionList = new ArrayList<>();
 
 		if (targetPlatfolder.isDirectory()) {
 			File[] tpVersionFolder = targetPlatfolder.listFiles();
@@ -66,9 +65,15 @@ public class TargetPlatformUtil {
 	}
 
 	public static ServiceContainer getServiceBundle(String serviceName) throws Exception {
-		File tpIndexFile = _checkCurrentTargetPlatform("service");
+		File tpIndexFile = _checkCurrentTargetPlatform("service-dependency");
 
 		return _getBundleAndVersion(tpIndexFile, serviceName);
+	}
+
+	public static ServiceContainer getServiceDependencyList() throws Exception {
+		File tpIndexFile = _checkCurrentTargetPlatform("service-dependency");
+
+		return _getServicesDependencyNameList(tpIndexFile);
 	}
 
 	public static ServiceContainer getServicesList() throws Exception {
@@ -78,9 +83,15 @@ public class TargetPlatformUtil {
 	}
 
 	public static ServiceContainer getServiceWrapperBundle(String servicewrapperName) throws Exception {
-		File tpIndexFile = _checkCurrentTargetPlatform("servicewrapper");
+		File tpIndexFile = _checkCurrentTargetPlatform("servicewrapper-dependency");
 
 		return _getBundleAndVersion(tpIndexFile, servicewrapperName);
+	}
+
+	public static ServiceContainer getServiceWrapperDependencyList() throws Exception {
+		File tpIndexFile = _checkCurrentTargetPlatform("servicewrapper-dependency");
+
+		return _getServicesDependencyNameList(tpIndexFile);
 	}
 
 	public static ServiceContainer getServiceWrapperList() throws Exception {
@@ -91,13 +102,12 @@ public class TargetPlatformUtil {
 
 	@SuppressWarnings("unchecked")
 	public static ServiceContainer getThirdPartyBundleList(String serviceName) throws Exception {
-		Bundle bundle = ProjectCore.getDefault().getBundle();
+		final URL url = FileLocator.toFileURL(
+			_getProjectCoreBundle().getEntry("OSGI-INF/liferay-thirdparty-bundles.json"));
 
-		URL url = FileLocator.toFileURL(bundle.getEntry("OSGI-INF/liferay-thirdparty-bundles.json"));
+		final File tpFile = new File(url.getFile());
 
-		File tpFile = new File(url.getFile());
-
-		ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper mapper = new ObjectMapper();
 
 		Map<String, List<String>> map = mapper.readValue(tpFile, Map.class);
 
@@ -115,16 +125,16 @@ public class TargetPlatformUtil {
 			ProjectCore.PLUGIN_ID, ITargetPlatformConstant.CURRENT_TARGETFORM_VERSION,
 			ITargetPlatformConstant.DEFAULT_TARGETFORM_VERSION, null);
 
-		currentVersion = currentVersion.replace("[", "");
-		currentVersion = currentVersion.replace("]", "");
-		currentVersion = currentVersion.toLowerCase();
+		String repalceVersionString = currentVersion.replace("[", "");
+
+		currentVersion = repalceVersionString.replace("]", "").toLowerCase();
 
 		return _useSpecificTargetPlatform(currentVersion, type);
 	}
 
 	@SuppressWarnings("unchecked")
 	private static ServiceContainer _getBundleAndVersion(File tpFile, String serviceName) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper mapper = new ObjectMapper();
 
 		Map<String, List<String>> map = mapper.readValue(tpFile, Map.class);
 
@@ -137,23 +147,38 @@ public class TargetPlatformUtil {
 		return null;
 	}
 
+	private static Bundle _getProjectCoreBundle() {
+		return ProjectCore.getDefault().getBundle();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ServiceContainer _getServicesDependencyNameList(File tpFile) throws Exception {
+		final ObjectMapper mapper = new ObjectMapper();
+
+		Map<String, String[]> serviceDependencyList = mapper.readValue(tpFile, Map.class);
+
+		String[] services = serviceDependencyList.keySet().toArray(new String[0]);
+
+		return new ServiceContainer(Arrays.asList(services));
+	}
+
 	@SuppressWarnings("unchecked")
 	private static ServiceContainer _getServicesNameList(File tpFile) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper mapper = new ObjectMapper();
 
-		Map<String, String[]> map = mapper.readValue(tpFile, Map.class);
+		List<String> serviceList = mapper.readValue(tpFile, List.class);
 
-		String[] services = map.keySet().toArray(new String[0]);
+		String[] services = serviceList.toArray(new String[0]);
 
 		return new ServiceContainer(Arrays.asList(services));
 	}
 
 	private static File _useSpecificTargetPlatform(String currentVersion, String type) throws IOException {
-		Bundle bundle = ProjectCore.getDefault().getBundle();
+		URL url;
+		url = FileLocator.toFileURL(
+			_getProjectCoreBundle().getEntry("OSGI-INF/target-platform/liferay-" + currentVersion));
 
-		URL url = FileLocator.toFileURL(bundle.getEntry("OSGI-INF/target-platform/liferay-" + currentVersion));
-
-		File tpFolder = new File(url.getFile());
+		final File tpFolder = new File(url.getFile());
 
 		File[] listFiles = tpFolder.listFiles(
 			new FilenameFilter() {
@@ -165,6 +190,14 @@ public class TargetPlatformUtil {
 					}
 
 					if (type.equals("servicewrapper") && name.endsWith("servicewrappers.json")) {
+						return true;
+					}
+
+					if (type.equals("service-dependency") && name.endsWith("service-dependency.json")) {
+						return true;
+					}
+
+					if (type.equals("servicewrapper-dependency") && name.endsWith("servicewrapper-dependency.json")) {
 						return true;
 					}
 

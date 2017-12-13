@@ -15,7 +15,7 @@
 package com.liferay.ide.project.core.modules;
 
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.project.core.util.TargetPlatformUtil;
 
 import java.util.Set;
 
@@ -25,8 +25,6 @@ import org.eclipse.sapphire.PossibleValuesService;
 import org.eclipse.sapphire.PropertyContentEvent;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
 
 /**
  * @author Simon Jiang
@@ -36,10 +34,10 @@ public class ServicePossibleValuesService extends PossibleValuesService {
 
 	@Override
 	public void dispose() {
-		NewLiferayModuleProjectOp op = _op();
-
 		if (_listener != null) {
-			op.property(NewLiferayModuleProjectOp.PROP_PROJECT_TEMPLATE_NAME).detach(_listener);
+			Value<Object> templateProperty = _op().property(NewLiferayModuleProjectOp.PROP_PROJECT_TEMPLATE_NAME);
+
+			templateProperty.detach(_listener);
 
 			_listener = null;
 		}
@@ -48,56 +46,27 @@ public class ServicePossibleValuesService extends PossibleValuesService {
 	}
 
 	@Override
-	public Status problem(Value<?> value) {
+	public Status problem(final Value<?> value) {
 		return Status.createOkStatus();
 	}
 
 	@Override
-	protected void compute(Set<String> values) {
-		NewLiferayModuleProjectOp op = _op();
+	protected void compute(final Set<String> values) {
+		final NewLiferayModuleProjectOp op = _op();
 
-		String template = op.getProjectTemplateName().content(true);
-
-		IServer runningServer = null;
-		IServer[] servers = ServerCore.getServers();
+		final String template = op.getProjectTemplateName().content(true);
 
 		if (template.equals("service-wrapper")) {
-			for (IServer server : servers) {
-				String serverId = server.getServerType().getId();
-
-				if (serverId.equals(PortalServer.ID)) {
-					runningServer = server;
-
-					break;
-				}
-			}
-
 			try {
-				ServiceContainer serviceWrapperList = new ServiceWrapperCommand(runningServer).execute();
-
-				values.addAll(serviceWrapperList.getServiceList());
+				values.addAll(TargetPlatformUtil.getServiceWrapperList().getServiceList());
 			}
 			catch (Exception e) {
 				ProjectCore.logError("Get service wrapper list error.", e);
 			}
 		}
 		else if (template.equals("service")) {
-			for (IServer server : servers) {
-				String serverId = server.getServerType().getId();
-
-				if ((server.getServerState() == IServer.STATE_STARTED) && serverId.equals(PortalServer.ID)) {
-					runningServer = server;
-
-					break;
-				}
-			}
-
 			try {
-				ServiceCommand serviceCommand = new ServiceCommand(runningServer);
-
-				ServiceContainer allServices = serviceCommand.execute();
-
-				values.addAll(allServices.getServiceList());
+				values.addAll(TargetPlatformUtil.getServicesList().getServiceList());
 			}
 			catch (Exception e) {
 				ProjectCore.logError("Get services list error. ", e);
@@ -109,15 +78,14 @@ public class ServicePossibleValuesService extends PossibleValuesService {
 		_listener = new FilteredListener<PropertyContentEvent>() {
 
 			@Override
-			protected void handleTypedEvent(PropertyContentEvent event) {
+			protected void handleTypedEvent(final PropertyContentEvent event) {
 				refresh();
 			}
 
 		};
+		Value<Object> templateProperty = _op().property(NewLiferayModuleProjectOp.PROP_PROJECT_TEMPLATE_NAME);
 
-		NewLiferayModuleProjectOp op = _op();
-
-		op.property(NewLiferayModuleProjectOp.PROP_PROJECT_TEMPLATE_NAME).attach(_listener);
+		templateProperty.attach(_listener);
 	}
 
 	private NewLiferayModuleProjectOp _op() {
