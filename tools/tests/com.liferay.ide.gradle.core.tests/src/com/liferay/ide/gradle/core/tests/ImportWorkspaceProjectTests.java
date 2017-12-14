@@ -24,6 +24,7 @@ import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.tests.TestUtil;
+import com.liferay.ide.core.tp.LiferayTargetPlatform;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.gradle.core.LiferayGradleProject;
 import com.liferay.ide.project.core.workspace.ImportLiferayWorkspaceOp;
@@ -41,12 +42,24 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Gregory Amerson
  */
 public class ImportWorkspaceProjectTests
 {
+	private ServiceTracker<LiferayTargetPlatform, LiferayTargetPlatform> _tracker;
+
+	public ImportWorkspaceProjectTests() {
+		BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+
+		_tracker = new ServiceTracker<>(bundleContext, LiferayTargetPlatform.class, null);
+		_tracker.open();
+	}
+
     @Before
     public void clearWorkspace() throws Exception
     {
@@ -185,6 +198,29 @@ public class ImportWorkspaceProjectTests
         assertEquals(
             "https://api.liferay.com/downloads/portal/7.0.10.6/liferay-dxp-digital-enterprise-tomcat-7.0-sp6-20171010144253003.zip",
             bundleUrl );
+    }
+
+    @Test
+    public void testImportLiferayWorkspaceWithTargetPlatformDefinition() throws Exception {
+    		IWorkspace ws = ResourcesPlugin.getWorkspace();
+        IWorkspaceRoot root = ws.getRoot();
+
+        File src = new File( "projects/testWorkspaceCustomBundleUrl" );
+        File dst = new File( root.getLocation().toFile(), src.getName() );
+
+        TestUtil.copyDir( src, dst );
+
+        ImportLiferayWorkspaceOp op = ImportLiferayWorkspaceOp.TYPE.instantiate();
+
+        op.setWorkspaceLocation( dst.getAbsolutePath() );
+
+        NullProgressMonitor monitor = new NullProgressMonitor();
+
+        op.execute( ProgressMonitorBridge.create( monitor ) );
+
+        LiferayTargetPlatform targetPlatform = _tracker.getService();
+
+        targetPlatform.createTargetPlatformProject(monitor);
     }
 
     private void assertSourceFolders( String projectName, String expectedSourceFolderName )

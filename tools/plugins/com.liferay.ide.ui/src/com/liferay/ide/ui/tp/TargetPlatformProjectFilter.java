@@ -14,7 +14,7 @@
 
 package com.liferay.ide.ui.tp;
 
-import com.liferay.ide.core.tp.TargetPlatformManager;
+import com.liferay.ide.core.tp.LiferayTargetPlatform;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
@@ -39,7 +39,7 @@ public class TargetPlatformProjectFilter extends ViewerFilter {
 		if (project != null) {
 			String projectName = project.getName();
 
-			if (projectName.equals(TargetPlatformManager.TARGET_PLATFORM_PROJECT_NAME)) {
+			if (projectName.equals(LiferayTargetPlatform.TARGET_PLATFORM_PROJECT_NAME)) {
 				return false;
 			}
 		}

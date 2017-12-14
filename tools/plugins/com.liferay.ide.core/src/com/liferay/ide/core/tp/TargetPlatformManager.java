@@ -18,12 +18,24 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
-public class TargetPlatformManager {
+/**
+ * @author Gregory Amerson
+ */
+@Component(scope=ServiceScope.SINGLETON)
+public class TargetPlatformManager implements LiferayTargetPlatform {
 
-	public static final String TARGET_PLATFORM_PROJECT_NAME = "Liferay Target Platform";
+	public TargetPlatformManager() {
+		super();
 
+		setTargetDefinition("com.liferay:liferay-target-platform:7.0.4@pom");
+	}
+
+	@Override
 	public IProject createTargetPlatformProject(IProgressMonitor monitor) throws CoreException {
+
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 
 		IProject project = root.getProject(TARGET_PLATFORM_PROJECT_NAME);
@@ -54,7 +66,7 @@ public class TargetPlatformManager {
 
 			String buildContent = CoreUtil.readStreamToString(buildFileTemplate);
 
-			buildContent = buildContent.replaceAll("__bomGav__", getCurrentTargetPlatformBomGav());
+			buildContent = buildContent.replaceAll("__bomGav__", getTargetDefinition());
 
 			Files.write(buildFile, buildContent.getBytes());
 
@@ -69,7 +81,14 @@ public class TargetPlatformManager {
 		return importedProjects.get(0);
 	}
 
-	private String getCurrentTargetPlatformBomGav() {
-		return "com.liferay:liferay-target-platform:7.0.4@pom";
+	private String getTargetDefinition() {
+		return _targetDefinition;
 	}
+
+	@Override
+	public void setTargetDefinition(String targetDefinition) {
+		_targetDefinition = targetDefinition;
+	}
+
+	private String _targetDefinition;
 }

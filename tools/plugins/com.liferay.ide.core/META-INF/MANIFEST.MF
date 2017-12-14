@@ -106,3 +106,4 @@ Bundle-ClassPath: .,
  lib/org.apache.httpcomponents.httpclient_4.2.1.jar,
  lib/org.apache.httpcomponents.httpcore_4.2.1.jar,
  lib/org.apache.httpcomponents.httpmime_4.2.1.jar
+Service-Component: OSGI-INF/com.liferay.ide.core.tp.TargetPlatformManager.xml
