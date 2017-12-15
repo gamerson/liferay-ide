@@ -23,10 +23,8 @@ import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
 import java.io.FileReader;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.apache.maven.cli.MavenCli;
+import org.apache.maven.cli.configuration.SettingsXmlConfigurationProcessor;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.MavenExecutionPlan;
 import org.apache.maven.model.Dependency;
@@ -45,9 +43,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
-
 import org.codehaus.plexus.util.xml.Xpp3Dom;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -78,9 +74,7 @@ import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.wtp.ProjectUtils;
 import org.eclipse.m2e.wtp.WarPluginConfiguration;
 import org.eclipse.wst.xml.core.internal.provisional.format.NodeFormatter;
-
 import org.osgi.framework.Version;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -306,7 +300,6 @@ public class MavenUtil {
 		return getLiferayMavenPluginConfig(mavenProject, ILiferayMavenConstants.PLUGIN_CONFIG_PLUGIN_TYPE);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static String getLocalRepositoryDir() {
 		String retval = null;
 
@@ -315,12 +308,10 @@ public class MavenUtil {
 		String userSettings = mavenConfiguration.getUserSettingsFile();
 
 		if ((userSettings == null) || (userSettings.length() == 0)) {
-			userSettings = MavenCli.DEFAULT_USER_SETTINGS_FILE.getAbsolutePath();
+			userSettings = SettingsXmlConfigurationProcessor.DEFAULT_USER_SETTINGS_FILE.getAbsolutePath();
 		}
 
-		org.eclipse.m2e.core.embedder.MavenRuntimeManager runtimeManager = MavenPlugin.getMavenRuntimeManager();
-
-		String globalSettings = runtimeManager.getGlobalSettingsFile();
+		String globalSettings = MavenPlugin.getMavenConfiguration().getGlobalSettingsFile();
 
 		IMaven maven = MavenPlugin.getMaven();
 
