@@ -347,21 +347,23 @@ public class CreateDBConnectAction extends AbstractServerRunningAction
                 DriverManager.getInstance().createNewDriverInstance(
                     driverTemplate, uniqueDriverInstanceName, driverPath, driverClass );
 
-            final String vendor = driverInstance.getProperty( IJDBCDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID );
-            final String uniqueConnectionProfileName = generateUniqueConnectionProfileName( connectionName + " " + vendor ); //$NON-NLS-1$
+			if (driverInstance != null) {
+				final String vendor = driverInstance.getProperty( IJDBCDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID );
+	            final String uniqueConnectionProfileName = generateUniqueConnectionProfileName( connectionName + " " + vendor ); //$NON-NLS-1$
 
-            final Properties connectionProfileProperties = driverInstance.getPropertySet().getBaseProperties();
+	            final Properties connectionProfileProperties = driverInstance.getPropertySet().getBaseProperties();
 
-            connectionProfileProperties.setProperty(
-                ConnectionProfileConstants.PROP_DRIVER_DEFINITION_ID, driverInstance.getId() );
-            connectionProfileProperties.setProperty(
-                IJDBCDriverDefinitionConstants.DATABASE_NAME_PROP_ID, getDatabaseName( connectionUrl ) );
-            connectionProfileProperties.setProperty( IJDBCDriverDefinitionConstants.USERNAME_PROP_ID, userName );
-            connectionProfileProperties.setProperty( IJDBCDriverDefinitionConstants.PASSWORD_PROP_ID, password );
-            connectionProfileProperties.setProperty( IJDBCDriverDefinitionConstants.URL_PROP_ID, connectionUrl );
+	            connectionProfileProperties.setProperty(
+	                ConnectionProfileConstants.PROP_DRIVER_DEFINITION_ID, driverInstance.getId() );
+	            connectionProfileProperties.setProperty(
+	                IJDBCDriverDefinitionConstants.DATABASE_NAME_PROP_ID, getDatabaseName( connectionUrl ) );
+	            connectionProfileProperties.setProperty( IJDBCDriverDefinitionConstants.USERNAME_PROP_ID, userName );
+	            connectionProfileProperties.setProperty( IJDBCDriverDefinitionConstants.PASSWORD_PROP_ID, password );
+	            connectionProfileProperties.setProperty( IJDBCDriverDefinitionConstants.URL_PROP_ID, connectionUrl );
 
-            ProfileManager.getInstance().createProfile(
-                uniqueConnectionProfileName, connectionDesc, providerId, connectionProfileProperties, "", false ); //$NON-NLS-1$
+	            ProfileManager.getInstance().createProfile(
+	                uniqueConnectionProfileName, connectionDesc, providerId, connectionProfileProperties, "", false ); //$NON-NLS-1$
+			}
         }
 
         private String generateUniqueDriverDefinitionName( final String driverDefinitionNameBase )
