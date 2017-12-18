@@ -180,12 +180,26 @@ public class NewModuleFragmentOpMethods {
 
 			PortalBundle portalBundle = LiferayServerCore.newPortalBundle(runtime.getLocation());
 
-			IPath modulesPath = portalBundle.getOSGiBundlesDir().append("modules");
+			String[] dirs = new String[] { "core", "modules", "portal", "static" };
 
-			File hostBundle = modulesPath.append(hostBundleName).toFile();
+			File hostBundle = null;
+
+			for (String dir : dirs) {
+				IPath modulesPath = portalBundle.getOSGiBundlesDir().append(dir);
+
+				hostBundle = modulesPath.append(hostBundleName).toFile();
+
+				if (FileUtil.notExists(hostBundle)) {
+					hostBundle = path.append(hostBundleName).toFile();
+				}
+
+				if (FileUtil.exists(hostBundle)) {
+					break;
+				}
+			}
 
 			if (FileUtil.notExists(hostBundle)) {
-				hostBundle = path.append(hostBundleName).toFile();
+				throw new CoreException(ProjectCore.createErrorStatus("Unable to get the jar file"));
 			}
 
 			try {
