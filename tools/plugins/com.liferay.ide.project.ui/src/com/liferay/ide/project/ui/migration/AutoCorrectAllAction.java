@@ -76,6 +76,10 @@ public class AutoCorrectAllAction extends Action {
 									for (Problem problem : problems) {
 										final IResource file = MigrationUtil.getIResourceFromProblem(problem);
 
+										if ( file==null || !file.exists() ) {
+											continue;
+										}
+
 										String fixedKey =
 											file.getLocation().toString() + "," + problem.autoCorrectContext;
 
