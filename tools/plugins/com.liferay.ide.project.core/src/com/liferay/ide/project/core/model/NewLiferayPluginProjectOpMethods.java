@@ -310,7 +310,7 @@ public class NewLiferayPluginProjectOpMethods {
 				greaterThan700 = true;
 			}
 
-			if ((greaterThan700 && "web".equals(type)) || ("theme".equals(type))) {
+			if ((greaterThan700 && "web".equals(type)) || "theme".equals(type)) {
 				retval = true;
 			}
 
@@ -477,9 +477,8 @@ public class NewLiferayPluginProjectOpMethods {
 
 				IFolder docroot = webproject.getDefaultDocrootFolder();
 
-				IFile[] sampleFiles = {
-					docroot.getFile("view.jsp"), docroot.getFile("css/main.css"), docroot.getFile("js/main.js")
-				};
+				IFile[] sampleFiles =
+					{docroot.getFile("view.jsp"), docroot.getFile("css/main.css"), docroot.getFile("js/main.js")};
 
 				for (IFile file : sampleFiles) {
 					if (FileUtil.exists(file)) {

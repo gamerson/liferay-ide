@@ -141,8 +141,10 @@ public class PluginPackageResourceListener implements IResourceChangeListener, I
 					public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 						IResource resource = delta.getResource();
 
-						if (!ValidationUtil.isProjectTargetDirFile(resource.getLocation().toFile())) {
-							processPropertiesFile((IFile)resource);
+						if ((resource != null) && (resource.getLocation() != null)) {
+							if (!ValidationUtil.isProjectTargetDirFile(resource.getLocation().toFile())) {
+								processPropertiesFile((IFile)resource);
+							}
 						}
 
 						return Status.OK_STATUS;
