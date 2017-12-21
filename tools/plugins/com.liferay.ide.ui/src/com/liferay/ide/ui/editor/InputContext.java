@@ -650,7 +650,7 @@ public abstract class InputContext {
 	 */
 	private void _handleSaveAs(IProgressMonitor monitor, IPath path)
 		throws CoreException, Exception, InterruptedException,
-			   InvocationTargetException {
+			InvocationTargetException {
 
 		// Ensure a new location was selected
 
