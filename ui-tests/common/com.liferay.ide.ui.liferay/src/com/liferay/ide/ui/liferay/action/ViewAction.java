@@ -86,7 +86,7 @@ public class ViewAction extends UIAction {
 		public void closeAndDelete(String... items) {
 			closeProject(items);
 
-			deleteProject(items);
+			delete(items);
 		}
 
 		public void closeAndDeleteFromDisk(String... items) {
@@ -100,7 +100,7 @@ public class ViewAction extends UIAction {
 
 			_jobAction.waitForNoRunningJobs();
 
-			deleteProject(items);
+			delete(items);
 		}
 
 		public void closeProject(String... items) {
@@ -111,7 +111,11 @@ public class ViewAction extends UIAction {
 			_jobAction.waitForCloseProject();
 		}
 
-		public void deleteProject(String... items) {
+		/**
+		 * The resource won't be deleted from disk if we call this method on Project.
+		 * But the resource will be deleted from disk if we call this method on Package or File.
+		 */
+		public void delete(String... items) {
 			_getProjects().contextMenu(DELETE, items);
 
 			ide.sleep();
@@ -139,6 +143,10 @@ public class ViewAction extends UIAction {
 
 		public String[] getProjectNames() {
 			return _getProjects().getItemLabels();
+		}
+
+		public void openComponentClassWizard(String... projectNames) {
+			_getProjects().contextMenu(LIFERAY_COMPONENT_CLASS, projectNames);
 		}
 
 		public void openFile(String... files) {

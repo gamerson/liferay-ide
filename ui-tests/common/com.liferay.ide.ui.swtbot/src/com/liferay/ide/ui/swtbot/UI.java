@@ -351,6 +351,8 @@ public interface UI {
 
 	public final String LIFERAY_CODE_UPGRADE = "Liferay Code Upgrade";
 
+	public final String LIFERAY_COMPONENT_CLASS = "Liferay Component Class";
+
 	public final String LIFERAY_FACES_ALLOY = "Liferay Faces Alloy";
 
 	public final String LIFERAY_HOOK_CONFIGURATION = "Liferay Hook Configuration";
@@ -475,6 +477,22 @@ public interface UI {
 	public final String NO = "No";
 
 	public final String NO_OPERTAIONS = "No operations to display at this time.";
+
+	public final String NPM_ANGULAR_PORTLET = "npm-angular-portlet";
+
+	public final String NPM_BILLBOARDJS_PORLET = "npm-billboardjs-portlet";
+
+	public final String NPM_ISOMORPHIC_PORTLET = "npm-isomorphic-portlet";
+
+	public final String NPM_JQUERY_PORTLET = "npm-jquery-portlet";
+
+	public final String NPM_METALJS_PORTLET = "npm-metaljs-portlet";
+
+	public final String NPM_PORTLET = "npm-portlet";
+
+	public final String NPM_REACT_PORTLET = "npm-react-portlet";
+
+	public final String NPM_VUEJS_PORTLET = "npm-vuejs-portlet";
 
 	public final String OK = "OK";
 
