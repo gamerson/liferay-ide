@@ -105,7 +105,7 @@ public class UIUtil {
 
 	public static void executeCommand(String commandId, ISelection selection)
 		throws ExecutionException, NotDefinedException, NotEnabledException,
-			   NotHandledException {
+			NotHandledException {
 
 		IEvaluationContext evaluationContext = new EvaluationContext(null, Collections.emptyList());
 
