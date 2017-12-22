@@ -49,7 +49,7 @@ public class NewLiferayComponentServicePossibleValuesService extends PossibleVal
 
 	@Override
 	public Status problem(Value<?> value) {
-		return Status.createOkStatus();
+		return Status.createWarningStatus("'" + value + "' is not among possible values");
 	}
 
 	@Override
