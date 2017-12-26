@@ -15,11 +15,9 @@
 package com.liferay.ide.ui.server.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
-import com.liferay.ide.ui.liferay.page.editor.ServerEditor;
 
 import java.io.IOException;
 
-import org.eclipse.core.runtime.IPath;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -31,39 +29,35 @@ public class ServerWildflyTests extends SwtbotBase {
 
 	@BeforeClass
 	public static void prepareServer() throws IOException {
-		envAction.unzipWildflyServer();
+		envAction.unzipServerWildfly();
 
 		envAction.prepareGeoFile();
 
-		envAction.preparePortalWildflyExtFile();
+		envAction.preparePortalExtFileWildfly();
 
-		envAction.prepareWildflyPortalSetupWizardFile();
+		envAction.preparePortalSetupWizardFileWildfly();
 
 		String serverName = "Liferay Wildfly 7-initialization";
 
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.openServerRuntimeEnvironmentsDialogTry();
+		dialogAction.preferences.openServerRuntimeEnvironmentsTry();
 
-		dialogAction.openNewRuntimeWizard();
+		dialogAction.serverRuntimeEnvironments.openNewRuntimeWizard();
 
-		wizardAction.prepareLiferay7RuntimeType();
+		wizardAction.newRuntime.prepare7();
 
 		wizardAction.next();
 
-		IPath serverDir = envAction.getLiferayWildflyServerDir();
-
-		IPath fullServerDir = serverDir.append(envAction.getLiferayWildflyPluginServerName());
-
-		wizardAction.prepareLiferay7RuntimeInfo(serverName, fullServerDir.toOSString());
+		wizardAction.newRuntime7.prepare(serverName, envAction.getServerFullDirWildfly().toString());
 
 		wizardAction.finish();
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 
 		wizardAction.openNewLiferayServerWizard();
 
-		wizardAction.prepareNewServer(serverName);
+		wizardAction.newServer.prepare(serverName);
 
 		wizardAction.finish();
 
@@ -97,57 +91,57 @@ public class ServerWildflyTests extends SwtbotBase {
 
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.deleteRuntimeTryConfirm(serverName);
+		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(serverName);
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 	}
 
 	@Test
 	public void addLiferay7RuntimeFromPreferences() {
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.openNewRuntimeWizard();
+		dialogAction.serverRuntimeEnvironments.openNewRuntimeWizard();
 
-		wizardAction.prepareLiferay7RuntimeType();
+		wizardAction.newRuntime.prepare7();
 
 		wizardAction.next();
 
 		String runtimeName = "Liferay 7-wildfly-runtime";
 
-		wizardAction.prepareLiferay7RuntimeInfo(runtimeName, envAction.getLiferayWildflyServerFullDir().toOSString());
+		wizardAction.newRuntime7.prepare(runtimeName, envAction.getServerFullDirWildfly().toString());
 
 		wizardAction.finish();
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.deleteRuntimeTryConfirm(runtimeName);
+		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(runtimeName);
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 	}
 
 	@Test
 	public void addLiferayWildflyServerFromMenu() {
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.openNewRuntimeWizard();
+		dialogAction.serverRuntimeEnvironments.openNewRuntimeWizard();
 
-		wizardAction.prepareLiferay7RuntimeType();
+		wizardAction.newRuntime.prepare7();
 
 		wizardAction.next();
 
 		String runtimeName = "Liferay 7-wildfly-server";
 
-		wizardAction.prepareLiferay7RuntimeInfo(runtimeName, envAction.getLiferayWildflyServerFullDir().toOSString());
+		wizardAction.newRuntime7.prepare(runtimeName, envAction.getServerFullDirWildfly().toString());
 
 		wizardAction.finish();
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 
 		wizardAction.openNewLiferayServerWizard();
 
-		wizardAction.prepareNewServer("Liferay 7-wildfly-server");
+		wizardAction.newServer.prepare("Liferay 7-wildfly-server");
 
 		wizardAction.finish();
 
@@ -155,9 +149,9 @@ public class ServerWildflyTests extends SwtbotBase {
 
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.deleteRuntimeTryConfirm(runtimeName);
+		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(runtimeName);
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 	}
 
 	@Test
@@ -166,21 +160,21 @@ public class ServerWildflyTests extends SwtbotBase {
 
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.openNewRuntimeWizard();
+		dialogAction.serverRuntimeEnvironments.openNewRuntimeWizard();
 
-		wizardAction.prepareLiferay7RuntimeType();
+		wizardAction.newRuntime.prepare7();
 
 		wizardAction.next();
 
-		wizardAction.prepareLiferay7RuntimeInfo(serverName, envAction.getLiferayWildflyServerFullDir().toOSString());
+		wizardAction.newRuntime7.prepare(serverName, envAction.getServerFullDirWildfly().toOSString());
 
 		wizardAction.finish();
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 
 		wizardAction.openNewLiferayServerWizard();
 
-		wizardAction.prepareNewServer(serverName);
+		wizardAction.newServer.prepare(serverName);
 
 		wizardAction.finish();
 
@@ -188,34 +182,19 @@ public class ServerWildflyTests extends SwtbotBase {
 
 		String serverStoppedLabel = serverName + "  [Stopped]";
 
-		viewAction.openServerEditor(serverStoppedLabel);
+		viewAction.servers.openEditor(serverStoppedLabel);
 
-		ServerEditor serverEditor = new ServerEditor(bot, serverName);
-		ServerEditor serverEditorWithLabel = new ServerEditor(bot, serverStoppedLabel);
+		editorAction.server.selectCustomLaunchSettings();
 
-		try {
-			serverEditor.getCustomLaunchSettings().click();
-		} catch (Exception e) {
-			serverEditorWithLabel.getCustomLaunchSettings().click();
-		}
-
-		try {
-			serverEditor.getUseDeveloperMode().select();
-		} catch (Exception e) {
-			serverEditorWithLabel.getUseDeveloperMode().select();
-		}
+		editorAction.server.selectUseDeveloperMode();
 
 		editorAction.save();
 
 		editorAction.close();
 
-		viewAction.openServerEditor(serverStoppedLabel);
+		viewAction.servers.openEditor(serverStoppedLabel);
 
-		try {
-			serverEditor.getDefaultLaunchSettings().click();
-		} catch (Exception e) {
-			serverEditorWithLabel.getDefaultLaunchSettings().click();
-		}
+		editorAction.server.selectDefaultLaunchSettings();
 
 		editorAction.save();
 
@@ -223,9 +202,9 @@ public class ServerWildflyTests extends SwtbotBase {
 
 		dialogAction.openPreferencesDialog();
 
-		dialogAction.deleteRuntimeTryConfirm(serverName);
+		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(serverName);
 
-		dialogAction.confirmPreferences();
+		dialogAction.preferences.confirm();
 	}
 
 }
