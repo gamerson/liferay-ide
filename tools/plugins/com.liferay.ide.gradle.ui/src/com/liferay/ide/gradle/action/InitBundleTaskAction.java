@@ -20,6 +20,7 @@ import com.liferay.ide.gradle.core.GradleCore;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
+import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.util.ServerUtil;
 
 import org.eclipse.core.resources.IProject;
@@ -29,6 +30,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
  * @author Terry Jia
+ * @author Charles Wu
  */
 public class InitBundleTaskAction extends GradleTaskAction {
 
@@ -39,7 +41,15 @@ public class InitBundleTaskAction extends GradleTaskAction {
 
 		try {
 			if (FileUtil.exists(bundlesLocation)) {
-				String serverName = bundlesLocation.lastSegment();
+
+				PortalBundle bundle = ServerUtil.getPortalBundle(bundlesLocation);
+
+				if (bundle == null) {
+					GradleCore.logError("Adding server failed");
+					return;
+				}
+
+				String serverName = bundle.getServerReleaseInfo();
 
 				ServerUtil.addPortalRuntimeAndServer(serverName, bundlesLocation, new NullProgressMonitor());
 
