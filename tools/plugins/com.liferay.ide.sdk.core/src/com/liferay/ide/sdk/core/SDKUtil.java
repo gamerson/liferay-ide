@@ -166,7 +166,9 @@ public class SDKUtil {
 		IProject[] projects = CoreUtil.getAllProjects();
 
 		for (IProject project : projects) {
-			if (isValidSDKLocation(project.getLocation().toOSString())) {
+			if ((project != null) && (project.getLocation() != null) &&
+					isValidSDKLocation(project.getLocation().toOSString())) {
+
 				if (retval != null) {
 					throw new CoreException(
 						SDKCorePlugin.createErrorStatus(
