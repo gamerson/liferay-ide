@@ -16,6 +16,7 @@ package com.liferay.ide.ui.liferay.action;
 
 import com.liferay.ide.ui.liferay.UIAction;
 import com.liferay.ide.ui.swtbot.eclipse.page.AddAndRemoveDialog;
+import com.liferay.ide.ui.swtbot.eclipse.page.AvailableSoftwareSitesPreferencesDialog;
 import com.liferay.ide.ui.swtbot.eclipse.page.PreferencesDialog;
 import com.liferay.ide.ui.swtbot.eclipse.page.ServerRuntimeEnvironmentsPreferencesDialog;
 import com.liferay.ide.ui.swtbot.eclipse.page.TextDialog;
@@ -23,6 +24,7 @@ import com.liferay.ide.ui.swtbot.eclipse.page.TextTableDialog;
 import com.liferay.ide.ui.swtbot.eclipse.page.TreeDialog;
 import com.liferay.ide.ui.swtbot.page.Button;
 import com.liferay.ide.ui.swtbot.page.Dialog;
+import com.liferay.ide.ui.swtbot.page.Table;
 import com.liferay.ide.ui.swtbot.util.CoreUtil;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
@@ -84,6 +86,7 @@ public class DialogAction extends UIAction {
 	}
 
 	public AddAndRemoveDialogAction addAndRemove = new AddAndRemoveDialogAction();
+	public AvailableSoftwareSitesDialogAction availableSoftwareSites = new AvailableSoftwareSitesDialogAction();
 	public PreferencesDialogAction preferences = new PreferencesDialogAction();
 	public ServerRuntimeEnvironmentsDialogAction serverRuntimeEnvironments =
 		new ServerRuntimeEnvironmentsDialogAction();
@@ -100,10 +103,25 @@ public class DialogAction extends UIAction {
 
 	}
 
+	public class AvailableSoftwareSitesDialogAction {
+
+		public Table getSites() {
+			return _availableSoftwareSitesPreferencesDialog.getSites();
+		}
+
+		private final AvailableSoftwareSitesPreferencesDialog _availableSoftwareSitesPreferencesDialog =
+			new AvailableSoftwareSitesPreferencesDialog(bot);
+
+	}
+
 	public class PreferencesDialogAction {
 
 		public void confirm() {
 			_preferencesDialog.confirm();
+		}
+
+		public void openAvailableSoftwareSites() {
+			openPreferenceType(INSTALL_UPDATE, AVAILABLE_SOFTWARE_SITES);
 		}
 
 		public void openPreferenceType(String categroy, String type) {
