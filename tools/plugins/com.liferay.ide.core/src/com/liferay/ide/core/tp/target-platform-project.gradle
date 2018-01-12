@@ -1,0 +1,23 @@
+apply plugin: 'java'
+
+configurations {
+	mavenBOM
+}
+
+dependencies {
+	mavenBOM "__bomGav__"
+}
+
+repositories {
+	maven {
+		url "https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
+	}
+
+	mavenLocal()
+}
+
+def bom = new XmlSlurper().parse(configurations.mavenBOM.singleFile)
+
+bom.dependencyManagement.dependencies.dependency.each {
+	project.dependencies.add('compile', "${it.groupId}:${it.artifactId}:${it.version}")
+}

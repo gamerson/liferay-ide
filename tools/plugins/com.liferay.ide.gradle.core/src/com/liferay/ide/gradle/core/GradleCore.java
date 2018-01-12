@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-
 import org.osgi.framework.BundleContext;
 
 /**
@@ -106,6 +105,8 @@ public class GradleCore extends Plugin {
 		log.log(createErrorStatus(msg, e));
 	}
 
+	private GradlePropertiesChangeListener _gradlePropertiesChangeListener;
+
 	/**
 	 * The constructor
 	 */
@@ -113,16 +114,22 @@ public class GradleCore extends Plugin {
 		_gradleProjectCreatedListener = new GradleProjectCreatedListener();
 	}
 
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
 		_plugin = this;
 
 		CorePlugin.listenerRegistry().addEventListener(_gradleProjectCreatedListener);
+
+		_gradlePropertiesChangeListener = GradlePropertiesChangeListener.createAndRegister();
 	}
 
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		CorePlugin.listenerRegistry().removeEventListener(_gradleProjectCreatedListener);
+
+		_gradlePropertiesChangeListener.close();
 
 		_plugin = null;
 

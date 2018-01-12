@@ -16,6 +16,7 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.tp.LiferayTargetPlatform;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
@@ -27,6 +28,9 @@ import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceProjectProvider
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -38,6 +42,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.sapphire.platform.PathBridge;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Andy Wu
@@ -46,8 +53,15 @@ import org.eclipse.sapphire.platform.PathBridge;
 public class LiferayGradleWorkspaceProjectProvider
 	extends AbstractLiferayProjectProvider implements NewLiferayWorkspaceProjectProvider<NewLiferayWorkspaceOp> {
 
+	private ServiceTracker<LiferayTargetPlatform, LiferayTargetPlatform> _tracker;
+
 	public LiferayGradleWorkspaceProjectProvider() {
 		super(new Class<?>[] {IProject.class});
+
+		BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+
+		_tracker = new ServiceTracker<>(bundleContext, LiferayTargetPlatform.class, null);
+		_tracker.open();
 	}
 
 	@Override
@@ -89,19 +103,29 @@ public class LiferayGradleWorkspaceProjectProvider
 				return importJob;
 			}
 
+			IPath path = new Path(location);
+
+			IProject project = CoreUtil.getProject(path.lastSegment());
+
+			final IFile gradlePropertiesFile = project.getFile("gradle.properties");
+
+			String targetPlatformSetting = getTargetPlatformSetting(gradlePropertiesFile);
+
+			if (targetPlatformSetting != null) {
+				LiferayTargetPlatform targetPlatform = _tracker.getService();
+
+				targetPlatform.setTargetDefinition(targetPlatformSetting);
+				targetPlatform.createTargetPlatformProject(monitor);
+			}
+
 			if (initBundle) {
-				IPath path = new Path(location);
-
-				IProject project = CoreUtil.getProject(path.lastSegment());
-
 				if (bundleUrl != null) {
-					final IFile gradlePropertiesFile = project.getFile("gradle.properties");
-
-					String content = FileUtil.readContents(gradlePropertiesFile.getContents());
 
 					String bundleUrlProp = LiferayWorkspaceUtil.LIFERAY_WORKSPACE_BUNDLE_URL + "=" + bundleUrl;
 
 					String separator = System.getProperty("line.separator", "\n");
+
+					String content = FileUtil.readContents(gradlePropertiesFile.getContents());
 
 					String newContent = content + separator + bundleUrlProp;
 
@@ -119,6 +143,19 @@ public class LiferayGradleWorkspaceProjectProvider
 		}
 
 		return Status.OK_STATUS;
+	}
+
+	private String getTargetPlatformSetting(final IFile gradlePropertiesFile) throws CoreException, IOException {
+		Properties gradleProperties = new Properties();
+
+		InputStream contents = gradlePropertiesFile.getContents(true);
+
+		gradleProperties.load(contents);
+
+		contents.close();
+
+		String targetPlatformValue = gradleProperties.getProperty("liferay.workspace.target.platform");
+		return targetPlatformValue;
 	}
 
 	@Override

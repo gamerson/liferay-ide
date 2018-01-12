@@ -296,4 +296,24 @@
 			href="https://aer.ctrlflow.com/liferay/community/discovery" />
 		</server>
 	</extension>
+	<extension
+		point="org.eclipse.jdt.ui.javaElementFilters"
+	>
+		<filter
+			class="com.liferay.ide.ui.tp.TargetPlatformProjectFilter"
+			description="Hide the &quot;Liferay Target Platform&quot; project"
+			enabled="true"
+			id="com.liferay.ide.ui.tp.TargetPlatformProjectFilter"
+			name="Liferay Target Platform project"
+			targetId="org.eclipse.jdt.ui.PackageExplorer">
+		</filter>
+		<filter
+			class="com.liferay.ide.ui.tp.WorkflowSupportProjectFilter"
+			description="Hide the &quot;Liferay Target Platform&quot; project"
+			enabled="true"
+			id="com.liferay.ide.ui.tp.WorkflowSupportProjectFilter"
+			name="Liferay Target Platform project"
+			targetId="org.eclipse.jdt.ui.ProjectsView">
+		</filter>
+	</extension>
 </plugin>
