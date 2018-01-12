@@ -121,6 +121,7 @@ public class NewLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 		dialogAction.preferences.confirm();
 	}
 
+	@Ignore("waiting for server configuration")
 	@Test
 	public void createLiferayWorkspaceWithDownloadBundleChangeBundleUrl() {
 		if (!envAction.internal()) {
