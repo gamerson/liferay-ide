@@ -24,7 +24,7 @@ import org.junit.Test;
 public class ServerJbossTests extends SwtbotBase {
 
 	@Test
-	public void addLiferayRuntime() {
+	public void addLiferay7RuntimeFromPreferences() {
 	}
 
 }

@@ -123,6 +123,12 @@ public class EnvAction extends UIAction {
 		return bundlesPath.append(_bundleInfos[1].getBundleDir());
 	}
 
+	public IPath getServerDirWildfly() {
+		IPath bundlesPath = _getBundlesPath().append("bundles");
+
+		return bundlesPath.append(_bundleInfos[2].getBundleDir());
+	}
+
 	public IPath getServerFullDir() {
 		return getServerDir().append(getServerName());
 	}
@@ -131,12 +137,20 @@ public class EnvAction extends UIAction {
 		return getServerDir62().append(getServerName62());
 	}
 
+	public IPath getServerFullDirWildfly() {
+		return getServerDirWildfly().append(getServerNameWildfly());
+	}
+
 	public String getServerName() {
 		return _bundleInfos[0].getServerDir();
 	}
 
 	public String getServerName62() {
 		return _bundleInfos[1].getServerDir();
+	}
+
+	public String getServerNameWildfly() {
+		return _bundleInfos[2].getServerDir();
 	}
 
 	public File getTempDir() {
@@ -338,6 +352,25 @@ public class EnvAction extends UIAction {
 		}
 	}
 
+	public void preparePortalExtFileWildfly() {
+		String filename = "portal-ext.properties";
+
+		IPath sourcePortalExtPath = _getBundlesPath().append(filename);
+
+		File source = sourcePortalExtPath.toFile();
+
+		IPath destPortalExtPath = getServerDirWildfly().append(filename);
+
+		File dest = destPortalExtPath.toFile();
+
+		try {
+			FileUtil.copyFile(source, dest);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void preparePortalSetupWizardFile() {
 		String filename = "portal-setup-wizard.properties";
 
@@ -346,6 +379,25 @@ public class EnvAction extends UIAction {
 		File source = sourcePortalSetupWizardPath.toFile();
 
 		IPath destPortalSetupWizardPath = getServerDir().append(filename);
+
+		File dest = destPortalSetupWizardPath.toFile();
+
+		try {
+			FileUtil.copyFile(source, dest);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void preparePortalSetupWizardFileWildfly() {
+		String filename = "portal-setup-wizard.properties";
+
+		IPath sourcePortalSetupWizardPath = _getBundlesPath().append(filename);
+
+		File source = sourcePortalSetupWizardPath.toFile();
+
+		IPath destPortalSetupWizardPath = getServerDirWildfly().append(filename);
 
 		File dest = destPortalSetupWizardPath.toFile();
 
@@ -519,6 +571,28 @@ public class EnvAction extends UIAction {
 			liferayServerZipFile62, liferayServerZipFolder62, liferayServerDirFile62, new NullProgressMonitor());
 	}
 
+	public void unzipServerWildfly() throws IOException {
+		FileUtil.deleteDir(getServerDirWildfly().toFile(), true);
+
+		File serverDir = getServerDirWildfly().toFile();
+
+		Assert.assertEquals(
+			"Expected file to be not exist:" + getServerDirWildfly().toPortableString(), false, serverDir.exists());
+
+		File liferayServerZipFile = _getServerZipWildfly().toFile();
+
+		Assert.assertEquals(
+			"Expected file to exist: " + liferayServerZipFile.getAbsolutePath(), true, liferayServerZipFile.exists());
+
+		File liferayServerDirFile = getServerDirWildfly().toFile();
+
+		liferayServerDirFile.mkdirs();
+
+		String liferayServerZipFolder = _getServerZipFolderWildfly();
+
+		ZipUtil.unzip(liferayServerZipFile, liferayServerZipFolder, liferayServerDirFile, new NullProgressMonitor());
+	}
+
 	public final String test_in_the_internal_net =
 		"Only do this test in the internal net, add -Dinternal=\"false\" if you are out of the China office.";
 
@@ -659,6 +733,14 @@ public class EnvAction extends UIAction {
 
 	private String _getServerZipFolder62() {
 		return _bundleInfos[1].getBundleDir();
+	}
+
+	private String _getServerZipFolderWildfly() {
+		return _bundleInfos[2].getBundleDir();
+	}
+
+	private IPath _getServerZipWildfly() {
+		return _getBundlesPath().append(_bundleInfos[2].getBundleZip());
 	}
 
 	private String _getUsername() {
