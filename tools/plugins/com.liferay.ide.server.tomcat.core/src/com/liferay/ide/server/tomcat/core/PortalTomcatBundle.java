@@ -20,6 +20,7 @@ import com.liferay.ide.core.util.FileListing;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.portal.AbstractPortalBundle;
+import com.liferay.ide.server.core.portal.PortalServerConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -109,9 +110,9 @@ public class PortalTomcatBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getHttpPort()
+    public int getHttpPort()
     {
-        String retVal = "8080";
+        int retVal = PortalServerConstants.DEFAULT_HTTP_PORT;
 
         File serverXmlFile = new File( getAppServerDir().toPortableString(), "conf/server.xml" );
 
@@ -119,18 +120,18 @@ public class PortalTomcatBundle extends AbstractPortalBundle
 
         if( !CoreUtil.empty( portValue ) )
         {
-            return portValue;
+            retVal = Integer.parseInt(portValue);
         }
 
         return retVal;
     }
 
     @Override
-    public void setHttpPort( String port )
+    public void setHttpPort( int port )
     {
         setHttpPortValue(
             new File( getAppServerDir().toPortableString(), "conf/server.xml" ), "Connector", "protocol", "HTTP/1.1",
-            "port", port );
+            "port", String.valueOf(port) );
     }
 
     @Override

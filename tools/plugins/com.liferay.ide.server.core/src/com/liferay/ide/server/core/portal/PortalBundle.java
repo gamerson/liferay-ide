@@ -62,8 +62,8 @@ public interface PortalBundle extends ILiferayPortal
 
     IPath[] getUserLibs();
 
-    String getHttpPort();
+    int getHttpPort();
 
-    void setHttpPort( String port );
+    void setHttpPort( int port );
 
 }

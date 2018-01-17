@@ -53,6 +53,7 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 
 /**
  * @author Greg Amerson
+ * @author Simon Jiang
  */
 public class RemoteServerComposite extends Composite implements ModifyListener, PropertyChangeListener
 {
@@ -108,7 +109,9 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         }
         else if( src.equals( textHTTP ) )
         {
-            this.remoteServerWC.setHTTPPort( textHTTP.getText() );
+            int httpPortValue = Integer.parseInt(textHTTP.getText().trim());
+
+            this.remoteServerWC.setHttpPort( httpPortValue );
         }
         else if( src.equals( textServerManagerContextPath ) )
         {
@@ -285,7 +288,7 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         {
             ignoreModifyEvents = true;
             this.textHostname.setText( this.serverWC.getHost() );
-            this.textHTTP.setText( this.remoteServerWC.getHTTPPort() );
+            this.textHTTP.setText( String.valueOf(this.remoteServerWC.getHttpPort()) );
             this.textLiferayPortalContextPath.setText( this.remoteServerWC.getLiferayPortalContextPath() );
             this.textServerManagerContextPath.setText( this.remoteServerWC.getServerManagerContextPath() );
             // this.checkboxSecurity.setSelection( this.remoteServerWC.getSecurityEnabled() );
@@ -403,13 +406,6 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
             return LiferayServerUI.createErrorStatus( Msgs.specifyUsernamePassword );
         }
 
-        String port = remoteServerWC.getHTTPPort();
-
-        if( CoreUtil.isNullOrEmpty( port ) )
-        {
-            return LiferayServerUI.createErrorStatus( Msgs.specifyHTTPPort );
-        }
-
         IStatus status = remoteServerWC.validate( monitor );
 
         if( status != null && status.getSeverity() == IStatus.ERROR )
@@ -436,7 +432,6 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
         public static String password;
         public static String serverManagerContextPath;
         public static String specifyHostname;
-        public static String specifyHTTPPort;
         public static String specifyUsernamePassword;
         public static String username;
         public static String validateConnection;
