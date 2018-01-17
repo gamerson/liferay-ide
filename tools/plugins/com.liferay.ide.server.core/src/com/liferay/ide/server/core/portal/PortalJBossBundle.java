@@ -82,9 +82,9 @@ public class PortalJBossBundle extends AbstractPortalBundle
     }
 
     @Override
-    public String getHttpPort()
+    public int getHttpPort()
     {
-        String retVal = "8080";
+        int retVal = PortalServerConstants.DEFAULT_HTTP_PORT;
 
         File standaloneXmlFile = new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
 
@@ -94,11 +94,12 @@ public class PortalJBossBundle extends AbstractPortalBundle
         {
             if( portValue.lastIndexOf( ":" ) == -1 )
             {
-                retVal = portValue;
+                retVal = Integer.parseInt(portValue);
             }
             else
             {
-                retVal = portValue.substring( portValue.lastIndexOf( ":" ) + 1, portValue.length() - 1 );
+                String httpPortValue = portValue.substring( portValue.lastIndexOf( ":" ) + 1, portValue.length() - 1 );
+                retVal = Integer.parseInt(httpPortValue);
             }
         }
 
@@ -106,11 +107,11 @@ public class PortalJBossBundle extends AbstractPortalBundle
     }
 
     @Override
-    public void setHttpPort( String port )
+    public void setHttpPort( int port )
     {
         File standaloneXmlFile = new File( getAppServerDir().toPortableString(), "standalone/configuration/standalone.xml" );
 
-        setHttpPortValue( standaloneXmlFile, "socket-binding", "name", "http", "port", port );
+        setHttpPortValue( standaloneXmlFile, "socket-binding", "name", "http", "port", String.valueOf(port) );
     }
 
     @Override

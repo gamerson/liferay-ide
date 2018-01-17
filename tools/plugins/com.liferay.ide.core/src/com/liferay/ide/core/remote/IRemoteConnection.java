@@ -16,6 +16,7 @@ package com.liferay.ide.core.remote;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public interface IRemoteConnection {
 
@@ -29,7 +30,7 @@ public interface IRemoteConnection {
 
 	public void setHost(String host);
 
-	public void setHttpPort(String httpPort);
+	public void setHttpPort(int httpPort);
 
 	public void setPassword(String password);
 
