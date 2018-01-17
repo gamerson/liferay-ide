@@ -58,6 +58,7 @@ import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 
 /**
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class RemoteSettingsEditorSection extends ServerEditorSection
 {
@@ -106,8 +107,9 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
                     return;
                 }
 
+                int httpPortValue = Integer.parseInt(textHttpPort.getText().trim());
                 updating = true;
-                execute( new SetHttpPortCommand( remoteServer, textHttpPort.getText().trim() ) );
+                execute( new SetHttpPortCommand( remoteServer, httpPortValue ) );
                 updating = false;
                 // validate();
             }
@@ -372,7 +374,7 @@ public class RemoteSettingsEditorSection extends ServerEditorSection
 
         updating = true;
 
-        textHttpPort.setText( remoteServer.getHTTPPort() );
+        textHttpPort.setText( String.valueOf(remoteServer.getHttpPort()) );
 
         textUsername.setText( remoteServer.getUsername() );
 
