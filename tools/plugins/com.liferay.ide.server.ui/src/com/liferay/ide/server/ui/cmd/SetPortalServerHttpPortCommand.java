@@ -20,15 +20,16 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class SetPortalServerHttpPortCommand extends ServerCommand
 {
 
-    protected String oldHttpPort;
-    protected String httpPort;
+    protected int oldHttpPort;
+    protected int httpPort;
 
-    public SetPortalServerHttpPortCommand( IServerWorkingCopy server, String httpPort )
+    public SetPortalServerHttpPortCommand( IServerWorkingCopy server, int httpPort )
     {
         super( server, Messages.editorResourceModifiedTitle );
         this.httpPort = httpPort;

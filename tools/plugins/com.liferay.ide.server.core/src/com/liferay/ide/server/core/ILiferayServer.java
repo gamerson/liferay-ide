@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 /**
  * @author Greg Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public interface ILiferayServer
 {
@@ -51,7 +52,7 @@ public interface ILiferayServer
 
     String getUsername();
 
-    String getHttpPort();
+    int getHttpPort();
 
     String getId();
 

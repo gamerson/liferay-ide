@@ -17,15 +17,16 @@ package com.liferay.ide.server.remote;
 
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.server.core.ILiferayServer;
+import com.liferay.ide.server.core.portal.PortalServerConstants;
 
 import org.eclipse.wst.server.core.model.IURLProvider;
 
 /**
  * @author Greg Amerson
+ * @author Simon Jiang
  */
 public interface IRemoteServer extends ILiferayServer, IURLProvider
 {
-
     String ATTR_ADJUST_DEPLOYMENT_TIMESTAMP = "adjust-deployment-timestamp"; //$NON-NLS-1$
 
     String ATTR_HOSTNAME = "hostname"; //$NON-NLS-1$
@@ -36,7 +37,7 @@ public interface IRemoteServer extends ILiferayServer, IURLProvider
 
     boolean DEFAULT_ADJUST_DEPLOYMENT_TIMESTAMP = defaultPrefs.getBoolean( "adjust.deployment.timestamp", true ); //$NON-NLS-1$
 
-    String DEFAULT_HTTP_PORT = defaultPrefs.get( "default.http.port", StringPool.EMPTY ); //$NON-NLS-1$
+    int DEFAULT_HTTP_PORT = defaultPrefs.getInt( "default.http.port", PortalServerConstants.DEFAULT_HTTP_PORT ); //$NON-NLS-1$
 
     String DEFAULT_LIFERAY_PORTAL_CONTEXT_PATH = defaultPrefs.get( "default.liferay.portal.context.path", StringPool.EMPTY ); //$NON-NLS-1$
 
@@ -46,7 +47,7 @@ public interface IRemoteServer extends ILiferayServer, IURLProvider
 
     String getHost();
 
-    String getHTTPPort();
+    int getHttpPort();
 
     String getId();
 
