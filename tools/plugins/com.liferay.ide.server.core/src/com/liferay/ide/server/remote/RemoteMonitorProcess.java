@@ -31,6 +31,7 @@ import org.eclipse.wst.server.core.IServer;
 
 /**
  * @author Greg Amerson
+ * @author Simon Jiang
  */
 @SuppressWarnings( "restriction" )
 public class RemoteMonitorProcess extends Process implements IProcess
@@ -105,7 +106,7 @@ public class RemoteMonitorProcess extends Process implements IProcess
         if( this.label == null )
         {
             String host = null;
-            String port = null;
+            int port = IRemoteServer.DEFAULT_HTTP_PORT;
 
             if( server != null )
             {
@@ -116,10 +117,10 @@ public class RemoteMonitorProcess extends Process implements IProcess
 
             if( wasServer != null )
             {
-                port = wasServer.getHTTPPort();
+                port = wasServer.getHttpPort();
             }
 
-            this.label = ( host != null ? host : StringPool.EMPTY ) + ":" + ( port != null ? port : StringPool.EMPTY ); //$NON-NLS-1$
+            this.label = ( host != null ? host : StringPool.EMPTY ) + ":" + port; //$NON-NLS-1$
         }
 
         return this.label;

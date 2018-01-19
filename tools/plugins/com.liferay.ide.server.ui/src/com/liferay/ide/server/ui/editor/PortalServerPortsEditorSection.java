@@ -32,6 +32,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSection
 {
@@ -73,7 +74,9 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
                 updating = true;
 
-                execute( new SetPortalServerHttpPortCommand( server, httpPort.getText().trim() ) );
+                int httpPortValue = Integer.parseInt(httpPort.getText().trim());
+
+                execute( new SetPortalServerHttpPortCommand( server, httpPortValue ) );
 
                 updating = false;
             }
@@ -87,13 +90,13 @@ public class PortalServerPortsEditorSection extends AbstractPortalServerEditorSe
 
     protected void initProperties()
     {
-        httpPort.setText( portalBundle.getHttpPort() );
+        httpPort.setText( String.valueOf(portalBundle.getHttpPort()) );
     }
 
     protected void setDefault()
     {
         execute( new SetPortalServerHttpPortCommand( server, PortalServerConstants.DEFAULT_HTTP_PORT ) );
-        httpPort.setText( PortalServerConstants.DEFAULT_HTTP_PORT );
+        httpPort.setText( String.valueOf(PortalServerConstants.DEFAULT_HTTP_PORT) );
     }
 
     private static class Msgs extends NLS
