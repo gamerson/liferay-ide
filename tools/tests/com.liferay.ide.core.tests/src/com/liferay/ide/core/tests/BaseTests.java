@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.core.tests;
-
-import static org.junit.Assert.fail;
 
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.FileUtil;
@@ -34,139 +31,138 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+
+import org.junit.Assert;
 
 /**
  * @author Gregory Amerson
  * @author Terry Jia
  */
-public class BaseTests
-{
+public class BaseTests {
 
-    protected static IProject project( final String name )
-    {
-        return workspaceRoot().getProject( name );
-    }
+	protected static void failTest(Exception e) {
+		StringWriter s = new StringWriter();
 
-    protected static IWorkspace workspace()
-    {
-        return ResourcesPlugin.getWorkspace();
-    }
+		e.printStackTrace(new PrintWriter(s));
 
-    protected static IWorkspaceRoot workspaceRoot()
-    {
-        return workspace().getRoot();
-    }
+		Assert.fail(s.toString());
+	}
 
-    protected final IFile createFile( final IProject project, final String path ) throws Exception
-    {
-        return createFile( project, path, new byte[0] );
-    }
+	protected static IProject project(String name) {
+		return workspaceRoot().getProject(name);
+	}
 
-    protected final IFile createFile( final IProject project, final String path, final byte[] content ) throws Exception
-    {
-        return createFile( project, path, new ByteArrayInputStream( content ) );
-    }
+	protected static IWorkspace workspace() {
+		return ResourcesPlugin.getWorkspace();
+	}
 
-    protected final IFile createFile( final IProject project, final String path, final InputStream content ) throws Exception
-    {
-        final IFile file = project.getFile( path );
-        final IContainer parent = file.getParent();
+	protected static IWorkspaceRoot workspaceRoot() {
+		return workspace().getRoot();
+	}
 
-        if( parent instanceof IFolder )
-        {
-            createFolder( (IFolder) parent );
-        }
+	protected IFile createFile(IProject project, String path) throws Exception {
+		return createFile(project, path, new byte[0]);
+	}
 
-        file.create( content, true, null );
+	protected IFile createFile(IProject project, String path, byte[] content) throws Exception {
+		return createFile(project, path, new ByteArrayInputStream(content));
+	}
 
-        return file;
-    }
+	protected IFile createFile(IProject project, String path, InputStream content) throws Exception {
+		IFile file = project.getFile(path);
 
-    protected final void createFolder( final IFolder folder ) throws Exception
-    {
-        if( !folder.exists() )
-        {
-            final IContainer parent = folder.getParent();
+		IContainer parent = file.getParent();
 
-            if( parent instanceof IFolder )
-            {
-                createFolder( (IFolder) parent );
-            }
+		if (parent instanceof IFolder) {
+			createFolder((IFolder)parent);
+		}
 
-            folder.create( true, true, null );
-        }
-    }
+		file.create(content, true, null);
 
-    protected final IFolder createFolder( final IProject project, final String path ) throws Exception
-    {
-        final IFolder folder = project.getFolder( path );
-        createFolder( folder );
-        return folder;
-    }
+		return file;
+	}
 
-    protected final IProject createProject( final String name ) throws Exception
-    {
-        String n = getClass().getName();
+	protected void createFolder(IFolder folder) throws Exception {
+		if (!folder.exists()) {
+			IContainer parent = folder.getParent();
 
-        if( name != null )
-        {
-            n = n + "." + name;
-        }
+			if (parent instanceof IFolder) {
+				createFolder((IFolder)parent);
+			}
 
-        final IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject( n );
-        p.create( null );
-        p.open( null );
+			folder.create(true, true, null);
+		}
+	}
 
-        return p;
-    }
+	protected IFolder createFolder(IProject project, String path) throws Exception {
+		IFolder folder = project.getFolder(path);
 
-    protected final File createTempFile( final String fileDir, final String fileName )
-    {
-        try
-        {
-            File tempFile = LiferayCore.getDefault().getStateLocation().append( fileName ).toFile();
+		createFolder(folder);
 
-            FileUtil.writeFileFromStream( tempFile, getClass().getResourceAsStream( fileDir + "/" + fileName ) );
+		return folder;
+	}
 
-            if( tempFile.exists() )
-            {
-                return tempFile;
-            }
-        }
-        catch( IOException e )
-        {
-        }
+	protected IProject createProject(String name) throws Exception {
+		Class<?> clazz = getClass();
 
-        return null;
-    }
+		String n = clazz.getName();
 
-    protected final void deleteProject( final String name ) throws Exception
-    {
-        String n = getClass().getName();
+		if (name != null) {
+			n = n + "." + name;
+		}
 
-        if( name != null )
-        {
-            n = n + "." + name;
-        }
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-        final IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject( n );
+		IProject p = workspace.getRoot().getProject(n);
 
-        if( p.exists() )
-        {
-            p.delete( true, null );
-        }
-    }
+		p.create(null);
 
-    protected static void failTest( Exception e )
-    {
-        StringWriter s = new StringWriter();
-        e.printStackTrace(new PrintWriter(s));
-        fail(s.toString());
-    }
+		p.open(null);
 
-    protected String stripCarriageReturns( String value )
-    {
-        return value.replaceAll( "\r", "" );
-    }
+		return p;
+	}
+
+	protected File createTempFile(String fileDir, String fileName) {
+		try {
+			IPath path = LiferayCore.getDefault().getStateLocation();
+
+			File tempFile = path.append(fileName).toFile();
+
+			Class<?> clazz = getClass();
+
+			FileUtil.writeFileFromStream(tempFile, clazz.getResourceAsStream(fileDir + "/" + fileName));
+
+			if (tempFile.exists()) {
+				return tempFile;
+			}
+		}
+		catch (IOException ioe) {
+		}
+
+		return null;
+	}
+
+	protected void deleteProject(String name) throws Exception {
+		Class<?> clazz = getClass();
+
+		String n = clazz.getName();
+
+		if (name != null) {
+			n = n + "." + name;
+		}
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+		IProject p = workspace.getRoot().getProject(n);
+
+		if (p.exists()) {
+			p.delete(true, null);
+		}
+	}
+
+	protected String stripCarriageReturns(String value) {
+		return value.replaceAll("\r", "");
+	}
 
 }
