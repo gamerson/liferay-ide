@@ -47,13 +47,13 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 
     public ServerManagerConnection()
     {
-        this( null, String.valueOf(PortalServerConstants.DEFAULT_HTTP_PORT), null, null, null );
+        this( null, PortalServerConstants.DEFAULT_HTTP_PORT, null, null, null );
     }
 
-    public ServerManagerConnection( String host, String httpPort, String username, String pw, String managerContextPath )
+    public ServerManagerConnection( String host, int httpPort, String username, String pw, String managerContextPath )
     {
         setHost( host );
-        setHttpPort( Integer.parseInt(httpPort) );
+        setHttpPort( httpPort );
         setUsername( username );
         setPassword( pw );
         this.managerContextPath = managerContextPath;
