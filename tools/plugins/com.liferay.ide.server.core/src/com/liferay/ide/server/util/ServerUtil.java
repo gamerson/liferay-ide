@@ -99,6 +99,7 @@ import org.w3c.dom.NodeList;
  * @author Kuo Zhang
  * @author Simon Jiang
  * @author Terry Jia
+ * @author Charles Wu
  */
 @SuppressWarnings( "restriction" )
 public class ServerUtil
@@ -818,6 +819,26 @@ public class ServerUtil
         return null;
     }
 
+    public static PortalBundle getPortalBundle( IPath bundleLocation )
+    {
+        if( FileUtil.exists( bundleLocation ) )
+        {
+            PortalBundleFactory[] factories = LiferayServerCore.getPortalBundleFactories();
+
+            for( PortalBundleFactory factory : factories )
+            {
+                IPath path = factory.canCreateFromPath( bundleLocation );
+
+                if( path != null )
+                {
+                    return factory.create( path );
+                }
+            }
+        }
+
+        return null;
+    }
+    
     public static IRuntime getRuntime( org.eclipse.wst.common.project.facet.core.runtime.IRuntime runtime )
     {
         return ServerCore.findRuntime( runtime.getProperty( "id" ) ); //$NON-NLS-1$
