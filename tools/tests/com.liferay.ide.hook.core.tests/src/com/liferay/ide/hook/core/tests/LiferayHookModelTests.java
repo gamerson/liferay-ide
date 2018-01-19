@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,13 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
-package com.liferay.ide.hook.core.tests;
+ */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+package com.liferay.ide.hook.core.tests;
 
 import com.liferay.ide.core.ILiferayPortal;
 import com.liferay.ide.core.ILiferayProject;
@@ -41,102 +37,103 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Gregory Amerson
  */
-public class LiferayHookModelTests extends ProjectCoreBase
-{
-    @Test
-    public void strutsActionPathPossibleValuesCacheService() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+public class LiferayHookModelTests extends ProjectCoreBase {
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "testPossibleValuesCache" );
-        op.setPluginType( PluginType.hook );
+	@Test
+	public void strutsActionPathPossibleValuesCacheService() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final IProject hookProject = createAntProject( op );
+		NewLiferayPluginProjectOp op = newProjectOp("testPossibleValuesCache");
 
-        final IFolder webappRoot = LiferayCore.create( IWebProject.class, hookProject ).getDefaultDocrootFolder();
+		op.setPluginType(PluginType.hook);
 
-        assertNotNull( webappRoot );
+		IProject hookProject = createAntProject(op);
 
-        final IFile hookXml = webappRoot.getFile( "WEB-INF/liferay-hook.xml" );
+		IFolder webappRoot = LiferayCore.create(IWebProject.class, hookProject).getDefaultDocrootFolder();
 
-        assertEquals( true, hookXml.exists() );
+		Assert.assertNotNull(webappRoot);
 
-        final Hook hook =
-            Hook6xx.TYPE.instantiate( new RootXmlResource( new XmlResourceStore( hookXml.getContents() ) ) );
+		IFile hookXml = webappRoot.getFile("WEB-INF/liferay-hook.xml");
 
-        assertNotNull( hook );
+		Assert.assertEquals(true, hookXml.exists());
 
-        final ILiferayProject liferayProject = LiferayCore.create( hookProject );
-        final ILiferayPortal portal = liferayProject.adapt( ILiferayPortal.class );
+		Hook hook = Hook6xx.TYPE.instantiate(new RootXmlResource(new XmlResourceStore(hookXml.getContents())));
 
-        final IPath strutsConfigPath = portal.getAppServerPortalDir().append( "WEB-INF/struts-config.xml" );
+		Assert.assertNotNull(hook);
 
-        final StrutsAction strutsAction = hook.getStrutsActions().insert();
+		ILiferayProject liferayProject = LiferayCore.create(hookProject);
 
-        final Value<String> strutsActionPath = strutsAction.getStrutsActionPath();
+		ILiferayPortal portal = liferayProject.adapt(ILiferayPortal.class);
 
-        final TreeSet<String> vals1 =
-            strutsActionPath.service( StrutsActionPathPossibleValuesCacheService.class ).getPossibleValuesForPath(
-                strutsConfigPath );
+		IPath strutsConfigPath = portal.getAppServerPortalDir().append("WEB-INF/struts-config.xml");
 
-        final TreeSet<String> vals2 =
-            strutsActionPath.service( StrutsActionPathPossibleValuesCacheService.class ).getPossibleValuesForPath(
-                strutsConfigPath );
+		StrutsAction strutsAction = hook.getStrutsActions().insert();
 
-        assertTrue( vals1 == vals2 );
-    }
+		Value<String> strutsActionPath = strutsAction.getStrutsActionPath();
 
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void strutsActionPathPossibleValuesService() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		TreeSet<String> vals1 = strutsActionPath.service(
+			StrutsActionPathPossibleValuesCacheService.class).getPossibleValuesForPath(strutsConfigPath);
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "testPossibleValues" );
-        op.setPluginType( PluginType.hook );
+		TreeSet<String> vals2 = strutsActionPath.service(
+			StrutsActionPathPossibleValuesCacheService.class).getPossibleValuesForPath(strutsConfigPath);
 
-        final IProject hookProject = createAntProject( op );
+		Assert.assertTrue(vals1 == vals2);
+	}
 
-        final IFolder webappRoot = LiferayCore.create( IWebProject.class, hookProject ).getDefaultDocrootFolder();
+	@Test
+	public void strutsActionPathPossibleValuesService() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        assertNotNull( webappRoot );
+		NewLiferayPluginProjectOp op = newProjectOp("testPossibleValues");
 
-        final IFile hookXml = webappRoot.getFile( "WEB-INF/liferay-hook.xml" );
+		op.setPluginType(PluginType.hook);
 
-        assertEquals( true, hookXml.exists() );
+		IProject hookProject = createAntProject(op);
 
-        final XmlResourceStore store = new XmlResourceStore( hookXml.getContents() )
-        {
-            public <A> A adapt( Class<A> adapterType )
-            {
-                if( IProject.class.equals( adapterType ) )
-                {
-                    return adapterType.cast( hookProject );
-                }
+		IFolder webappRoot = LiferayCore.create(IWebProject.class, hookProject).getDefaultDocrootFolder();
 
-                return super.adapt( adapterType );
-            }
-        };
+		Assert.assertNotNull(webappRoot);
 
-        final Hook hook = Hook6xx.TYPE.instantiate( new RootXmlResource( store ) );
+		IFile hookXml = webappRoot.getFile("WEB-INF/liferay-hook.xml");
 
-        assertNotNull( hook );
+		Assert.assertEquals(true, hookXml.exists());
 
-        final StrutsAction strutsAction = hook.getStrutsActions().insert();
+		XmlResourceStore store = new XmlResourceStore(hookXml.getContents()) {
 
-        final Value<String> strutsActionPath = strutsAction.getStrutsActionPath();
+			public <A> A adapt(Class<A> adapterType) {
+				if (IProject.class.equals(adapterType)) {
+					return adapterType.cast(hookProject);
+				}
 
-        final Set<String> values = strutsActionPath.service( StrutsActionPathPossibleValuesService.class ).values();
+				return super.adapt(adapterType);
+			}
 
-        assertNotNull( values );
+		};
 
-        assertTrue( values.size() > 10 );
-    }
+		Hook hook = Hook6xx.TYPE.instantiate(new RootXmlResource(store));
+
+		Assert.assertNotNull(hook);
+
+		StrutsAction strutsAction = hook.getStrutsActions().insert();
+
+		Value<String> strutsActionPath = strutsAction.getStrutsActionPath();
+
+		Set<String> values = strutsActionPath.service(StrutsActionPathPossibleValuesService.class).values();
+
+		Assert.assertNotNull(values);
+
+		Assert.assertTrue(values.size() > 10);
+	}
+
 }
