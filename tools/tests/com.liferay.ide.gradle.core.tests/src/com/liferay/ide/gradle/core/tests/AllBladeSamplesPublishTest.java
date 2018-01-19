@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,14 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.gradle.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.LiferayCore;
@@ -30,6 +25,7 @@ import com.liferay.ide.project.core.workspace.ImportLiferayWorkspaceOp;
 import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +43,9 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Module;
+
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,190 +53,176 @@ import org.junit.Test;
 /**
  * @author Gregory Amerson
  */
-@SuppressWarnings( "restriction" )
 @Ignore
-public class AllBladeSamplesPublishTest
-{
+@SuppressWarnings("restriction")
+public class AllBladeSamplesPublishTest {
 
-    private static final String WORKSPACE_SERVER_NAME = "workspace-server";
+	@BeforeClass
+	public static void importAllBladeSamples() throws Exception {
+		Util.deleteAllWorkspaceProjects();
 
-    @AfterClass
-    public static void restoreBladeCLIPrefsToDefault() throws Exception
-    {
-        IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+		ImportLiferayWorkspaceOp op = ImportLiferayWorkspaceOp.TYPE.instantiate();
 
-        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+		File projectDir = _copyTestProjectToWorkspace("projects/all-blade-samples");
 
-        final String defaultValue = defaults.get( BladeCLI.BLADE_CLI_REPO_URL, "" );
+		op.setWorkspaceLocation(projectDir.getCanonicalPath());
 
-        prefs.put( BladeCLI.BLADE_CLI_REPO_URL, defaultValue );
+		op.setProvisionLiferayBundle(true);
 
-        IServer wsServer = ServerUtil.getServer( WORKSPACE_SERVER_NAME );
+		op.setServerName(_WORKSPACE_SERVER_NAME);
 
-        wsServer.stop( true );
-    }
+		final NullProgressMonitor monitor = new NullProgressMonitor();
 
-    @BeforeClass
-    public static void importAllBladeSamples() throws Exception
-    {
-        Util.deleteAllWorkspaceProjects();
+		op.execute(ProgressMonitorBridge.create(monitor));
 
-        ImportLiferayWorkspaceOp op = ImportLiferayWorkspaceOp.TYPE.instantiate();
+		Util.waitForBuildAndValidation();
 
-        File projectDir = copyTestProjectToWorkspace( "projects/all-blade-samples" );
+		IProject rootProject = CoreUtil.getWorkspaceRoot().getProject("all-blade-samples");
 
-        op.setWorkspaceLocation( projectDir.getCanonicalPath() );
+		Assert.assertNotNull(rootProject);
 
-        op.setProvisionLiferayBundle( true );
+		Assert.assertTrue(rootProject.exists());
 
-        op.setServerName( WORKSPACE_SERVER_NAME );
+		_assertLiferayProject("blade.portlet.jsp");
 
-        final NullProgressMonitor monitor = new NullProgressMonitor();
+		_assertLiferayProject("blade.gogo");
 
-        op.execute( ProgressMonitorBridge.create( monitor ) );
+		IServer wsServer = ServerUtil.getServer(_WORKSPACE_SERVER_NAME);
 
-        Util.waitForBuildAndValidation();
+		Assert.assertNotNull(wsServer);
 
-        IProject rootProject = CoreUtil.getWorkspaceRoot().getProject( "all-blade-samples" );
+		long timeoutExpiredMs = System.currentTimeMillis() + 300000;
 
-        assertNotNull( rootProject );
+		wsServer.start("run", monitor);
 
-        assertTrue( rootProject.exists() );
+		while (true) {
+			Assert.assertEquals(wsServer.getServerState(), IServer.STATE_STARTING, wsServer.getServerState());
 
-        assertLiferayProject( "blade.portlet.jsp" );
+			Thread.sleep(500);
 
-        assertLiferayProject( "blade.gogo" );
+			if ((wsServer.getServerState() == IServer.STATE_STARTED) ||
+				(System.currentTimeMillis() >= timeoutExpiredMs)) {
 
-        IServer wsServer = ServerUtil.getServer( WORKSPACE_SERVER_NAME );
+				break;
+			}
+		}
 
-        assertNotNull( wsServer );
+		Assert.assertEquals(wsServer.getServerState(), IServer.STATE_STARTED, wsServer.getServerState());
+	}
 
-        long timeoutExpiredMs = System.currentTimeMillis() + 300000;
+	@AfterClass
+	public static void restoreBladeCLIPrefsToDefault() throws Exception {
+		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-        wsServer.start( "run", monitor );
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-        while( true )
-        {
-            assertEquals( wsServer.getServerState(), IServer.STATE_STARTING, wsServer.getServerState() );
+		final String defaultValue = defaults.get(BladeCLI.BLADE_CLI_REPO_URL, "");
 
-            Thread.sleep( 500 );
+		prefs.put(BladeCLI.BLADE_CLI_REPO_URL, defaultValue);
 
-            if( wsServer.getServerState() == IServer.STATE_STARTED || System.currentTimeMillis() >= timeoutExpiredMs )
-            {
-                break;
-            }
-        }
+		IServer wsServer = ServerUtil.getServer(_WORKSPACE_SERVER_NAME);
 
-        assertEquals( wsServer.getServerState(), IServer.STATE_STARTED, wsServer.getServerState() );
-    }
+		wsServer.stop(true);
+	}
 
-    private static File copyTestProjectToWorkspace( String path ) throws Exception
-    {
-        IWorkspace ws = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = ws.getRoot();
+	@Test
+	public void testAllProjectsImported() throws Exception {
+		List<IProject> bladeProjects = _getAllBladeProjects();
 
-        File src = new File( path );
-        File dst = new File( root.getLocation().toFile(), src.getName() );
+		Assert.assertEquals("", 35, bladeProjects.size());
+	}
 
-        TestUtil.copyDir( src, dst );
+	@Test
+	public void testPublishAllBladeSamples() throws Exception {
+		IServer server = ServerUtil.getServer(_WORKSPACE_SERVER_NAME);
 
-        return dst;
-    }
+		IServerWorkingCopy serverWC = server.createWorkingCopy();
 
-    @Test
-    public void testAllProjectsImported() throws Exception
-    {
-        List<IProject> bladeProjects = getAllBladeProjects();
+		List<IProject> bladeProjects = _getAllBladeProjects();
 
-        assertEquals( 35, bladeProjects.size() );
-    }
+		List<IModule> modules = new ArrayList<>();
 
-    private List<IProject> getAllBladeProjects()
-    {
-        List<IProject> bladeProjects = new ArrayList<>();
+		for (IProject bladeProject : bladeProjects) {
+			final String name = bladeProject.getName();
 
-        for( IProject project : CoreUtil.getAllProjects() )
-        {
-            if( project.getName().startsWith( "blade" ) )
-            {
-                bladeProjects.add( project );
-            }
-        }
+			IModule module = new Module(null, name, name, "liferay.bundle", "1.0", bladeProject);
 
-        return bladeProjects;
-    }
+			modules.add(module);
+		}
 
-    @Test
-    public void testPublishAllBladeSamples() throws Exception
-    {
-        IServer server = ServerUtil.getServer( WORKSPACE_SERVER_NAME );
+		IProgressMonitor monitor = new NullProgressMonitor();
 
-        IServerWorkingCopy serverWC = server.createWorkingCopy();
+		serverWC.modifyModules(modules.toArray(new IModule[0]), null, monitor);
 
-        List<IProject> bladeProjects = getAllBladeProjects();
+		server = serverWC.save(true, monitor);
 
-        List<IModule> modules = new ArrayList<>();
+		Util.waitForBuildAndValidation();
 
-        for( IProject bladeProject : bladeProjects )
-        {
-            final String name = bladeProject.getName();
+		IModule[] serverModules = server.getModules();
 
-            IModule module = new Module( null, name, name, "liferay.bundle", "1.0", bladeProject );
+		Assert.assertEquals("", 35, serverModules.length);
 
-            modules.add( module );
-        }
+		String[] retval = BladeCLI.execute("sh lb -s blade");
 
-        IProgressMonitor monitor = new NullProgressMonitor();
+		for (IModule serverModule : serverModules) {
+			IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, serverModule.getProject());
 
-        serverWC.modifyModules( modules.toArray( new IModule[0] ), null, monitor );
+			String bsn = bundleProject.getSymbolicName();
 
-        server = serverWC.save( true, monitor );
+			boolean foundBundle = false;
 
-        Util.waitForBuildAndValidation();
+			for (String bundleString : retval) {
+				if (bundleString.contains(bsn)) {
+					foundBundle = true;
 
-        IModule[] serverModules = server.getModules();
+					if (!bundleString.contains("blade.hook.jsp")) {
+						Assert.assertTrue("Error in bundle state: " + bundleString, bundleString.contains("Active"));
+					}
+					else {
+						Assert.assertTrue("Error in bundle state: " + bundleString, bundleString.contains("Resolved"));
+					}
 
-        assertEquals( 35, serverModules.length );
+					break;
+				}
+			}
 
-        String[] retval = BladeCLI.execute( "sh lb -s blade" );
+			Assert.assertTrue(foundBundle);
+		}
+	}
 
-        for( IModule serverModule : serverModules )
-        {
-            IBundleProject bundleProject = LiferayCore.create( IBundleProject.class, serverModule.getProject() );
+	private static void _assertLiferayProject(String projectName) {
+		IProject project = CoreUtil.getProject(projectName);
 
-            String bsn = bundleProject.getSymbolicName();
+		Assert.assertTrue("Project " + projectName + " doesn't exist.", project.exists());
+		Assert.assertTrue("Project " + projectName + " doesn't haven liferay nature", LiferayNature.hasNature(project));
+	}
 
-            boolean foundBundle = false;
+	private static File _copyTestProjectToWorkspace(String path) throws Exception {
+		IWorkspace ws = ResourcesPlugin.getWorkspace();
 
-            for( String bundleString : retval )
-            {
-                if( bundleString.contains( bsn ) )
-                {
-                    foundBundle = true;
+		IWorkspaceRoot root = ws.getRoot();
 
-                    if( !bundleString.contains( "blade.hook.jsp" ) )
-                    {
-                        assertTrue( "Error in bundle state: " + bundleString, bundleString.contains( "Active" ) );
-                    }
-                    else
-                    {
-                        assertTrue( "Error in bundle state: " + bundleString, bundleString.contains( "Resolved" ) );
-                    }
+		File src = new File(path);
 
-                    break;
-                }
-            }
+		File dst = new File(root.getLocation().toFile(), src.getName());
 
-            assertTrue( foundBundle );
-        }
-    }
+		TestUtil.copyDir(src, dst);
 
-    private static void assertLiferayProject( String projectName )
-    {
-        IProject project = CoreUtil.getProject( projectName );
+		return dst;
+	}
 
-        assertTrue( "Project " + projectName + " doesn't exist.", project.exists() );
-        assertTrue( "Project " + projectName + " doesn't haven liferay nature", LiferayNature.hasNature( project ) );
-    }
+	private List<IProject> _getAllBladeProjects() {
+		List<IProject> bladeProjects = new ArrayList<>();
+
+		for (IProject project : CoreUtil.getAllProjects()) {
+			if (project.getName().startsWith("blade")) {
+				bladeProjects.add(project);
+			}
+		}
+
+		return bladeProjects;
+	}
+
+	private static final String _WORKSPACE_SERVER_NAME = "workspace-server";
 
 }

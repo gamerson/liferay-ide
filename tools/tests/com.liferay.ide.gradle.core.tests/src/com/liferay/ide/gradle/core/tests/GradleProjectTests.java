@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,15 +10,11 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.gradle.core.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
 
 import com.liferay.blade.gradle.model.CustomModel;
 import com.liferay.ide.core.IBundleProject;
@@ -51,247 +47,222 @@ import org.junit.Test;
  * @author Gregory Amerson
  * @author Andy Wu
  */
-public class GradleProjectTests
-{
+public class GradleProjectTests {
+
+	@BeforeClass
+	public static void deleteAllWorkspaceProjects()
+		throws Exception {
+
+		Util.deleteAllWorkspaceProjects();
+	}
+
+	@Test
+	public void getSymbolicName()
+		throws Exception {
 
-    @BeforeClass
-    public static void deleteAllWorkspaceProjects() throws Exception
-    {
-        Util.deleteAllWorkspaceProjects();
-    }
+		LiferayGradleProject gradleProject =
+			Util.fullImportGradleProject("projects/getSymbolicName");
 
-    @Test
-    public void getSymbolicName() throws Exception
-    {
-        LiferayGradleProject gradleProject = Util.fullImportGradleProject( "projects/getSymbolicName" );
+		Assert.assertNotNull(gradleProject);
+
+		NullProgressMonitor monitor = new NullProgressMonitor();
+
+		IPath outputJar = gradleProject.getOutputBundle(false, monitor);
+
+		if (outputJar != null && outputJar.toFile().exists()) {
+			outputJar = gradleProject.getOutputBundle(true, monitor);
+		}
+
+		Assert.assertTrue(outputJar.toFile().exists());
 
-        assertNotNull( gradleProject );
+		Assert.assertEquals("com.liferay.test.bsn", gradleProject.getSymbolicName());
+	}
 
-        NullProgressMonitor monitor = new NullProgressMonitor();
+	@Test
+	public void getOutputJar()
+		throws Exception {
 
-        IPath outputJar = gradleProject.getOutputBundle( false, monitor );
+		LiferayGradleProject gradleProject =
+			Util.fullImportGradleProject("projects/getOutputJar");
 
-        if( outputJar != null && outputJar.toFile().exists() )
-        {
-            outputJar = gradleProject.getOutputBundle( true, monitor );
-        }
+		Assert.assertNotNull(gradleProject);
 
-        assertTrue( outputJar.toFile().exists() );
+		NullProgressMonitor monitor = new NullProgressMonitor();
 
-        assertEquals( "com.liferay.test.bsn", gradleProject.getSymbolicName() );
-    }
+		IPath outputJar = gradleProject.getOutputBundle(false, monitor);
 
-    @Test
-    public void getOutputJar() throws Exception
-    {
-        LiferayGradleProject gradleProject = Util.fullImportGradleProject( "projects/getOutputJar" );
+		Assert.assertNotNull(outputJar);
 
-        assertNotNull( gradleProject );
+		if (outputJar.toFile().exists()) {
+			outputJar.toFile().delete();
+		}
 
-        NullProgressMonitor monitor = new NullProgressMonitor();
+		Assert.assertTrue(!outputJar.toFile().exists());
 
-        IPath outputJar = gradleProject.getOutputBundle( false, monitor );
+		outputJar = gradleProject.getOutputBundle(true, monitor);
 
-        assertNotNull( outputJar );
+		Assert.assertNotNull(outputJar);
 
-        if( outputJar.toFile().exists() )
-        {
-            outputJar.toFile().delete();
-        }
+		Assert.assertTrue(outputJar.toFile().exists());
+	}
 
-        assertTrue( !outputJar.toFile().exists() );
+	/*
+	 * @Test public void gradleProjectProviderCache() throws Exception { final
+	 * int[] consolesAdded = new int[1]; IConsoleListener consoleListener = new
+	 * IConsoleListener() {
+	 * @Override public void consolesRemoved( IConsole[] consoles ) { }
+	 * @Override public void consolesAdded( IConsole[] consoles ) {
+	 * consolesAdded[0]++; } };
+	 * ConsolePlugin.getDefault().getConsoleManager().addConsoleListener(
+	 * consoleListener );; LiferayGradleProject gradleProject =
+	 * fullImportGradleProject( "projects/cacheTest" ); assertNotNull(
+	 * gradleProject ); IBundleProject bundleProject = LiferayCore.create(
+	 * IBundleProject.class, gradleProject.getProject() ); assertNotNull(
+	 * bundleProject ); assertEquals( LiferayGradleProject.class,
+	 * bundleProject.getClass() ); assertEquals( 1, consolesAdded[0] );
+	 * bundleProject = LiferayCore.create( IBundleProject.class,
+	 * gradleProject.getProject() ); assertNotNull( bundleProject );
+	 * assertEquals( LiferayGradleProject.class, bundleProject.getClass() );
+	 * assertEquals( 1, consolesAdded[0] ); IFile buildFile =
+	 * gradleProject.getProject().getFile( "build.gradle" ); String
+	 * buildFileContents = CoreUtil.readStreamToString( buildFile.getContents(
+	 * true ), true ); String updatedContents = buildFileContents.replaceAll(
+	 * "apply plugin: 'org.dm.bundle'", "" ); buildFile.setContents( new
+	 * ByteArrayInputStream( updatedContents.getBytes() ), IResource.FORCE, new
+	 * NullProgressMonitor() ); final Object lock = new Object();
+	 * IGradleModelListener gradleModelListener = new IGradleModelListener() {
+	 * @Override public <T> void modelChanged( GradleProject project, Class<T>
+	 * type, T model ) { synchronized( lock ) { lock.notify(); } } };
+	 * gradleProject.addModelListener( gradleModelListener );
+	 * gradleProject.requestGradleModelRefresh(); synchronized( lock ) {
+	 * lock.wait(); } bundleProject = LiferayCore.create( IBundleProject.class,
+	 * gradleProject.getProject() ); assertNull( bundleProject ); assertEquals(
+	 * 2, consolesAdded[0] ); buildFile.setContents( new ByteArrayInputStream(
+	 * buildFileContents.getBytes() ), IResource.FORCE, new
+	 * NullProgressMonitor() ); gradleProject.requestGradleModelRefresh();
+	 * synchronized( lock ) { lock.wait(); } bundleProject = LiferayCore.create(
+	 * IBundleProject.class, gradleProject.getProject() ); assertNotNull(
+	 * bundleProject ); assertEquals( 3, consolesAdded[0] ); }
+	 */
 
-        outputJar = gradleProject.getOutputBundle( true, monitor );
+	@Test
+	public void hasGradleBundlePluginDetection()
+		throws Exception {
 
-        assertNotNull( outputJar );
+		final LiferayGradleProject gradleProject =
+			Util.fullImportGradleProject("projects/biz.aQute.bundle");
 
-        assertTrue( outputJar.toFile().exists() );
-    }
+		Assert.assertNotNull(gradleProject);
 
-/*    @Test
-    public void gradleProjectProviderCache() throws Exception
-    {
-        final int[] consolesAdded = new int[1];
+		final IBundleProject[] bundleProject = new IBundleProject[1];
 
-        IConsoleListener consoleListener = new IConsoleListener()
-        {
-            @Override
-            public void consolesRemoved( IConsole[] consoles )
-            {
-            }
+		WorkspaceJob job = new WorkspaceJob("") {
 
-            @Override
-            public void consolesAdded( IConsole[] consoles )
-            {
-                consolesAdded[0]++;
-            }
-        };
+			@Override
+			public IStatus runInWorkspace(IProgressMonitor monitor)
+				throws CoreException {
 
-        ConsolePlugin.getDefault().getConsoleManager().addConsoleListener( consoleListener );;
+				bundleProject[0] = LiferayCore.create(
+					IBundleProject.class, gradleProject.getProject());
+				return Status.OK_STATUS;
+			}
+		};
 
-        LiferayGradleProject gradleProject = fullImportGradleProject( "projects/cacheTest" );
+		job.schedule(5000);
+		job.join();
 
-        assertNotNull( gradleProject );
+		Assert.assertNotNull(bundleProject[0]);
 
-        IBundleProject bundleProject = LiferayCore.create( IBundleProject.class, gradleProject.getProject() );
+		Assert.assertEquals(LiferayGradleProject.class, bundleProject[0].getClass());
+	}
 
-        assertNotNull( bundleProject );
+	@Test
+	public void testThemeProjectPluginDetection()
+		throws Exception {
 
-        assertEquals( LiferayGradleProject.class, bundleProject.getClass() );
+		NewLiferayModuleProjectOp op =
+			NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        assertEquals( 1, consolesAdded[0] );
+		op.setProjectName("gradle-theme-test");
+		op.setProjectProvider("gradle-module");
+		op.setProjectTemplateName("theme");
 
-        bundleProject = LiferayCore.create( IBundleProject.class, gradleProject.getProject() );
+		op.execute(ProgressMonitorBridge.create(new NullProgressMonitor()));
 
-        assertNotNull( bundleProject );
+		IProject project = CoreUtil.getProject("gradle-theme-test");
 
-        assertEquals( LiferayGradleProject.class, bundleProject.getClass() );
+		Assert.assertNotNull(project);
 
-        assertEquals( 1, consolesAdded[0] );
+		Util.waitForBuildAndValidation();
 
-        IFile buildFile = gradleProject.getProject().getFile( "build.gradle" );
-        String buildFileContents = CoreUtil.readStreamToString( buildFile.getContents( true ), true );
-        String updatedContents = buildFileContents.replaceAll( "apply plugin: 'org.dm.bundle'", "" );
+		IBundleProject bundleProject =
+			LiferayCore.create(IBundleProject.class, project);
 
-        buildFile.setContents(
-            new ByteArrayInputStream( updatedContents.getBytes() ), IResource.FORCE, new NullProgressMonitor() );
+		Assert.assertNotNull(bundleProject);
+	}
 
-        final Object lock = new Object();
+	@Test
+	public void toolingApiCustomModel()
+		throws Exception {
 
-        IGradleModelListener gradleModelListener = new IGradleModelListener()
-        {
-            @Override
-            public <T> void modelChanged( GradleProject project, Class<T> type, T model )
-            {
-                synchronized( lock )
-                {
-                    lock.notify();
-                }
-            }
-        };
+		LiferayGradleProject gradleProject =
+			Util.fullImportGradleProject("projects/customModel");
 
-        gradleProject.addModelListener( gradleModelListener );
-        gradleProject.requestGradleModelRefresh();
+		Assert.assertNotNull(gradleProject);
 
-        synchronized( lock )
-        {
-            lock.wait();
-        }
+		CustomModel customModel = GradleCore.getToolingModel(
+			CustomModel.class, gradleProject.getProject());
 
-        bundleProject = LiferayCore.create( IBundleProject.class, gradleProject.getProject() );
+		Assert.assertNotNull(customModel);
 
-        assertNull( bundleProject );
+		Assert.assertFalse(customModel.hasPlugin("not.a.plugin"));
 
-        assertEquals( 2, consolesAdded[0] );
+		Assert.assertTrue(
+			customModel.hasPlugin("org.dm.gradle.plugins.bundle.BundlePlugin"));
+	}
 
-        buildFile.setContents(
-            new ByteArrayInputStream( buildFileContents.getBytes() ), IResource.FORCE, new NullProgressMonitor() );
+	@Test
+	public void testAddGradleDependency()
+		throws Exception {
 
-        gradleProject.requestGradleModelRefresh();
+		LiferayGradleProject gradleProject = Util.fullImportGradleProject(
+			"projects/GradleDependencyTestProject");
+		String[][] gradleDependencies = new String[][] {
+			{
+				"com.liferay.portal", "com.liferay.portal.kernel", "2.6.0"
+			}
+		};
 
-        synchronized( lock )
-        {
-            lock.wait();
-        }
+		GradleDependency gd = new GradleDependency(
+			gradleDependencies[0][0], gradleDependencies[0][1],
+			gradleDependencies[0][2]);
 
-        bundleProject = LiferayCore.create( IBundleProject.class, gradleProject.getProject() );
+		Assert.assertNotNull(gradleProject);
 
-        assertNotNull( bundleProject );
+		IProject project = gradleProject.getProject();
 
-        assertEquals( 3, consolesAdded[0] );
-    }*/
+		IFile gradileFile = project.getFile("build.gradle");
 
-    @Test
-    public void hasGradleBundlePluginDetection() throws Exception
-    {
-        final LiferayGradleProject gradleProject = Util.fullImportGradleProject( "projects/biz.aQute.bundle" );
+		GradleDependencyUpdater updater =
+			new GradleDependencyUpdater(gradileFile.getLocation().toFile());
 
-        assertNotNull( gradleProject );
+		List<GradleDependency> existDependencies = updater.getAllDependencies();
 
-        final IBundleProject[] bundleProject = new IBundleProject[1];
+		Assert.assertFalse(existDependencies.contains(gd));
 
-        WorkspaceJob job = new WorkspaceJob("")
-        {
-            @Override
-            public IStatus runInWorkspace( IProgressMonitor monitor ) throws CoreException
-            {
-                bundleProject[0] = LiferayCore.create( IBundleProject.class, gradleProject.getProject() );
-                return Status.OK_STATUS;
-            }
-        };
+		IProjectBuilder gradleProjectBuilder =
+			gradleProject.adapt(IProjectBuilder.class);
 
-        job.schedule( 5000 );
-        job.join();
+		gradleProjectBuilder.updateProjectDependency(
+			project, Arrays.asList(gradleDependencies));
 
-        assertNotNull( bundleProject[0] );
+		GradleDependencyUpdater dependencyUpdater =
+			new GradleDependencyUpdater(gradileFile.getLocation().toFile());
 
-        assertEquals( LiferayGradleProject.class, bundleProject[0].getClass() );
-    }
+		List<GradleDependency> updatedDependencies =
+			dependencyUpdater.getAllDependencies();
 
-    @Test
-    public void testThemeProjectPluginDetection() throws Exception
-    {
-       NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
-
-       op.setProjectName( "gradle-theme-test" );
-       op.setProjectProvider( "gradle-module" );
-       op.setProjectTemplateName( "theme" );
-
-       op.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) );
-
-       IProject project = CoreUtil.getProject( "gradle-theme-test" );
-
-       assertNotNull( project );
-
-       Util.waitForBuildAndValidation();
-
-       IBundleProject bundleProject = LiferayCore.create( IBundleProject.class, project );
-
-       assertNotNull( bundleProject );
-    }
-
-    @Test
-    public void toolingApiCustomModel() throws Exception
-    {
-        LiferayGradleProject gradleProject = Util.fullImportGradleProject( "projects/customModel" );
-
-        assertNotNull( gradleProject );
-
-        CustomModel customModel = GradleCore.getToolingModel( CustomModel.class, gradleProject.getProject() );
-
-        assertNotNull( customModel );
-
-        assertFalse( customModel.hasPlugin( "not.a.plugin" ) );
-
-        assertTrue( customModel.hasPlugin( "org.dm.gradle.plugins.bundle.BundlePlugin" ) );
-    }
-
-    @Test
-    public void testAddGradleDependency() throws Exception
-    {
-        LiferayGradleProject gradleProject = Util.fullImportGradleProject( "projects/GradleDependencyTestProject" );
-        String[][] gradleDependencies =
-            new String[][] { { "com.liferay.portal", "com.liferay.portal.kernel", "2.6.0" } };
-
-        GradleDependency gd =
-            new GradleDependency( gradleDependencies[0][0], gradleDependencies[0][1], gradleDependencies[0][2] );
-
-        assertNotNull( gradleProject );
-
-        IProject project = gradleProject.getProject();
-        IFile gradileFile = project.getFile( "build.gradle" );
-        GradleDependencyUpdater updater = new GradleDependencyUpdater( gradileFile.getLocation().toFile() );
-        List<GradleDependency> existDependencies = updater.getAllDependencies();
-
-        assertFalse( existDependencies.contains( gd ) );
-
-        IProjectBuilder gradleProjectBuilder = gradleProject.adapt( IProjectBuilder.class );
-        gradleProjectBuilder.updateProjectDependency( project, Arrays.asList( gradleDependencies ) );
-
-        GradleDependencyUpdater dependencyUpdater = new GradleDependencyUpdater( gradileFile.getLocation().toFile() );
-        List<GradleDependency> updatedDependencies = dependencyUpdater.getAllDependencies();
-
-        assertTrue( updatedDependencies.contains( gd ) );
-    }
+		Assert.assertTrue(updatedDependencies.contains(gd));
+	}
 
 }
