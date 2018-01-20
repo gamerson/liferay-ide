@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,13 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.maven.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ZipUtil;
@@ -25,6 +21,7 @@ import com.liferay.ide.project.core.modules.ImportLiferayModuleProjectOp;
 import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.io.File;
+
 import java.net.URL;
 
 import org.eclipse.core.resources.IProject;
@@ -33,110 +30,108 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Andy Wu
  */
-public class ImportLiferayModuleProjectOpTest
-{
+public class ImportLiferayModuleProjectOpTest {
 
-    @Before
-    public void clearWorkspace() throws Exception
-    {
-        for( IProject project : CoreUtil.getAllProjects() )
-        {
-            project.delete( true, new NullProgressMonitor() );
-        }
-    }
+	@Before
+	public void clearWorkspace() throws Exception {
+		for (IProject project : CoreUtil.getAllProjects()) {
+			project.delete(true, new NullProgressMonitor());
+		}
+	}
 
-    @Test
-    public void testImportMavenModuleProject() throws Exception
-    {
-        String projectName = "testMavenProjects";
+	@Test
+	public void testImportGradleModuleProject() throws Exception {
+		String projectName = "testGradleProject";
 
-        String projectLocation = unzipFile( projectName );
+		String projectLocation = _unzipFile(projectName);
 
-        ImportLiferayModuleProjectOp importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
+		ImportLiferayModuleProjectOp importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
 
-        importOp.setLocation( projectLocation );
+		importOp.setLocation(projectLocation);
 
-        assertEquals( "maven", importOp.getBuildType().text( false ) );
-        assertTrue( importOp.validation().ok() );
-        assertTrue( importOp.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) ).ok() );
+		Assert.assertEquals("gradle", importOp.getBuildType().text(false));
+		Assert.assertTrue(importOp.validation().ok());
+		Assert.assertTrue(importOp.execute(ProgressMonitorBridge.create(new NullProgressMonitor())).ok());
 
-        IProject project = ProjectUtil.getProject( projectName );
-        assertTrue( project.exists() );
+		IProject project = ProjectUtil.getProject(projectName);
 
-        importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
+		Assert.assertTrue(project.exists());
 
-        importOp.setLocation( projectLocation );
-        assertEquals( "A project with that name already exists.", importOp.validation().message() );
+		importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
 
-        projectLocation = unzipFile( "maven-liferay-workspace" );
+		importOp.setLocation(projectLocation);
 
-        importOp.setLocation( projectLocation );
+		Assert.assertEquals("A project with that name already exists.", importOp.validation().message());
 
-        assertEquals(
-            "Can't import Liferay Workspace, please use Import Liferay Workspace Project wizard.",
-            importOp.validation().message() );
+		projectLocation = _unzipFile("gradle-liferay-workspace");
 
-    }
+		importOp.setLocation(projectLocation);
 
-    @Test
-    public void testImportGradleModuleProject() throws Exception
-    {
-        String projectName = "testGradleProject";
+		Assert.assertEquals(
+			"Can't import Liferay Workspace, please use Import Liferay Workspace Project wizard.",
+			importOp.validation().message());
+	}
 
-        String projectLocation = unzipFile( projectName );
+	@Test
+	public void testImportMavenModuleProject() throws Exception {
+		String projectName = "testMavenProjects";
 
-        ImportLiferayModuleProjectOp importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
+		String projectLocation = _unzipFile(projectName);
 
-        importOp.setLocation( projectLocation );
+		ImportLiferayModuleProjectOp importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
 
-        assertEquals( "gradle", importOp.getBuildType().text( false ) );
-        assertTrue( importOp.validation().ok() );
-        assertTrue( importOp.execute( ProgressMonitorBridge.create( new NullProgressMonitor() ) ).ok() );
+		importOp.setLocation(projectLocation);
 
-        IProject project = ProjectUtil.getProject( projectName );
-        assertTrue( project.exists() );
+		Assert.assertEquals("maven", importOp.getBuildType().text(false));
+		Assert.assertTrue(importOp.validation().ok());
+		Assert.assertTrue(importOp.execute(ProgressMonitorBridge.create(new NullProgressMonitor())).ok());
 
-        importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
+		IProject project = ProjectUtil.getProject(projectName);
 
-        importOp.setLocation( projectLocation );
-        assertEquals( "A project with that name already exists.", importOp.validation().message() );
+		Assert.assertTrue(project.exists());
 
-        projectLocation = unzipFile( "gradle-liferay-workspace" );
+		importOp = ImportLiferayModuleProjectOp.TYPE.instantiate();
 
-        importOp.setLocation( projectLocation );
+		importOp.setLocation(projectLocation);
 
-        assertEquals(
-            "Can't import Liferay Workspace, please use Import Liferay Workspace Project wizard.",
-            importOp.validation().message() );
+		Assert.assertEquals("A project with that name already exists.", importOp.validation().message());
 
-    }
+		projectLocation = _unzipFile("maven-liferay-workspace");
 
-    private String unzipFile( String fileName ) throws Exception
-    {
-        final URL projectZipUrl =
-            Platform.getBundle( "com.liferay.ide.maven.core.tests" ).getEntry( "projects/" + fileName + ".zip" );
+		importOp.setLocation(projectLocation);
 
-        final File projectZipFile = new File( FileLocator.toFileURL( projectZipUrl ).getFile() );
+		Assert.assertEquals(
+			"Can't import Liferay Workspace, please use Import Liferay Workspace Project wizard.",
+			importOp.validation().message());
+	}
 
-        IPath stateLocation = LiferayMavenCore.getDefault().getStateLocation();
+	private String _unzipFile(String fileName) throws Exception {
+		URL projectZipUrl = Platform.getBundle("com.liferay.ide.maven.core.tests").getEntry(
+			"projects/" + fileName + ".zip");
 
-        File targetFolder = new File( stateLocation.toFile(), fileName );
+		File projectZipFile = new File(FileLocator.toFileURL(projectZipUrl).getFile());
 
-        if( targetFolder.exists() )
-        {
-            targetFolder.delete();
-        }
+		IPath stateLocation = LiferayMavenCore.getDefault().getStateLocation();
 
-        ZipUtil.unzip( projectZipFile, stateLocation.toFile() );
+		File targetFolder = new File(stateLocation.toFile(), fileName);
 
-        assertTrue( targetFolder.exists() );
+		if (targetFolder.exists()) {
+			targetFolder.delete();
+		}
 
-        return targetFolder.getAbsolutePath();
-    }
+		ZipUtil.unzip(projectZipFile, stateLocation.toFile());
+
+		Assert.assertTrue(targetFolder.exists());
+
+		return targetFolder.getAbsolutePath();
+	}
+
 }

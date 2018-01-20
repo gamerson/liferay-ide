@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.gradle.core.tests;
-
-import static org.junit.Assert.fail;
 
 import com.liferay.ide.core.tests.TestUtil;
 import com.liferay.ide.core.util.CoreUtil;
@@ -38,91 +35,87 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.Job;
 
+import org.junit.Assert;
+
 /**
  * @author Gregory Amerson
  */
-@SuppressWarnings( "restriction" )
-public class Util
-{
+@SuppressWarnings("restriction")
+public class Util {
 
-    public static void deleteAllWorkspaceProjects() throws Exception
-    {
-        for( IProject project : CoreUtil.getAllProjects())
-        {
-            project.close( new NullProgressMonitor() );
-            project.delete( true, new NullProgressMonitor() );
-        }
-    }
+	public static void deleteAllWorkspaceProjects() throws Exception {
+		for (IProject project : CoreUtil.getAllProjects()) {
+			project.close(new NullProgressMonitor());
 
-    public static LiferayGradleProject fullImportGradleProject( String projectPath ) throws Exception
-    {
-        IWorkspace ws = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = ws.getRoot();
+			project.delete(true, new NullProgressMonitor());
+		}
+	}
 
-        File src = new File( projectPath );
-        File dst = new File( root.getLocation().toFile(), src.getName() );
+	public static void failTest(Exception e) {
+		StringWriter s = new StringWriter();
 
-        TestUtil.copyDir( src, dst );
+		e.printStackTrace(new PrintWriter(s));
 
-        IProgressMonitor monitor = new NullProgressMonitor();
+		Assert.fail(s.toString());
+	}
 
-        IStatus status = GradleUtil.importGradleProject( dst, monitor );
+	public static LiferayGradleProject fullImportGradleProject(String projectPath) throws Exception {
+		IWorkspace ws = ResourcesPlugin.getWorkspace();
 
-        Util.waitForBuildAndValidation();
+		IWorkspaceRoot root = ws.getRoot();
 
-        if( status.isOK() )
-        {
-            IProject project = CoreUtil.getProject( dst.getName() );
+		File src = new File(projectPath);
 
-            return new LiferayGradleProject( project );
-        }
-        else
-        {
-            throw new Exception( status.getException() );
-        }
-    }
+		File dst = new File(root.getLocation().toFile(), src.getName());
 
-    public static void waitForBuildAndValidation() throws Exception
-    {
-        IWorkspaceRoot root = null;
+		TestUtil.copyDir(src, dst);
 
-        try
-        {
-            ResourcesPlugin.getWorkspace().checkpoint( true );
-            Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
-            Job.getJobManager().join( ResourcesPlugin.FAMILY_MANUAL_BUILD, new NullProgressMonitor() );
-            Job.getJobManager().join( ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor() );
-            Job.getJobManager().join( CorePlugin.GRADLE_JOB_FAMILY, new NullProgressMonitor() );
-            Job.getJobManager().join( GradleCore.JobFamilyId, new NullProgressMonitor() );
-            Thread.sleep( 200 );
-            Job.getJobManager().beginRule( root = ResourcesPlugin.getWorkspace().getRoot(), null );
-        }
-        catch( InterruptedException e )
-        {
-            failTest( e );
-        }
-        catch( IllegalArgumentException e )
-        {
-            failTest( e );
-        }
-        catch( OperationCanceledException e )
-        {
-            failTest( e );
-        }
-        finally
-        {
-            if( root != null )
-            {
-                Job.getJobManager().endRule( root );
-            }
-        }
-    }
-    
-    public static void failTest( Exception e )
-    {
-        StringWriter s = new StringWriter();
-        e.printStackTrace( new PrintWriter( s ) );
-        fail( s.toString() );
-    }
+		IProgressMonitor monitor = new NullProgressMonitor();
+
+		IStatus status = GradleUtil.importGradleProject(dst, monitor);
+
+		waitForBuildAndValidation();
+
+		if (status.isOK()) {
+			IProject project = CoreUtil.getProject(dst.getName());
+
+			return new LiferayGradleProject(project);
+		}
+		else {
+			throw new Exception(status.getException());
+		}
+	}
+
+	public static void waitForBuildAndValidation() throws Exception {
+		IWorkspaceRoot root = null;
+
+		try {
+			ResourcesPlugin.getWorkspace().checkpoint(true);
+
+			Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor());
+			Job.getJobManager().join(ResourcesPlugin.FAMILY_MANUAL_BUILD, new NullProgressMonitor());
+			Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, new NullProgressMonitor());
+			Job.getJobManager().join(CorePlugin.GRADLE_JOB_FAMILY, new NullProgressMonitor());
+			Job.getJobManager().join(GradleCore.JobFamilyId, new NullProgressMonitor());
+
+			Thread.sleep(200);
+
+			Job.getJobManager().beginRule(root = ResourcesPlugin.getWorkspace().getRoot(), null);
+		}
+		catch (InterruptedException ie) {
+			failTest(ie);
+		}
+		catch (IllegalArgumentException iae) {
+			failTest(iae);
+		}
+		catch (OperationCanceledException oce) {
+			failTest(oce);
+		}
+		finally {
+			if (root != null) {
+				Job.getJobManager().endRule(root);
+			}
+		}
+	}
 
 }

@@ -158,6 +158,10 @@ public class ProjectCore extends Plugin {
 		return _plugin;
 	}
 
+	public static IPath getDefaultStateLocation() {
+		return _plugin.getStateLocation();
+	}
+
 	public static IPortletFramework getPortletFramework(String name) {
 		for (IPortletFramework framework : getPortletFrameworks()) {
 			if (framework.getShortName().equals(name)) {

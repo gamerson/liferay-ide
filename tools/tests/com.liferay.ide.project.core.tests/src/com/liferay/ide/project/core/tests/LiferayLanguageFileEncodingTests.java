@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,18 +10,15 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.IWebProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.LiferayLanguagePropertiesValidator;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.ProjectRecord;
@@ -31,6 +28,7 @@ import com.liferay.ide.sdk.core.SDKManager;
 import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
+
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -48,9 +46,12 @@ import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
+
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -58,294 +59,330 @@ import org.w3c.dom.NodeList;
  * @author Gregory Amerson
  * @author Kuo Zhang
  */
-@SuppressWarnings( "restriction" )
-public class LiferayLanguageFileEncodingTests extends ProjectCoreBase
-{
+@SuppressWarnings("restriction")
+public class LiferayLanguageFileEncodingTests extends ProjectCoreBase {
 
-    @AfterClass
-    public static void removePluginsSDK() throws Exception
-    {
-        deleteAllWorkspaceProjects();
-    }
+	@AfterClass
+	public static void removePluginsSDK() throws Exception {
+		deleteAllWorkspaceProjects();
+	}
 
-    /*
-     * In order to test the encoding feature, mainly test the markers on the non-default encoding language files,
-     * encode them to default then check if the markers are gone. Since the LiferayLanguagePropertiesListener does't
-     * work so immediately after the language files get changed, manually invoke the same methods as the listener
-     */
-    private IRuntime runtime;
+	@Ignore
+	@Test
+	public void testHookProjectEncoding() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-    private IRuntime getRuntime() throws Exception
-    {
-        if( runtime == null )
-        {
-            runtime = createNewRuntime( "runtime" );
+		IProject hookProject = _importProject("hooks", "Hook-Encoding-Test-hook");
 
-            assertNotNull( runtime );
-        }
+		Assert.assertEquals(true, ProjectUtil.isHookProject(hookProject));
 
-        return runtime;
-    }
+		IFolder defaultDocrootFolder = LiferayCore.create(IWebProject.class, hookProject).getDefaultDocrootFolder();
 
-    private boolean hasEncodingMarker( IFile file ) throws Exception
-    {
-        final IMarker[] markers = file.findMarkers(
-            LiferayLanguagePropertiesValidator.LIFERAY_LANGUAGE_PROPERTIES_MARKER_TYPE, false, IResource.DEPTH_ZERO );
+		Assert.assertNotNull(defaultDocrootFolder);
+		Assert.assertEquals(true, defaultDocrootFolder.exists());
 
-        return markers.length > 0;
-    }
+		IFolder defaultSrcFolder = defaultDocrootFolder.getFolder(new Path("WEB-INF/src/content/"));
 
-    private IProject importProject( String path, String name ) throws Exception
-    {
-        final IPath sdkLocation = SDKManager.getInstance().getDefaultSDK().getLocation();
-        final IPath hooksFolder = sdkLocation.append( path );
+		Assert.assertNotNull(defaultSrcFolder);
+		Assert.assertEquals(true, defaultSrcFolder.exists());
 
-        final URL hookZipUrl =
-            Platform.getBundle( "com.liferay.ide.project.core.tests" ).getEntry( "projects/" + name + ".zip" );
+		IFile fileNameWithoutUnderscore = defaultSrcFolder.getFile("FileNameWithoutUnderscore.properties");
 
-        final File hookZipFile = new File( FileLocator.toFileURL( hookZipUrl ).getFile() );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithoutUnderscore));
 
-        ZipUtil.unzip( hookZipFile, hooksFolder.toFile() );
+		IFile fileNameWithoutUnderscore_CorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithoutUnderscore_CorrectEncoding.properties");
 
-        final IPath projectFolder = hooksFolder.append( name );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithoutUnderscore_CorrectEncoding));
 
-        assertEquals( true, projectFolder.toFile().exists() );
+		IFile fileNameWithoutUnderscore_IncorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithoutUnderscore_IncorrectEncoding.properties");
 
-        final ProjectRecord projectRecord = ProjectUtil.getProjectRecordForDir( projectFolder.toOSString() );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithoutUnderscore_IncorrectEncoding));
 
-        assertNotNull( projectRecord );
+		IFile fileNameWithUnderscore_CorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithUnderscore_CorrectEncoding.properties");
 
-        final IProject project =
-            ProjectImportUtil.importProject(
-                projectRecord, ServerUtil.getFacetRuntime( getRuntime() ), sdkLocation.toOSString(),
-                new NullProgressMonitor() );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithUnderscore_CorrectEncoding));
 
-        assertNotNull( project );
+		IFile fileNameWithUnderscore_IncorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithUnderscore_IncorrectEncoding.properties");
 
-        assertEquals( "Expected new project to exist.", true, project.exists() );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithUnderscore_IncorrectEncoding));
 
-        return project;
-    }
+		IFile fileNameWithStar = defaultSrcFolder.getFile("FileNameWithStar.properties");
 
-    private boolean isLanguagePropertiesFile( IFile file )
-    {
-        return file != null && file.exists() && PropertiesUtil.isLanguagePropertiesFile( file );
-    }
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithStar));
 
-    private void removeSpecifiedNode( IFile file, String nodeName, String content ) throws Exception
-    {
-        final IStructuredModel model = StructuredModelManager.getModelManager().getModelForEdit( file );
-        final IDOMDocument document = ( (IDOMModel) model ).getDocument();
-        final NodeList elements = document.getElementsByTagName( nodeName );
+		IFile fileNameWithStarCorrectEncoding = defaultSrcFolder.getFile("FileNameWithStarCorrectEncoding.properties");
 
-        for( int i = 0; i < elements.getLength(); i++ )
-        {
-            Node node = elements.item( i );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithStarCorrectEncoding));
 
-            if( content.equals( node.getTextContent() ) )
-            {
-                node.getParentNode().removeChild( node );
-                break;
-            }
-        }
+		IFile fileNameWithStarIncorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithStarIncorrectEncoding.properties");
 
-        model.save( file );
-        model.releaseFromEdit();
-    }
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithStarIncorrectEncoding));
 
-    @Ignore
-    @Test
-    public void testHookProjectEncoding() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IFile removeThisLineTest = defaultSrcFolder.getFile("RemoveThisLineTest.properties");
 
-        final IProject hookProject = importProject( "hooks", "Hook-Encoding-Test-hook" );
-        assertEquals( true, ProjectUtil.isHookProject( hookProject ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(removeThisLineTest));
 
-        final IFolder defaultDocrootFolder =
-            LiferayCore.create( IWebProject.class, hookProject ).getDefaultDocrootFolder();
-        assertNotNull( defaultDocrootFolder );
-        assertEquals( true, defaultDocrootFolder.exists() );
+		waitForBuildAndValidation(hookProject);
 
-        final IFolder defaultSrcFolder = defaultDocrootFolder.getFolder( new Path( "WEB-INF/src/content/" ) );
-        assertNotNull( defaultSrcFolder );
-        assertEquals( true, defaultSrcFolder.exists() );
+		// test the filename without underscore
 
-        final IFile fileNameWithoutUnderscore = defaultSrcFolder.getFile( "FileNameWithoutUnderscore.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithoutUnderscore ) );
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithoutUnderscore));
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithoutUnderscore_CorrectEncoding));
 
-        final IFile fileNameWithoutUnderscore_CorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithoutUnderscore_CorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithoutUnderscore_CorrectEncoding ) );
+		Assert.assertEquals(true, _hasEncodingMarker(fileNameWithoutUnderscore_IncorrectEncoding));
 
-        final IFile fileNameWithoutUnderscore_IncorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithoutUnderscore_IncorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithoutUnderscore_IncorrectEncoding ) );
+		// test the filename with underscore
 
-        final IFile fileNameWithUnderscore_CorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithUnderscore_CorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithUnderscore_CorrectEncoding ) );
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithUnderscore_CorrectEncoding));
 
-        final IFile fileNameWithUnderscore_IncorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithUnderscore_IncorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithUnderscore_IncorrectEncoding ) );
+		Assert.assertEquals(true, _hasEncodingMarker(fileNameWithUnderscore_IncorrectEncoding));
 
-        final IFile fileNameWithStar = defaultSrcFolder.getFile( "FileNameWithStar.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithStar ) );
+		// test the filename with a wildcard "*"
 
-        final IFile fileNameWithStarCorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithStarCorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithStarCorrectEncoding ) );
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithStar));
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithStarCorrectEncoding));
 
-        final IFile fileNameWithStarIncorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithStarIncorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithStarIncorrectEncoding ) );
+		Assert.assertEquals(true, _hasEncodingMarker(fileNameWithStarIncorrectEncoding));
 
-        final IFile removeThisLineTest = defaultSrcFolder.getFile( "RemoveThisLineTest.properties" );
-        assertEquals( true, isLanguagePropertiesFile( removeThisLineTest ) );
+		// test an incorrect encoding file referenced by liferay-hook.xml
+		// remove the reference line, the marker will disappear.
 
-        waitForBuildAndValidation( hookProject );
+		Assert.assertEquals(true, _hasEncodingMarker(removeThisLineTest));
 
-        // test the filename without underscore
-        assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore ) );
-        assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore_CorrectEncoding ) );
+		IWebProject webProject = LiferayCore.create(IWebProject.class, hookProject);
 
-        assertEquals( true, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding ) );
+		IFile liferayHookXml = webProject.getDescriptorFile(ILiferayConstants.LIFERAY_HOOK_XML_FILE);
 
-        // test the filename with underscore
-        assertEquals( false, hasEncodingMarker( fileNameWithUnderscore_CorrectEncoding ) );
+		Assert.assertNotNull(liferayHookXml);
 
-        assertEquals( true, hasEncodingMarker( fileNameWithUnderscore_IncorrectEncoding ) );
+		_removeSpecifiedNode(liferayHookXml, "language-properties", "content/RemoveThisLineTest.properties");
 
-        // test the filename with a wildcard "*"
-        assertEquals( false, hasEncodingMarker( fileNameWithStar ) );
-        assertEquals( false, hasEncodingMarker( fileNameWithStarCorrectEncoding ) );
+		waitForBuildAndValidation(hookProject);
+		Assert.assertEquals(false, _hasEncodingMarker(removeThisLineTest));
 
-        assertEquals( true, hasEncodingMarker( fileNameWithStarIncorrectEncoding ) );
+		/*
+		 * Both encoding action and quick fix of the encoding marker invoke
+		 * method PropertiesUtils.encodeLanguagePropertiesFilesToDefault(), so
+		 * here we only test this method and re-check the existence of markers.
+		 */
+		// test encoding one properties file to default, take
+		// FileNameWithoutUnderscore_IncorrectEncoding for example.
 
-        // test an incorrect encoding file referenced by liferay-hook.xml
-        // remove the reference line, the marker will disappear.
-        assertEquals( true, hasEncodingMarker( removeThisLineTest ) );
+		PropertiesUtil.encodeLanguagePropertiesFilesToDefault(
+			fileNameWithoutUnderscore_IncorrectEncoding, new NullProgressMonitor());
 
-        IWebProject webProject = LiferayCore.create(IWebProject.class, hookProject);
+		waitForBuildAndValidation(hookProject);
 
-		final IFile liferayHookXml = webProject.getDescriptorFile( ILiferayConstants.LIFERAY_HOOK_XML_FILE );
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithoutUnderscore_IncorrectEncoding));
 
-        assertNotNull( liferayHookXml );
+		// test encoding all properties files of this project to default.
 
-        removeSpecifiedNode( liferayHookXml, "language-properties", "content/RemoveThisLineTest.properties" );
+		PropertiesUtil.encodeLanguagePropertiesFilesToDefault(hookProject, new NullProgressMonitor());
 
-        waitForBuildAndValidation( hookProject );
-        assertEquals( false, hasEncodingMarker( removeThisLineTest ) );
+		waitForBuildAndValidation(hookProject);
 
-        /*
-         * Both encoding action and quick fix of the encoding marker invoke method
-         * PropertiesUtils.encodeLanguagePropertiesFilesToDefault(),
-         * so here we only test this method and re-check the existence of markers.
-         */
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithUnderscore_IncorrectEncoding));
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithStarIncorrectEncoding));
+	}
 
-        // test encoding one properties file to default, take FileNameWithoutUnderscore_IncorrectEncoding for example.
-        PropertiesUtil.encodeLanguagePropertiesFilesToDefault(
-            fileNameWithoutUnderscore_IncorrectEncoding, new NullProgressMonitor() );
+	@Ignore
+	@Test
+	public void testPortletProjectEncoding() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        waitForBuildAndValidation( hookProject );
-        assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding ) );
+		IProject portletProject = _importProject("portlets", "Portlet-Encoding-Test-portlet");
 
-        // test encoding all properties files of this project to default.
-        PropertiesUtil.encodeLanguagePropertiesFilesToDefault( hookProject, new NullProgressMonitor() );
-        waitForBuildAndValidation( hookProject );
+		Assert.assertEquals(true, ProjectUtil.isPortletProject(portletProject));
 
-        assertEquals( false, hasEncodingMarker( fileNameWithUnderscore_IncorrectEncoding ) );
-        assertEquals( false, hasEncodingMarker( fileNameWithStarIncorrectEncoding ) );
-    }
+		IFolder defaultDocrootFolder = LiferayCore.create(IWebProject.class, portletProject).getDefaultDocrootFolder();
 
-    @Ignore
-    @Test
-    public void testPortletProjectEncoding() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		Assert.assertNotNull(defaultDocrootFolder);
+		Assert.assertEquals(true, defaultDocrootFolder.exists());
 
-        final IProject portletProject = importProject( "portlets", "Portlet-Encoding-Test-portlet" );
+		IFolder defaultSrcFolder = defaultDocrootFolder.getFolder(new Path("WEB-INF/src/content/"));
 
-        assertEquals( true, ProjectUtil.isPortletProject( portletProject ) );
+		Assert.assertNotNull(defaultSrcFolder);
+		Assert.assertEquals(true, defaultSrcFolder.exists());
 
-        final IFolder defaultDocrootFolder =
-            LiferayCore.create( IWebProject.class, portletProject ).getDefaultDocrootFolder();
-        assertNotNull( defaultDocrootFolder );
-        assertEquals( true, defaultDocrootFolder.exists() );
+		// List all the properties files used to test
 
-        final IFolder defaultSrcFolder = defaultDocrootFolder.getFolder( new Path( "WEB-INF/src/content/" ) );
-        assertNotNull( defaultSrcFolder );
-        assertEquals( true, defaultSrcFolder.exists() );
+		IFile fileNameWithoutUnderscore = defaultSrcFolder.getFile("FileNameWithoutUnderscore.properties");
 
-        // List all the properties files used to test
-        final IFile fileNameWithoutUnderscore = defaultSrcFolder.getFile( "FileNameWithoutUnderscore.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithoutUnderscore ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithoutUnderscore));
 
-        final IFile fileNameWithoutUnderscore_CorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithoutUnderscore_CorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithoutUnderscore_CorrectEncoding ) );
+		IFile fileNameWithoutUnderscore_CorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithoutUnderscore_CorrectEncoding.properties");
 
-        final IFile fileNameWithoutUnderscore_IncorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithoutUnderscore_IncorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithoutUnderscore_IncorrectEncoding ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithoutUnderscore_CorrectEncoding));
 
-        final IFile fileNameWithoutUnderscore_IncorrectEncoding1 =
-            defaultSrcFolder.getFile( "FileNameWithoutUnderscore_IncorrectEncoding1.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithoutUnderscore_IncorrectEncoding1 ) );
+		IFile fileNameWithoutUnderscore_IncorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithoutUnderscore_IncorrectEncoding.properties");
 
-        final IFile fileNameWithUnderscore_CorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithUnderscore_CorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithUnderscore_CorrectEncoding ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithoutUnderscore_IncorrectEncoding));
 
-        final IFile fileNameWithUnderscore_IncorrectEncoding =
-            defaultSrcFolder.getFile( "FileNameWithUnderscore_IncorrectEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( fileNameWithUnderscore_IncorrectEncoding ) );
+		IFile fileNameWithoutUnderscore_IncorrectEncoding1 = defaultSrcFolder.getFile(
+			"FileNameWithoutUnderscore_IncorrectEncoding1.properties");
 
-        final IFile supportedLocaleEncoding = defaultSrcFolder.getFile( "SupportedLocaleEncoding.properties" );
-        assertEquals( true, isLanguagePropertiesFile( supportedLocaleEncoding ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithoutUnderscore_IncorrectEncoding1));
 
-        final IFile supportedLocaleEncoding_en_US =
-            defaultSrcFolder.getFile( "SupportedLocaleEncoding_en_US.properties" );
-        assertEquals( true, isLanguagePropertiesFile( supportedLocaleEncoding_en_US ) );
+		IFile fileNameWithUnderscore_CorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithUnderscore_CorrectEncoding.properties");
 
-        final IFile supportedLocaleEncoding_zh_CN =
-            defaultSrcFolder.getFile( "SupportedLocaleEncoding_zh_CN.properties" );
-        assertEquals( true, isLanguagePropertiesFile( supportedLocaleEncoding_zh_CN ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithUnderscore_CorrectEncoding));
 
-        waitForBuildAndValidation( portletProject );
-        // test filename with underscore
-        assertEquals( false, hasEncodingMarker( fileNameWithUnderscore_CorrectEncoding ) );
+		IFile fileNameWithUnderscore_IncorrectEncoding = defaultSrcFolder.getFile(
+			"FileNameWithUnderscore_IncorrectEncoding.properties");
 
-        assertEquals( true, hasEncodingMarker( fileNameWithUnderscore_IncorrectEncoding ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(fileNameWithUnderscore_IncorrectEncoding));
 
-        // test filename without underscore
-        assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore ) );
-        assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore_CorrectEncoding ) );
+		IFile supportedLocaleEncoding = defaultSrcFolder.getFile("SupportedLocaleEncoding.properties");
 
-        assertEquals( true, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding ) );
-        assertEquals( true, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding1 ) );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(supportedLocaleEncoding));
 
-        // test supported locale
-        assertEquals( false, hasEncodingMarker( supportedLocaleEncoding ) );
-        assertEquals( false, hasEncodingMarker( supportedLocaleEncoding_en_US ) );
-        assertEquals( false, hasEncodingMarker( supportedLocaleEncoding_zh_CN ) );
+		IFile supportedLocaleEncoding_en_US = defaultSrcFolder.getFile("SupportedLocaleEncoding_en_US.properties");
 
-        // test encoding one file to default, take FileNameWithUnderscore_IncorrectEncoding.properties for example.
-        PropertiesUtil.encodeLanguagePropertiesFilesToDefault(
-            fileNameWithUnderscore_IncorrectEncoding, new NullProgressMonitor() );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(supportedLocaleEncoding_en_US));
 
-        waitForBuildAndValidation( portletProject );
-        Thread.sleep( 5000 );
-        assertEquals( false, hasEncodingMarker( fileNameWithUnderscore_IncorrectEncoding ) );
+		IFile supportedLocaleEncoding_zh_CN = defaultSrcFolder.getFile("SupportedLocaleEncoding_zh_CN.properties");
 
-        // test encoding all files of this project to default
-        PropertiesUtil.encodeLanguagePropertiesFilesToDefault( portletProject, new NullProgressMonitor() );
+		Assert.assertEquals(true, _isLanguagePropertiesFile(supportedLocaleEncoding_zh_CN));
 
-        Thread.sleep( 5000 );
-        waitForBuildAndValidation( portletProject );
-        assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding ) );
-        assertEquals( false, hasEncodingMarker( fileNameWithoutUnderscore_IncorrectEncoding1 ) );
-    }
+		waitForBuildAndValidation(portletProject);
+		// test filename with underscore
+
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithUnderscore_CorrectEncoding));
+
+		Assert.assertEquals(true, _hasEncodingMarker(fileNameWithUnderscore_IncorrectEncoding));
+
+		// test filename without underscore
+
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithoutUnderscore));
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithoutUnderscore_CorrectEncoding));
+
+		Assert.assertEquals(true, _hasEncodingMarker(fileNameWithoutUnderscore_IncorrectEncoding));
+		Assert.assertEquals(true, _hasEncodingMarker(fileNameWithoutUnderscore_IncorrectEncoding1));
+
+		// test supported locale
+
+		Assert.assertEquals(false, _hasEncodingMarker(supportedLocaleEncoding));
+		Assert.assertEquals(false, _hasEncodingMarker(supportedLocaleEncoding_en_US));
+		Assert.assertEquals(false, _hasEncodingMarker(supportedLocaleEncoding_zh_CN));
+
+		// test encoding one file to default, take
+		// FileNameWithUnderscore_IncorrectEncoding.properties for example.
+
+		PropertiesUtil.encodeLanguagePropertiesFilesToDefault(
+			fileNameWithUnderscore_IncorrectEncoding, new NullProgressMonitor());
+
+		waitForBuildAndValidation(portletProject);
+		Thread.sleep(5000);
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithUnderscore_IncorrectEncoding));
+
+		// test encoding all files of this project to default
+
+		PropertiesUtil.encodeLanguagePropertiesFilesToDefault(portletProject, new NullProgressMonitor());
+
+		Thread.sleep(5000);
+		waitForBuildAndValidation(portletProject);
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithoutUnderscore_IncorrectEncoding));
+		Assert.assertEquals(false, _hasEncodingMarker(fileNameWithoutUnderscore_IncorrectEncoding1));
+	}
+
+	private IRuntime _getRuntime() throws Exception {
+		if (_runtime == null) {
+			_runtime = createNewRuntime("runtime");
+
+			Assert.assertNotNull(_runtime);
+		}
+
+		return _runtime;
+	}
+
+	private boolean _hasEncodingMarker(IFile file) throws Exception {
+		IMarker[] markers = file.findMarkers(
+			LiferayLanguagePropertiesValidator.LIFERAY_LANGUAGE_PROPERTIES_MARKER_TYPE, false, IResource.DEPTH_ZERO);
+
+		if (markers.length > 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private IProject _importProject(String path, String name) throws Exception {
+		IPath sdkLocation = SDKManager.getInstance().getDefaultSDKLocation();
+
+		IPath hooksFolder = sdkLocation.append(path);
+
+		URL hookZipUrl = Platform.getBundle("com.liferay.ide.project.core.tests").getEntry("projects/" + name + ".zip");
+
+		File hookZipFile = new File(FileLocator.toFileURL(hookZipUrl).getFile());
+
+		ZipUtil.unzip(hookZipFile, hooksFolder.toFile());
+
+		IPath projectFolder = hooksFolder.append(name);
+
+		Assert.assertEquals(true, projectFolder.toFile().exists());
+
+		ProjectRecord projectRecord = ProjectUtil.getProjectRecordForDir(projectFolder.toOSString());
+
+		Assert.assertNotNull(projectRecord);
+
+		IProject project = ProjectImportUtil.importProject(
+			projectRecord, ServerUtil.getFacetRuntime(_getRuntime()), sdkLocation.toOSString(),
+			new NullProgressMonitor());
+
+		Assert.assertNotNull(project);
+
+		Assert.assertEquals("Expected new project to exist.", true, project.exists());
+
+		return project;
+	}
+
+	private boolean _isLanguagePropertiesFile(IFile file) {
+		if (FileUtil.exists(file) && PropertiesUtil.isLanguagePropertiesFile(file)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private void _removeSpecifiedNode(IFile file, String nodeName, String content) throws Exception {
+		IStructuredModel model = StructuredModelManager.getModelManager().getModelForEdit(file);
+
+		IDOMDocument document = ((IDOMModel)model).getDocument();
+
+		NodeList elements = document.getElementsByTagName(nodeName);
+
+		for (int i = 0; i < elements.getLength(); i++) {
+			Node node = elements.item(i);
+
+			if (content.equals(node.getTextContent())) {
+				node.getParentNode().removeChild(node);
+				break;
+			}
+		}
+
+		model.save(file);
+		model.releaseFromEdit();
+	}
+
+	/**
+	 * In order to test the encoding feature, mainly test the markers on the
+	 * non-default encoding language files, encode them to default then check if
+	 * the markers are gone. Since the LiferayLanguagePropertiesListener does't
+	 * work so immediately after the language files get changed, manually invoke
+	 * the same methods as the listener
+	 */
+	private IRuntime _runtime;
 
 }

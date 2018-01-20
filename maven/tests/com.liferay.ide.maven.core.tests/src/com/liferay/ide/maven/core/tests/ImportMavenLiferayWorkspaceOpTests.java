@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,13 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.maven.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ZipUtil;
@@ -24,6 +20,7 @@ import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.ImportLiferayWorkspaceOp;
 
 import java.io.File;
+
 import java.net.URL;
 
 import org.eclipse.core.resources.IProject;
@@ -32,65 +29,69 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Andy Wu
  */
-public class ImportMavenLiferayWorkspaceOpTests
-{
-    @Before
-    public void clearWorkspace() throws Exception
-    {
-        for( IProject project : CoreUtil.getAllProjects())
-        {
-            project.delete( true, new NullProgressMonitor() );
-        }
-    }
+public class ImportMavenLiferayWorkspaceOpTests {
 
-    @Test
-    public void testImportMavenLiferayWorkspaceOp() throws Exception
-    {
-        ImportLiferayWorkspaceOp op = ImportLiferayWorkspaceOp.TYPE.instantiate();
+	@Before
+	public void clearWorkspace() throws Exception {
+		for (IProject project : CoreUtil.getAllProjects()) {
+			project.delete(true, new NullProgressMonitor());
+		}
+	}
 
-        final URL wsZipUrl =
-            Platform.getBundle( "com.liferay.ide.maven.core.tests" ).getEntry( "projects/maven-liferay-workspace.zip" );
+	@Test
+	public void testImportMavenLiferayWorkspaceOp() throws Exception {
+		ImportLiferayWorkspaceOp op = ImportLiferayWorkspaceOp.TYPE.instantiate();
 
-        final File wsZipFile = new File( FileLocator.toFileURL( wsZipUrl ).getFile() );
+		URL wsZipUrl = Platform.getBundle("com.liferay.ide.maven.core.tests").getEntry(
+			"projects/maven-liferay-workspace.zip");
 
-        File eclipseWorkspaceLocation = CoreUtil.getWorkspaceRoot().getLocation().toFile();
+		File wsZipFile = new File(FileLocator.toFileURL(wsZipUrl).getFile());
 
-        ZipUtil.unzip( wsZipFile, eclipseWorkspaceLocation );
+		File eclipseWorkspaceLocation = CoreUtil.getWorkspaceRootLocationFile();
 
-        File wsFolder = new File( eclipseWorkspaceLocation, "maven-liferay-workspace" );
+		ZipUtil.unzip(wsZipFile, eclipseWorkspaceLocation);
 
-        op.setWorkspaceLocation( wsFolder.getAbsolutePath() );
+		File wsFolder = new File(eclipseWorkspaceLocation, "maven-liferay-workspace");
 
-        Status validationStatus = op.validation();
+		op.setWorkspaceLocation(wsFolder.getAbsolutePath());
 
-        assertTrue( validationStatus.ok() );
+		Status validationStatus = op.validation();
 
-        op.execute( new ProgressMonitor() );
+		Assert.assertTrue(validationStatus.ok());
 
-        IProject project = CoreUtil.getProject( "maven-liferay-workspace" );
-        assertTrue( project.exists() );
+		op.execute(new ProgressMonitor());
 
-        project = CoreUtil.getProject( "maven-liferay-workspace-modules" );
-        assertTrue( project.exists() );
+		IProject project = CoreUtil.getProject("maven-liferay-workspace");
 
-        project = CoreUtil.getProject( "maven-liferay-workspace-themes" );
-        assertTrue( project.exists() );
+		Assert.assertTrue(project.exists());
 
-        project = CoreUtil.getProject( "maven-liferay-workspace-wars" );
-        assertTrue( project.exists() );
+		project = CoreUtil.getProject("maven-liferay-workspace-modules");
 
-        op = ImportLiferayWorkspaceOp.TYPE.instantiate();
+		Assert.assertTrue(project.exists());
 
-        assertEquals( LiferayWorkspaceUtil.hasLiferayWorkspaceMsg, op.validation().message() );
+		project = CoreUtil.getProject("maven-liferay-workspace-themes");
 
-        project = CoreUtil.getProject( "maven-liferay-workspace" );
+		Assert.assertTrue(project.exists());
 
-        project.delete( true, true, new NullProgressMonitor() );
-    }
+		project = CoreUtil.getProject("maven-liferay-workspace-wars");
+
+		Assert.assertTrue(project.exists());
+
+		op = ImportLiferayWorkspaceOp.TYPE.instantiate();
+
+		Assert.assertEquals(LiferayWorkspaceUtil.hasLiferayWorkspaceMsg, op.validation().message());
+
+		project = CoreUtil.getProject("maven-liferay-workspace");
+
+		project.delete(true, true, new NullProgressMonitor());
+	}
+
 }
