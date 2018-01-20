@@ -4,10 +4,10 @@
 	<author>greg</author>
 	<namespace>FOO</namespace>
 
-	<entity name="Foo" local-service="true" remote-service="true">
-		<column name="fooId" type="long" primary="true" />
+	<entity local-service="true" name="Foo" remote-service="true">
+		<column name="fooId" primary="true" type="long" />
 	</entity>
-    <entity name="Bar">
-        <column name="fooId" type="long"></column>
-    </entity>
+	<entity name="Bar">
+		<column name="fooId" type="long"></column>
+	</entity>
 </service-builder>

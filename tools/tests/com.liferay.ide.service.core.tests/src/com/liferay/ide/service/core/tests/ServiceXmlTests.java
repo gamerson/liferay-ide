@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,11 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
-package com.liferay.ide.service.core.tests;
+ */
 
-import static org.junit.Assert.assertEquals;
+package com.liferay.ide.service.core.tests;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
@@ -31,87 +29,97 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
-import org.junit.Test;
 
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author Kuo Zhang
  * @author Gregory Amerson
  */
-public class ServiceXmlTests extends XmlTestsBase
-{
-    // This test needs to set the "liferay.bundles.dir" in the configuration.
+public class ServiceXmlTests extends XmlTestsBase {
 
-    @Test
-    public void testAddDefaultColumns() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+	// This test needs to set the "liferay.bundles.dir" in the configuration.
 
-        final IProject project =
-            importProject( "portlets", "com.liferay.ide.service.core.tests", "Add-Default-Columns-Test-portlet" );
+	@Test
+	public void testAddDefaultColumns() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final ServiceBuilderDescriptorHelper descriptorHelper = new ServiceBuilderDescriptorHelper( project );
+		IProject project = importProject(
+			"portlets", "com.liferay.ide.service.core.tests", "Add-Default-Columns-Test-portlet");
 
-        assertEquals( Status.OK_STATUS, descriptorHelper.addEntity( "AddDefaultColumns" ) );
-        assertEquals( Status.OK_STATUS, descriptorHelper.addDefaultColumns( "AddDefaultColumns" ) );
+		ServiceBuilderDescriptorHelper descriptorHelper = new ServiceBuilderDescriptorHelper(project);
 
-        final IFile serviceXmlFile = descriptorHelper.getDescriptorFile();
+		Assert.assertEquals(Status.OK_STATUS, descriptorHelper.addEntity("AddDefaultColumns"));
 
-        final String serviceXmlContent = CoreUtil.readStreamToString( serviceXmlFile.getContents() );
+		Assert.assertEquals(Status.OK_STATUS, descriptorHelper.addDefaultColumns("AddDefaultColumns"));
 
-        final String expectedServiceXmlContent =
-            CoreUtil.readStreamToString( this.getClass().getResourceAsStream(
-                "files/service-sample-6.2.0-add-default-columns.xml" ) );
+		IFile serviceXmlFile = descriptorHelper.getDescriptorFile();
 
-        assertEquals(
-            expectedServiceXmlContent.replaceAll( "\\s+", StringPool.SPACE ),
-            serviceXmlContent.replaceAll( "\\s+", StringPool.SPACE) );
-    }
+		String serviceXmlContent = CoreUtil.readStreamToString(serviceXmlFile.getContents());
 
-    @Test
-    public void testAddSampleEntity() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		Class<?> clazz = getClass();
 
-        final IProject project =
-            importProject( "portlets","com.liferay.ide.service.core.tests", "Add-Sample-Entity-Test-portlet" );
+		String expectedServiceXmlContent = CoreUtil.readStreamToString(
+			clazz.getResourceAsStream("files/service-sample-6.2.0-add-default-columns.xml"));
 
-        final ServiceBuilderDescriptorHelper descriptorHelper = new ServiceBuilderDescriptorHelper( project );
+		Assert.assertEquals(
+			expectedServiceXmlContent.replaceAll("\\s+", StringPool.SPACE),
+			serviceXmlContent.replaceAll("\\s+", StringPool.SPACE));
+	}
 
-        assertEquals( Status.OK_STATUS, descriptorHelper.addDefaultEntity() );
+	@Test
+	public void testAddSampleEntity() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final IFile serviceXmlFile = descriptorHelper.getDescriptorFile();
+		IProject project = importProject(
+			"portlets", "com.liferay.ide.service.core.tests", "Add-Sample-Entity-Test-portlet");
 
-        final String serviceXmlContent = CoreUtil.readStreamToString( serviceXmlFile.getContents() );
+		ServiceBuilderDescriptorHelper descriptorHelper = new ServiceBuilderDescriptorHelper(project);
 
-        final String expectedServiceXmlContent =
-            CoreUtil.readStreamToString( this.getClass().getResourceAsStream(
-                "files/service-sample-6.2.0-add-sample-entity.xml" ) );
+		Assert.assertEquals(Status.OK_STATUS, descriptorHelper.addDefaultEntity());
 
-        assertEquals(
-            expectedServiceXmlContent.replaceAll( "\\s+", StringPool.SPACE ),
-            serviceXmlContent.replaceAll( "\\s+", StringPool.SPACE ) );
-    }
+		IFile serviceXmlFile = descriptorHelper.getDescriptorFile();
 
-    @Test
-    public void testEntityReferenceService() throws Exception
-    {
-        ServiceBuilder sb =
-            ServiceBuilder6xx.TYPE.instantiate( new RootXmlResource( new XmlResourceStore(
-                this.getClass().getResourceAsStream( "files/entity-reference-test.xml" ) ) ) );
+		String serviceXmlContent = CoreUtil.readStreamToString(serviceXmlFile.getContents());
 
-        Entity foo = sb.getEntities().get( 0 );
-        Entity bar = sb.getEntities().get( 1 );
+		Class<?> clazz = getClass();
 
-        ElementList<Relationship> relationships = sb.getRelationships();
+		String expectedServiceXmlContent = CoreUtil.readStreamToString(
+			clazz.getResourceAsStream("files/service-sample-6.2.0-add-sample-entity.xml"));
 
-        assertEquals( 1, relationships.size() );
+		Assert.assertEquals(
+			expectedServiceXmlContent.replaceAll("\\s+", StringPool.SPACE),
+			serviceXmlContent.replaceAll("\\s+", StringPool.SPACE));
+	}
 
-        Entity to = sb.getRelationships().get( 0 ).getToEntity().target();
-        Entity from = sb.getRelationships().get( 0 ).getFromEntity().target();
+	@Test
+	public void testEntityReferenceService() throws Exception {
+		Class<?> clazz = getClass();
 
-        assertEquals( to, foo );
-        assertEquals( from, bar );
-    }
+		ServiceBuilder sb = ServiceBuilder6xx.TYPE.instantiate(
+			new RootXmlResource(new XmlResourceStore(clazz.getResourceAsStream("files/entity-reference-test.xml"))));
+
+		Entity foo = sb.getEntities().get(0);
+
+		Entity bar = sb.getEntities().get(1);
+
+		ElementList<Relationship> relationships = sb.getRelationships();
+
+		Assert.assertEquals("", 1, relationships.size());
+
+		Relationship relationship = sb.getRelationships().get(0);
+
+		Entity to = relationship.getToEntity().target();
+
+		Entity from = relationship.getFromEntity().target();
+
+		Assert.assertEquals(to, foo);
+		Assert.assertEquals(from, bar);
+	}
 
 }
