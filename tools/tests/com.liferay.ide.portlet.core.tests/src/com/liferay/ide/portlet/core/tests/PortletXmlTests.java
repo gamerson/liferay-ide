@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
-package com.liferay.ide.portlet.core.tests;
+ */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+package com.liferay.ide.portlet.core.tests;
 
 import com.liferay.ide.portlet.core.model.Param;
 import com.liferay.ide.portlet.core.model.Portlet;
@@ -29,80 +26,80 @@ import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.ResourceStoreException;
 import org.eclipse.sapphire.modeling.xml.RootXmlResource;
 import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
-import org.junit.Test;
 
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author Gregory Amerson
  * @author Kuo Zhang
  */
-public class PortletXmlTests extends XmlTestsBase
-{
+public class PortletXmlTests extends XmlTestsBase {
 
-    private static final String PORTLET_XML = "files/portlet.xml";
+	@Test
+	public void portletXmlRead() throws Exception {
+		PortletApp portletApp = _portletApp(_PORTLET_XML);
 
-    @Test
-    public void portletXmlRead() throws Exception
-    {
-        final PortletApp portletApp = portletApp( PORTLET_XML );
+		Assert.assertNotNull(portletApp);
 
-        assertNotNull( portletApp );
+		ElementList<Portlet> portlets = portletApp.getPortlets();
 
-        final ElementList<Portlet> portlets = portletApp.getPortlets();
+		Assert.assertNotNull(portlets);
 
-        assertNotNull( portlets );
+		Assert.assertEquals("", 1, portlets.size());
 
-        assertEquals( 1, portlets.size() );
+		Portlet portlet = portlets.get(0);
 
-        final Portlet portlet = portlets.get( 0 );
+		Assert.assertNotNull(portlet);
 
-        assertNotNull( portlet );
+		Assert.assertEquals("1", portlet.getPortletName().content());
 
-        assertEquals( "1", portlet.getPortletName().content() );
+		Assert.assertEquals("Sample JSP", portlet.getDisplayName().content());
 
-        assertEquals( "Sample JSP", portlet.getDisplayName().content() );
+		Assert.assertEquals("com.liferay.samplejsp.portlet.JSPPortlet", portlet.getPortletClass().text());
 
-        assertEquals( "com.liferay.samplejsp.portlet.JSPPortlet", portlet.getPortletClass().text() );
+		Param param = portlet.getInitParams().get(0);
 
-        final Param param = portlet.getInitParams().get( 0 );
+		Assert.assertNotNull(param);
 
-        assertNotNull( param );
+		Assert.assertEquals("view-jsp", param.getName().content());
 
-        assertEquals( "view-jsp", param.getName().content() );
+		Assert.assertEquals("/view.jsp", param.getValue().content());
 
-        assertEquals( "/view.jsp", param.getValue().content() );
+		Assert.assertEquals(Integer.valueOf(0), portlet.getExpirationCache().content());
 
-        assertEquals( new Integer( 0 ), portlet.getExpirationCache().content() );
+		Supports supports = portlet.getSupports();
 
-        final Supports supports = portlet.getSupports();
+		Assert.assertNotNull(supports);
 
-        assertNotNull( supports );
+		Assert.assertEquals("text/html", supports.getMimeType().content());
 
-        assertEquals( "text/html", supports.getMimeType().content() );
+		PortletInfo info = portlet.getPortletInfo();
 
-        final PortletInfo info = portlet.getPortletInfo();
+		Assert.assertEquals("Sample JSP", info.getTitle().content());
 
-        assertEquals( "Sample JSP", info.getTitle().content() );
+		Assert.assertEquals("Sample JSP", info.getShortTitle().content());
 
-        assertEquals( "Sample JSP", info.getShortTitle().content() );
+		Assert.assertEquals("Sample JSP", info.getKeywords().content());
 
-        assertEquals( "Sample JSP", info.getKeywords().content() );
+		ElementList<SecurityRoleRef> roles = portlet.getSecurityRoleRefs();
 
-        final ElementList<SecurityRoleRef> roles = portlet.getSecurityRoleRefs();
+		Assert.assertEquals("", 4, roles.size());
 
-        assertEquals( 4, roles.size() );
+		SecurityRoleRef role = roles.get(1);
 
-        final SecurityRoleRef role = roles.get( 1 );
+		Assert.assertNotNull(role);
 
-        assertNotNull( role );
+		Assert.assertEquals("guest", role.getRoleName().content());
+	}
 
-        assertEquals( "guest", role.getRoleName().content() );
-    }
+	private PortletApp _portletApp(String portletXml) throws ResourceStoreException {
+		Class<?> clazz = getClass();
 
-    private PortletApp portletApp( String portletXml ) throws ResourceStoreException
-    {
-        return PortletApp.TYPE.instantiate( new RootXmlResource( new XmlResourceStore(
-            getClass().getResourceAsStream( portletXml )) ) );
-    }
+		return PortletApp.TYPE.instantiate(
+			new RootXmlResource(new XmlResourceStore(clazz.getResourceAsStream(portletXml))));
+	}
+
+	private static final String _PORTLET_XML = "files/portlet.xml";
 
 }
