@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,13 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.PluginClasspathContainerInitializer;
@@ -27,7 +23,9 @@ import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
 
 import java.io.File;
+
 import java.net.URL;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -41,161 +39,157 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Simon Jiang
  */
+public class ImportPluginsSDKProjectTests extends ProjectCoreBase {
 
-public class ImportPluginsSDKProjectTests extends ProjectCoreBase
-{
+	@AfterClass
+	public static void removePluginsSDK() throws Exception {
+		deleteAllWorkspaceProjects();
+	}
 
-    @AfterClass
-    public static void removePluginsSDK() throws Exception
-    {
-        deleteAllWorkspaceProjects();
-    }
+	@Test
+	public void testImportBasicHookProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-    private boolean isLiferayRuntimePluginClassPath( List<IClasspathEntry> entries, final String entryPath )
-    {
-        boolean retval = false;
-        for( Iterator<IClasspathEntry> iterator = entries.iterator(); iterator.hasNext(); )
-        {
-            IClasspathEntry entry = iterator.next();
+		IPath projectPath = _importProject("hooks", "Import-IDE3.0-hook");
 
-            if( entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER )
-            {
-                for( String path : entry.getPath().segments() )
-                {
-                    if( path.equals( entryPath ) )
-                    {
-                        retval = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return retval;
-    }
+		IProject hookProjectForIDE3 = ProjectImportUtil.importProject(projectPath, new NullProgressMonitor(), null);
 
-    @Override
-    protected IPath getLiferayPluginsSdkDir()
-    {
-        return ProjectCore.getDefault().getStateLocation().append(
-            "com.liferay.portal.plugins.sdk-1.0.16-withdependencies" );
-    }
+		Assert.assertNotNull(hookProjectForIDE3);
 
-    @Override
-    protected IPath getLiferayPluginsSDKZip()
-    {
-        return getLiferayBundlesPath().append(
-            "com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip" );
-    }
+		IJavaProject javaProject = JavaCore.create(hookProjectForIDE3);
 
-    @Override
-    protected String getLiferayPluginsSdkZipFolder()
-    {
-        return "com.liferay.portal.plugins.sdk-1.0.16-withdependencies/";
-    }
+		IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
 
-    private IPath importProject( String pluginType, String name ) throws Exception
-    {
-        SDK sdk = SDKUtil.getWorkspaceSDK();
-        final IPath pluginTypeFolder = sdk.getLocation().append( pluginType );
+		List<IClasspathEntry> rawClasspaths = Arrays.asList(rawClasspath);
 
-        final URL projectZipUrl =
-            Platform.getBundle( "com.liferay.ide.project.core.tests" ).getEntry( "projects/" + name + ".zip" );
+		boolean hasPluginClasspathDependencyContainer = _isLiferayRuntimePluginClassPath(
+			rawClasspaths, SDKClasspathContainer.ID);
 
-        final File projectZipFile = new File( FileLocator.toFileURL( projectZipUrl ).getFile() );
+		Assert.assertEquals(hasPluginClasspathDependencyContainer, true);
+	}
 
-        ZipUtil.unzip( projectZipFile, pluginTypeFolder.toFile() );
+	@Test
+	public void testImportConfiguredPortletProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final IPath projectFolder = pluginTypeFolder.append( name );
+		IPath projectPath = _importProject("portlets", "Import-Old-Configured-portlet");
 
-        assertEquals( true, projectFolder.toFile().exists() );
+		IProject portletProjectForIDE3 = ProjectImportUtil.importProject(projectPath, new NullProgressMonitor(), null);
 
-        return projectFolder;
-    }
+		Assert.assertNotNull(portletProjectForIDE3);
 
-    @Test
-    public void testSDKSetting() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
+		IJavaProject javaProject = JavaCore.create(portletProjectForIDE3);
 
-        SDK sdk = SDKUtil.getWorkspaceSDK();
-        Map<String, Object> sdkProperties = sdk.getBuildProperties( true );
+		IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
 
-        assertNotNull( sdkProperties.get( "app.server.type" ) );
-        assertNotNull( sdkProperties.get( "app.server.dir" ) );
-        assertNotNull( sdkProperties.get( "app.server.deploy.dir" ) );
-        assertNotNull( sdkProperties.get( "app.server.lib.global.dir" ) );
-        assertNotNull( sdkProperties.get( "app.server.parent.dir" ) );
-        assertNotNull( sdkProperties.get( "app.server.portal.dir" ) );
+		List<IClasspathEntry> rawClasspaths = Arrays.asList(rawClasspath);
 
-        assertEquals( sdkProperties.get( "app.server.type" ), "tomcat" );
-        assertEquals( sdkProperties.get( "app.server.dir" ), getLiferayRuntimeDir().toPortableString() );
-        assertEquals(
-            sdkProperties.get( "app.server.deploy.dir" ),
-            getLiferayRuntimeDir().append( "webapps" ).toPortableString() );
-        assertEquals(
-            sdkProperties.get( "app.server.lib.global.dir" ),
-            getLiferayRuntimeDir().append( "lib/ext" ).toPortableString() );
-        assertEquals(
-            sdkProperties.get( "app.server.parent.dir" ),
-            getLiferayRuntimeDir().removeLastSegments( 1 ).toPortableString() );
-        assertEquals(
-            sdkProperties.get( "app.server.portal.dir" ),
-            getLiferayRuntimeDir().append( "webapps/ROOT" ).toPortableString() );
+		boolean hasOldPluginClasspathContainer = _isLiferayRuntimePluginClassPath(
+			rawClasspaths, PluginClasspathContainerInitializer.ID);
 
-    }
+		boolean hasPluginClasspathDependencyContainer = _isLiferayRuntimePluginClassPath(
+			rawClasspaths, SDKClasspathContainer.ID);
 
-    @Test
-    public void testImportBasicHookProject() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
+		boolean hasOldRuntimeClasspathContainer = _isLiferayRuntimePluginClassPath(
+			rawClasspaths, "com.liferay.studio.server.tomcat.runtimeClasspathProvider");
 
-        final IPath projectPath = importProject( "hooks", "Import-IDE3.0-hook" );
-        IProject hookProjectForIDE3 = ProjectImportUtil.importProject( projectPath, new NullProgressMonitor(), null );
+		Assert.assertEquals(hasOldPluginClasspathContainer, false);
+		Assert.assertEquals(hasOldRuntimeClasspathContainer, false);
+		Assert.assertEquals(hasPluginClasspathDependencyContainer, true);
+	}
 
-        assertNotNull( hookProjectForIDE3 );
+	@Test
+	public void testSDKSetting() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        IJavaProject javaProject = JavaCore.create( hookProjectForIDE3 );
-        IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
-        List<IClasspathEntry> rawClasspaths = Arrays.asList( rawClasspath );
-        final boolean hasPluginClasspathDependencyContainer =
-            isLiferayRuntimePluginClassPath( rawClasspaths, SDKClasspathContainer.ID );
+		SDK sdk = SDKUtil.getWorkspaceSDK();
 
-        assertEquals( hasPluginClasspathDependencyContainer, true );
-    }
+		Map<String, Object> sdkProperties = sdk.getBuildProperties(true);
 
-    @Test
-    public void testImportConfiguredPortletProject() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
+		Assert.assertNotNull(sdkProperties.get("app.server.type"));
+		Assert.assertNotNull(sdkProperties.get("app.server.dir"));
+		Assert.assertNotNull(sdkProperties.get("app.server.deploy.dir"));
+		Assert.assertNotNull(sdkProperties.get("app.server.lib.global.dir"));
+		Assert.assertNotNull(sdkProperties.get("app.server.parent.dir"));
+		Assert.assertNotNull(sdkProperties.get("app.server.portal.dir"));
 
-        final IPath projectPath = importProject( "portlets", "Import-Old-Configured-portlet" );
-        IProject portletProjectForIDE3 =
-            ProjectImportUtil.importProject( projectPath, new NullProgressMonitor(), null );
+		Assert.assertEquals(sdkProperties.get("app.server.type"), "tomcat");
 
-        assertNotNull( portletProjectForIDE3 );
+		IPath path = getLiferayRuntimeDir();
 
-        IJavaProject javaProject = JavaCore.create( portletProjectForIDE3 );
-        IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
-        List<IClasspathEntry> rawClasspaths = Arrays.asList( rawClasspath );
+		Assert.assertEquals(sdkProperties.get("app.server.dir"), path.toPortableString());
+		Assert.assertEquals(sdkProperties.get("app.server.deploy.dir"), path.append("webapps").toPortableString());
+		Assert.assertEquals(sdkProperties.get("app.server.lib.global.dir"), path.append("lib/ext").toPortableString());
+		Assert.assertEquals(sdkProperties.get("app.server.parent.dir"), path.removeLastSegments(1).toPortableString());
+		Assert.assertEquals(sdkProperties.get("app.server.portal.dir"), path.append("webapps/ROOT").toPortableString());
+	}
 
-        final boolean hasOldPluginClasspathContainer =
-            isLiferayRuntimePluginClassPath( rawClasspaths, PluginClasspathContainerInitializer.ID );
-        final boolean hasPluginClasspathDependencyContainer =
-            isLiferayRuntimePluginClassPath( rawClasspaths, SDKClasspathContainer.ID );
-        final boolean hasOldRuntimeClasspathContainer = isLiferayRuntimePluginClassPath(
-            rawClasspaths, "com.liferay.studio.server.tomcat.runtimeClasspathProvider" );
+	@Override
+	protected IPath getLiferayPluginsSdkDir() {
+		return ProjectCore.getDefaultStateLocation().append("com.liferay.portal.plugins.sdk-1.0.16-withdependencies");
+	}
 
-        assertEquals( hasOldPluginClasspathContainer, false );
-        assertEquals( hasOldRuntimeClasspathContainer, false );
-        assertEquals( hasPluginClasspathDependencyContainer, true );
-    }
+	@Override
+	protected IPath getLiferayPluginsSDKZip() {
+		return getLiferayBundlesPath().append("com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip");
+	}
+
+	@Override
+	protected String getLiferayPluginsSdkZipFolder() {
+		return "com.liferay.portal.plugins.sdk-1.0.16-withdependencies/";
+	}
+
+	private IPath _importProject(String pluginType, String name) throws Exception {
+		SDK sdk = SDKUtil.getWorkspaceSDK();
+
+		IPath pluginTypeFolder = sdk.getLocation().append(pluginType);
+
+		URL projectZipUrl = Platform.getBundle("com.liferay.ide.project.core.tests").getEntry(
+			"projects/" + name + ".zip");
+
+		File projectZipFile = new File(FileLocator.toFileURL(projectZipUrl).getFile());
+
+		ZipUtil.unzip(projectZipFile, pluginTypeFolder.toFile());
+
+		IPath projectFolder = pluginTypeFolder.append(name);
+
+		Assert.assertEquals(true, projectFolder.toFile().exists());
+
+		return projectFolder;
+	}
+
+	private boolean _isLiferayRuntimePluginClassPath(List<IClasspathEntry> entries, String entryPath) {
+		boolean retval = false;
+
+		for (Iterator<IClasspathEntry> iterator = entries.iterator(); iterator.hasNext();) {
+			IClasspathEntry entry = iterator.next();
+
+			if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
+				for (String path : entry.getPath().segments()) {
+					if (path.equals(entryPath)) {
+						retval = true;
+
+						break;
+					}
+				}
+			}
+		}
+
+		return retval;
+	}
+
 }

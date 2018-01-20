@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,14 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.ILiferayProject;
@@ -28,8 +23,13 @@ import com.liferay.ide.project.core.IPortletFramework;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
 import com.liferay.ide.project.core.model.PluginType;
+import com.liferay.ide.project.core.model.ProjectName;
+import com.liferay.ide.project.core.tests.util.SapphireUtil;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
+
+import java.io.File;
+import java.io.InputStream;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +42,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.sapphire.DefaultValueService;
 import org.eclipse.sapphire.PossibleValuesService;
+import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.PathBridge;
@@ -50,6 +51,8 @@ import org.eclipse.sapphire.services.ValueLabelService;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
+
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -58,857 +61,936 @@ import org.junit.Test;
  * @author Kuo Zhang
  * @author Terry Jia
  */
-@SuppressWarnings( "restriction" )
-public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase
-{
-    protected IProject checkNewJsfAntProjectIvyFile( IProject jsfProject, String jsfSuite ) throws Exception
-    {
-        final IFile ivyXml = jsfProject.getFile( "ivy.xml" );
+@SuppressWarnings("restriction")
+public abstract class NewLiferayPluginProjectOpBase extends ProjectCoreBase {
 
-        final String ivyXmlContent = CoreUtil.readStreamToString( ivyXml.getContents() );
+	@Test
+	public void testDisplayNameDefaultValue() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final String expectedIvyXmlContent =
-            CoreUtil.readStreamToString( this.getClass().getResourceAsStream(
-                "files/" + getRuntimeVersion() + "/ivy-" + jsfSuite + ".xml" ) );
+		NewLiferayPluginProjectOp op = newProjectOp("display-name-default-value");
 
-        assertEquals( stripCarriageReturns( expectedIvyXmlContent ), stripCarriageReturns( ivyXmlContent ) );
+		DefaultValueService dvs = op.getDisplayName().service(DefaultValueService.class);
 
-        return jsfProject;
-    }
+		String exceptedDisplayName = "Test Display Name Default Value";
 
-    protected void checkNewJsfAntProjectXHtmlPagesLocation( IProject jsfProject ) throws Exception
-    {
-        final IFolder docroot = CoreUtil.getDefaultDocrootFolder( jsfProject );
-        final IFolder views = docroot.getFolder( "/WEB-INF/views" );
+		op.setProjectName("test display name default value");
 
-        assertEquals( true, views.exists() );
+		Assert.assertEquals(exceptedDisplayName, op.getDisplayName().content());
+		Assert.assertEquals(exceptedDisplayName, dvs.value());
 
-        final IFolder oldViews = docroot.getFolder( "/views" );
+		op.setProjectName("Test-Display-Name-Default-Value");
 
-        assertEquals( false, oldViews.exists() );
+		Assert.assertEquals(exceptedDisplayName, op.getDisplayName().content());
+		Assert.assertEquals(exceptedDisplayName, dvs.value());
 
-        final String contents =
-            CoreUtil.readStreamToString( docroot.getFile( "/WEB-INF/portlet.xml" ).getContents( true ) );
+		op.setProjectName("Test_Display_Name_Default_Value");
 
-        if( contents.contains( "init-param" ) )
-        {
-            assertEquals( true, contents.contains( "/WEB-INF/views/view.xhtml" ) );
-        }
-    }
+		Assert.assertEquals(exceptedDisplayName, op.getDisplayName().content());
+		Assert.assertEquals(exceptedDisplayName, dvs.value());
 
-    protected IProject checkNewThemeAntProject( NewLiferayPluginProjectOp op, IProject project, String expectedBuildFile )
-        throws Exception
-    {
-        final String themeParent = op.getThemeParent().content();
-        final String themeFramework = op.getThemeFramework().content();
-        final IFolder defaultDocroot = LiferayCore.create( IWebProject.class, project ).getDefaultDocrootFolder();
-        final IFile readme = defaultDocroot.getFile( "WEB-INF/src/resources-importer/readme.txt" );
+		op.setProjectName("test-Display_name Default-value");
 
-        assertEquals( true, readme.exists() );
+		Assert.assertEquals(exceptedDisplayName, op.getDisplayName().content());
+		Assert.assertEquals(exceptedDisplayName, dvs.value());
 
-        final IFile buildXml = project.getFile( "build.xml" );
+		String projectName = "test-display_name default value";
 
-        final String buildXmlContent = CoreUtil.readStreamToString( buildXml.getContents() );
+		String[] suffixs = {"-portlet", "-hook", "-theme", "-layouttpl", "-ext"};
 
-        if( expectedBuildFile == null )
-        {
-            expectedBuildFile = "build-theme-" + themeParent + "-" + themeFramework + ".xml";
-        }
+		for (String suffix : suffixs) {
+			op.setProjectName(projectName + suffix);
+			Assert.assertEquals(exceptedDisplayName, op.getDisplayName().content());
+			Assert.assertEquals(exceptedDisplayName, dvs.value());
+		}
+	}
 
-        final String expectedbuildXmlContent =
-            CoreUtil.readStreamToString(
-                this.getClass().getResourceAsStream( "files/" + getRuntimeVersion() + "/" + expectedBuildFile ) ).replaceAll(
-                "RUNTIMEVERSION", getRuntimeVersion() );
+	@Test
+	public void testDontIncludeSampleCode() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        assertEquals( stripCarriageReturns( expectedbuildXmlContent ), stripCarriageReturns( buildXmlContent ) );
+		// test portlet project
 
-        return project;
-    }
+		NewLiferayPluginProjectOp op = newProjectOp("test-dont-include-sample-code-portlet");
 
-    protected IProject createNewJsfAntProject( String jsfSuite, String suffix ) throws Exception
-    {
-        final String projectName = jsfSuite + suffix;
-        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
-        op.setPortletFramework( "jsf-2.x" );
-        op.setPortletFrameworkAdvanced( jsfSuite );
+		op.setIncludeSampleCode(false);
+		op.setPluginType(PluginType.portlet);
 
-        final IProject jsfProject = createAntProject( op );
+		IProject project = createAntProject(op);
 
-        final IFolder defaultDocroot =
-            LiferayCore.create( IWebProject.class, jsfProject ).getDefaultDocrootFolder();
+		ILiferayProject lr = LiferayCore.create(project);
 
-        assertNotNull( defaultDocroot );
+		IFile portletXml = lr.getDescriptorFile(ILiferayConstants.PORTLET_XML_FILE);
 
-        final IFile config = defaultDocroot.getFile( "WEB-INF/faces-config.xml" );
+		IFile liferayPortletXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_PORTLET_XML_FILE);
 
-        assertEquals( true, config.exists() );
+		IFile liferayDisplayXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_DISPLAY_XML_FILE);
 
-        checkNewJsfAntProjectXHtmlPagesLocation( jsfProject );
+		Assert.assertNotNull(portletXml);
+		Assert.assertNotNull(liferayPortletXml);
+		Assert.assertNotNull(liferayDisplayXml);
 
-        return checkNewJsfAntProjectIvyFile( jsfProject, jsfSuite );
-    }
+		Assert.assertEquals(0, countElements(portletXml, "portlet"));
+		Assert.assertEquals(0, countElements(liferayPortletXml, "portlet"));
+		Assert.assertEquals(0, countElements(liferayDisplayXml, "category"));
+	}
 
-    protected IProject createNewSDKProjectCustomLocation(
-        final NewLiferayPluginProjectOp newProjectOp, IPath customLocation ) throws Exception
-    {
-        newProjectOp.setUseDefaultLocation( false );
+	@Test
+	public void testDontIncludeSampleCodeServiceBuilder() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        newProjectOp.setLocation( PathBridge.create( customLocation ) );
+		// test service-builder project
 
-        return createAntProject( newProjectOp );
-    }
+		NewLiferayPluginProjectOp op = newProjectOp("test-dont-include-sample-code-service-builder");
 
-    protected IProject createNewThemeAntProject( final NewLiferayPluginProjectOp op ) throws Exception
-    {
-        final IProject themeProject = createAntProject( op );
+		op.setIncludeSampleCode(false);
+		op.setPluginType(PluginType.servicebuilder);
 
-        final IFolder defaultDocroot =
-            LiferayCore.create( IWebProject.class, themeProject ).getDefaultDocrootFolder();
+		IProject project = createAntProject(op);
 
-        assertNotNull( defaultDocroot );
+		ILiferayProject lr = LiferayCore.create(project);
 
-        return themeProject;
-    }
+		IFile portletXml = lr.getDescriptorFile(ILiferayConstants.PORTLET_XML_FILE);
 
-    protected IProject createNewThemeAntProject( String themeParent, String themeFramework ) throws Exception
-    {
-        final String projectName = "test-theme-project-sdk-" + themeParent + "-" + themeFramework;
-        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
-        op.setPluginType( PluginType.theme );
-        op.setThemeParent( themeParent );
-        op.setThemeFramework( themeFramework );
+		IFile liferayPortletXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_PORTLET_XML_FILE);
 
-        final IProject project = createNewThemeAntProject( op );
+		IFile liferayDisplayXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_DISPLAY_XML_FILE);
 
-        return checkNewThemeAntProject( op, project, null );
-    }
+		IFile serviceXml = lr.getDescriptorFile(ILiferayConstants.SERVICE_XML_FILE);
 
-    protected IProject createNewThemeAntProjectDefaults() throws Exception
-    {
-        final String projectName = "test-theme-project-sdk-defaults";
-        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
-        op.setPluginType( PluginType.theme );
+		Assert.assertNotNull(portletXml);
+		Assert.assertNotNull(liferayPortletXml);
+		Assert.assertNotNull(liferayDisplayXml);
+		Assert.assertNotNull(serviceXml);
 
-        IProject project = createNewThemeAntProject( op );
+		Assert.assertEquals(0, countElements(portletXml, "portlet"));
+		Assert.assertEquals(0, countElements(liferayPortletXml, "portlet"));
+		Assert.assertEquals(0, countElements(liferayDisplayXml, "category"));
+		Assert.assertEquals(0, countElements(serviceXml, "entity"));
+	}
 
-        return checkNewThemeAntProject( op, project, "build-theme-defaults.xml" );
-    }
+	@Test
+	public void testHookProjectName() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-    protected abstract String getServiceXmlDoctype();
+		NewLiferayPluginProjectOp op = newProjectOp("test-hook");
 
-    @Test
-    public void testDisplayNameDefaultValue() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		op.setPluginType(PluginType.hook);
+		op.setUseDefaultLocation(true);
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "display-name-default-value" );
+		IProject expectedProject = createAntProject(op);
 
-        final DefaultValueService dvs = op.getDisplayName().service( DefaultValueService.class );
+		String expectedProjectName = expectedProject.getName();
 
-        final String exceptedDisplayName = "Test Display Name Default Value";
+		ProjectName projectName = op.getProjectNames().get(0);
 
-        op.setProjectName( "test display name default value" );
-        assertEquals( exceptedDisplayName, op.getDisplayName().content() );
-        assertEquals( exceptedDisplayName, dvs.value() );
+		String actualProjectName = projectName.getName().content();
 
-        op.setProjectName( "Test-Display-Name-Default-Value" );
-        assertEquals( exceptedDisplayName, op.getDisplayName().content() );
-        assertEquals( exceptedDisplayName, dvs.value() );
+		Assert.assertEquals(expectedProjectName, actualProjectName);
+	}
 
-        op.setProjectName( "Test_Display_Name_Default_Value" );
-        assertEquals( exceptedDisplayName, op.getDisplayName().content() );
-        assertEquals( exceptedDisplayName, dvs.value() );
+	@Test
+	public void testIncludeSampleCode() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        op.setProjectName( "test-Display_name Default-value" );
-        assertEquals( exceptedDisplayName, op.getDisplayName().content() );
-        assertEquals( exceptedDisplayName, dvs.value() );
+		// test portlet project
 
-        final String projectName = "test-display_name default value";
+		NewLiferayPluginProjectOp op = newProjectOp("test-include-sample-code-portlet");
 
-        final String[] suffixs = { "-portlet", "-hook", "-theme", "-layouttpl", "-ext" };
+		op.setIncludeSampleCode(true);
+		op.setPluginType(PluginType.portlet);
 
-        for( String suffix : suffixs )
-        {
-            op.setProjectName( projectName + suffix );
-            assertEquals( exceptedDisplayName, op.getDisplayName().content() );
-            assertEquals( exceptedDisplayName, dvs.value() );
-        }
-    }
+		IProject project = createAntProject(op);
 
-    protected void testLocationListener() throws Exception
-    {
-        final NewLiferayPluginProjectOp op = newProjectOp( "location-listener" );
-        op.setProjectProvider( "ant" );
-        op.setUseDefaultLocation( false );
+		ILiferayProject lr = LiferayCore.create(project);
 
-        final String projectNameWithoutSuffix = "project-name-without-suffix";
-        final String locationWithoutSuffix = "location-without-suffix";
+		IFile portletXml = lr.getDescriptorFile(ILiferayConstants.PORTLET_XML_FILE);
 
-        op.setPluginType( "portlet" );
-        final String suffix = "-portlet";
+		IFile liferayPortletXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_PORTLET_XML_FILE);
 
-        // Both of project name and location are without type suffix.
-        op.setProjectName( projectNameWithoutSuffix );
-        op.setLocation( locationWithoutSuffix );
-        assertEquals(
-            locationWithoutSuffix + "/" + projectNameWithoutSuffix + suffix, op.getLocation().content().toString() );
+		IFile liferayDisplayXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_DISPLAY_XML_FILE);
 
-        // Location does't have a type suffix, project name has one.
-        op.setProjectName( projectNameWithoutSuffix + suffix );
-        op.setLocation( locationWithoutSuffix );
-        assertEquals( locationWithoutSuffix , op.getLocation().content().toString() );
+		Assert.assertNotNull(portletXml);
+		Assert.assertNotNull(liferayPortletXml);
+		Assert.assertNotNull(liferayDisplayXml);
 
-        // Location has a type suffix.
-        op.setLocation( locationWithoutSuffix + suffix );
-        assertEquals( locationWithoutSuffix + suffix, op.getLocation().content().toString() );
-    }
+		Assert.assertEquals(1, countElements(portletXml, "portlet"));
+		Assert.assertEquals(1, countElements(liferayPortletXml, "portlet"));
+		Assert.assertEquals(1, countElements(liferayDisplayXml, "category"));
+	}
 
-    @Test
-    @Ignore
-    public void testNewExtAntProject() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+	@Test
+	public void testIncludeSampleCodeServiceBuilder() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "ext" );
-        op.setPluginType( PluginType.ext );
+		// test service-builder project
 
-        IProject extProject = null;
+		NewLiferayPluginProjectOp op = newProjectOp("test-include-sample-code-service-builder");
 
-        try
-        {
-            extProject = createAntProject( op );
-        }
-        catch( Throwable e )
-        {
-        }
+		op.setIncludeSampleCode(true);
+		op.setPluginType(PluginType.servicebuilder);
 
-        assertNotNull( extProject );
+		IProject project = createAntProject(op);
 
-        final IFolder defaultDocroot =
-            LiferayCore.create( IWebProject.class, extProject ).getDefaultDocrootFolder();
+		ILiferayProject lr = LiferayCore.create(project);
 
-        assertNotNull( defaultDocroot );
+		IFile portletXml = lr.getDescriptorFile(ILiferayConstants.PORTLET_XML_FILE);
 
-        final IFile extFile = defaultDocroot.getFile( "WEB-INF/liferay-portlet-ext.xml" );
+		IFile liferayPortletXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_PORTLET_XML_FILE);
 
-        assertEquals( true, extFile.exists() );
-    }
+		IFile liferayDisplayXml = lr.getDescriptorFile(ILiferayConstants.LIFERAY_DISPLAY_XML_FILE);
 
-    @Test
-    public void testNewHookAntProject() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IFile serviceXml = lr.getDescriptorFile(ILiferayConstants.SERVICE_XML_FILE);
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-hook-project-sdk" );
-        op.setPluginType( PluginType.hook );
+		Assert.assertNotNull(portletXml);
+		Assert.assertNotNull(liferayPortletXml);
+		Assert.assertNotNull(liferayDisplayXml);
+		Assert.assertNotNull(serviceXml);
 
-        final IProject hookProject = createAntProject( op );
+		Assert.assertEquals(1, countElements(portletXml, "portlet"));
+		Assert.assertEquals(1, countElements(liferayPortletXml, "portlet"));
+		Assert.assertEquals(1, countElements(liferayDisplayXml, "category"));
+		Assert.assertEquals(1, countElements(serviceXml, "entity"));
+	}
 
-        final IFolder webappRoot = LiferayCore.create( IWebProject.class, hookProject ).getDefaultDocrootFolder();
+	@Ignore
+	@Test
+	public void testNewExtAntProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        assertNotNull( webappRoot );
+		NewLiferayPluginProjectOp op = newProjectOp("ext");
 
-        final IFile hookXml = webappRoot.getFile( "WEB-INF/liferay-hook.xml" );
+		op.setPluginType(PluginType.ext);
 
-        assertEquals( true, hookXml.exists() );
-    }
+		IProject extProject = null;
 
-    @Test
-    public void testNewJsfAntProjects() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		try {
+			extProject = createAntProject(op);
+		}
+		catch (Throwable e) {
+		}
 
-        createNewJsfAntProject( "jsf", "" );
-        createNewJsfAntProject( "liferay_faces_alloy", "" );
-        createNewJsfAntProject( "icefaces", "" );
-        createNewJsfAntProject( "primefaces", "" );
-    }
+		Assert.assertNotNull(extProject);
 
-    private void testNewJsfRichfacesProject( String framework, boolean richfacesEnabled ) throws Exception
-    {
-        final IProject project = createNewJsfAntProject( framework, "rf" );
+		IFolder defaultDocroot = LiferayCore.create(IWebProject.class, extProject).getDefaultDocrootFolder();
 
-        final String contents =
-            CoreUtil.readStreamToString( project.getFile( "docroot/WEB-INF/web.xml" ).getContents( true ) );
+		Assert.assertNotNull(defaultDocroot);
 
-        assertEquals( richfacesEnabled, contents.contains( "org.richfaces.resourceMapping.enabled" ) );
+		IFile extFile = defaultDocroot.getFile("WEB-INF/liferay-portlet-ext.xml");
 
-        assertEquals( richfacesEnabled, contents.contains( "org.richfaces.webapp.ResourceServlet" ) );
-    }
+		Assert.assertEquals(true, extFile.exists());
+	}
 
-    protected void testNewJsfRichfacesProjects() throws Exception
-    {
-        testNewJsfRichfacesProject( "primefaces", false );
-        testNewJsfRichfacesProject( "richfaces", true );
-    }
+	@Test
+	public void testNewHookAntProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-    protected void testNewLayoutAntProject() throws Exception
-    {
-        final String projectName = "test-layouttpl-project-sdk";
-        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
-        op.setPluginType( PluginType.layouttpl );
+		NewLiferayPluginProjectOp op = newProjectOp("test-hook-project-sdk");
 
-        IProject layouttplProject = createAntProject( op );
+		op.setPluginType(PluginType.hook);
 
-        final IFolder webappRoot = LiferayCore.create( IWebProject.class, layouttplProject ).getDefaultDocrootFolder();
+		IProject hookProject = createAntProject(op);
 
-        assertNotNull( webappRoot );
+		IFolder webappRoot = LiferayCore.create(IWebProject.class, hookProject).getDefaultDocrootFolder();
 
-        final IFile layoutXml = webappRoot.getFile( "WEB-INF/liferay-layout-templates.xml" );
+		Assert.assertNotNull(webappRoot);
 
-        assertEquals( true, layoutXml.exists() );
-    }
+		IFile hookXml = webappRoot.getFile("WEB-INF/liferay-hook.xml");
 
-    @Test
-    public void testNewPortletAntProject() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		Assert.assertEquals(true, hookXml.exists());
+	}
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "portlet-without-servicexml" );
-        op.setPluginType( PluginType.portlet );
+	@Test
+	public void testNewJsfAntProjects() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final IProject portletProject = createAntProject( op );
+		createNewJsfAntProject("jsf", "");
+		createNewJsfAntProject("liferay_faces_alloy", "");
+		createNewJsfAntProject("icefaces", "");
+		createNewJsfAntProject("primefaces", "");
+	}
 
-        final IFolder webappRoot = LiferayCore.create( IWebProject.class, portletProject ).getDefaultDocrootFolder();
+	@Test
+	public void testNewPortletAntProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        assertNotNull( webappRoot );
+		NewLiferayPluginProjectOp op = newProjectOp("portlet-without-servicexml");
 
-        final IFile serviceXml = webappRoot.getFile( "WEB-INF/service.xml" );
+		op.setPluginType(PluginType.portlet);
 
-        assertEquals( false, serviceXml.exists() );
-    }
+		IProject portletProject = createAntProject(op);
 
-    protected void testNewSDKProjectInSDK() throws Exception
-    {
-        final IProject projectInSDK = createAntProject( newProjectOp( "test-project-in-sdk" ) );
+		IFolder webappRoot = LiferayCore.create(IWebProject.class, portletProject).getDefaultDocrootFolder();
 
-        assertNotNull( projectInSDK );
+		Assert.assertNotNull(webappRoot);
 
-        assertEquals( true, projectInSDK.exists() );
+		IFile serviceXml = webappRoot.getFile("WEB-INF/service.xml");
 
-        final SDK sdk = SDKUtil.getWorkspaceSDK();
+		Assert.assertEquals(false, serviceXml.exists());
+	}
 
-        assertEquals( true, sdk.getLocation().isPrefixOf( projectInSDK.getLocation() ) );
+	@Test
+	public void testNewSDKProjects() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final IFile buildXml = projectInSDK.getFile( "build.xml" );
+		createAntProject(newProjectOp("test-name-1"));
+		createAntProject(newProjectOp("Test With Spaces"));
+		createAntProject(newProjectOp("test_name_1"));
+		createAntProject(newProjectOp("-portlet-portlet"));
+		createAntProject(newProjectOp("-portlet-hook"));
 
-        assertNotNull( buildXml );
+		NewLiferayPluginProjectOp op = newProjectOp("-hook-hook");
 
-        assertEquals( true, buildXml.exists() );
+		op.setPluginType(PluginType.hook);
 
-        final String buildXmlContent = CoreUtil.readStreamToString( buildXml.getContents( true ) );
+		createAntProject(op);
+	}
 
-        final Pattern p =
-            Pattern.compile( ".*<import file=\"\\.\\./build-common-portlet.xml\".*", Pattern.MULTILINE | Pattern.DOTALL );
+	@Test
+	public void testNewServiceBuilderPortletAntProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final Matcher m = p.matcher( buildXmlContent );
+		NewLiferayPluginProjectOp op = newProjectOp("portlet-with-servicexml");
 
-        assertEquals( "sdk project build.xml didn't use relative import.", true, m.matches() );
-    }
+		op.setPluginType(PluginType.servicebuilder);
 
-    @Test
-    public void testNewSDKProjects() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IProject portletProject = createAntProject(op);
 
-        createAntProject( newProjectOp( "test-name-1" ) );
-        createAntProject( newProjectOp( "Test With Spaces" ) );
-        createAntProject( newProjectOp( "test_name_1" ) );
-        createAntProject( newProjectOp( "-portlet-portlet" ) );
-        createAntProject( newProjectOp( "-portlet-hook" ) );
+		IFolder webappRoot = LiferayCore.create(IWebProject.class, portletProject).getDefaultDocrootFolder();
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "-hook-hook" );
-        op.setPluginType( PluginType.hook );
-        createAntProject( op );
-    }
+		Assert.assertNotNull(webappRoot);
 
-    @Test
-    public void testNewServiceBuilderPortletAntProject() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IFile serviceXml = webappRoot.getFile("WEB-INF/service.xml");
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "portlet-with-servicexml" );
-        op.setPluginType( PluginType.servicebuilder );
+		Assert.assertEquals(true, serviceXml.exists());
 
-        final IProject portletProject = createAntProject( op );
+		String serviceXmlContent = CoreUtil.readStreamToString(serviceXml.getContents());
 
-        final IFolder webappRoot = LiferayCore.create( IWebProject.class, portletProject ).getDefaultDocrootFolder();
+		Assert.assertEquals(true, serviceXmlContent.contains(getServiceXmlDoctype()));
+	}
 
-        assertNotNull( webappRoot );
+	@Test
+	public void testNewVaadinAntProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final IFile serviceXml = webappRoot.getFile( "WEB-INF/service.xml" );
+		NewLiferayPluginProjectOp op = newProjectOp("test-vaadin-project-sdk");
 
-        assertEquals( true, serviceXml.exists() );
+		op.setPluginType(PluginType.portlet);
+		op.setPortletFramework("vaadin");
 
-        final String serviceXmlContent = CoreUtil.readStreamToString( serviceXml.getContents() );
+		IProject vaadinProject = createAntProject(op);
 
-        assertEquals( true, serviceXmlContent.contains( getServiceXmlDoctype() ) );
-    }
+		IFolder webappRoot = LiferayCore.create(IWebProject.class, vaadinProject).getDefaultDocrootFolder();
 
-    protected void testNewThemeProjects() throws Exception
-    {
-        createNewThemeAntProjectDefaults();
-        createNewThemeAntProject( "_unstyled", "Freemarker" );
-        createNewThemeAntProject( "_styled", "Velocity" );
-        createNewThemeAntProject( "classic", "JSP" );
-    }
+		Assert.assertNotNull(webappRoot);
 
-    @Test
-    public void testNewVaadinAntProject() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IFile application = webappRoot.getFile(
+			"WEB-INF/src/testvaadinprojectsdk" + getRuntimeVersion() + "/TestVaadinProjectSdk" + getRuntimeVersion() +
+				"Application.java");
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-vaadin-project-sdk" );
-        op.setPluginType( PluginType.portlet );
-        op.setPortletFramework( "vaadin" );
+		Assert.assertEquals(true, application.exists());
+	}
 
-        IProject vaadinProject = createAntProject( op );
+	@Test
+	public void testPortletFrameworkAdvancedPossibleValues() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final IFolder webappRoot = LiferayCore.create( IWebProject.class, vaadinProject ).getDefaultDocrootFolder();
+		NewLiferayPluginProjectOp op = newProjectOp("test-portlet-framework-advanced-possible-values");
 
-        assertNotNull( webappRoot );
+		PossibleValuesService service = op.getPortletFrameworkAdvanced().service(PossibleValuesService.class);
 
-        final IFile application =
-            webappRoot.getFile( "WEB-INF/src/testvaadinprojectsdk" + getRuntimeVersion() +
-                "/TestVaadinProjectSdk" + getRuntimeVersion() + "Application.java" );
+		Set<String> acturalFrameworks = service.values();
 
-        assertEquals( true, application.exists() );
-    }
+		Assert.assertNotNull(acturalFrameworks);
 
-    protected void testPluginTypeListener() throws Exception
-    {
-        this.testPluginTypeListener( false );
-    }
+		Set<String> exceptedFrameworks = new HashSet<>();
 
-    protected void testPluginTypeListener( Boolean versionRestriction ) throws Exception
-    {
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-plugin-type-listener" );
-        final String projectName = op.getProjectName().content();
-        op.setProjectProvider( "ant" );
-        op.setUseDefaultLocation( true );
+		exceptedFrameworks.add("icefaces");
+		exceptedFrameworks.add("jsf");
+		exceptedFrameworks.add("liferay_faces_alloy");
+		exceptedFrameworks.add("primefaces");
+		exceptedFrameworks.add("richfaces");
 
-        final SDK sdk = SDKUtil.createSDKFromLocation( getLiferayPluginsSdkDir() );
+		Assert.assertNotNull(exceptedFrameworks);
 
-        final String[] pluginTypes = { "portlet", "hook", "layouttpl", "theme", "ext" };
+		Assert.assertEquals(true, exceptedFrameworks.containsAll(acturalFrameworks));
+		Assert.assertEquals(true, acturalFrameworks.containsAll(exceptedFrameworks));
+	}
 
-        IPath exceptedLocation = null;
+	@Test
+	public void testPortletFrameworkPossibleValues() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        for( String pluginType : pluginTypes )
-        {
-            op.setPluginType( pluginType );
+		NewLiferayPluginProjectOp op = newProjectOp("test-portlet-framework-possible-values");
 
-            if( pluginType.equals( "portlet" ) )
-            {
-                exceptedLocation = sdk.getLocation().append( "portlets" ).append( projectName + "-portlet" );
-            }
-            else if( pluginType.equals( "hook" ) )
-            {
-                exceptedLocation = sdk.getLocation().append( "hooks" ).append( projectName + "-hook" );
-            }
-            else if( pluginType.equals( "layouttpl" ) )
-            {
-                exceptedLocation = sdk.getLocation().append( "layouttpl" ).append( projectName + "-layouttpl" );
-            }
-            else if( pluginType.equals( "theme" ) )
-            {
-                exceptedLocation = sdk.getLocation().append( "themes" ).append( projectName + "-theme" );
-            }
-            else
-            {
-                exceptedLocation = sdk.getLocation().append( "ext" ).append( projectName + "-ext" );
-            }
+		op.setProjectProvider("ant");
+		op.setPluginType("portlet");
 
-            assertEquals( exceptedLocation, PathBridge.create( op.getLocation().content() ) );
-        }
-    }
+		PossibleValuesService service = op.getPortletFramework().service(PossibleValuesService.class);
 
-    @Test
-    public void testPortletFrameworkAdvancedPossibleValues() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		Set<String> acturalFrameworks = service.values();
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-advanced-possible-values" );
+		Assert.assertNotNull(acturalFrameworks);
 
-        final Set<String> acturalFrameworks =
-            op.getPortletFrameworkAdvanced().service( PossibleValuesService.class ).values();
+		Set<String> exceptedFrameworks = new HashSet<>();
 
-        assertNotNull( acturalFrameworks );
+		exceptedFrameworks.add("jsf-2.x");
+		exceptedFrameworks.add("mvc");
+		exceptedFrameworks.add("spring_mvc");
+		exceptedFrameworks.add("vaadin");
 
-        Set<String> exceptedFrameworks = new HashSet<String>();
-        exceptedFrameworks.add( "jsf" );
-        exceptedFrameworks.add( "icefaces" );
-        exceptedFrameworks.add( "liferay_faces_alloy" );
-        exceptedFrameworks.add( "primefaces" );
-        exceptedFrameworks.add( "richfaces" );
+		Assert.assertNotNull(exceptedFrameworks);
 
-        assertNotNull( exceptedFrameworks );
+		Assert.assertEquals(true, exceptedFrameworks.containsAll(acturalFrameworks));
+		Assert.assertEquals(true, acturalFrameworks.containsAll(exceptedFrameworks));
+	}
 
-        assertEquals( true, exceptedFrameworks.containsAll( acturalFrameworks ) );
-        assertEquals( true, acturalFrameworks.containsAll( exceptedFrameworks ) );
+	@Test
+	public void testPortletFrameworkValueLabel() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-    }
+		NewLiferayPluginProjectOp op = newProjectOp("test-portlet-framework-value-label");
 
-    @Test
-    public void testPortletFrameworkPossibleValues() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		ValueLabelService vls = op.getPortletFramework().service(ValueLabelService.class);
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-possible-values" );
-        op.setProjectProvider( "ant" );
-        op.setPluginType( "portlet" );
+		Set<String> acturalLables = new HashSet<>();
 
-        final Set<String> acturalFrameworks = op.getPortletFramework().service( PossibleValuesService.class ).values();
+		for (IPortletFramework pf : ProjectCore.getPortletFrameworks()) {
+			acturalLables.add(vls.provide(pf.getShortName()));
+		}
 
-        assertNotNull( acturalFrameworks );
+		Assert.assertNotNull(acturalLables);
 
-        Set<String> exceptedFrameworks = new HashSet<String>();
-        exceptedFrameworks.add( "mvc" );
-        exceptedFrameworks.add( "jsf-2.x" );
-        exceptedFrameworks.add( "vaadin" );
-        exceptedFrameworks.add( "spring_mvc" );
+		Set<String> exceptedLables = new HashSet<>();
 
-        assertNotNull( exceptedFrameworks );
+		exceptedLables.add("ICEfaces");
+		exceptedLables.add("JSF 2.x");
+		exceptedLables.add("JSF standard");
+		exceptedLables.add("Liferay Faces Alloy");
+		exceptedLables.add("Liferay MVC");
+		exceptedLables.add("PrimeFaces");
+		exceptedLables.add("RichFaces");
+		exceptedLables.add("Spring MVC");
+		exceptedLables.add("Vaadin");
 
-        assertEquals( true, exceptedFrameworks.containsAll( acturalFrameworks ) );
-        assertEquals( true, acturalFrameworks.containsAll( exceptedFrameworks ) );
-    }
+		Assert.assertEquals(true, exceptedLables.containsAll(acturalLables));
+		Assert.assertEquals(true, acturalLables.containsAll(exceptedLables));
+	}
 
-    @Test
-    public void testPortletFrameworkValueLabel() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+	@Test
+	public void testProjectProviderValueLabel() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-portlet-framework-value-label" );
+		NewLiferayPluginProjectOp op = newProjectOp("test-project-provider-value-label");
 
-        final ValueLabelService vls = op.getPortletFramework().service( ValueLabelService.class );
+		ValueLabelService vls = op.getProjectProvider().service(ValueLabelService.class);
 
-        Set<String> acturalLables = new HashSet<String>();
+		PossibleValuesService service = op.getProjectProvider().service(PossibleValuesService.class);
 
-        for( IPortletFramework pf : ProjectCore.getPortletFrameworks() )
-        {
-            acturalLables.add( vls.provide( pf.getShortName() ) );
-        }
+		Set<String> actualProviderShortNames = service.values();
 
-        assertNotNull( acturalLables );
+		Set<String> actualLabels = new HashSet<>();
 
-        Set<String> exceptedLables = new HashSet<String>();
-        exceptedLables.add( "Liferay MVC" );
-        exceptedLables.add( "JSF 2.x" );
-        exceptedLables.add( "Vaadin" );
-        exceptedLables.add( "JSF standard" );
-        exceptedLables.add( "ICEfaces" );
-        exceptedLables.add( "Liferay Faces Alloy" );
-        exceptedLables.add( "PrimeFaces" );
-        exceptedLables.add( "RichFaces" );
-        exceptedLables.add( "Spring MVC" );
+		for (String shortName : actualProviderShortNames) {
+			actualLabels.add(vls.provide(shortName));
+		}
 
-        assertEquals( true, exceptedLables.containsAll( acturalLables ) );
-        assertEquals( true, acturalLables.containsAll( exceptedLables ) );
-    }
+		Assert.assertNotNull(actualLabels);
 
-    @Test
-    public void testServiceBuilderProjectName() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		Set<String> exceptedLabels = new HashSet<>();
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-sb" );
+		exceptedLabels.add("Ant (liferay-plugins-sdk)");
+		exceptedLabels.add("Maven (liferay-maven-plugin)");
 
-        op.setPluginType( PluginType.servicebuilder );
-        op.setUseDefaultLocation( true );
+		Assert.assertEquals(true, exceptedLabels.containsAll(actualLabels));
+	}
 
-        final IProject expectedProject = createAntProject( op );
+	@Test
+	public void testSDKLocationValidation() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        String expectedProjectName = expectedProject.getName();
+		NewLiferayPluginProjectOp op = newProjectOp("test-sdk");
 
-        String actualProjectName = op.getProjectNames().get(0).getName().content();
+		op.setProjectProvider("ant");
 
-        assertEquals( expectedProjectName, actualProjectName );
-    }
+		Status status = op.execute(new ProgressMonitor());
 
-    @Test
-    public void testSDKLocationValidation() throws Exception
-    {
-        if( shouldSkipBundleTests() )return;
+		if (!status.ok()) {
+			throw new Exception(status.exception());
+		}
 
-        NewLiferayPluginProjectOp op = newProjectOp( "test-sdk" );
+		SDK sdk = SDKUtil.getWorkspaceSDK();
 
-        op.setProjectProvider( "ant" );
+		IPath sdkLocation = sdk.getLocation();
 
-        Status status = op.execute( new ProgressMonitor() );
+		if (sdk != null) {
+			CoreUtil.getProject(sdk.getName()).delete(false, false, null);
+		}
 
-        if( !status.ok() )
-        {
-            throw new Exception( status.exception() );
-        }
+		// set existed project name
 
-        SDK sdk = SDKUtil.getWorkspaceSDK();
+		IProject project = getProject("portlets", "test-sdk-" + getRuntimeVersion() + "-portlet");
 
-        IPath sdkLocation = sdk.getLocation();
+		project.delete(false, false, null);
 
-        if( sdk != null )
-        {
-            CoreUtil.getWorkspaceRoot().getProject( sdk.getName() ).delete( false, false, null );
-        }
+		op.setSdkLocation(sdkLocation.toOSString());
 
-        // set existed project name
-        IProject project = getProject( "portlets", "test-sdk-" + getRuntimeVersion() + "-portlet" );
-        project.delete( false, false, null );
-        op.setSdkLocation( sdkLocation.toOSString() );
-        assertTrue( op.validation().message().contains( "is not valid because a project already exists at that location." ) );
+		Assert.assertTrue(
+			SapphireUtil.message(op).contains("is not valid because a project already exists at that location."));
 
-        op = newProjectOp( "test2-sdk" );
+		op = newProjectOp("test2-sdk");
 
-        op.setSdkLocation( "" );
-        assertEquals( "This sdk location is empty.", op.validation().message() );
+		op.setSdkLocation("");
 
-        op.setSdkLocation( sdk.getLocation().getDevice() + "/" );
-        assertEquals( "This sdk location is not correct.", op.validation().message() );
+		Assert.assertEquals("This sdk location is empty.", SapphireUtil.message(op));
 
-        // sdk has no build.USERNAME.properties file
-        sdkLocation.append( "build." + System.getenv().get( "USER" ) + ".properties" ).toFile().delete();
-        sdkLocation.append( "build." + System.getenv().get( "USERNAME" ) + ".properties" ).toFile().delete();
-        op.setSdkLocation( sdkLocation.toOSString() );
+		op.setSdkLocation(sdk.getLocation().getDevice() + "/");
 
-        String expectedMessageRegx = ".*app.server.*";
-        assertTrue( op.validation().message().matches( expectedMessageRegx ) );
+		Assert.assertEquals("This sdk location is not correct.", SapphireUtil.message(op));
 
-        assertEquals( false, op.validation().ok() );
-    }
+		// sdk has no build.USERNAME.properties file
 
-    protected void testProjectNameValidation( final String initialProjectName ) throws Exception
-    {
-        final NewLiferayPluginProjectOp op1 = newProjectOp( "" );
-        op1.setUseDefaultLocation( true );
+		File file = sdkLocation.append("build." + System.getenv().get("USER") + ".properties").toFile();
 
-        ValidationService vs = op1.getProjectName().service( ValidationService.class );
+		file.delete();
 
-        final String validProjectName = initialProjectName;
+		file = sdkLocation.append("build." + System.getenv().get("USERNAME") + ".properties").toFile();
 
-        op1.setProjectName( validProjectName );
-        assertEquals( "ok", vs.validation().message() );
-        assertEquals( "ok", op1.getProjectName().validation().message() );
+		file.delete();
 
-        op1.setProjectName( validProjectName + "-portlet" );
-        assertEquals( "ok", vs.validation().message() );
-        assertEquals( "ok", op1.getProjectName().validation().message() );
+		op.setSdkLocation(sdkLocation.toOSString());
 
-        final IProject proj = createProject( op1 );
+		String expectedMessageRegx = ".*app.server.*";
 
-        op1.dispose();
+		Assert.assertTrue(SapphireUtil.message(op).matches(expectedMessageRegx));
 
-        final NewLiferayPluginProjectOp op2 = newProjectOp( "" );
-        vs = op2.getProjectName().service( ValidationService.class );
+		Assert.assertEquals(false, SapphireUtil.ok(op));
+	}
 
-        op2.setProjectName( validProjectName + "-portlet" );
-        assertEquals( "A project with that name already exists.", vs.validation().message() );
-        assertEquals( "A project with that name already exists.", op2.getProjectName().validation().message() );
+	@Test
+	public void testServiceBuilderProjectName() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        op2.setProjectName( validProjectName );
-        assertEquals( "A project with that name already exists.", vs.validation().message() );
-        assertEquals( "A project with that name already exists.", op2.getProjectName().validation().message() );
+		NewLiferayPluginProjectOp op = newProjectOp("test-sb");
 
-        final IPath dotProjectLocation = proj.getLocation().append( ".project" );
+		op.setPluginType(PluginType.servicebuilder);
+		op.setUseDefaultLocation(true);
 
-        if( dotProjectLocation.toFile().exists() )
-        {
-            dotProjectLocation.toFile().delete();
-        }
+		IProject expectedProject = createAntProject(op);
 
-        op2.dispose();
+		String expectedProjectName = expectedProject.getName();
 
-        final NewLiferayPluginProjectOp op3 = newProjectOp( "" );
-        vs = op3.getProjectName().service( ValidationService.class );
+		ProjectName projectName = op.getProjectNames().get(0);
 
-        op3.setProjectName( validProjectName );
-        assertEquals( "A project with that name already exists.", vs.validation().message() );
-        assertEquals( "A project with that name already exists.", op3.getProjectName().validation().message() );
+		String actualProjectName = projectName.getName().content();
 
-        String invalidProjectName = validProjectName + "/";
-        op3.setProjectName( invalidProjectName );
-        assertEquals(
-            "/ is an invalid character in resource name '" + invalidProjectName + "'.", vs.validation().message() );
+		Assert.assertEquals(expectedProjectName, actualProjectName);
+	}
 
-        op3.dispose();
-//        invalidProjectName = validProjectName + ".";
-//        op3.setProjectName( invalidProjectName );
-//        assertEquals( "'" + invalidProjectName + "' is an invalid name on this platform.", vs.validation().message() );
-//        assertEquals(
-//            "'" + invalidProjectName + "' is an invalid name on this platform.",
-//            op3.getProjectName().validation().message() );
-    }
+	protected IProject checkNewJsfAntProjectIvyFile(IProject jsfProject, String jsfSuite) throws Exception {
+		IFile ivyXml = jsfProject.getFile("ivy.xml");
 
-    @Test
-    public void testProjectProviderValueLabel() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		String ivyXmlContent = CoreUtil.readStreamToString(ivyXml.getContents());
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-project-provider-value-label" );
+		Class<?> clazz = getClass();
 
-        final ValueLabelService vls = op.getProjectProvider().service( ValueLabelService.class );
+		String expectedIvyXmlContent = CoreUtil.readStreamToString(
+			clazz.getResourceAsStream("files/" + getRuntimeVersion() + "/ivy-" + jsfSuite + ".xml"));
 
-        final Set<String> actualProviderShortNames =
-            op.getProjectProvider().service( PossibleValuesService.class ).values();
+		Assert.assertEquals(stripCarriageReturns(expectedIvyXmlContent), stripCarriageReturns(ivyXmlContent));
 
-        Set<String> actualLabels = new HashSet<String>();
+		return jsfProject;
+	}
 
-        for( String shortName : actualProviderShortNames )
-        {
-            actualLabels.add( vls.provide( shortName ) );
-        }
+	protected void checkNewJsfAntProjectXHtmlPagesLocation(IProject jsfProject) throws Exception {
+		IFolder docroot = CoreUtil.getDefaultDocrootFolder(jsfProject);
 
-        assertNotNull( actualLabels );
+		IFolder views = docroot.getFolder("/WEB-INF/views");
 
-        Set<String> exceptedLabels = new HashSet<String>();
-        exceptedLabels.add( "Ant (liferay-plugins-sdk)" );
-        exceptedLabels.add( "Maven (liferay-maven-plugin)" );
+		Assert.assertEquals(true, views.exists());
 
-        assertEquals( true, exceptedLabels.containsAll( actualLabels ) );
-    }
+		IFolder oldViews = docroot.getFolder("/views");
 
-    @Test
-    public void testHookProjectName() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		Assert.assertEquals(false, oldViews.exists());
 
-        final NewLiferayPluginProjectOp op = newProjectOp( "test-hook" );
+		String contents = CoreUtil.readStreamToString(docroot.getFile("/WEB-INF/portlet.xml").getContents(true));
 
-        op.setPluginType( PluginType.hook );
-        op.setUseDefaultLocation( true );
+		if (contents.contains("init-param")) {
+			Assert.assertEquals(true, contents.contains("/WEB-INF/views/view.xhtml"));
+		}
+	}
 
-        final IProject expectedProject = createAntProject( op );
+	protected IProject checkNewThemeAntProject(NewLiferayPluginProjectOp op, IProject project, String expectedBuildFile)
+		throws Exception {
 
-        String expectedProjectName = expectedProject.getName();
+		String themeParent = op.getThemeParent().content();
+		String themeFramework = op.getThemeFramework().content();
 
-        String actualProjectName = op.getProjectNames().get(0).getName().content();
+		IFolder defaultDocroot = LiferayCore.create(IWebProject.class, project).getDefaultDocrootFolder();
 
-        assertEquals( expectedProjectName, actualProjectName );
-    }
+		IFile readme = defaultDocroot.getFile("WEB-INF/src/resources-importer/readme.txt");
 
-    @Test
-    public void testIncludeSampleCode() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		Assert.assertEquals(true, readme.exists());
 
-        // test portlet project
-        NewLiferayPluginProjectOp op = newProjectOp("test-include-sample-code-portlet");
+		IFile buildXml = project.getFile("build.xml");
 
-        op.setIncludeSampleCode( true );
-        op.setPluginType( PluginType.portlet );
+		String buildXmlContent = CoreUtil.readStreamToString(buildXml.getContents());
 
-        IProject project = createAntProject( op );
+		if (expectedBuildFile == null) {
+			expectedBuildFile = "build-theme-" + themeParent + "-" + themeFramework + ".xml";
+		}
 
-        ILiferayProject lr = LiferayCore.create( project );
+		Class<?> clazz = getClass();
 
-        IFile portletXml = lr.getDescriptorFile( ILiferayConstants.PORTLET_XML_FILE );
-        IFile liferayPortletXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
-        IFile liferayDisplayXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_DISPLAY_XML_FILE );
+		try (InputStream in = clazz.getResourceAsStream("files/" + getRuntimeVersion() + "/" + expectedBuildFile)) {
+			String expectedbuildXmlContent = CoreUtil.readStreamToString(
+				in).replaceAll("RUNTIMEVERSION", getRuntimeVersion());
 
-        assertNotNull( portletXml );
-        assertNotNull( liferayPortletXml );
-        assertNotNull( liferayDisplayXml );
+			Assert.assertEquals(stripCarriageReturns(expectedbuildXmlContent), stripCarriageReturns(buildXmlContent));
+		}
 
-        assertEquals( 1, countElements( portletXml, "portlet" ) );
-        assertEquals( 1, countElements( liferayPortletXml, "portlet" ) );
-        assertEquals( 1, countElements( liferayDisplayXml, "category" ) );
-    }
+		return project;
+	}
 
-    @Test
-    public void testIncludeSampleCodeServiceBuilder() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+	protected int countElements(IFile file, String elementName) throws Exception {
+		IDOMModel domModel = (IDOMModel)StructuredModelManager.getModelManager().getModelForRead(file);
 
-        // test service-builder project
-        NewLiferayPluginProjectOp op = newProjectOp("test-include-sample-code-service-builder");
+		IDOMDocument document = domModel.getDocument();
 
-        op.setIncludeSampleCode( true );
-        op.setPluginType( PluginType.servicebuilder );
+		int count = document.getElementsByTagName(elementName).getLength();
 
-        IProject project = createAntProject( op );
-        ILiferayProject lr = LiferayCore.create( project );
+		domModel.releaseFromRead();
 
-        IFile portletXml = lr.getDescriptorFile( ILiferayConstants.PORTLET_XML_FILE );
-        IFile liferayPortletXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
-        IFile liferayDisplayXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_DISPLAY_XML_FILE );
-        IFile serviceXml = lr.getDescriptorFile( ILiferayConstants.SERVICE_XML_FILE );
+		return count;
+	}
 
-        assertNotNull( portletXml );
-        assertNotNull( liferayPortletXml );
-        assertNotNull( liferayDisplayXml );
-        assertNotNull( serviceXml );
+	protected IProject createNewJsfAntProject(String jsfSuite, String suffix) throws Exception {
+		String projectName = jsfSuite + suffix;
 
-        assertEquals( 1, countElements( portletXml, "portlet" ) );
-        assertEquals( 1, countElements( liferayPortletXml, "portlet" ) );
-        assertEquals( 1, countElements( liferayDisplayXml, "category" ) );
-        assertEquals( 1, countElements( serviceXml, "entity" ) );
-    }
+		NewLiferayPluginProjectOp op = newProjectOp(projectName);
 
-    @Test
-    public void testDontIncludeSampleCode() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		op.setPortletFramework("jsf-2.x");
+		op.setPortletFrameworkAdvanced(jsfSuite);
 
-        // test portlet project
-        NewLiferayPluginProjectOp op = newProjectOp("test-dont-include-sample-code-portlet");
+		IProject jsfProject = createAntProject(op);
 
-        op.setIncludeSampleCode( false );
-        op.setPluginType( PluginType.portlet );
+		IFolder defaultDocroot = LiferayCore.create(IWebProject.class, jsfProject).getDefaultDocrootFolder();
 
-        IProject project = createAntProject( op );
+		Assert.assertNotNull(defaultDocroot);
 
-        ILiferayProject lr = LiferayCore.create( project );
-        IFile portletXml = lr.getDescriptorFile( ILiferayConstants.PORTLET_XML_FILE );
-        IFile liferayPortletXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
-        IFile liferayDisplayXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_DISPLAY_XML_FILE );
+		IFile config = defaultDocroot.getFile("WEB-INF/faces-config.xml");
 
-        assertNotNull( portletXml );
-        assertNotNull( liferayPortletXml );
-        assertNotNull( liferayDisplayXml );
+		Assert.assertEquals(true, config.exists());
 
-        assertEquals( 0, countElements( portletXml, "portlet" ) );
-        assertEquals( 0, countElements( liferayPortletXml, "portlet" ) );
-        assertEquals( 0, countElements( liferayDisplayXml, "category" ) );
-    }
+		checkNewJsfAntProjectXHtmlPagesLocation(jsfProject);
 
-    @Test
-    public void testDontIncludeSampleCodeServiceBuilder() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		return checkNewJsfAntProjectIvyFile(jsfProject, jsfSuite);
+	}
 
-        // test service-builder project
-        NewLiferayPluginProjectOp op = newProjectOp("test-dont-include-sample-code-service-builder");
+	protected IProject createNewSDKProjectCustomLocation(NewLiferayPluginProjectOp newProjectOp, IPath customLocation)
+		throws Exception {
 
-        op.setIncludeSampleCode( false );
-        op.setPluginType( PluginType.servicebuilder );
+		newProjectOp.setUseDefaultLocation(false);
 
-        IProject project = createAntProject( op );
+		newProjectOp.setLocation(PathBridge.create(customLocation));
 
-        ILiferayProject lr = LiferayCore.create( project );
-        IFile portletXml = lr.getDescriptorFile( ILiferayConstants.PORTLET_XML_FILE );
-        IFile liferayPortletXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_PORTLET_XML_FILE );
-        IFile liferayDisplayXml = lr.getDescriptorFile( ILiferayConstants.LIFERAY_DISPLAY_XML_FILE );
-        IFile serviceXml = lr.getDescriptorFile( ILiferayConstants.SERVICE_XML_FILE );
+		return createAntProject(newProjectOp);
+	}
 
-        assertNotNull( portletXml );
-        assertNotNull( liferayPortletXml );
-        assertNotNull( liferayDisplayXml );
-        assertNotNull( serviceXml );
+	protected IProject createNewThemeAntProject(NewLiferayPluginProjectOp op) throws Exception {
+		IProject themeProject = createAntProject(op);
 
-        assertEquals( 0, countElements( portletXml, "portlet" ) );
-        assertEquals( 0, countElements( liferayPortletXml, "portlet" ) );
-        assertEquals( 0, countElements( liferayDisplayXml, "category" ) );
-        assertEquals( 0, countElements( serviceXml, "entity" ) );
-    }
+		IFolder defaultDocroot = LiferayCore.create(IWebProject.class, themeProject).getDefaultDocrootFolder();
 
-    protected int countElements( IFile file, String elementName ) throws Exception
-    {
-        final IDOMModel domModel = (IDOMModel) StructuredModelManager.getModelManager().getModelForRead( file );
-        final IDOMDocument document = domModel.getDocument();
+		Assert.assertNotNull(defaultDocroot);
 
-        final int count = document.getElementsByTagName( elementName ).getLength();
+		return themeProject;
+	}
 
-        domModel.releaseFromRead();
+	protected IProject createNewThemeAntProject(String themeParent, String themeFramework) throws Exception {
+		String projectName = "test-theme-project-sdk-" + themeParent + "-" + themeFramework;
 
-        return count;
-    }
+		NewLiferayPluginProjectOp op = newProjectOp(projectName);
+
+		op.setPluginType(PluginType.theme);
+		op.setThemeParent(themeParent);
+		op.setThemeFramework(themeFramework);
+
+		IProject project = createNewThemeAntProject(op);
+
+		return checkNewThemeAntProject(op, project, null);
+	}
+
+	protected IProject createNewThemeAntProjectDefaults() throws Exception {
+		String projectName = "test-theme-project-sdk-defaults";
+
+		NewLiferayPluginProjectOp op = newProjectOp(projectName);
+
+		op.setPluginType(PluginType.theme);
+
+		IProject project = createNewThemeAntProject(op);
+
+		return checkNewThemeAntProject(op, project, "build-theme-defaults.xml");
+	}
+
+	protected abstract String getServiceXmlDoctype();
+
+	protected void testLocationListener() throws Exception {
+		NewLiferayPluginProjectOp op = newProjectOp("location-listener");
+
+		op.setProjectProvider("ant");
+		op.setUseDefaultLocation(false);
+
+		String projectNameWithoutSuffix = "project-name-without-suffix";
+		String locationWithoutSuffix = "location-without-suffix";
+
+		op.setPluginType("portlet");
+		String suffix = "-portlet";
+
+		// Both of project name and location are without type suffix.
+
+		op.setProjectName(projectNameWithoutSuffix);
+		op.setLocation(locationWithoutSuffix);
+
+		Path path = op.getLocation().content();
+
+		Assert.assertEquals(locationWithoutSuffix + "/" + projectNameWithoutSuffix + suffix, path.toString());
+
+		// Location does't have a type suffix, project name has one.
+
+		op.setProjectName(projectNameWithoutSuffix + suffix);
+		op.setLocation(locationWithoutSuffix);
+
+		path = op.getLocation().content();
+
+		Assert.assertEquals(locationWithoutSuffix, path.toString());
+
+		// Location has a type suffix.
+
+		op.setLocation(locationWithoutSuffix + suffix);
+
+		path = op.getLocation().content();
+
+		Assert.assertEquals(locationWithoutSuffix + suffix, path.toString());
+	}
+
+	protected void testNewJsfRichfacesProjects() throws Exception {
+		_testNewJsfRichfacesProject("primefaces", false);
+		_testNewJsfRichfacesProject("richfaces", true);
+	}
+
+	protected void testNewLayoutAntProject() throws Exception {
+		String projectName = "test-layouttpl-project-sdk";
+
+		NewLiferayPluginProjectOp op = newProjectOp(projectName);
+
+		op.setPluginType(PluginType.layouttpl);
+
+		IProject layouttplProject = createAntProject(op);
+
+		IFolder webappRoot = LiferayCore.create(IWebProject.class, layouttplProject).getDefaultDocrootFolder();
+
+		Assert.assertNotNull(webappRoot);
+
+		IFile layoutXml = webappRoot.getFile("WEB-INF/liferay-layout-templates.xml");
+
+		Assert.assertEquals(true, layoutXml.exists());
+	}
+
+	protected void testNewSDKProjectInSDK() throws Exception {
+		IProject projectInSDK = createAntProject(newProjectOp("test-project-in-sdk"));
+
+		Assert.assertNotNull(projectInSDK);
+
+		Assert.assertEquals(true, projectInSDK.exists());
+
+		SDK sdk = SDKUtil.getWorkspaceSDK();
+
+		Assert.assertEquals(true, sdk.getLocation().isPrefixOf(projectInSDK.getLocation()));
+
+		IFile buildXml = projectInSDK.getFile("build.xml");
+
+		Assert.assertNotNull(buildXml);
+
+		Assert.assertEquals(true, buildXml.exists());
+
+		String buildXmlContent = CoreUtil.readStreamToString(buildXml.getContents(true));
+
+		Matcher m = _p.matcher(buildXmlContent);
+
+		Assert.assertEquals("sdk project build.xml didn't use relative import.", true, m.matches());
+	}
+
+	protected void testNewThemeProjects() throws Exception {
+		createNewThemeAntProjectDefaults();
+		createNewThemeAntProject("_unstyled", "Freemarker");
+		createNewThemeAntProject("_styled", "Velocity");
+		createNewThemeAntProject("classic", "JSP");
+	}
+
+	protected void testPluginTypeListener() throws Exception {
+		testPluginTypeListener(false);
+	}
+
+	protected void testPluginTypeListener(Boolean versionRestriction) throws Exception {
+		NewLiferayPluginProjectOp op = newProjectOp("test-plugin-type-listener");
+
+		String projectName = op.getProjectName().content();
+
+		op.setProjectProvider("ant");
+		op.setUseDefaultLocation(true);
+
+		SDK sdk = SDKUtil.createSDKFromLocation(getLiferayPluginsSdkDir());
+
+		String[] pluginTypes = {"portlet", "hook", "layouttpl", "theme", "ext"};
+
+		IPath exceptedLocation = null;
+
+		for (String pluginType : pluginTypes) {
+			op.setPluginType(pluginType);
+
+			IPath sdkLocation = sdk.getLocation();
+
+			if (pluginType.equals("portlet")) {
+				exceptedLocation = sdkLocation.append("portlets").append(projectName + "-portlet");
+			}
+			else if (pluginType.equals("hook")) {
+				exceptedLocation = sdkLocation.append("hooks").append(projectName + "-hook");
+			}
+			else if (pluginType.equals("layouttpl")) {
+				exceptedLocation = sdkLocation.append("layouttpl").append(projectName + "-layouttpl");
+			}
+			else if (pluginType.equals("theme")) {
+				exceptedLocation = sdkLocation.append("themes").append(projectName + "-theme");
+			}
+			else {
+				exceptedLocation = sdkLocation.append("ext").append(projectName + "-ext");
+			}
+
+			Assert.assertEquals(exceptedLocation, PathBridge.create(op.getLocation().content()));
+		}
+	}
+
+	protected void testProjectNameValidation(String initialProjectName) throws Exception {
+		NewLiferayPluginProjectOp op1 = newProjectOp("");
+
+		op1.setUseDefaultLocation(true);
+
+		ValidationService service = op1.getProjectName().service(ValidationService.class);
+
+		String validProjectName = initialProjectName;
+
+		op1.setProjectName(validProjectName);
+
+		Assert.assertEquals("ok", SapphireUtil.message(service));
+
+		Assert.assertEquals("ok", SapphireUtil.message(op1.getProjectName()));
+
+		op1.setProjectName(validProjectName + "-portlet");
+
+		Assert.assertEquals("ok", SapphireUtil.message(service));
+
+		Assert.assertEquals("ok", SapphireUtil.message(op1.getProjectName()));
+
+		IProject proj = createProject(op1);
+
+		op1.dispose();
+
+		NewLiferayPluginProjectOp op2 = newProjectOp("");
+
+		service = op2.getProjectName().service(ValidationService.class);
+
+		op2.setProjectName(validProjectName + "-portlet");
+
+		Assert.assertEquals("A project with that name already exists.", SapphireUtil.message(service));
+
+		Assert.assertEquals("A project with that name already exists.", SapphireUtil.message(op2.getProjectName()));
+
+		op2.setProjectName(validProjectName);
+
+		Assert.assertEquals("A project with that name already exists.", SapphireUtil.message(service));
+
+		Assert.assertEquals("A project with that name already exists.", SapphireUtil.message(op2.getProjectName()));
+
+		IPath dotProjectLocation = proj.getLocation().append(".project");
+
+		if (dotProjectLocation.toFile().exists()) {
+			dotProjectLocation.toFile().delete();
+		}
+
+		op2.dispose();
+
+		NewLiferayPluginProjectOp op3 = newProjectOp("");
+
+		service = op3.getProjectName().service(ValidationService.class);
+
+		op3.setProjectName(validProjectName);
+
+		Assert.assertEquals("A project with that name already exists.", SapphireUtil.message(service));
+
+		Assert.assertEquals("A project with that name already exists.", SapphireUtil.message(op3.getProjectName()));
+
+		String invalidProjectName = validProjectName + "/";
+
+		op3.setProjectName(invalidProjectName);
+
+		Assert.assertEquals(
+			"/ is an invalid character in resource name '" + invalidProjectName +
+				"'.",
+			SapphireUtil.message(service));
+
+		op3.dispose();
+	}
+
+	private void _testNewJsfRichfacesProject(String framework, boolean richfacesEnabled) throws Exception {
+		IProject project = createNewJsfAntProject(framework, "rf");
+
+		String contents = CoreUtil.readStreamToString(project.getFile("docroot/WEB-INF/web.xml").getContents(true));
+
+		Assert.assertEquals(richfacesEnabled, contents.contains("org.richfaces.resourceMapping.enabled"));
+
+		Assert.assertEquals(richfacesEnabled, contents.contains("org.richfaces.webapp.ResourceServlet"));
+	}
+
+	private Pattern _p = Pattern.compile(
+		".*<import file=\"\\.\\./build-common-portlet.xml\".*", Pattern.MULTILINE | Pattern.DOTALL);
 
 }

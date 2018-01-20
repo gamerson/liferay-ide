@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,13 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
-package com.liferay.ide.project.core.tests.modules;
+ */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+package com.liferay.ide.project.core.tests.modules;
 
 import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.FileUtil;
@@ -30,101 +26,99 @@ import com.liferay.ide.project.core.upgrade.UpgradeAssistantSettingsUtil;
 
 import java.io.File;
 import java.io.InputStream;
+
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Lovett Li
  */
-public class UpgradeAssistantSettingsUtilTests
-{
-    private static final IPath stateLocation = ProjectCore.getDefault().getStateLocation();
+public class UpgradeAssistantSettingsUtilTests {
 
-    @Before
-    public void beforeTest() throws Exception
-    {
-        File jsonFile =
-            stateLocation.append( "Liferay7UpgradeAssistantSettings.json" ).toFile();
+	@Before
+	public void beforeTest() throws Exception {
+		File jsonFile = _stateLocation.append("Liferay7UpgradeAssistantSettings.json").toFile();
 
-        if( jsonFile.exists() )
-        {
-            assertTrue( jsonFile.delete() );
-        }
+		if (jsonFile.exists()) {
+			Assert.assertTrue(jsonFile.delete());
+		}
 
-        File existingFile =
-        		stateLocation.append("MigrationProblemsContainer.json").toFile();
+		File existingFile = _stateLocation.append("MigrationProblemsContainer.json").toFile();
 
-        InputStream input = UpgradeAssistantSettingsUtilTests.class.getResourceAsStream("files/MigrationProblemsContainer.json");
+		InputStream input = UpgradeAssistantSettingsUtilTests.class.getResourceAsStream(
+			"files/MigrationProblemsContainer.json");
 
-        FileUtil.writeFile(existingFile, input);
+		FileUtil.writeFile(existingFile, input);
 
-        input.close();
-    }
+		input.close();
+	}
 
-    @Test
-    public void writeTest() throws Exception
-    {
-        UpgradeAssistantSettingsUtil.setObjectToStore(
-            Liferay7UpgradeAssistantSettings.class, createLiferay7UpgradeAssistantSettingsObject() );
+	@Test
+	public void readExistingMigrationProblemsContainer() throws Exception {
+		MigrationProblemsContainer migrationProblemsContainer = UpgradeAssistantSettingsUtil.getObjectFromStore(
+			MigrationProblemsContainer.class);
 
-        assertTrue( stateLocation.append( "Liferay7UpgradeAssistantSettings.json" ).toFile().exists() );
-    }
+		Assert.assertNotNull(migrationProblemsContainer);
 
-    @Test
-    public void readTest() throws Exception
-    {
-        writeTest();
+		MigrationProblems[] migrationProblems = migrationProblemsContainer.getProblemsArray();
 
-        Liferay7UpgradeAssistantSettings settings =
-            UpgradeAssistantSettingsUtil.getObjectFromStore( Liferay7UpgradeAssistantSettings.class );
+		Assert.assertEquals("", 2, migrationProblems.length);
 
-        assertNotNull( settings );
+		FileProblems[] fileProblems = migrationProblems[0].getProblems();
 
-        PortalSettings portalSettings = settings.getPortalSettings();
+		Assert.assertNotNull(fileProblems);
 
-        assertNotNull( portalSettings );
+		Assert.assertEquals("", 18, fileProblems.length);
 
-        assertEquals( "Previous Location 6.2", portalSettings.getPreviousLiferayPortalLocation() );
-        assertEquals( "New Portal Location 7.0", portalSettings.getNewLiferayPortalLocation() );
-        assertEquals( "New Portal Name 7.0", portalSettings.getNewName() );
-    }
+		List<Problem> problems = fileProblems[0].getProblems();
 
-    protected Liferay7UpgradeAssistantSettings createLiferay7UpgradeAssistantSettingsObject()
-    {
-        PortalSettings portalSettings =
-            new PortalSettings( "Previous Location 6.2", "New Portal Name 7.0", "New Portal Location 7.0", "Portal Settings" );
+		Assert.assertNotNull(problems);
 
-        Liferay7UpgradeAssistantSettings settings = new Liferay7UpgradeAssistantSettings();
+		Assert.assertEquals("", 9, problems.size());
+	}
 
-        settings.setPortalSettings( portalSettings );
+	@Test
+	public void readTest() throws Exception {
+		writeTest();
 
-        return settings;
-    }
+		Liferay7UpgradeAssistantSettings settings = UpgradeAssistantSettingsUtil.getObjectFromStore(
+			Liferay7UpgradeAssistantSettings.class);
 
-    @Test
-    public void readExistingMigrationProblemsContainer() throws Exception {
-    		MigrationProblemsContainer migrationProblemsContainer =
-    			UpgradeAssistantSettingsUtil.getObjectFromStore(MigrationProblemsContainer.class);
+		Assert.assertNotNull(settings);
 
-    		assertNotNull(migrationProblemsContainer);
+		PortalSettings portalSettings = settings.getPortalSettings();
 
-    		MigrationProblems[] migrationProblems = migrationProblemsContainer.getProblemsArray();
+		Assert.assertNotNull(portalSettings);
 
-    		assertEquals(2, migrationProblems.length);
+		Assert.assertEquals("Previous Location 6.2", portalSettings.getPreviousLiferayPortalLocation());
+		Assert.assertEquals("New Portal Location 7.0", portalSettings.getNewLiferayPortalLocation());
+		Assert.assertEquals("New Portal Name 7.0", portalSettings.getNewName());
+	}
 
-    		FileProblems[] fileProblems = migrationProblems[0].getProblems();
+	@Test
+	public void writeTest() throws Exception {
+		UpgradeAssistantSettingsUtil.setObjectToStore(
+			Liferay7UpgradeAssistantSettings.class, createLiferay7UpgradeAssistantSettingsObject());
 
-    		assertNotNull(fileProblems);
+		Assert.assertTrue(FileUtil.exists(_stateLocation.append("Liferay7UpgradeAssistantSettings.json")));
+	}
 
-    		assertEquals(18, fileProblems.length);
+	protected Liferay7UpgradeAssistantSettings createLiferay7UpgradeAssistantSettingsObject() {
+		PortalSettings portalSettings = new PortalSettings(
+			"Previous Location 6.2", "New Portal Name 7.0", "New Portal Location 7.0", "Portal Settings");
 
-    		List<Problem> problems = fileProblems[0].getProblems();
+		Liferay7UpgradeAssistantSettings settings = new Liferay7UpgradeAssistantSettings();
 
-    		assertNotNull(problems);
+		settings.setPortalSettings(portalSettings);
 
-    		assertEquals(9, problems.size());
-    }
+		return settings;
+	}
+
+	private static final IPath _stateLocation = ProjectCore.getDefault().getStateLocation();
+
 }

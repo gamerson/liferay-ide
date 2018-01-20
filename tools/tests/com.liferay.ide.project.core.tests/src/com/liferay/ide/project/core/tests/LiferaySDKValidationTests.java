@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,105 +10,107 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
+import com.liferay.ide.project.core.tests.util.SapphireUtil;
 import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKUtil;
+
+import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
+
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Simon Jiang
  */
-public class LiferaySDKValidationTests extends ProjectCoreBase
-{
+public class LiferaySDKValidationTests extends ProjectCoreBase {
 
-    @AfterClass
-    public static void removePluginsSDK() throws Exception
-    {
-        deleteAllWorkspaceProjects();
+	@AfterClass
+	public static void removePluginsSDK() throws Exception {
+		deleteAllWorkspaceProjects();
 
-        IPath sdkPath = ProjectCore.getDefault().getStateLocation().append(
-            "com.liferay.portal.plugins.sdk-1.0.16-withdependencies" );
+		IPath sdkPath = ProjectCore.getDefaultStateLocation().append(
+			"com.liferay.portal.plugins.sdk-1.0.16-withdependencies");
 
-        if( sdkPath != null && sdkPath.toFile() != null )
-        {
-            sdkPath.toFile().delete();
-        }
-    }
+		if (FileUtil.exists(sdkPath)) {
+			sdkPath.toFile().delete();
+		}
+	}
 
-    @Test
-    public void testSDKLocationValidation() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
+	@Test
+	public void testSDKLocationValidation() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        NewLiferayPluginProjectOp op = newProjectOp( "test-sdk" );
+		NewLiferayPluginProjectOp op = newProjectOp("test-sdk");
 
-        op.setProjectProvider( "ant" );
+		op.setProjectProvider("ant");
 
-        op.execute( new ProgressMonitor() );
+		op.execute(new ProgressMonitor());
 
-        SDK sdk = SDKUtil.getWorkspaceSDK();
+		SDK sdk = SDKUtil.getWorkspaceSDK();
 
-        IPath sdkLocation = sdk.getLocation();
+		IPath sdkLocation = sdk.getLocation();
 
-        if( sdk != null )
-        {
-            CoreUtil.getWorkspaceRoot().getProject( sdk.getName() ).delete( false, true, null );
-        }
+		if (sdk != null) {
+			CoreUtil.getProject(sdk.getName()).delete(false, true, null);
+		}
 
-        CoreUtil.getWorkspaceRoot().getProject( "test-sdk" ).delete( false, true, null );
+		CoreUtil.getProject("test-sdk").delete(false, true, null);
 
-        // set existed project name
-        op.setSdkLocation( sdkLocation.toOSString() );
-        assertTrue( op.validation().message().contains( "A project with that name already exists." ) );
+		// set existed project name
 
-        op = newProjectOp( "test2-sdk" );
-        op.setSdkLocation( "" );
-        assertEquals( "This sdk location is empty.", op.validation().message() );
+		op.setSdkLocation(sdkLocation.toOSString());
 
-        op.setSdkLocation( sdkLocation.getDevice() + "/" );
-        assertEquals( "This sdk location is not correct.", op.validation().message() );
+		Assert.assertTrue(SapphireUtil.message(op).contains("A project with that name already exists."));
 
-        // sdk has no build.USERNAME.properties file
-        sdkLocation.append( "build." + System.getProperty( "user.name" ) + ".properties" ).toFile().delete();
-        IStatus validateStatus = sdk.validate( true );
-        assertEquals( false, validateStatus.isOK() );
+		op = newProjectOp("test2-sdk");
 
-    }
+		op.setSdkLocation("");
 
-    @Override
-    protected IPath getLiferayPluginsSdkDir()
-    {
-        return ProjectCore.getDefault().getStateLocation().append(
-            "com.liferay.portal.plugins.sdk-1.0.16-withdependencies" );
-    }
+		Assert.assertEquals("This sdk location is empty.", SapphireUtil.message(op));
 
-    @Override
-    protected IPath getLiferayPluginsSDKZip()
-    {
-        return getLiferayBundlesPath().append(
-            "com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip" );
-    }
+		op.setSdkLocation(sdkLocation.getDevice() + "/");
 
-    @Override
-    protected String getLiferayPluginsSdkZipFolder()
-    {
-        return "com.liferay.portal.plugins.sdk-1.0.16-withdependencies/";
-    }
+		Assert.assertEquals("This sdk location is not correct.", SapphireUtil.message(op));
+
+		// sdk has no build.USERNAME.properties file
+
+		File file = sdkLocation.append("build." + System.getProperty("user.name") + ".properties").toFile();
+
+		file.delete();
+
+		IStatus validateStatus = sdk.validate(true);
+
+		Assert.assertEquals(false, validateStatus.isOK());
+	}
+
+	@Override
+	protected IPath getLiferayPluginsSdkDir() {
+		return ProjectCore.getDefaultStateLocation().append("com.liferay.portal.plugins.sdk-1.0.16-withdependencies");
+	}
+
+	@Override
+	protected IPath getLiferayPluginsSDKZip() {
+		return getLiferayBundlesPath().append("com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip");
+	}
+
+	@Override
+	protected String getLiferayPluginsSdkZipFolder() {
+		return "com.liferay.portal.plugins.sdk-1.0.16-withdependencies/";
+	}
 
 }

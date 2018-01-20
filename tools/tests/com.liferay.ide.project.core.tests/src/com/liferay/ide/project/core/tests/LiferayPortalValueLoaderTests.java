@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,13 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.server.core.ILiferayRuntime;
 import com.liferay.ide.server.util.LiferayPortalValueLoader;
@@ -24,81 +20,84 @@ import com.liferay.ide.server.util.ServerUtil;
 
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
+
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
  */
-public class LiferayPortalValueLoaderTests extends ProjectCoreBase
-{
+public class LiferayPortalValueLoaderTests extends ProjectCoreBase {
 
-    @AfterClass
-    public static void removePluginsSDK() throws Exception
-    {
-        deleteAllWorkspaceProjects();
-    }
+	@AfterClass
+	public static void removePluginsSDK() throws Exception {
+		deleteAllWorkspaceProjects();
+	}
 
-    private LiferayPortalValueLoader loader( final IRuntime runtime )
-    {
-        ILiferayRuntime liferayRutime = ServerUtil.getLiferayRuntime( runtime );
-        return new LiferayPortalValueLoader( liferayRutime.getUserLibs() );
-    }
+	@Test
+	public void loadHookPropertiesFromClass() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-    @Before
-    public void removeRuntimes() throws Exception
-    {
-        super.removeAllRuntimes();
-    }
+		setupPluginsSDKAndRuntime();
 
-    @Test
-    public void loadHookPropertiesFromClass() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IRuntime runtime = ServerCore.getRuntimes()[0];
 
-        setupPluginsSDKAndRuntime();
+		String[] props = _loader(runtime).loadHookPropertiesFromClass();
 
-        final IRuntime runtime = ServerCore.getRuntimes()[0];
+		Assert.assertNotNull(props);
 
-        final String[] props = loader( runtime ).loadHookPropertiesFromClass();
+		Assert.assertEquals("", 142, props.length);
+	}
 
-        assertNotNull( props );
+	@Test
+	public void loadServerInfoFromClass() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        assertEquals( 142, props.length );
-    }
+		setupPluginsSDKAndRuntime();
 
-    @Test
-    public void loadServerInfoFromClass() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IRuntime runtime = ServerCore.getRuntimes()[0];
 
-        setupPluginsSDKAndRuntime();
+		String info = _loader(runtime).loadServerInfoFromClass();
 
-        final IRuntime runtime = ServerCore.getRuntimes()[0];
+		Assert.assertNotNull(info);
 
-        final String info = loader( runtime ).loadServerInfoFromClass();
+		Assert.assertEquals("Liferay Portal Community Edition / 6.2.5", info);
+	}
 
-        assertNotNull( info );
+	@Test
+	public void loadVersionFromClass() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-        assertEquals( "Liferay Portal Community Edition / 6.2.5", info );
-    }
+		setupPluginsSDKAndRuntime();
 
-    @Test
-    public void loadVersionFromClass() throws Exception
-    {
-        if( shouldSkipBundleTests() ) return;
+		IRuntime runtime = ServerCore.getRuntimes()[0];
 
-        setupPluginsSDKAndRuntime();
+		Version version = _loader(runtime).loadVersionFromClass();
 
-        final IRuntime runtime = ServerCore.getRuntimes()[0];
+		Assert.assertNotNull(version);
 
-        final Version version = loader( runtime ).loadVersionFromClass();
+		Assert.assertEquals("6.2.5", version.toString());
+	}
 
-        assertNotNull( version );
+	@Before
+	public void removeRuntimes() throws Exception {
+		super.removeAllRuntimes();
+	}
 
-        assertEquals( "6.2.5", version.toString() );
-    }
+	private LiferayPortalValueLoader _loader(IRuntime runtime) {
+		ILiferayRuntime liferayRutime = ServerUtil.getLiferayRuntime(runtime);
+
+		return new LiferayPortalValueLoader(liferayRutime.getUserLibs());
+	}
 
 }
