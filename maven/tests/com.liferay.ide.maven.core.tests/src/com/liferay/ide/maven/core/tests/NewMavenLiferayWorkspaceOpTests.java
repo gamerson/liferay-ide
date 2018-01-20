@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.maven.core.tests;
-
-import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
@@ -25,38 +22,39 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Andy Wu
  */
-public class NewMavenLiferayWorkspaceOpTests
-{
+public class NewMavenLiferayWorkspaceOpTests {
 
-    @Test
-    public void testNewMavenLiferayWorkspaceOp() throws Exception
-    {
-        NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
+	@Test
+	public void testNewMavenLiferayWorkspaceOp() throws Exception {
+		NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
 
-        String projectName = "test-liferay-workspace";
+		String projectName = "test-liferay-workspace";
 
-        IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
+		IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
 
-        op.setWorkspaceName( projectName );
-        op.setUseDefaultLocation( false );
-        op.setLocation( workspaceLocation.toPortableString() );
-        op.setProjectProvider( "maven-liferay-workspace" );
+		op.setWorkspaceName(projectName);
+		op.setUseDefaultLocation(false);
+		op.setLocation(workspaceLocation.toPortableString());
+		op.setProjectProvider("maven-liferay-workspace");
 
-        op.execute( new ProgressMonitor() );
+		op.execute(new ProgressMonitor());
 
-        String projectLocation = workspaceLocation.append( projectName ).toPortableString();
+		String projectLocation = workspaceLocation.append(projectName).toPortableString();
 
-        File pomFile = new File( projectLocation, "pom.xml" );
+		File pomFile = new File(projectLocation, "pom.xml");
 
-        assertTrue( pomFile.exists() );
+		Assert.assertTrue(pomFile.exists());
 
-        String content = FileUtil.readContents( pomFile );
+		String content = FileUtil.readContents(pomFile);
 
-        assertTrue( content.contains("com.liferay.portal.tools.bundle.support") );
-    }
+		Assert.assertTrue(content.contains("com.liferay.portal.tools.bundle.support"));
+	}
+
 }

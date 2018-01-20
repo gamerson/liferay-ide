@@ -417,6 +417,10 @@ public class CoreUtil {
 		return getWorkspaceRoot().getLocation();
 	}
 
+	public static File getWorkspaceRootLocationFile() {
+		return getWorkspaceRootLocation().toFile();
+	}
+
 	public static Object invoke(String methodName, Object object, Class<?>[] argTypes, Object[] args)
 		throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
 			SecurityException {
