@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.service.core.tests;
-
-import static org.junit.Assert.assertEquals;
 
 import com.liferay.ide.core.tests.BaseTests;
 import com.liferay.ide.core.util.CoreUtil;
@@ -28,61 +25,59 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Gregory Amerson
  */
-public class ServiceCoreTests extends BaseTests
-{
+public class ServiceCoreTests extends BaseTests {
 
-    @Test
-    public void testCreateBlankServiceXmlFile() throws Exception
-    {
-        createServiceXmlFile( "6.2.0", false );
-    }
+	@Test
+	public void testCreateBlankServiceXmlFile() throws Exception {
+		_createServiceXmlFile("6.2.0", false);
+	}
 
-    @Test
-    public void testCreateServiceXmlFiles() throws Exception
-    {
-        createServiceXmlFile( "6.2.0", true );
-    }
+	@Test
+	public void testCreateServiceXmlFiles() throws Exception {
+		_createServiceXmlFile("6.2.0", true);
+	}
 
-    private void createServiceXmlFile( String version, boolean useSample ) throws Exception
-    {
-        final IProject project = createProject( "serviceXmlFiles-" + version + "-" + useSample );
+	private void _createServiceXmlFile(String version, boolean useSample) throws Exception {
+		IProject project = createProject("serviceXmlFiles-" + version + "-" + useSample);
 
-        final IDataModel model = DataModelFactory.createDataModel( new NewServiceBuilderDataModelProvider() );
+		IDataModel model = DataModelFactory.createDataModel(new NewServiceBuilderDataModelProvider());
 
-        model.setProperty( NewServiceBuilderDataModelProvider.AUTHOR, "junit" );
-        model.setProperty( NewServiceBuilderDataModelProvider.PACKAGE_PATH, "com.liferay.sample" );
-        model.setProperty( NewServiceBuilderDataModelProvider.NAMESPACE, "SAMPLE" );
-        model.setBooleanProperty( NewServiceBuilderDataModelProvider.USE_SAMPLE_TEMPLATE, useSample );
+		model.setProperty(NewServiceBuilderDataModelProvider.AUTHOR, "junit");
+		model.setProperty(NewServiceBuilderDataModelProvider.PACKAGE_PATH, "com.liferay.sample");
+		model.setProperty(NewServiceBuilderDataModelProvider.NAMESPACE, "SAMPLE");
+		model.setBooleanProperty(NewServiceBuilderDataModelProvider.USE_SAMPLE_TEMPLATE, useSample);
 
-        final IFolder folder = project.getFolder( "test" );
+		IFolder folder = project.getFolder("test");
 
-        CoreUtil.prepareFolder( folder );
+		CoreUtil.prepareFolder(folder);
 
-        final IFile serviceXmlFile = folder.getFile( "service.xml" );
+		IFile serviceXmlFile = folder.getFile("service.xml");
 
-        assertEquals( false, serviceXmlFile.exists() );
+		Assert.assertEquals(false, serviceXmlFile.exists());
 
-        WizardUtil.createDefaultServiceBuilderFile(
-            serviceXmlFile, version,
-            model.getBooleanProperty( NewServiceBuilderDataModelProvider.USE_SAMPLE_TEMPLATE ),
-            model.getStringProperty( NewServiceBuilderDataModelProvider.PACKAGE_PATH ),
-            model.getStringProperty( NewServiceBuilderDataModelProvider.NAMESPACE ),
-            model.getStringProperty( NewServiceBuilderDataModelProvider.AUTHOR ), new NullProgressMonitor() );
+		WizardUtil.createDefaultServiceBuilderFile(
+			serviceXmlFile, version, model.getBooleanProperty(NewServiceBuilderDataModelProvider.USE_SAMPLE_TEMPLATE),
+			model.getStringProperty(NewServiceBuilderDataModelProvider.PACKAGE_PATH),
+			model.getStringProperty(NewServiceBuilderDataModelProvider.NAMESPACE),
+			model.getStringProperty(NewServiceBuilderDataModelProvider.AUTHOR), new NullProgressMonitor());
 
-        assertEquals( true, serviceXmlFile.exists() );
+		Assert.assertEquals(true, serviceXmlFile.exists());
 
-        final String serviceXmlContent = CoreUtil.readStreamToString( serviceXmlFile.getContents() );
+		String serviceXmlContent = CoreUtil.readStreamToString(serviceXmlFile.getContents());
 
-        final String expectedServiceXmlContent =
-            CoreUtil.readStreamToString( this.getClass().getResourceAsStream(
-                "files/service-sample-" + version + "-" + useSample + ".xml" ) );
+		Class<?> clazz = getClass();
 
-        assertEquals( stripCarriageReturns( expectedServiceXmlContent ), stripCarriageReturns( serviceXmlContent ) );
-    }
+		String expectedServiceXmlContent = CoreUtil.readStreamToString(
+			clazz.getResourceAsStream("files/service-sample-" + version + "-" + useSample + ".xml"));
+
+		Assert.assertEquals(stripCarriageReturns(expectedServiceXmlContent), stripCarriageReturns(serviceXmlContent));
+	}
 
 }
