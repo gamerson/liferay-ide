@@ -71,7 +71,7 @@ public class AllBladeSamplesPublishTest {
 
 		op.setServerName(_WORKSPACE_SERVER_NAME);
 
-		final NullProgressMonitor monitor = new NullProgressMonitor();
+		NullProgressMonitor monitor = new NullProgressMonitor();
 
 		op.execute(ProgressMonitorBridge.create(monitor));
 
@@ -116,7 +116,7 @@ public class AllBladeSamplesPublishTest {
 
 		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-		final String defaultValue = defaults.get(BladeCLI.BLADE_CLI_REPO_URL, "");
+		String defaultValue = defaults.get(BladeCLI.BLADE_CLI_REPO_URL, "");
 
 		prefs.put(BladeCLI.BLADE_CLI_REPO_URL, defaultValue);
 
@@ -143,7 +143,7 @@ public class AllBladeSamplesPublishTest {
 		List<IModule> modules = new ArrayList<>();
 
 		for (IProject bladeProject : bladeProjects) {
-			final String name = bladeProject.getName();
+			String name = bladeProject.getName();
 
 			IModule module = new Module(null, name, name, "liferay.bundle", "1.0", bladeProject);
 

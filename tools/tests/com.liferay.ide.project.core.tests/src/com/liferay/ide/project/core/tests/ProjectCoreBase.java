@@ -267,7 +267,9 @@ public class ProjectCoreBase extends ServerCoreBase {
 
 			StringBuilder sb = new StringBuilder();
 
-			Stream.of(validationStatus.getChildren()).map(IStatus::getMessage).forEach(sb::append);
+			Stream<IStatus> stream = Stream.of(validationStatus.getChildren());
+
+			stream.map(IStatus::getMessage).forEach(sb::append);
 
 			PrintDirectoryTree.print(sdk.getLocation().toFile(), sb);
 

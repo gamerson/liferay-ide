@@ -38,7 +38,7 @@ public class GradleParseTests {
 
 	@Test
 	public void addDependenceInClosureLine() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testParse5.gradle");
+		File inputFile = new File("projects/testParseInput/testParse5.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 
@@ -51,7 +51,7 @@ public class GradleParseTests {
 
 		Files.write(_outputfile.toPath(), updater.getGradleFileContents(), StandardCharsets.UTF_8);
 
-		final File expectedOutputFile = new File("projects/testParseOutput/testParse5.gradle");
+		File expectedOutputFile = new File("projects/testParseOutput/testParse5.gradle");
 
 		Assert.assertEquals(
 			_encoding(CoreUtil.readStreamToString(Files.newInputStream(expectedOutputFile.toPath()))),
@@ -60,7 +60,7 @@ public class GradleParseTests {
 
 	@Test
 	public void addDependenceInSameLine() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testParse4.gradle");
+		File inputFile = new File("projects/testParseInput/testParse4.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 
@@ -73,7 +73,7 @@ public class GradleParseTests {
 
 		Files.write(_outputfile.toPath(), updater.getGradleFileContents(), StandardCharsets.UTF_8);
 
-		final File expectedOutputFile = new File("projects/testParseOutput/testParse4.gradle");
+		File expectedOutputFile = new File("projects/testParseOutput/testParse4.gradle");
 
 		Assert.assertEquals(
 			_encoding(CoreUtil.readStreamToString(Files.newInputStream(expectedOutputFile.toPath()))),
@@ -82,7 +82,7 @@ public class GradleParseTests {
 
 	@Test
 	public void addDependenceIntoEmptyBlock() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testParse2.gradle");
+		File inputFile = new File("projects/testParseInput/testParse2.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 
@@ -95,7 +95,7 @@ public class GradleParseTests {
 
 		Files.write(_outputfile.toPath(), updater.getGradleFileContents(), StandardCharsets.UTF_8);
 
-		final File expectedOutputFile = new File("projects/testParseOutput/testParse2.gradle");
+		File expectedOutputFile = new File("projects/testParseOutput/testParse2.gradle");
 
 		Assert.assertEquals(
 			_encoding(CoreUtil.readStreamToString(Files.newInputStream(expectedOutputFile.toPath()))),
@@ -104,7 +104,7 @@ public class GradleParseTests {
 
 	@Test
 	public void addDependenceSkipComment() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testParse.gradle");
+		File inputFile = new File("projects/testParseInput/testParse.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 
@@ -117,7 +117,7 @@ public class GradleParseTests {
 
 		Files.write(_outputfile.toPath(), updater.getGradleFileContents(), StandardCharsets.UTF_8);
 
-		final File expectedOutputFile = new File("projects/testParseOutput/testParse.gradle");
+		File expectedOutputFile = new File("projects/testParseOutput/testParse.gradle");
 
 		Assert.assertEquals(
 			_encoding(CoreUtil.readStreamToString(Files.newInputStream(expectedOutputFile.toPath()))),
@@ -126,7 +126,7 @@ public class GradleParseTests {
 
 	@Test
 	public void addDependenceWithoutDendendenceBlock() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testParse3.gradle");
+		File inputFile = new File("projects/testParseInput/testParse3.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 
@@ -139,7 +139,7 @@ public class GradleParseTests {
 
 		Files.write(_outputfile.toPath(), updater.getGradleFileContents(), StandardCharsets.UTF_8);
 
-		final File expectedOutputFile = new File("projects/testParseOutput/testParse3.gradle");
+		File expectedOutputFile = new File("projects/testParseOutput/testParse3.gradle");
 
 		Assert.assertEquals(
 			_encoding(CoreUtil.readStreamToString(Files.newInputStream(expectedOutputFile.toPath()))),
@@ -148,7 +148,7 @@ public class GradleParseTests {
 
 	@Test
 	public void getAllDependencies() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testDependencies.gradle");
+		File inputFile = new File("projects/testParseInput/testDependencies.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 
@@ -159,7 +159,7 @@ public class GradleParseTests {
 
 	@Test
 	public void getAllDependenciesShortFormat() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testDependenciesShortFormat.gradle");
+		File inputFile = new File("projects/testParseInput/testDependenciesShortFormat.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 
@@ -170,7 +170,7 @@ public class GradleParseTests {
 
 	@Test
 	public void getAllDependenciesShortFormatAndLongFormat() throws IOException {
-		final File inputFile = new File("projects/testParseInput/testDependenciesShortFormatAndLongFormat.gradle");
+		File inputFile = new File("projects/testParseInput/testDependenciesShortFormatAndLongFormat.gradle");
 
 		GradleDependencyUpdater updater = new GradleDependencyUpdater(inputFile);
 

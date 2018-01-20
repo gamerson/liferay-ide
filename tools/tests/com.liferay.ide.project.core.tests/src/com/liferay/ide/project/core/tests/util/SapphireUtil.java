@@ -27,6 +27,10 @@ import org.eclipse.sapphire.services.ValidationService;
  */
 public class SapphireUtil {
 
+	public static String content(Value<?> value) {
+		return value.content().toString();
+	}
+
 	public static ProgressMonitor getNullProgressMonitor() {
 		return ProgressMonitorBridge.create(new NullProgressMonitor());
 	}

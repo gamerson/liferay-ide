@@ -137,8 +137,9 @@ public class NewLiferayComponentOpTests {
 
 		bndConfig =
 			"-includeresource: \\" + separator +
-				"\t@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" + separator +
-					"\t@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld,\\" + separator + "\t@shiro-core-1.1.0.jar";
+				"\t@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" +
+					separator + "\t@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld,\\" + separator +
+						"\t@shiro-core-1.1.0.jar";
 
 		Assert.assertTrue(bndcontent.contains(bndConfig));
 
