@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,15 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests.workspace;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.ILiferayProjectImporter;
 import com.liferay.ide.core.LiferayCore;
@@ -27,11 +21,14 @@ import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.tests.ProjectCoreBase;
+import com.liferay.ide.project.core.tests.util.SapphireUtil;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
 import java.io.File;
+
 import java.net.URL;
+
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
@@ -41,122 +38,120 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
+
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * @author Andy Wu
  */
-public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
-{
+public class NewLiferayWorkspaceOpTests extends ProjectCoreBase {
 
-    @BeforeClass
-    public static void removeAllProjects() throws Exception
-    {
-        IProgressMonitor monitor = new NullProgressMonitor();
+	@BeforeClass
+	public static void removeAllProjects() throws Exception {
+		IProgressMonitor monitor = new NullProgressMonitor();
 
-        for( IProject project : CoreUtil.getAllProjects() )
-        {
-            project.delete( true, monitor );
+		for (IProject project : CoreUtil.getAllProjects()) {
+			project.delete(true, monitor);
 
-            assertFalse( project.exists() );
-        }
-    }
+			Assert.assertFalse(project.exists());
+		}
+	}
 
-    @Test
-    public void testNewLiferayWorkspaceOp() throws Exception
-    {
-        ILiferayProjectImporter importer = LiferayCore.getImporter( "gradle" );
+	@Test
+	public void testNewLiferayWorkspaceOp() throws Exception {
+		ILiferayProjectImporter importer = LiferayCore.getImporter("gradle");
 
-        File eclipseWorkspaceLocation = CoreUtil.getWorkspaceRoot().getLocation().toFile();
+		File eclipseWorkspaceLocation = CoreUtil.getWorkspaceRootLocationFile();
 
-        URL projectZipUrl =
-            Platform.getBundle( "com.liferay.ide.project.core.tests" ).getEntry( "projects/existingProject.zip" );
+		URL projectZipUrl = Platform.getBundle("com.liferay.ide.project.core.tests").getEntry(
+			"projects/existingProject.zip");
 
-        final File projectZipFile = new File( FileLocator.toFileURL( projectZipUrl ).getFile() );
+		File projectZipFile = new File(FileLocator.toFileURL(projectZipUrl).getFile());
 
-        ZipUtil.unzip( projectZipFile, eclipseWorkspaceLocation );
+		ZipUtil.unzip(projectZipFile, eclipseWorkspaceLocation);
 
-        File projectFolder = new File( eclipseWorkspaceLocation, "existingProject" );
+		File projectFolder = new File(eclipseWorkspaceLocation, "existingProject");
 
-        waitForBuildAndValidation();
+		waitForBuildAndValidation();
 
-        importer.importProjects( projectFolder.getAbsolutePath(), new NullProgressMonitor() );
+		importer.importProjects(projectFolder.getAbsolutePath(), new NullProgressMonitor());
 
-        NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
+		NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
 
-        op.setWorkspaceName( "existingProject" );
+		op.setWorkspaceName("existingProject");
 
-        String message = op.validation().message();
+		Assert.assertNotNull(SapphireUtil.message(op));
 
-        assertNotNull( message );
+		Assert.assertEquals("A project with that name(ignore case) already exists.", SapphireUtil.message(op));
 
-        assertEquals( "A project with that name(ignore case) already exists.", message );
+		op.setWorkspaceName("ExistingProject");
 
-        op.setWorkspaceName( "ExistingProject" );
+		Assert.assertTrue(SapphireUtil.message(op).equals("A project with that name(ignore case) already exists."));
 
-        message = op.validation().message();
+		String projectName = "test-liferay-workspace";
 
-        assertTrue( message.equals( "A project with that name(ignore case) already exists." ) );
+		IPath workspaceLocation = CoreUtil.getWorkspaceRootLocation();
 
-        String projectName = "test-liferay-workspace";
+		op.setWorkspaceName(projectName);
+		op.setUseDefaultLocation(false);
+		op.setLocation(workspaceLocation.toPortableString());
 
-        IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
+		op.execute(new ProgressMonitor());
 
-        op.setWorkspaceName( projectName );
-        op.setUseDefaultLocation( false );
-        op.setLocation( workspaceLocation.toPortableString() );
+		String wsLocation = workspaceLocation.append(projectName).toPortableString();
 
-        op.execute( new ProgressMonitor() );
+		File wsFile = new File(wsLocation);
 
-        String wsLocation = workspaceLocation.append( projectName ).toPortableString();
+		Assert.assertTrue(wsFile.exists());
 
-        File wsFile = new File( wsLocation );
+		Assert.assertTrue(LiferayWorkspaceUtil.isValidWorkspaceLocation(wsLocation));
 
-        assertTrue( wsFile.exists() );
+		File propertiesFile = new File(wsFile, "gradle.properties");
 
-        assertTrue( LiferayWorkspaceUtil.isValidWorkspaceLocation( wsLocation ) );
+		Properties prop = PropertiesUtil.loadProperties(propertiesFile);
 
-        File propertiesFile = new File( wsFile, "gradle.properties" );
-        Properties prop = PropertiesUtil.loadProperties( propertiesFile );
-        prop.setProperty( LiferayWorkspaceUtil.LIFERAY_WORKSPACE_WARS_DIR, "wars,wars2" );
-        PropertiesUtil.saveProperties( prop, propertiesFile );
+		prop.setProperty(LiferayWorkspaceUtil.LIFERAY_WORKSPACE_WARS_DIR, "wars,wars2");
 
-        NewLiferayModuleProjectOp moduleProjectOp = NewLiferayModuleProjectOp.TYPE.instantiate();
+		PropertiesUtil.saveProperties(prop, propertiesFile);
 
-        moduleProjectOp.setProjectName( "testThemeWarDefault" );
-        moduleProjectOp.setProjectTemplateName( "theme" );
+		NewLiferayModuleProjectOp moduleProjectOp = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        moduleProjectOp.execute( new ProgressMonitor() );
+		moduleProjectOp.setProjectName("testThemeWarDefault");
+		moduleProjectOp.setProjectTemplateName("theme");
 
-        waitForBuildAndValidation();
+		moduleProjectOp.execute(new ProgressMonitor());
 
-        assertTrue( CoreUtil.getProject( "testThemeWarDefault" ).exists() );
+		waitForBuildAndValidation();
 
-        moduleProjectOp = NewLiferayModuleProjectOp.TYPE.instantiate();
+		Assert.assertTrue(CoreUtil.getProject("testThemeWarDefault").exists());
 
-        moduleProjectOp.setProjectName( "testThemeWarNotDefault" );
-        moduleProjectOp.setProjectTemplateName( "theme" );
-        moduleProjectOp.setUseDefaultLocation( false );
-        moduleProjectOp.setLocation( wsLocation + "/wars" );
+		moduleProjectOp = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        moduleProjectOp.execute( new ProgressMonitor() );
+		moduleProjectOp.setProjectName("testThemeWarNotDefault");
+		moduleProjectOp.setProjectTemplateName("theme");
+		moduleProjectOp.setUseDefaultLocation(false);
+		moduleProjectOp.setLocation(wsLocation + "/wars");
 
-        waitForBuildAndValidation();
+		moduleProjectOp.execute(new ProgressMonitor());
 
-        assertTrue( CoreUtil.getProject( "testThemeWarNotDefault" ).exists() );
+		waitForBuildAndValidation();
 
-        moduleProjectOp = NewLiferayModuleProjectOp.TYPE.instantiate();
+		Assert.assertTrue(CoreUtil.getProject("testThemeWarNotDefault").exists());
 
-        moduleProjectOp.setProjectName( "testThemeWar2" );
-        moduleProjectOp.setProjectTemplateName( "theme" );
-        moduleProjectOp.setUseDefaultLocation( false );
-        moduleProjectOp.setLocation( wsLocation + "/wars2" );
+		moduleProjectOp = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        moduleProjectOp.execute( new ProgressMonitor() );
+		moduleProjectOp.setProjectName("testThemeWar2");
+		moduleProjectOp.setProjectTemplateName("theme");
+		moduleProjectOp.setUseDefaultLocation(false);
+		moduleProjectOp.setLocation(wsLocation + "/wars2");
 
-        waitForBuildAndValidation();
+		moduleProjectOp.execute(new ProgressMonitor());
 
-        assertTrue( CoreUtil.getProject( "testThemeWar2" ).exists() );
-    }
+		waitForBuildAndValidation();
+
+		Assert.assertTrue(CoreUtil.getProject("testThemeWar2").exists());
+	}
+
 }

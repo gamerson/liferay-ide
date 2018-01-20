@@ -108,6 +108,16 @@ public final class SDKManager {
 		return null;
 	}
 
+	public IPath getDefaultSDKLocation() {
+		SDK sdk = getDefaultSDK();
+
+		if (sdk == null) {
+			return null;
+		}
+
+		return sdk.getLocation();
+	}
+
 	// current list of available sdks
 
 	public SDK getSDK(IPath sdkLocation) {

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,22 +10,20 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.ProjectRecord;
 import com.liferay.ide.project.core.util.ProjectImportUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.sdk.core.SDK;
 import com.liferay.ide.sdk.core.SDKManager;
 import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.File;
+
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -38,64 +36,66 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
+
 import org.junit.AfterClass;
+import org.junit.Assert;
 
 /**
  * @author Kuo Zhang
  */
-public class XmlTestsBase extends ProjectCoreBase
-{
-    @AfterClass
-    public static void removePluginsSDK() throws Exception
-    {
-        deleteAllWorkspaceProjects();
-    }
+public class XmlTestsBase extends ProjectCoreBase {
 
-    protected boolean checkMarker( IFile descriptorFile, String markerType, String markerMessage ) throws Exception
-    {
-        final IMarker[] markers = descriptorFile.findMarkers( markerType, false, IResource.DEPTH_ZERO );
+	@AfterClass
+	public static void removePluginsSDK() throws Exception {
+		deleteAllWorkspaceProjects();
+	}
 
-        for( IMarker marker : markers )
-        {
-            if( markerType.equals( marker.getType() ) &&
-                marker.getAttribute( IMarker.MESSAGE ).equals( markerMessage ) )
-            {
-                return true;
-            }
-        }
+	protected boolean checkMarker(IFile descriptorFile, String markerType, String markerMessage) throws Exception {
+		IMarker[] markers = descriptorFile.findMarkers(markerType, false, IResource.DEPTH_ZERO);
 
-        return false;
-    }
+		for (IMarker marker : markers) {
+			if (markerType.equals(marker.getType()) && marker.getAttribute(IMarker.MESSAGE).equals(markerMessage)) {
+				return true;
+			}
+		}
 
-    @Override
-    protected IProject importProject( String path, String bundleId, String projectName ) throws Exception
-    {
-        final IPath sdkLocation = SDKManager.getInstance().getDefaultSDK().getLocation();
-        final IPath projectFolder = sdkLocation.append( path );
+		return false;
+	}
 
-        final URL projectZipUrl =
-            Platform.getBundle( bundleId ).getEntry( "projects/" + projectName + ".zip" );
+	@Override
+	protected IProject importProject(String path, String bundleId, String projectName) throws Exception {
+		SDK sdk = SDKManager.getInstance().getDefaultSDK();
 
-        final File projectZipFile = new File( FileLocator.toFileURL( projectZipUrl ).getFile() );
+		IPath sdkLocation = sdk.getLocation();
 
-        ZipUtil.unzip( projectZipFile, projectFolder.toFile() );
+		IPath projectFolder = sdkLocation.append(path);
 
-        final IPath projectPath = projectFolder.append( projectName );
-        assertEquals( true, projectPath.toFile().exists() );
+		URL projectZipUrl = Platform.getBundle(bundleId).getEntry("projects/" + projectName + ".zip");
 
-        final ProjectRecord projectRecord = ProjectUtil.getProjectRecordForDir( projectPath.toOSString() );
-        assertNotNull( projectRecord );
+		File projectZipFile = new File(FileLocator.toFileURL(projectZipUrl).getFile());
 
-        final IRuntime runtime = ServerCore.findRuntime( getRuntimeVersion() );
-        assertNotNull( runtime );
+		ZipUtil.unzip(projectZipFile, projectFolder.toFile());
 
-        final IProject project = ProjectImportUtil.importProject(
-            projectRecord, ServerUtil.getFacetRuntime( runtime ), sdkLocation.toOSString(),new NullProgressMonitor() );
+		IPath projectPath = projectFolder.append(projectName);
 
-        assertNotNull( project );
+		Assert.assertEquals(true, projectPath.toFile().exists());
 
-        assertEquals( "Expected new project to exist.", true, project.exists() );
+		ProjectRecord projectRecord = ProjectUtil.getProjectRecordForDir(projectPath.toOSString());
 
-        return project;
-    }
+		Assert.assertNotNull(projectRecord);
+
+		IRuntime runtime = ServerCore.findRuntime(getRuntimeVersion());
+
+		Assert.assertNotNull(runtime);
+
+		IProject project = ProjectImportUtil.importProject(
+			projectRecord, ServerUtil.getFacetRuntime(runtime), sdkLocation.toOSString(), new NullProgressMonitor());
+
+		Assert.assertNotNull(project);
+
+		Assert.assertEquals("Expected new project to exist.", true, project.exists());
+
+		return project;
+	}
+
 }

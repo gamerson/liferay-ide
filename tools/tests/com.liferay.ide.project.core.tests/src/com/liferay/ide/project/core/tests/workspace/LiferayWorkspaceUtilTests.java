@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests.workspace;
-
-import static org.junit.Assert.assertTrue;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
@@ -23,92 +20,93 @@ import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
 import java.io.File;
+
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Andy Wu
  */
-public class LiferayWorkspaceUtilTests
-{
-    @Test
-    public void testLiferayWorkspaceUtil() throws Exception
-    {
-        NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
+public class LiferayWorkspaceUtilTests {
 
-        op.setWorkspaceName( "test-liferay-workspace" );
+	@Test
+	public void testLiferayWorkspaceUtil() throws Exception {
+		NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
 
-        if( op.validation().ok() )
-        {
-            op.execute( new ProgressMonitor() );
-        }
+		op.setWorkspaceName("test-liferay-workspace");
 
-        IProject workspaceProject = CoreUtil.getProject( "test-liferay-workspace" );
+		if (op.validation().ok()) {
+			op.execute(new ProgressMonitor());
+		}
 
-        assertTrue(workspaceProject != null);
-        assertTrue(workspaceProject.exists());
+		IProject workspaceProject = CoreUtil.getProject("test-liferay-workspace");
 
-        String workspaceLocation = workspaceProject.getLocation().toPortableString();
+		Assert.assertTrue(workspaceProject != null);
+		Assert.assertTrue(workspaceProject.exists());
 
-        String homeValue = LiferayWorkspaceUtil.getHomeDir( workspaceLocation );
+		String workspaceLocation = workspaceProject.getLocation().toPortableString();
 
-        assertTrue( homeValue.equals( "bundles" ) );
+		String homeValue = LiferayWorkspaceUtil.getHomeDir(workspaceLocation);
 
-        String modulesValue = LiferayWorkspaceUtil.getModulesDir( workspaceProject );
+		Assert.assertTrue(homeValue.equals("bundles"));
 
-        assertTrue( modulesValue.equals( "modules" ) );
+		String modulesValue = LiferayWorkspaceUtil.getModulesDir(workspaceProject);
 
-        String pluginSdkValue = LiferayWorkspaceUtil.getPluginsSDKDir( workspaceLocation );
+		Assert.assertTrue(modulesValue.equals("modules"));
 
-        assertTrue( pluginSdkValue.equals( "plugins-sdk" ) );
+		String pluginSdkValue = LiferayWorkspaceUtil.getPluginsSDKDir(workspaceLocation);
 
-        String themesValue = LiferayWorkspaceUtil.getThemesDir( workspaceProject );
+		Assert.assertTrue(pluginSdkValue.equals("plugins-sdk"));
 
-        assertTrue( themesValue.equals( "themes" ) );
+		String themesValue = LiferayWorkspaceUtil.getThemesDir(workspaceProject);
 
-        String warsValue = LiferayWorkspaceUtil.getWarsDirs( workspaceProject )[0];
+		Assert.assertTrue(themesValue.equals("themes"));
 
-        assertTrue( warsValue.equals( "wars" ) );
+		String warsValue = LiferayWorkspaceUtil.getWarsDirs(workspaceProject)[0];
 
-        File propertiesFile = new File(workspaceLocation+"/gradle.properties");
+		Assert.assertTrue(warsValue.equals("wars"));
 
-        Properties prop = PropertiesUtil.loadProperties( propertiesFile);
-        prop.setProperty( LiferayWorkspaceUtil.LIFERAY_WORKSPACE_HOME_DIR, "bundles1" );
-        prop.setProperty( LiferayWorkspaceUtil.LIFERAY_WORKSPACE_MODULES_DIR, "tests,modules" );
-        prop.setProperty( LiferayWorkspaceUtil.LIFERAY_WORKSPACE_PLUGINS_SDK_DIR, "plugins-sdk1" );
-        prop.setProperty( LiferayWorkspaceUtil.LIFERAY_WORKSPACE_THEMES_DIR, "themes1" );
-        prop.setProperty( LiferayWorkspaceUtil.LIFERAY_WORKSPACE_WARS_DIR, "test1,wars1," );
-        PropertiesUtil.saveProperties( prop, propertiesFile );
+		File propertiesFile = new File(workspaceLocation + "/gradle.properties");
 
-        workspaceProject.refreshLocal( IResource.DEPTH_INFINITE, new NullProgressMonitor() );
+		Properties prop = PropertiesUtil.loadProperties(propertiesFile);
 
-        homeValue = LiferayWorkspaceUtil.getHomeDir( workspaceLocation );
+		prop.setProperty(LiferayWorkspaceUtil.LIFERAY_WORKSPACE_HOME_DIR, "bundles1");
+		prop.setProperty(LiferayWorkspaceUtil.LIFERAY_WORKSPACE_MODULES_DIR, "tests,modules");
+		prop.setProperty(LiferayWorkspaceUtil.LIFERAY_WORKSPACE_PLUGINS_SDK_DIR, "plugins-sdk1");
+		prop.setProperty(LiferayWorkspaceUtil.LIFERAY_WORKSPACE_THEMES_DIR, "themes1");
+		prop.setProperty(LiferayWorkspaceUtil.LIFERAY_WORKSPACE_WARS_DIR, "test1,wars1,");
+		PropertiesUtil.saveProperties(prop, propertiesFile);
 
+		workspaceProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 
-        assertTrue( homeValue.equals( "bundles1" ) );
+		homeValue = LiferayWorkspaceUtil.getHomeDir(workspaceLocation);
 
-        modulesValue = LiferayWorkspaceUtil.getModulesDir( workspaceProject );
+		Assert.assertTrue(homeValue.equals("bundles1"));
 
-        assertTrue( modulesValue.equals( "tests" ) );
+		modulesValue = LiferayWorkspaceUtil.getModulesDir(workspaceProject);
 
-        pluginSdkValue = LiferayWorkspaceUtil.getPluginsSDKDir( workspaceLocation );
+		Assert.assertTrue(modulesValue.equals("tests"));
 
-        assertTrue( pluginSdkValue.equals( "plugins-sdk1" ) );
+		pluginSdkValue = LiferayWorkspaceUtil.getPluginsSDKDir(workspaceLocation);
 
-        themesValue = LiferayWorkspaceUtil.getThemesDir( workspaceProject );
+		Assert.assertTrue(pluginSdkValue.equals("plugins-sdk1"));
 
-        assertTrue( themesValue.equals( "themes1" ) );
+		themesValue = LiferayWorkspaceUtil.getThemesDir(workspaceProject);
 
-        warsValue = LiferayWorkspaceUtil.getWarsDirs( workspaceProject )[0];
+		Assert.assertTrue(themesValue.equals("themes1"));
 
-        assertTrue( warsValue.equals( "test1" ) );
+		warsValue = LiferayWorkspaceUtil.getWarsDirs(workspaceProject)[0];
 
-        workspaceProject.delete(true,true,new NullProgressMonitor());
-    }
+		Assert.assertTrue(warsValue.equals("test1"));
+
+		workspaceProject.delete(true, true, new NullProgressMonitor());
+	}
 
 }

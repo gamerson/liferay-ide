@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,23 +10,16 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.modules;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import aQute.bnd.osgi.Domain;
 
 import com.liferay.ide.project.core.ProjectCore;
 
 import java.io.File;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -34,9 +27,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.osgi.framework.Version;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -44,151 +40,140 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author Gregory Amerson
  * @author Andy Wu
  */
-public class BladeCLITests
-{
+public class BladeCLITests {
 
-    @After
-    public void setBladeURLefaultPreferences()
-    {
-        IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+	@Test
+	public void bladeCLICreateProject() throws Exception {
+		Path temp = Files.createTempDirectory("path with spaces");
 
-        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+		StringBuilder sb = new StringBuilder();
 
-        final String defaultValue = defaults.get( BladeCLI.BLADE_CLI_REPO_URL, "" );
+		sb.append("create ");
+		sb.append("-d \"");
+		sb.append(temp.toAbsolutePath().toString());
+		sb.append("\" ");
+		sb.append("-t mvc-portlet ");
+		sb.append("foo");
 
-        prefs.put( BladeCLI.BLADE_CLI_REPO_URL, defaultValue );
+		BladeCLI.execute(sb.toString());
 
-        try
-        {
-            prefs.flush();
-        }
-        catch( BackingStoreException e )
-        {
-        }
-    }
+		Assert.assertTrue(new File(temp.toFile(), "foo/build.gradle").exists());
+	}
 
-    @Test
-    public void testBundleFileIsValid() throws Exception
-    {
-        IPath path = BladeCLI.getBladeCLIPath();
+	@Test
+	public void bladeCLIExecute() throws Exception {
+		String[] output = BladeCLI.execute("help");
 
-        final File bladeFile = path.toFile();
+		Assert.assertNotNull(output);
 
-        assertTrue( bladeFile.exists() );
+		Assert.assertTrue(output.length > 0);
 
-        Domain domain = Domain.domain( bladeFile );
+		for (String line : output) {
+			if (line.contains("[null]")) {
+				Assert.fail("Output contains [null]");
+			}
+		}
+	}
 
-        assertTrue( domain.getBundleVersion().startsWith( "2" ) );
+	@Test
+	public void bladeCLIProjectTemplates() throws Exception {
+		String[] projectTemplates = BladeCLI.getProjectTemplates();
 
-        assertFalse( domain.getBundleVersion().startsWith( "3" ) );
-    }
+		Assert.assertNotNull(projectTemplates);
 
-    @Test
-    public void testBundleFileIsFromBundle() throws Exception
-    {
-        IPath path = BladeCLI.getBladeCLIPath();
+		Assert.assertTrue(projectTemplates[0], projectTemplates[0].startsWith("activator"));
 
-        IPath stateLocation = ProjectCore.getDefault().getStateLocation();
+		Assert.assertTrue(
+			projectTemplates[projectTemplates.length - 1],
+			projectTemplates[projectTemplates.length - 1].startsWith("war-mvc-portlet"));
+	}
 
-        assertFalse( stateLocation.isPrefixOf( path ) );
-    }
+	@After
+	public void setBladeURLefaultPreferences() {
+		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-    @Test
-    public void testUpdate1xWillFail() throws Exception
-    {
-        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-        prefs.put( BladeCLI.BLADE_CLI_REPO_URL, "https://releases.liferay.com/tools/blade-cli/1.x/" );
+		String defaultValue = defaults.get(BladeCLI.BLADE_CLI_REPO_URL, "");
 
-        prefs.flush();
+		prefs.put(BladeCLI.BLADE_CLI_REPO_URL, defaultValue);
 
-        String latestVersion = null;
+		try {
+			prefs.flush();
+		}
+		catch (BackingStoreException bse) {
+		}
+	}
 
-        try
-        {
-            latestVersion = Domain.domain( BladeCLI.fetchBladeJarFromRepo(false) ).getBundleVersion();
-        }
-        catch( Exception e )
-        {
-        }
+	@Test
+	public void testBundleFileIsFromBundle() throws Exception {
+		IPath path = BladeCLI.getBladeCLIPath();
 
-        assertNull( latestVersion );
-    }
+		IPath stateLocation = ProjectCore.getDefault().getStateLocation();
 
-    @Test
-    @Ignore
-    public void testUpdateBladeFromCloudbees() throws Exception
-    {
-        IPath originalPath = BladeCLI.getBladeCLIPath();
+		Assert.assertFalse(stateLocation.isPrefixOf(path));
+	}
 
-        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+	@Test
+	public void testBundleFileIsValid() throws Exception {
+		IPath path = BladeCLI.getBladeCLIPath();
 
-        prefs.put( BladeCLI.BLADE_CLI_REPO_URL,
-            "https://liferay-test-01.ci.cloudbees.com/job/liferay-blade-cli/lastSuccessfulBuild/artifact/build/generated/p2/" );
+		File bladeFile = path.toFile();
 
-        prefs.flush();
+		Assert.assertTrue(bladeFile.exists());
 
-        File latestBladeJar = BladeCLI.fetchBladeJarFromRepo(false);
+		Domain domain = Domain.domain(bladeFile);
 
-        Version latestVersionFromRepo = new Version( Domain.domain( latestBladeJar ).getBundleVersion() );
+		Assert.assertTrue(domain.getBundleVersion().startsWith("2"));
 
-        Domain bladeFromBundle = Domain.domain( originalPath.toFile() );
+		Assert.assertFalse(domain.getBundleVersion().startsWith("3"));
+	}
 
-        if( latestVersionFromRepo.compareTo( new Version( bladeFromBundle.getBundleVersion() ) ) > 0 )
-        {
-            BladeCLI.addToLocalInstance( latestBladeJar );
+	@Test
+	public void testUpdate1xWillFail() throws Exception {
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-            assertEquals( new Version( Domain.domain( BladeCLI.getBladeCLIPath().toFile() ).getBundleVersion() ),
-                new Version( Domain.domain( latestBladeJar ).getBundleVersion() ) );
-        }
-    }
+		prefs.put(BladeCLI.BLADE_CLI_REPO_URL, "https://releases.liferay.com/tools/blade-cli/1.x/");
 
-    @Test
-    public void bladeCLICreateProject() throws Exception
-    {
-        Path temp = Files.createTempDirectory( "path with spaces" );
+		prefs.flush();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append( "create " );
-        sb.append( "-d \"" + temp.toAbsolutePath().toString() + "\" " );
-        sb.append( "-t mvc-portlet " );
-        sb.append( "foo" );
+		String latestVersion = null;
 
-        BladeCLI.execute( sb.toString() );
+		try {
+			latestVersion = Domain.domain(BladeCLI.fetchBladeJarFromRepo(false)).getBundleVersion();
+		}
+		catch (Exception e) {
+		}
 
-        assertTrue( new File( temp.toFile(), "foo/build.gradle" ).exists() );
-    }
+		Assert.assertNull(latestVersion);
+	}
 
-    @Test
-    public void bladeCLIExecute() throws Exception
-    {
-        String[] output = BladeCLI.execute( "help" );
+	@Ignore
+	@Test
+	public void testUpdateBladeFromCloudbees() throws Exception {
+		IPath originalPath = BladeCLI.getBladeCLIPath();
 
-        assertNotNull( output );
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-        assertTrue( output.length > 0 );
+		prefs.put(
+			BladeCLI.BLADE_CLI_REPO_URL,
+			"https://liferay-test-01.ci.cloudbees.com/job/liferay-blade-cli/lastSuccessfulBuild/artifact/build/generated/p2/");
 
-        for( String line : output )
-        {
-            if( line.contains( "[null]" ) )
-            {
-                fail( "Output contains [null]" );
-            }
-        }
-    }
+		prefs.flush();
 
-    @Test
-    public void bladeCLIProjectTemplates() throws Exception
-    {
-        String[] projectTemplates = BladeCLI.getProjectTemplates();
+		File latestBladeJar = BladeCLI.fetchBladeJarFromRepo(false);
 
-        assertNotNull( projectTemplates );
+		Version latestVersionFromRepo = new Version(Domain.domain(latestBladeJar).getBundleVersion());
 
-        assertTrue( projectTemplates[0], projectTemplates[0].startsWith("activator"));
+		Domain bladeFromBundle = Domain.domain(originalPath.toFile());
 
-        assertTrue(
-            projectTemplates[projectTemplates.length - 1],
-            projectTemplates[projectTemplates.length - 1].startsWith( "war-mvc-portlet" ) );
-    }
+		if (latestVersionFromRepo.compareTo(new Version(bladeFromBundle.getBundleVersion())) > 0) {
+			BladeCLI.addToLocalInstance(latestBladeJar);
+
+			Assert.assertEquals(
+				new Version(Domain.domain(BladeCLI.getBladeCLIPath().toFile()).getBundleVersion()),
+				new Version(Domain.domain(latestBladeJar).getBundleVersion()));
+		}
+	}
 
 }

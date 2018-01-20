@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.core.tests;
-
-import static org.junit.Assert.assertNotNull;
 
 import com.liferay.ide.core.IWebProject;
 import com.liferay.ide.core.LiferayCore;
@@ -25,55 +22,51 @@ import com.liferay.ide.project.core.model.PluginType;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * @author Terry Jia
  */
-public class NewLiferayWebPluginProjectTests extends ProjectCoreBase
-{
+public class NewLiferayWebPluginProjectTests extends ProjectCoreBase {
 
-    @AfterClass
-    public static void removePluginsSDK() throws Exception
-    {
-        deleteAllWorkspaceProjects();
-    }
+	@AfterClass
+	public static void removePluginsSDK() throws Exception {
+		deleteAllWorkspaceProjects();
+	}
 
-    @Override
-    protected IPath getLiferayPluginsSdkDir()
-    {
-        return ProjectCore.getDefault().getStateLocation().append(
-            "com.liferay.portal.plugins.sdk-1.0.16-withdependencies" );
-    }
+	@Test
+	public void testNewWebAntProject() throws Exception {
+		if (shouldSkipBundleTests()) {
+			return;
+		}
 
-    @Override
-    protected IPath getLiferayPluginsSDKZip()
-    {
-        return getLiferayBundlesPath().append(
-            "com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip" );
-    }
+		String projectName = "test-web-project-sdk";
 
-    @Override
-    protected String getLiferayPluginsSdkZipFolder()
-    {
-        return "com.liferay.portal.plugins.sdk-1.0.16-withdependencies/";
-    }
+		NewLiferayPluginProjectOp op = newProjectOp(projectName);
 
-    @Test
-    public void testNewWebAntProject() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
+		op.setPluginType(PluginType.web);
 
-        final String projectName = "test-web-project-sdk";
-        final NewLiferayPluginProjectOp op = newProjectOp( projectName );
+		IProject webProject = createAntProject(op);
 
-        op.setPluginType( PluginType.web );
+		Assert.assertNotNull(LiferayCore.create(IWebProject.class, webProject).getDefaultDocrootFolder());
+	}
 
-        final IProject webProject = createAntProject( op );
+	@Override
+	protected IPath getLiferayPluginsSdkDir() {
+		return ProjectCore.getDefaultStateLocation().append("com.liferay.portal.plugins.sdk-1.0.16-withdependencies");
+	}
 
-        assertNotNull( LiferayCore.create( IWebProject.class, webProject ).getDefaultDocrootFolder() );
-    }
+	@Override
+	protected IPath getLiferayPluginsSDKZip() {
+		return getLiferayBundlesPath().append("com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip");
+	}
+
+	@Override
+	protected String getLiferayPluginsSdkZipFolder() {
+		return "com.liferay.portal.plugins.sdk-1.0.16-withdependencies/";
+	}
 
 }

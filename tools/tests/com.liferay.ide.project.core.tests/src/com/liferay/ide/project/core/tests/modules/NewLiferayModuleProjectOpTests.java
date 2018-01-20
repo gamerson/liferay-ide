@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,18 +10,15 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
-package com.liferay.ide.project.core.tests.modules;
+ */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+package com.liferay.ide.project.core.tests.modules;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOpMethods;
 import com.liferay.ide.project.core.modules.PropertyKey;
+import com.liferay.ide.project.core.tests.util.SapphireUtil;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 
 import java.util.List;
@@ -30,7 +27,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.platform.ProgressMonitorBridge;
+
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -38,225 +36,219 @@ import org.junit.Test;
  * @author Simon Jiang
  * @author Andy Wu
  */
-public class NewLiferayModuleProjectOpTests
-{
+public class NewLiferayModuleProjectOpTests {
 
-    @Test
-    @Ignore
-    public void testNewLiferayModuleProjectDefaultValueServiceDashes() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+	@Ignore
+	@Test
+	public void testNewLiferayModuleProjectDefaultValueServiceDashes() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        op.setProjectName( "my-test-project" );
+		op.setProjectName("my-test-project");
 
-        op.setProjectTemplateName( "portlet" );
+		op.setProjectTemplateName("portlet");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
-    }
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
+	}
 
-    @Test
-    @Ignore
-    public void testNewLiferayModuleProjectDefaultValueServiceDots() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+	@Ignore
+	@Test
+	public void testNewLiferayModuleProjectDefaultValueServiceDots() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        op.setProjectName( "my.test.project" );
+		op.setProjectName("my.test.project");
 
-        op.setProjectTemplateName( "portlet" );
+		op.setProjectTemplateName("portlet");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
-    }
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
+	}
 
-    @Test
-    @Ignore
-    public void testNewLiferayModuleProjectDefaultValueServiceIsListeningToProjectName() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+	@Ignore
+	@Test
+	public void testNewLiferayModuleProjectDefaultValueServiceIsListeningToProjectName() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        op.setProjectName( "my.test.project" );
+		op.setProjectName("my.test.project");
 
-        op.setProjectTemplateName( "portlet" );
+		op.setProjectTemplateName("portlet");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
 
-        op.setProjectName( "my_abc-test" );
+		op.setProjectName("my_abc-test");
 
-        assertEquals( "MyAbcTest", op.getComponentName().content( true ) );
-    }
+		Assert.assertEquals("MyAbcTest", op.getComponentName().content(true));
+	}
 
-    @Test
-    @Ignore
-    public void testNewLiferayModuleProjectDefaultValueServiceIsListeningToProjectTemplateName() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+	@Ignore
+	@Test
+	public void testNewLiferayModuleProjectDefaultValueServiceIsListeningToProjectTemplateName() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        op.setProjectName( "my.test.project" );
+		op.setProjectName("my.test.project");
 
-        op.setProjectTemplateName( "activator" );
+		op.setProjectTemplateName("activator");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
 
-        op.setProjectTemplateName( "portlet" );
+		op.setProjectTemplateName("portlet");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
 
-        op.setProjectTemplateName( "mvc-portlet" );
+		op.setProjectTemplateName("mvc-portlet");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
 
-        op.setProjectTemplateName( "service" );
+		op.setProjectTemplateName("service");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
 
-        op.setProjectTemplateName( "service-wrapper" );
+		op.setProjectTemplateName("service-wrapper");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
 
-        op.setProjectTemplateName( "service-builder" );
+		op.setProjectTemplateName("service-builder");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
-    }
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
+	}
 
-    @Test
-    @Ignore
-    public void testNewLiferayModuleProjectDefaultValueServiceUnderscores() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+	@Ignore
+	@Test
+	public void testNewLiferayModuleProjectDefaultValueServiceUnderscores() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        op.setProjectName( "my_test_project" );
+		op.setProjectName("my_test_project");
 
-        op.setProjectTemplateName( "portlet" );
+		op.setProjectTemplateName("portlet");
 
-        assertEquals( "MyTestProject", op.getComponentName().content( true ) );
-    }
+		Assert.assertEquals("MyTestProject", op.getComponentName().content(true));
+	}
 
-    @Test
-    @Ignore
-    public void testNewLiferayModuleProjectPackageDefaultValueService() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+	@Test
+	public void testNewLiferayModuleProjectNameValidataionService() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        op.setProjectName( "my-test-project" );
+		op.setProjectName("my-test-project");
 
-        op.setProjectTemplateName( "Portlet" );
+		Assert.assertTrue(SapphireUtil.ok(op.getProjectName()));
 
-        assertEquals( "my.test.project", op.getPackageName().content( true ) );
+		op.setProjectName("1");
 
-        op.setProjectName( "my.test.foo" );
+		Assert.assertTrue(SapphireUtil.ok(op.getProjectName()));
 
-        assertEquals( "my.test.foo", op.getPackageName().content( true ) );
+		op.setProjectName("a");
 
-        op.setProjectName( "my_test_foo1" );
+		Assert.assertTrue(SapphireUtil.ok(op.getProjectName()));
 
-        op.setProjectTemplateName( "ServiceWrapper" );
+		op.setProjectName("A");
 
-        assertEquals( "my.test.foo1", op.getPackageName().content( true ) );
-    }
+		Assert.assertTrue(SapphireUtil.ok(op.getProjectName()));
 
-    @Test
-    public void testNewLiferayModuleProjectNameValidataionService() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+		op.setProjectName("my-test-project-");
 
-        op.setProjectName( "my-test-project" );
+		Assert.assertTrue(SapphireUtil.ok(op.getProjectName()));
 
-        assertTrue( op.validation().ok() );
+		op.setProjectName("my-test-project.");
 
-        op.setProjectName( "1" );
+		Assert.assertTrue(SapphireUtil.ok(op.getProjectName()));
 
-        assertTrue( op.getProjectName().validation().ok() );
+		op.setProjectName("my-test-project_");
 
-        op.setProjectName( "a" );
+		Assert.assertTrue(SapphireUtil.ok(op.getProjectName()));
+	}
 
-        assertTrue( op.getProjectName().validation().ok() );
+	@Test
+	public void testNewLiferayModuleProjectNewProperties() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        op.setProjectName( "A" );
+		op.setProjectName("test-properties-in-portlet");
 
-        assertTrue( op.getProjectName().validation().ok() );
+		op.setProjectTemplateName("portlet");
+		op.setComponentName("Test");
 
-        op.setProjectName( "my-test-project-" );
+		PropertyKey pk = op.getPropertyKeys().insert();
 
-        assertFalse( op.getProjectName().validation().ok() );
+		pk.setName("property-test-key");
+		pk.setValue("property-test-value");
 
-        op.setProjectName( "my-test-project." );
+		Assert.assertEquals(
+			"OK",
+			SapphireUtil.message(NewLiferayModuleProjectOpMethods.execute(op, SapphireUtil.getNullProgressMonitor())));
 
-        assertFalse( op.getProjectName().validation().ok() );
+		IProject modPorject = CoreUtil.getProject(op.getProjectName().content());
 
-        op.setProjectName( "my-test-project_" );
+		modPorject.open(new NullProgressMonitor());
 
-        assertFalse( op.getProjectName().validation().ok() );
-    }
+		SearchFilesVisitor sv = new SearchFilesVisitor();
 
-    @Test
-    public void testNewLiferayModuleProjectNewProperties() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+		List<IFile> searchFiles = sv.searchFiles(modPorject, "TestPortlet.java");
 
-        op.setProjectName( "test-properties-in-portlet" );
+		IFile componentClassFile = searchFiles.get(0);
 
-        op.setProjectTemplateName( "portlet" );
-        op.setComponentName( "Test" );
+		Assert.assertEquals(componentClassFile.exists(), true);
 
-        PropertyKey pk = op.getPropertyKeys().insert();
+		String actual = CoreUtil.readStreamToString(componentClassFile.getContents());
 
-        pk.setName( "property-test-key" );
-        pk.setValue( "property-test-value" );
+		Assert.assertTrue(actual, actual.contains("\"property-test-key=property-test-value\""));
+	}
 
-        Status exStatus =
-            NewLiferayModuleProjectOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+	@Ignore
+	@Test
+	public void testNewLiferayModuleProjectPackageDefaultValueService() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        assertEquals( "OK", exStatus.message() );
+		op.setProjectName("my-test-project");
 
-        IProject modPorject = CoreUtil.getProject( op.getProjectName().content() );
-        modPorject.open( new NullProgressMonitor() );
+		op.setProjectTemplateName("Portlet");
 
-        SearchFilesVisitor sv = new SearchFilesVisitor();
-        List<IFile> searchFiles = sv.searchFiles( modPorject, "TestPortlet.java" );
-        IFile componentClassFile = searchFiles.get( 0 );
+		Assert.assertEquals("my.test.project", op.getPackageName().content(true));
 
-        assertEquals( componentClassFile.exists(), true );
+		op.setProjectName("my.test.foo");
 
-        String actual = CoreUtil.readStreamToString( componentClassFile.getContents() );
+		Assert.assertEquals("my.test.foo", op.getPackageName().content(true));
 
-        assertTrue( actual, actual.contains( "\"property-test-key=property-test-value\"" ) );
-    }
+		op.setProjectName("my_test_foo1");
 
-    @Test
-    public void testNewLiferayPortletProviderNewProperties() throws Exception
-    {
-        NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
+		op.setProjectTemplateName("ServiceWrapper");
 
-        op.setProjectName( "test-properties-in-portlet-provider" );
-        op.setComponentName( "Test" );
-        op.setProjectTemplateName( "portlet-provider" );
+		Assert.assertEquals("my.test.foo1", op.getPackageName().content(true));
+	}
 
-        PropertyKey pk = op.getPropertyKeys().insert();
+	@Test
+	public void testNewLiferayPortletProviderNewProperties() throws Exception {
+		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-        pk.setName( "property-test-key" );
-        pk.setValue( "property-test-value" );
+		op.setProjectName("test-properties-in-portlet-provider");
+		op.setComponentName("Test");
+		op.setProjectTemplateName("portlet-provider");
 
-        Status exStatus =
-            NewLiferayModuleProjectOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+		PropertyKey pk = op.getPropertyKeys().insert();
 
-        assertTrue( exStatus.message(), exStatus.ok() );
+		pk.setName("property-test-key");
+		pk.setValue("property-test-value");
 
-        IProject modPorject = CoreUtil.getProject( op.getProjectName().content() );
-        modPorject.open( new NullProgressMonitor() );
+		Status status = NewLiferayModuleProjectOpMethods.execute(op, SapphireUtil.getNullProgressMonitor());
 
-        IFile testAddPortletProvider =
-            modPorject.getFile( "src/main/java/test/properties/in/portlet/provider/portlet/TestAddPortletProvider.java" );
+		Assert.assertTrue(status.message(), status.ok());
 
-        assertTrue( testAddPortletProvider.exists() );
+		IProject modPorject = CoreUtil.getProject(op.getProjectName().content());
 
-        SearchFilesVisitor sv = new SearchFilesVisitor();
-        List<IFile> searchFiles = sv.searchFiles( modPorject, "TestAddPortletProvider.java" );
-        IFile componentClassFile = searchFiles.get( 0 );
+		modPorject.open(new NullProgressMonitor());
 
-        assertEquals( componentClassFile.exists(), true );
+		IFile testAddPortletProvider = modPorject.getFile(
+			"src/main/java/test/properties/in/portlet/provider/portlet/TestAddPortletProvider.java");
 
-        String actual = CoreUtil.readStreamToString( componentClassFile.getContents() );
+		Assert.assertTrue(testAddPortletProvider.exists());
 
-        assertTrue( actual.contains( "property-test-key=property-test-value" ) );
-    }
+		SearchFilesVisitor sv = new SearchFilesVisitor();
+
+		List<IFile> searchFiles = sv.searchFiles(modPorject, "TestAddPortletProvider.java");
+
+		IFile componentClassFile = searchFiles.get(0);
+
+		Assert.assertEquals(componentClassFile.exists(), true);
+
+		String actual = CoreUtil.readStreamToString(componentClassFile.getContents());
+
+		Assert.assertTrue(actual.contains("property-test-key=property-test-value"));
+	}
 
 }

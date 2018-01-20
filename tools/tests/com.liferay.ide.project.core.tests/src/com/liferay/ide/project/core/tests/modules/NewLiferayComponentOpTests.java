@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,12 +10,9 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
-package com.liferay.ide.project.core.tests.modules;
+ */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+package com.liferay.ide.project.core.tests.modules;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
@@ -33,6 +30,8 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
+
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -40,158 +39,178 @@ import org.junit.Test;
  * @author Gregory Amerson
  * @author Simon Jiang
  */
-public class NewLiferayComponentOpTests
-{
+public class NewLiferayComponentOpTests {
 
-    @Test
-    public void testNewLiferayComponentDefaultValueServiceDashes() throws Exception
-    {
-        NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+	@BeforeClass
+	public static void setupBladeCLIRepoUrl() throws Exception {
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 
-        op.setProjectName( "my-test-project" );
+		prefs.put(
+			BladeCLI.BLADE_CLI_REPO_URL,
+			"https://liferay-test-01.ci.cloudbees.com/job/liferay-blade-cli/lastSuccessfulBuild/artifact/build/generated/p2/");
 
-        op.setComponentClassTemplateName( "PortletActionCommand" );
+		prefs.flush();
+	}
 
-        assertEquals( "MyTestProjectPortletActionCommand", op.getComponentClassName().content( true ) );
-    }
+	@Test
+	public void testNewLiferayComponentBndAndGradleForPortleActionCommandAndRest() throws Exception {
+		NewLiferayModuleProjectOp pop = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-    @Test
-    public void testNewLiferayComponentDefaultValueServiceUnderscores() throws Exception
-    {
-        NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+		pop.setProjectName("testGradleModuleComponentBnd");
+		pop.setProjectTemplateName("portlet");
+		pop.setProjectProvider("gradle-module");
 
-        op.setProjectName( "my_test_project" );
+		Status modulePorjectStatus = NewLiferayModuleProjectOpMethods.execute(
+			pop, ProgressMonitorBridge.create(new NullProgressMonitor()));
 
-        op.setComponentClassTemplateName( "PortletActionCommand" );
+		Assert.assertTrue(modulePorjectStatus.ok());
 
-        assertEquals( "MyTestProjectPortletActionCommand", op.getComponentClassName().content( true ) );
-    }
+		IProject modPorject = CoreUtil.getProject(pop.getProjectName().content());
 
-    @Test
-    public void testNewLiferayComponentDefaultValueServiceDots() throws Exception
-    {
-        NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+		modPorject.open(new NullProgressMonitor());
 
-        op.setProjectName( "my.test.project" );
+		NewLiferayComponentOp cop = NewLiferayComponentOp.TYPE.instantiate();
 
-        op.setComponentClassTemplateName( "PortletActionCommand" );
+		cop.setProjectName(pop.getProjectName().content());
+		cop.setComponentClassTemplateName("PortletActionCommand");
 
-        assertEquals( "MyTestProjectPortletActionCommand", op.getComponentClassName().content( true ) );
-    }
+		NewLiferayComponentOpMethods.execute(cop, ProgressMonitorBridge.create(new NullProgressMonitor()));
 
-    @Test
-    public void testNewLiferayComponentDefaultValueServiceIsListeningToProjectName() throws Exception
-    {
-        NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+		IFile bgd = modPorject.getFile("bnd.bnd");
 
-        op.setProjectName( "my.test.project" );
+		String bndcontent = FileUtil.readContents(bgd.getLocation().toFile(), true);
 
-        op.setComponentClassTemplateName( "PortletActionCommand" );
+		String separator = System.getProperty("line.separator");
 
-        assertEquals( "MyTestProjectPortletActionCommand", op.getComponentClassName().content( true ) );
+		String bndConfig =
+			"-includeresource: \\" + separator +
+				"\t@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" +
+					separator + "\t@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld" + separator;
 
-        op.setProjectName( "my_abc-test" );
+		Assert.assertTrue(bndcontent.contains(bndConfig));
 
-        assertEquals( "MyAbcTestPortletActionCommand", op.getComponentClassName().content( true ) );
-    }
+		IFile buildgrade = modPorject.getFile("build.gradle");
 
-    @Test
-    public void testNewLiferayComponentDefaultValueServiceIsListeningToComponentClassTemplateName() throws Exception
-    {
-        NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+		String buildgradeContent = FileUtil.readContents(buildgrade.getLocation().toFile(), true);
 
-        op.setProjectName( "my.test.project" );
+		Assert.assertTrue(
+			buildgradeContent.contains(
+				"compile group: \"com.liferay.portal\", name:\"com.liferay.util.bridges\", version:\"2.0.0\""));
+		Assert.assertTrue(
+			buildgradeContent.contains(
+				"compile group: \"org.osgi\", name:\"org.osgi.service.component.annotations\", version:\"1.3.0\""));
 
-        op.setComponentClassTemplateName( "PortletActionCommand" );
+		NewLiferayComponentOp copRest = NewLiferayComponentOp.TYPE.instantiate();
 
-        assertEquals( "MyTestProjectPortletActionCommand", op.getComponentClassName().content( true ) );
+		copRest.setProjectName(pop.getProjectName().content());
+		copRest.setComponentClassTemplateName("RestService");
 
-        op.setComponentClassTemplateName( "FriendlyUrlMapper" );
+		NewLiferayComponentOpMethods.execute(copRest, ProgressMonitorBridge.create(new NullProgressMonitor()));
 
-        assertEquals( "MyTestProjectFriendlyUrlMapper", op.getComponentClassName().content( true ) );
-    }
+		bgd = modPorject.getFile("bnd.bnd");
 
+		bndcontent = FileUtil.readContents(bgd.getLocation().toFile(), true);
 
-    @BeforeClass
-    public static void setupBladeCLIRepoUrl() throws Exception
-    {
-        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode( ProjectCore.PLUGIN_ID );
+		Assert.assertTrue(bndcontent.contains(bndConfig));
 
-        prefs.put( BladeCLI.BLADE_CLI_REPO_URL, "https://liferay-test-01.ci.cloudbees.com/job/liferay-blade-cli/lastSuccessfulBuild/artifact/build/generated/p2/" );
+		String restConfig = "Require-Capability: osgi.contract; filter:=\"(&(osgi.contract=JavaJAXRS)(version=2))\"";
 
-        prefs.flush();
-    }
+		Assert.assertTrue(bndcontent.contains(restConfig));
 
-    @Test
-    public void testNewLiferayComponentBndAndGradleForPortleActionCommandAndRest() throws Exception
-    {
-        NewLiferayModuleProjectOp pop = NewLiferayModuleProjectOp.TYPE.instantiate();
+		buildgrade = modPorject.getFile("build.gradle");
 
-        pop.setProjectName( "testGradleModuleComponentBnd" );
-        pop.setProjectTemplateName( "portlet" );
-        pop.setProjectProvider( "gradle-module" );
+		buildgradeContent = FileUtil.readContents(buildgrade.getLocation().toFile(), true);
 
-        Status modulePorjectStatus = NewLiferayModuleProjectOpMethods.execute( pop, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
-        assertTrue( modulePorjectStatus.ok() );
+		Assert.assertTrue(
+			buildgradeContent.contains("compile group: \"javax.ws.rs\", name:\"javax.ws.rs-api\", version:\"2.0.1\""));
 
-        IProject modPorject = CoreUtil.getProject( pop.getProjectName().content() );
-        modPorject.open( new NullProgressMonitor() );
+		NewLiferayComponentOp copAuth = NewLiferayComponentOp.TYPE.instantiate();
 
-        NewLiferayComponentOp cop = NewLiferayComponentOp.TYPE.instantiate();
-        cop.setProjectName( pop.getProjectName().content() );
-        cop.setComponentClassTemplateName( "PortletActionCommand" );
+		copAuth.setProjectName(pop.getProjectName().content());
+		copAuth.setComponentClassTemplateName("Authenticator");
 
-        NewLiferayComponentOpMethods.execute( cop, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+		NewLiferayComponentOpMethods.execute(copAuth, ProgressMonitorBridge.create(new NullProgressMonitor()));
 
-        IFile bgd = modPorject.getFile( "bnd.bnd" );
-        String bndcontent = FileUtil.readContents( bgd.getLocation().toFile(), true );
+		bgd = modPorject.getFile("bnd.bnd");
 
-        String bndConfig = "-includeresource: \\" + System.getProperty( "line.separator" ) +
-                        "\t" + "@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" + System.getProperty( "line.separator" ) +
-                        "\t" + "@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld" + System.getProperty( "line.separator" );
+		bndcontent = FileUtil.readContents(bgd.getLocation().toFile(), true);
 
-        assertTrue( bndcontent.contains( bndConfig ) );
+		bndConfig =
+			"-includeresource: \\" + separator +
+				"\t@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" + separator +
+					"\t@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld,\\" + separator + "\t@shiro-core-1.1.0.jar";
 
-        IFile buildgrade = modPorject.getFile( "build.gradle" );
-        String buildgradeContent = FileUtil.readContents( buildgrade.getLocation().toFile(),true );
-        assertTrue( buildgradeContent.contains( "compile group: \"com.liferay.portal\", name:\"com.liferay.util.bridges\", version:\"2.0.0\"" ) );
-        assertTrue( buildgradeContent.contains( "compile group: \"org.osgi\", name:\"org.osgi.service.component.annotations\", version:\"1.3.0\"" ) );
+		Assert.assertTrue(bndcontent.contains(bndConfig));
 
-        NewLiferayComponentOp copRest = NewLiferayComponentOp.TYPE.instantiate();
-        copRest.setProjectName( pop.getProjectName().content() );
-        copRest.setComponentClassTemplateName( "RestService" );
+		buildgrade = modPorject.getFile("build.gradle");
 
-        NewLiferayComponentOpMethods.execute( copRest, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+		buildgradeContent = FileUtil.readContents(buildgrade.getLocation().toFile(), true);
 
-        bgd = modPorject.getFile( "bnd.bnd" );
-        bndcontent = FileUtil.readContents( bgd.getLocation().toFile(), true );
-        assertTrue( bndcontent.contains( bndConfig ) );
+		Assert.assertTrue(
+			buildgradeContent.contains("compile group: \"org.apache.shiro\", name:\"shiro-core\", version:\"1.1.0\""));
+	}
 
-        final String restConfig = "Require-Capability: osgi.contract; filter:=\"(&(osgi.contract=JavaJAXRS)(version=2))\"";
-        assertTrue( bndcontent.contains( restConfig ) );
+	@Test
+	public void testNewLiferayComponentDefaultValueServiceDashes() throws Exception {
+		NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
 
-        buildgrade = modPorject.getFile( "build.gradle" );
-        buildgradeContent = FileUtil.readContents( buildgrade.getLocation().toFile(),true );
-        assertTrue( buildgradeContent.contains( "compile group: \"javax.ws.rs\", name:\"javax.ws.rs-api\", version:\"2.0.1\"" ) );
+		op.setProjectName("my-test-project");
 
-        NewLiferayComponentOp copAuth = NewLiferayComponentOp.TYPE.instantiate();
-        copAuth.setProjectName( pop.getProjectName().content() );
-        copAuth.setComponentClassTemplateName( "Authenticator" );
+		op.setComponentClassTemplateName("PortletActionCommand");
 
-        NewLiferayComponentOpMethods.execute( copAuth, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
+		Assert.assertEquals("MyTestProjectPortletActionCommand", op.getComponentClassName().content(true));
+	}
 
-        bgd = modPorject.getFile( "bnd.bnd" );
-        bndcontent = FileUtil.readContents( bgd.getLocation().toFile(), true );
+	@Test
+	public void testNewLiferayComponentDefaultValueServiceDots() throws Exception {
+		NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
 
-        bndConfig = "-includeresource: \\" + System.getProperty( "line.separator" ) +
-                        "\t" + "@com.liferay.util.bridges-2.0.0.jar!/com/liferay/util/bridges/freemarker/FreeMarkerPortlet.class,\\" + System.getProperty( "line.separator" ) +
-                        "\t" + "@com.liferay.util.taglib-2.0.0.jar!/META-INF/*.tld,\\" + System.getProperty( "line.separator" ) +
-                        "\t" + "@shiro-core-1.1.0.jar";
+		op.setProjectName("my.test.project");
 
-        assertTrue( bndcontent.contains( bndConfig ) );
+		op.setComponentClassTemplateName("PortletActionCommand");
 
-        buildgrade = modPorject.getFile( "build.gradle" );
-        buildgradeContent = FileUtil.readContents( buildgrade.getLocation().toFile() ,true);
-        assertTrue( buildgradeContent.contains( "compile group: \"org.apache.shiro\", name:\"shiro-core\", version:\"1.1.0\"" ) );
-    }
+		Assert.assertEquals("MyTestProjectPortletActionCommand", op.getComponentClassName().content(true));
+	}
+
+	@Test
+	public void testNewLiferayComponentDefaultValueServiceIsListeningToComponentClassTemplateName() throws Exception {
+		NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+
+		op.setProjectName("my.test.project");
+
+		op.setComponentClassTemplateName("PortletActionCommand");
+
+		Assert.assertEquals("MyTestProjectPortletActionCommand", op.getComponentClassName().content(true));
+
+		op.setComponentClassTemplateName("FriendlyUrlMapper");
+
+		Assert.assertEquals("MyTestProjectFriendlyUrlMapper", op.getComponentClassName().content(true));
+	}
+
+	@Test
+	public void testNewLiferayComponentDefaultValueServiceIsListeningToProjectName() throws Exception {
+		NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+
+		op.setProjectName("my.test.project");
+
+		op.setComponentClassTemplateName("PortletActionCommand");
+
+		Assert.assertEquals("MyTestProjectPortletActionCommand", op.getComponentClassName().content(true));
+
+		op.setProjectName("my_abc-test");
+
+		Assert.assertEquals("MyAbcTestPortletActionCommand", op.getComponentClassName().content(true));
+	}
+
+	@Test
+	public void testNewLiferayComponentDefaultValueServiceUnderscores() throws Exception {
+		NewLiferayComponentOp op = NewLiferayComponentOp.TYPE.instantiate();
+
+		op.setProjectName("my_test_project");
+
+		op.setComponentClassTemplateName("PortletActionCommand");
+
+		Assert.assertEquals("MyTestProjectPortletActionCommand", op.getComponentClassName().content(true));
+	}
+
 }
