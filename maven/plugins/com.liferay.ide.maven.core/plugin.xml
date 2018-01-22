@@ -31,7 +31,6 @@
 			class="com.liferay.ide.maven.core.BundleProjectConfigurator"
 			id="com.liferay.ide.maven.core.bnd.configurator"
 			name="Liferay BND Project Configurator"
-			secondaryTo="bndtools.m2e.bndconfigurator"
 		>
 		</configurator>
 	</extension>
