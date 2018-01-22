@@ -812,7 +812,7 @@ public class WizardAction extends UIAction {
 
 			_newServerWizard.getServerTypes().selectTreeItem(LIFERAY_INC, LIFERAY_7_X);
 		}
-		
+
 		public void prepare(String serverName, String runtimeType) {
 			ide.sleep(500);
 
@@ -823,7 +823,7 @@ public class WizardAction extends UIAction {
 			_newServerWizard.getServerTypes().selectTreeItem(LIFERAY_INC, LIFERAY_7_X);
 
 			_newServerWizard.getServerRuntimeTypes().setSelection(runtimeType);
-		}		
+		}
 
 		public void prepare62(String serverName) {
 			ide.sleep(500);

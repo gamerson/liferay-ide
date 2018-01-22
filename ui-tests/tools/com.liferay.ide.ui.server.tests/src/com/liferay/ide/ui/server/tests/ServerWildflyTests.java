@@ -19,9 +19,9 @@ import com.liferay.ide.ui.liferay.SwtbotBase;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IPath;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 
 /**
  * @author Terry Jia
@@ -189,7 +189,6 @@ public class ServerWildflyTests extends SwtbotBase {
 		String serverStoppedLabel = serverName + "  [Stopped]";
 
 		viewAction.servers.openEditor(serverStoppedLabel);
-
 
 		editorAction.server.selectCustomLaunchSettings();
 
