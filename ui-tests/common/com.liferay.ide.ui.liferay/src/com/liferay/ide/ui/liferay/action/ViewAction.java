@@ -31,6 +31,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 /**
  * @author Terry Jia
  * @author Ying Xu
+ * @author Simon Jiang
  */
 public class ViewAction extends UIAction {
 

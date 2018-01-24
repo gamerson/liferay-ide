@@ -22,6 +22,7 @@ import org.junit.Assert;
 
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class TomcatSupport extends SupportBase implements ServerSupport {
 
@@ -84,7 +85,7 @@ public class TomcatSupport extends SupportBase implements ServerSupport {
 
 		wizardAction.openNewLiferayServerWizard();
 
-		wizardAction.newServer.prepare(getServerName());
+		wizardAction.newServer.prepare(getServerName(), getServerName());
 
 		wizardAction.finish();
 	}

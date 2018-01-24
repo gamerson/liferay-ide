@@ -28,13 +28,13 @@ public class PingThread {
 	// delay between pings
 	private static final int PING_INTERVAL = 250;
 
-	// maximum number of pings before giving up
-	private int maxPings;
-
 	private boolean stop = false;
 	private String url;
-	private IServer server;
-	private PortalServerBehavior behaviour;
+	protected IServer server;
+	protected PortalServerBehavior behaviour;
+	private long startedTime;
+	private long defaultTimeout = 15 * 60 * 1000;
+	private long timeout = 0;
 
 	/**
 	 * Create a new PingThread.
@@ -44,18 +44,27 @@ public class PingThread {
 	 * @param maxPings the maximum number of times to try pinging, or -1 to continue forever
 	 * @param behaviour
 	 */
-	public PingThread(IServer server, String url, int maxPings, PortalServerBehavior behaviour) {
+	public PingThread(IServer server, String url, PortalServerBehavior behaviour) {
 		super();
 		this.server = server;
 		this.url = url;
-		this.maxPings = maxPings;
 		this.behaviour = behaviour;
-		Thread t = new Thread("Liferay Ping Thread") {
-			public void run() {
-				ping();
-			}
+		int serverStartTimeout = server.getStartTimeout();
+
+		if( serverStartTimeout < defaultTimeout / 1000 ){
+		    this.timeout = defaultTimeout;
+		} else {
+		    this.timeout = serverStartTimeout * 1000;
+		}
+
+		Thread t = new Thread( "Liferay Ping Thread" ){
+
+		    public void run(){
+		        startedTime = System.currentTimeMillis();
+		        ping();
+		    }
 		};
-		t.setDaemon(true);
+		t.setDaemon( true );
 		t.start();
 	}
 
@@ -64,23 +73,22 @@ public class PingThread {
 	 * state to STATE_STARTED.
 	 */
 	protected void ping() {
-		int count = 0;
+		long currentTime = 0;
 		try {
 			Thread.sleep(PING_DELAY);
 		} catch (Exception e) {
-			// ignore
 		}
 		while (!stop) {
-			try {
-				if (count == maxPings) {
-					try {
-						server.stop(false);
-					} catch (Exception e) {
+				try {
+					currentTime = System.currentTimeMillis();
+					if( ( currentTime - startedTime ) > timeout ){
+					    try{
+					        server.stop( false );
+					    } catch( Exception e ){
+					    }
+					    stop = true;
+					    break;
 					}
-					stop = true;
-					break;
-				}
-				count++;
 
 				URL pingUrl = new URL(url);
 				URLConnection conn = pingUrl.openConnection();
@@ -99,7 +107,6 @@ public class PingThread {
 				try {
 					Thread.sleep(200);
 				} catch (Exception e) {
-					// ignore
 				}
 				behaviour.setServerStarted();
 				stop = true;
@@ -109,7 +116,6 @@ public class PingThread {
 					try {
 						Thread.sleep(PING_INTERVAL);
 					} catch (InterruptedException e2) {
-						// ignore
 					}
 				}
 			}
