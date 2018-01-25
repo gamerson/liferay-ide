@@ -17,6 +17,7 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.core.portal.PortalServerConstants;
 import com.liferay.ide.server.tomcat.core.util.LiferayTomcatUtil;
 
 import java.net.MalformedURLException;
@@ -126,15 +127,15 @@ public class LiferayTomcatServer extends TomcatServer
     }
 
     @Override
-    public String getHttpPort()
+    public int getHttpPort()
     {
         try
         {
-            return String.valueOf( getTomcatConfiguration().getMainPort().getPort() );
+            return getTomcatConfiguration().getMainPort().getPort();
         }
         catch( CoreException e )
         {
-            return null;
+            return PortalServerConstants.DEFAULT_HTTP_PORT;
         }
     }
 
