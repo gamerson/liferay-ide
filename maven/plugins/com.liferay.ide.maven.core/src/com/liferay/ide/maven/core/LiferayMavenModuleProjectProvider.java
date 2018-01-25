@@ -14,6 +14,7 @@
 
 package com.liferay.ide.maven.core;
 
+import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.model.ProjectName;
@@ -22,20 +23,26 @@ import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.PropertyKey;
 
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.model.Plugin;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.m2e.core.project.IMavenProjectFacade;
+import org.eclipse.m2e.core.project.IProjectCreationListener;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.platform.PathBridge;
 
 /**
  * @author Joye Luo
+ * @author Simon Jiang
  */
 public class LiferayMavenModuleProjectProvider
 	extends LiferayMavenProjectProvider implements NewLiferayProjectProvider<NewLiferayModuleProjectOp> {
@@ -124,13 +131,61 @@ public class LiferayMavenModuleProjectProvider
 				}
 			}
 
-			MavenUtil.importProject(projectLocation.toPortableString(), monitor);
+			MavenUtil.importProject(projectLocation.toPortableString(), new LiferaMavenModuleImportListener(), monitor);
 		}
 		catch (Exception e) {
 			retval = ProjectCore.createErrorStatus("can't create module project.", e);
 		}
 
 		return retval;
+	}
+
+	private class LiferaMavenModuleImportListener implements IProjectCreationListener{
+
+		@Override
+		public void projectCreated(IProject project) {
+
+			if (_isMavenBundlePlugin(project)) {
+				try {
+					LiferayNature.addLiferayNature(project, new NullProgressMonitor());
+				} catch (CoreException e) {
+				}
+			}
+
+		}
+
+		private boolean _isMavenBundlePlugin(IProject project) {
+			NullProgressMonitor monitor = new NullProgressMonitor();
+
+			IMavenProjectFacade facade = MavenUtil.getProjectFacade(project, monitor);
+
+			if (facade != null) {
+				try {
+					MavenProject mavenProject = facade.getMavenProject(new NullProgressMonitor());
+
+					if ((mavenProject != null) && "bundle".equals(mavenProject.getPackaging())) {
+						Plugin mavenBundlePlugin = MavenUtil.getPlugin(
+							facade, ILiferayMavenConstants.MAVEN_BUNDLE_PLUGIN_KEY, monitor);
+
+						if (mavenBundlePlugin != null) {
+							return true;
+						}
+					}
+					else if ((mavenProject != null) && "jar".equals(mavenProject.getPackaging())) {
+						Plugin bndMavenPlugin = MavenUtil.getPlugin(
+							facade, ILiferayMavenConstants.BND_MAVEN_PLUGIN_KEY, monitor);
+
+						if (bndMavenPlugin != null) {
+							return true;
+						}
+					}
+				}
+				catch (CoreException ce) {
+				}
+			}
+
+			return false;
+		}
 	}
 
 	@Override
