@@ -174,7 +174,7 @@ public class ValidationFragmentTests extends SwtbotBase {
 				continue;
 			}
 
-			wizardAction.newFragment.setLocation(msg.getInput());
+			wizardAction.newFragment.getLocation().setText(msg.getInput());
 
 			validationAction.assertEquals(msg.getExpect(), wizardAction.getValidationMsg(2));
 		}
@@ -251,7 +251,7 @@ public class ValidationFragmentTests extends SwtbotBase {
 				continue;
 			}
 
-			wizardAction.newFragment.setProjectName(msg.getInput());
+			wizardAction.newFragment.projectName().setText(msg.getInput());
 
 			validationAction.assertEquals(msg.getExpect(), wizardAction.getValidationMsg(2));
 		}
