@@ -20,6 +20,7 @@ import com.liferay.ide.ui.liferay.base.Sdk62Support;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 /**
  * @author Terry Jia
@@ -28,7 +29,7 @@ import org.junit.Test;
 public class NewPortletProjectSdk62Tests extends SwtbotBase {
 
 	@ClassRule
-	public static Sdk62Support sdk62 = new Sdk62Support(bot);
+	public static RuleChain chain = RuleChain.outerRule(tomcat62).around(new Sdk62Support(bot, tomcat62));
 
 	@Test
 	public void createMvcPortletProject() {

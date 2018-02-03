@@ -16,11 +16,12 @@ package com.liferay.ide.ui.module.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
 import com.liferay.ide.ui.liferay.base.LiferayWorkspaceMavenSupport;
-import com.liferay.ide.ui.liferay.base.TomcatRunningSupport;
+import com.liferay.ide.ui.liferay.base.ServerRunningSupport;
 
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 /**
  * @author Terry Jia
@@ -29,10 +30,10 @@ import org.junit.Test;
 public class DeployModuleLiferayWorkspaceMavenTomcatTests extends SwtbotBase {
 
 	@ClassRule
-	public static LiferayWorkspaceMavenSupport liferayWorkspace = new LiferayWorkspaceMavenSupport(bot);
+	public static RuleChain chain = RuleChain.outerRule(tomcat).around(new ServerRunningSupport(bot, tomcat));
 
 	@ClassRule
-	public static TomcatRunningSupport tomcat = new TomcatRunningSupport(bot);
+	public static LiferayWorkspaceMavenSupport liferayWorkspace = new LiferayWorkspaceMavenSupport(bot);
 
 	@Test
 	public void deployActivator() {

@@ -38,10 +38,6 @@ public class ServerTomcatTests extends SwtbotBase {
 
 		envAction.prepareGeoFile();
 
-		envAction.preparePortalExtFile();
-
-		envAction.preparePortalSetupWizardFile();
-
 		String serverName = "Liferay 7-initialization";
 
 		dialogAction.openPreferencesDialog();

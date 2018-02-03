@@ -21,6 +21,8 @@ import com.liferay.ide.ui.liferay.action.EnvAction;
 import com.liferay.ide.ui.liferay.action.JobAction;
 import com.liferay.ide.ui.liferay.action.ViewAction;
 import com.liferay.ide.ui.liferay.action.WizardAction;
+import com.liferay.ide.ui.liferay.base.Tomcat62Support;
+import com.liferay.ide.ui.liferay.base.TomcatSupport;
 import com.liferay.ide.ui.liferay.page.LiferayIDE;
 import com.liferay.ide.ui.swtbot.Keys;
 import com.liferay.ide.ui.swtbot.UI;
@@ -50,6 +52,8 @@ public class SwtbotBase implements UI, Keys, Messages, FileConstants {
 	public static EnvAction envAction;
 	public static LiferayIDE ide;
 	public static JobAction jobAction;
+	public static TomcatSupport tomcat = new TomcatSupport(bot);
+	public static Tomcat62Support tomcat62 = new Tomcat62Support(bot);
 	public static ViewAction viewAction;
 	public static WizardAction wizardAction;
 

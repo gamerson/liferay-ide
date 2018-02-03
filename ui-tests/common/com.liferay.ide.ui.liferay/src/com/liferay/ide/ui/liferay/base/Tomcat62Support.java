@@ -23,10 +23,10 @@ import org.junit.Assert;
 /**
  * @author Terry Jia
  */
-public class TomcatSupport extends ServerSupport {
+public class Tomcat62Support extends ServerSupport {
 
-	public TomcatSupport(SWTWorkbenchBot bot) {
-		super(bot, "tomcat", "7.0-ga5");
+	public Tomcat62Support(SWTWorkbenchBot bot) {
+		super(bot, "tomcat", "6.2-ga6");
 	}
 
 	@Override
@@ -62,11 +62,11 @@ public class TomcatSupport extends ServerSupport {
 
 		dialogAction.serverRuntimeEnvironments.openNewRuntimeWizard();
 
-		wizardAction.newRuntime.prepare7();
+		wizardAction.newRuntime.prepare62();
 
 		wizardAction.next();
 
-		wizardAction.newRuntime7.prepare(getServerName(), envAction.getServerFullDir().toOSString());
+		wizardAction.newRuntime62.prepare(getServerName(), envAction.getServerFullDir().toOSString());
 
 		wizardAction.finish();
 

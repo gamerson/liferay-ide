@@ -19,6 +19,7 @@ import com.liferay.ide.ui.liferay.base.SdkSupport;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 /**
  * @author Terry Jia
@@ -26,7 +27,7 @@ import org.junit.Test;
 public class NewPluginProjectWizardSdkTests extends SwtbotBase {
 
 	@ClassRule
-	public static SdkSupport sdk = new SdkSupport(bot);
+	public static RuleChain chain = RuleChain.outerRule(tomcat).around(new SdkSupport(bot, tomcat));
 
 	@Test
 	public void createSampleProject() {
