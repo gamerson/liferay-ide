@@ -19,10 +19,10 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 /**
  * @author Terry Jia
  */
-public class Sdk62Support extends SupportBase {
+public class Sdk62Support extends SdkSupport {
 
-	public Sdk62Support(SWTWorkbenchBot bot) {
-		super(bot);
+	public Sdk62Support(SWTWorkbenchBot bot, ServerSupport server) {
+		super(bot, "6.2-ce-ga6", server);
 	}
 
 	@Override
@@ -31,48 +31,16 @@ public class Sdk62Support extends SupportBase {
 			return;
 		}
 
-		jobAction.waitForIvy();
-
-		String sdkName = envAction.getSdkName62() + "-" + envAction.getTimestamp();
-
-		viewAction.project.closeAndDeleteWithNoRunningJobs(sdkName);
-
-		envAction.resetTimestamp();
+		super.after();
 	}
 
 	@Override
 	public void before() {
-		super.before();
-
 		if (!envAction.internal()) {
 			return;
 		}
 
-		envAction.unzipPluginsSdk62();
-
-		viewAction.switchLiferayPerspective();
-
-		wizardAction.openNewLiferayPluginProjectWizard();
-
-		String projectName = "test-portlet";
-
-		wizardAction.newPlugin.prepareSdk(projectName);
-
-		wizardAction.next();
-
-		wizardAction.next();
-
-		String location = envAction.getSdkDir62().toOSString();
-
-		wizardAction.setSdkLocation.prepare(location);
-
-		wizardAction.finish();
-
-		jobAction.waitForIvy();
-
-		jobAction.waitForValidate(projectName);
-
-		viewAction.project.closeAndDelete(projectName);
+		super.before();
 	}
 
 }
