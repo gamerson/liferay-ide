@@ -24,17 +24,12 @@ import com.liferay.ide.ui.liferay.util.ZipUtil;
 import com.liferay.ide.ui.swtbot.util.CoreUtil;
 import com.liferay.ide.ui.swtbot.util.StringPool;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import java.net.InetAddress;
 import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -66,8 +61,42 @@ public class EnvAction extends UIAction {
 		return _envAction;
 	}
 
+	public BundleInfo[] getBundleInfos() {
+		return _bundleInfos;
+	}
+
+	public IPath getBundlesPath() {
+		if (_bundlesPath == null) {
+			if ((_bundlesDir == null) || _bundlesDir.equals("") || _bundlesDir.equals("null")) {
+				URL rootUrl = Platform.getBundle("com.liferay.ide.ui.liferay").getEntry("/");
+
+				try {
+					String filePath = FileLocator.toFileURL(rootUrl).getFile();
+
+					if (filePath.contains("target/work/configuration")) {
+						int index = filePath.indexOf("/ui-tests/");
+
+						_bundlesPath = new Path(filePath.substring(0, index) + "/tests-resources");
+					}
+					else {
+						_bundlesPath = new Path(filePath).removeLastSegments(3).append("tests-resources");
+					}
+				}
+				catch (IOException ioe) {
+				}
+			}
+			else {
+				_bundlesPath = new Path(_bundlesDir);
+			}
+		}
+
+		Assert.assertTrue(_bundlesPath.toFile().exists());
+
+		return _bundlesPath;
+	}
+
 	public IPath getBundlesProjectDir(String workspaceProjectName) {
-		IPath serverDir = _getBundlesPath().append("bundles");
+		IPath serverDir = getBundlesPath().append("bundles");
 
 		IPath bundlesProjectPath = serverDir.append(workspaceProjectName);
 
@@ -80,6 +109,12 @@ public class EnvAction extends UIAction {
 		return bundlesProjectFilePath;
 	}
 
+	public File getBundleSubfile(String fileName) {
+		IPath path = getBundlesPath().append(fileName);
+
+		return path.toFile();
+	}
+
 	public IPath getEclipseWorkspacePath() {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 
@@ -87,7 +122,7 @@ public class EnvAction extends UIAction {
 	}
 
 	public IPath getProjectsFolder() {
-		return _getBundlesPath().append("projects");
+		return getBundlesPath().append("projects");
 	}
 
 	public File getProjectZip(String bundleId, String projectName) throws IOException {
@@ -98,42 +133,22 @@ public class EnvAction extends UIAction {
 		return projectZipFile;
 	}
 
-	public IPath getSdkDir() {
-		IPath bundlesPath = _getBundlesPath().append("bundles");
-
-		String sdkDir = _sdkInfos[0].getSdkDir() + "-" + getTimestamp();
-
-		return bundlesPath.append(sdkDir);
-	}
-
-	public IPath getSdkDir62() {
-		IPath bundlesPath = _getBundlesPath().append("bundles");
-
-		String sdkDir = _sdkInfos[1].getSdkDir() + "-" + getTimestamp();
-
-		return bundlesPath.append(sdkDir);
+	public SdkInfo[] getSdkInfos() {
+		return _sdkInfos;
 	}
 
 	public String getSdkName() {
 		return _sdkInfos[0].getSdkDir();
 	}
 
-	public String getSdkName62() {
-		return _sdkInfos[1].getSdkDir();
-	}
-
-	public IPath getSdkZip62() {
-		return _getBundlesPath().append(_sdkInfos[1].getSdkZip());
-	}
-
 	public IPath getServerDir() {
-		IPath bundlesPath = _getBundlesPath().append("bundles");
+		IPath bundlesPath = getBundlesPath().append("bundles");
 
 		return bundlesPath.append(_bundleInfos[0].getBundleDir());
 	}
 
 	public IPath getServerDir62() {
-		IPath bundlesPath = _getBundlesPath().append("bundles");
+		IPath bundlesPath = getBundlesPath().append("bundles");
 
 		return bundlesPath.append(_bundleInfos[1].getBundleDir());
 	}
@@ -155,7 +170,7 @@ public class EnvAction extends UIAction {
 	}
 
 	public File getTempDir() {
-		IPath temp = _getBundlesPath().append("temp");
+		IPath temp = getBundlesPath().append("bundles");
 
 		return temp.toFile();
 	}
@@ -168,10 +183,24 @@ public class EnvAction extends UIAction {
 		return _timestamp;
 	}
 
-	public File getValidationFolder() {
-		IPath validationPath = _getBundlesPath().append("validation");
+	public String getUsername() {
+		String retval = StringPool.BLANK;
 
-		return validationPath.toFile();
+		retval = System.getenv("USERNAME");
+
+		if (CoreUtil.empty(retval)) {
+			retval = System.getenv("USER");
+		}
+
+		Assert.assertTrue((retval != null) && !retval.equals(""));
+
+		return retval;
+	}
+
+	public File getValidationDir() {
+		IPath path = getBundlesPath().append("validation");
+
+		return path.toFile();
 	}
 
 	public ValidationMsg[] getValidationMsgs(File csv) {
@@ -230,36 +259,6 @@ public class EnvAction extends UIAction {
 		return retval;
 	}
 
-	public void killGradleProcess() throws IOException {
-		String jpsCmd = "jps";
-
-		Process proc = Runtime.getRuntime().exec(jpsCmd);
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-		String temp = in.readLine();
-
-		List<String> result = new ArrayList<>();
-
-		while (temp != null) {
-			if ((temp != null) && temp.contains("GradleDaemon")) {
-				result.add(temp);
-			}
-
-			temp = in.readLine();
-		}
-
-		try {
-			for (String pid : result) {
-				String[] allGradleProcess = pid.split(" ");
-
-				Runtime.getRuntime().exec("taskkill /F /PID " + allGradleProcess[0]);
-			}
-		}
-		catch (Exception e) {
-		}
-	}
-
 	public boolean localConnected() {
 		boolean connected = true;
 
@@ -290,7 +289,7 @@ public class EnvAction extends UIAction {
 	}
 
 	public File prepareBundlesProject(File source) throws IOException {
-		IPath serverDir = _getBundlesPath().append("bundles");
+		IPath serverDir = getBundlesPath().append("bundles");
 
 		File dist = new File(serverDir.toFile(), source.getName() + "-" + getTimestamp());
 
@@ -304,7 +303,7 @@ public class EnvAction extends UIAction {
 	public void prepareGeoFile() {
 		String filename = "com.liferay.ip.geocoder.internal.IPGeocoderConfiguration.cfg";
 
-		IPath sourceGeoPath = _getBundlesPath().append(filename);
+		IPath sourceGeoPath = getBundlesPath().append(filename);
 
 		File source = sourceGeoPath.toFile();
 
@@ -319,7 +318,7 @@ public class EnvAction extends UIAction {
 		try {
 			FileUtil.copyFile(source, dest);
 
-			String content = "filePath=" + _getBundlesPath().toPortableString() + "/GeoLiteCity.dat";
+			String content = "filePath=" + getBundlesPath().toPortableString() + "/GeoLiteCity.dat";
 
 			FileUtils.write(content, dest);
 		}
@@ -327,54 +326,16 @@ public class EnvAction extends UIAction {
 		}
 	}
 
-	public void preparePortalExtFile() {
-		String filename = "portal-ext.properties";
-
-		IPath sourcePortalExtPath = _getBundlesPath().append(filename);
-
-		File source = sourcePortalExtPath.toFile();
-
-		IPath destPortalExtPath = getServerDir().append(filename);
-
-		File dest = destPortalExtPath.toFile();
-
-		try {
-			FileUtil.copyFile(source, dest);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public void preparePortalExtFile62() {
 		String filename = "portal-ext.properties";
 
-		IPath sourcePortalExtPath = _getBundlesPath().append(filename);
+		IPath sourcePortalExtPath = getBundlesPath().append(filename);
 
 		File source = sourcePortalExtPath.toFile();
 
 		IPath destPortalExtPath = getServerDir62().append(filename);
 
 		File dest = destPortalExtPath.toFile();
-
-		try {
-			FileUtil.copyFile(source, dest);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void preparePortalSetupWizardFile() {
-		String filename = "portal-setup-wizard.properties";
-
-		IPath sourcePortalSetupWizardPath = _getBundlesPath().append(filename);
-
-		File source = sourcePortalSetupWizardPath.toFile();
-
-		IPath destPortalSetupWizardPath = getServerDir().append(filename);
-
-		File dest = destPortalSetupWizardPath.toFile();
 
 		try {
 			FileUtil.copyFile(source, dest);
@@ -396,105 +357,6 @@ public class EnvAction extends UIAction {
 		_timestamp = 0;
 	}
 
-	public void unzipPluginsSdk() {
-		try {
-			File sdkDir = getSdkDir().toFile();
-
-			Assert.assertEquals(
-				"Expected file to be not exist:" + getSdkDir().toPortableString(), false, sdkDir.exists());
-
-			File sdkZipFile = _getSdkZip().toFile();
-
-			Assert.assertEquals("Expected file to exist: " + sdkZipFile.getAbsolutePath(), true, sdkZipFile.exists());
-
-			sdkDir.mkdirs();
-
-			ZipUtil.unzip(sdkZipFile, getSdkName(), sdkDir, new NullProgressMonitor());
-
-			Assert.assertEquals(true, sdkDir.exists());
-
-			String username = _getUsername();
-
-			File userBuildFile = new File(sdkDir, "build." + username + ".properties");
-
-			userBuildFile.createNewFile();
-
-			unzipServer();
-
-			File serverDir = getServerDir().toFile();
-
-			String appServerParentDir = "app.server.parent.dir=" + serverDir.getPath().replace("\\", "/");
-
-			FileWriter writer = new FileWriter(userBuildFile.getPath(), true);
-
-			writer.write(appServerParentDir);
-
-			writer.close();
-
-			if (internal()) {
-				IPath bundlesPath = _getBundlesPath();
-
-				IPath source = bundlesPath.append("internal").append("ivy-settings.xml");
-
-				IPath dest = getSdkDir().append("ivy-settings.xml");
-
-				FileUtil.copyFile(source.toFile(), dest.toFile());
-			}
-		}
-		catch (Exception e) {
-		}
-	}
-
-	public void unzipPluginsSdk62() {
-		try {
-			Assert.assertTrue(test_in_the_internal_net, internal());
-
-			File sdkDir = getSdkDir62().toFile();
-
-			Assert.assertEquals(
-				"Expected file to be not exist:" + getSdkDir62().toPortableString(), false, sdkDir.exists());
-
-			File sdkZipFile = _getSdkZip62().toFile();
-
-			Assert.assertEquals("Expected file to exist: " + sdkZipFile.getAbsolutePath(), true, sdkZipFile.exists());
-
-			sdkDir.mkdirs();
-
-			ZipUtil.unzip(sdkZipFile, getSdkName62(), sdkDir, new NullProgressMonitor());
-
-			Assert.assertEquals(true, sdkDir.exists());
-
-			String username = _getUsername();
-
-			File userBuildFile = new File(sdkDir, "build." + username + ".properties");
-
-			userBuildFile.createNewFile();
-
-			unzipServer62();
-
-			File serverDir = getServerDir62().toFile();
-
-			String appServerParentDir = "app.server.parent.dir=" + serverDir.getPath().replace("\\", "/");
-
-			FileWriter writer = new FileWriter(userBuildFile.getPath(), true);
-
-			writer.write(appServerParentDir);
-
-			writer.close();
-
-			IPath bundlesPath = _getBundlesPath();
-
-			IPath source = bundlesPath.append("internal").append("ivy-settings.xml");
-
-			IPath dest = getSdkDir62().append("ivy-settings.xml");
-
-			FileUtil.copyFile(source.toFile(), dest.toFile());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public void unzipPluginsSdkToProject(String workspaceProjectName) {
 		try {
 			File sdkDir = getBundlesProjectFileDir(workspaceProjectName, "plugins-sdk").toFile();
@@ -507,7 +369,7 @@ public class EnvAction extends UIAction {
 
 			Assert.assertEquals(true, sdkDir.exists());
 
-			String username = _getUsername();
+			String username = getUsername();
 
 			File userBuildFile = new File(sdkDir, "build." + username + ".properties");
 
@@ -526,7 +388,7 @@ public class EnvAction extends UIAction {
 			writer.close();
 
 			if (internal()) {
-				IPath bundlesPath = _getBundlesPath();
+				IPath bundlesPath = getBundlesPath();
 
 				IPath source = bundlesPath.append("internal").append("ivy-settings.xml");
 
@@ -615,14 +477,34 @@ public class EnvAction extends UIAction {
 	private EnvAction(SWTWorkbenchBot bot) {
 		super(bot);
 
-		_bundleInfos = _getBundleInfos();
-		_sdkInfos = _getSdkInfos();
+		_bundleInfos = _parseBundleInfos();
+		_sdkInfos = _parseSdkInfos();
 
 		log = Logger.getLogger(getClass());
 	}
 
-	private BundleInfo[] _getBundleInfos() {
-		IPath bundlesCsvPath = _getBundlesPath().append("bundles.csv");
+	private IPath _getSdkZip() {
+		return getBundlesPath().append(_sdkInfos[0].getSdkZip());
+	}
+
+	private IPath _getServerZip() {
+		return getBundlesPath().append(_bundleInfos[0].getBundleZip());
+	}
+
+	private IPath _getServerZip62() {
+		return getBundlesPath().append(_bundleInfos[1].getBundleZip());
+	}
+
+	private String _getServerZipFolder() {
+		return _bundleInfos[0].getBundleDir();
+	}
+
+	private String _getServerZipFolder62() {
+		return _bundleInfos[1].getBundleDir();
+	}
+
+	private BundleInfo[] _parseBundleInfos() {
+		IPath bundlesCsvPath = getBundlesPath().append("bundles.csv");
 
 		File bundleCsv = bundlesCsvPath.toFile();
 
@@ -661,38 +543,8 @@ public class EnvAction extends UIAction {
 		return bundleInfos;
 	}
 
-	private IPath _getBundlesPath() {
-		if (_bundlesPath == null) {
-			if ((_bundlesDir == null) || _bundlesDir.equals("") || _bundlesDir.equals("null")) {
-				URL rootUrl = Platform.getBundle("com.liferay.ide.ui.liferay").getEntry("/");
-
-				try {
-					String filePath = FileLocator.toFileURL(rootUrl).getFile();
-
-					if (filePath.contains("target/work/configuration")) {
-						int index = filePath.indexOf("/ui-tests/");
-
-						_bundlesPath = new Path(filePath.substring(0, index) + "/tests-resources");
-					}
-					else {
-						_bundlesPath = new Path(filePath).removeLastSegments(3).append("tests-resources");
-					}
-				}
-				catch (IOException ioe) {
-				}
-			}
-			else {
-				_bundlesPath = new Path(_bundlesDir);
-			}
-		}
-
-		Assert.assertTrue(_bundlesPath.toFile().exists());
-
-		return _bundlesPath;
-	}
-
-	private SdkInfo[] _getSdkInfos() {
-		IPath sdksCsvPath = _getBundlesPath().append("sdks.csv");
+	private SdkInfo[] _parseSdkInfos() {
+		IPath sdksCsvPath = getBundlesPath().append("sdks.csv");
 
 		File sdksCsv = sdksCsvPath.toFile();
 
@@ -723,44 +575,6 @@ public class EnvAction extends UIAction {
 		}
 
 		return sdkInfos;
-	}
-
-	private IPath _getSdkZip() {
-		return _getBundlesPath().append(_sdkInfos[0].getSdkZip());
-	}
-
-	private IPath _getSdkZip62() {
-		return _getBundlesPath().append(_sdkInfos[1].getSdkZip());
-	}
-
-	private IPath _getServerZip() {
-		return _getBundlesPath().append(_bundleInfos[0].getBundleZip());
-	}
-
-	private IPath _getServerZip62() {
-		return _getBundlesPath().append(_bundleInfos[1].getBundleZip());
-	}
-
-	private String _getServerZipFolder() {
-		return _bundleInfos[0].getBundleDir();
-	}
-
-	private String _getServerZipFolder62() {
-		return _bundleInfos[1].getBundleDir();
-	}
-
-	private String _getUsername() {
-		String retval = StringPool.BLANK;
-
-		retval = System.getenv("USERNAME");
-
-		if (CoreUtil.empty(retval)) {
-			retval = System.getenv("USER");
-		}
-
-		Assert.assertTrue((retval != null) && !retval.equals(""));
-
-		return retval;
 	}
 
 	private static EnvAction _envAction;
