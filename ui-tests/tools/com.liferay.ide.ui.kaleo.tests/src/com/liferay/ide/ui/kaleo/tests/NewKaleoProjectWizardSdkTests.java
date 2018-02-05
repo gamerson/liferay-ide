@@ -16,19 +16,23 @@ package com.liferay.ide.ui.kaleo.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
 import com.liferay.ide.ui.liferay.base.SdkSupport;
+import com.liferay.ide.ui.liferay.base.TomcatSupport;
 
 import org.junit.ClassRule;
-import org.junit.Ignore;
+
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 /**
  * @author Haoyi Sun
  */
-@Ignore("unstable need more research")
+
 public class NewKaleoProjectWizardSdkTests extends SwtbotBase {
 
+	public static TomcatSupport tomcat = new TomcatSupport(bot);
+
 	@ClassRule
-	public static SdkSupport sdk = new SdkSupport(bot);
+	public static RuleChain chain = RuleChain.outerRule(tomcat).around(new SdkSupport(bot, tomcat));
 
 	@Test
 	public void createKaleoWorkflowAssignCreatorOnProject() {
