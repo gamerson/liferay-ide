@@ -41,8 +41,10 @@ import com.liferay.ide.ui.swtbot.eclipse.page.NewRuntimeWizard;
 import com.liferay.ide.ui.swtbot.eclipse.page.NewServerWizard;
 import com.liferay.ide.ui.swtbot.page.Button;
 import com.liferay.ide.ui.swtbot.page.CheckBox;
+import com.liferay.ide.ui.swtbot.page.ComboBox;
 import com.liferay.ide.ui.swtbot.page.MenuItem;
 import com.liferay.ide.ui.swtbot.page.Text;
+import com.liferay.ide.ui.swtbot.page.ToolbarButtonWithTooltip;
 import com.liferay.ide.ui.swtbot.page.Wizard;
 import com.liferay.ide.ui.swtbot.util.StringPool;
 
@@ -430,6 +432,22 @@ public class WizardAction extends UIAction {
 			_newFragmentInfoWizard.getFiles().click(file);
 		}
 
+		public Text getHostOsgiBundle() {
+			return _newFragmentInfoWizard.getHostOsgiBundle();
+		}
+
+		public ToolbarButtonWithTooltip getBrowseOsgiBtn() {
+			return _newFragmentInfoWizard.getBrowseOsgiBtn();
+		}
+
+		public ToolbarButtonWithTooltip getAddOverrideFilesBtn() {
+			return _newFragmentInfoWizard.getAddOverrideFilesBtn();
+		}
+
+		public ToolbarButtonWithTooltip getDeleteBtn() {
+			return _newFragmentInfoWizard.getDeleteBtn();
+		}
+
 		private final NewFragmentInfoWizard _newFragmentInfoWizard = new NewFragmentInfoWizard(bot);
 
 	}
@@ -764,6 +782,10 @@ public class WizardAction extends UIAction {
 			return _newProjectWizard.getLocation();
 		}
 
+		public Text getProjectName() {
+			return _newProjectWizard.getProjectName();
+		}
+
 		public CheckBox getUseDefaultLocation() {
 			return _newProjectWizard.getUseDefaultLocation();
 		}
@@ -774,6 +796,10 @@ public class WizardAction extends UIAction {
 
 		public void setProjectName(String projectName) {
 			_newProjectWizard.getProjectName().setText(projectName);
+		}
+
+		public ComboBox getBuildTypes() {
+			return _newProjectWizard.getBuildTypes();
 		}
 
 		private final NewProjectWizard _newProjectWizard = new NewProjectWizard(bot);
