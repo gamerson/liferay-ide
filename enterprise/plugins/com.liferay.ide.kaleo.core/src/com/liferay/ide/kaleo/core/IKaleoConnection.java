@@ -24,6 +24,7 @@ import org.json.JSONObject;
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public interface IKaleoConnection extends IRemoteConnection {
 
@@ -54,7 +55,7 @@ public interface IKaleoConnection extends IRemoteConnection {
 
 	public void setHost(String host);
 
-	public void setHttpPort(String httpPort);
+	public void setHttpPort(int httpPort);
 
 	public void setPassword(String password);
 

@@ -58,6 +58,7 @@ import org.json.JSONObject;
  * @author Gregory Amerson
  * @author Tao Tao
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class RemoteConnection implements IRemoteConnection {
 
@@ -92,15 +93,8 @@ public class RemoteConnection implements IRemoteConnection {
 		releaseHttpClient();
 	}
 
-	public void setHttpPort(String httpPort) {
-		if (httpPort != null) {
-			_httpPort = Integer.parseInt(httpPort);
-		}
-		else {
-			_httpPort = -1;
-		}
-
-		releaseHttpClient();
+	public void setHttpPort(int httpPort) {
+		_httpPort = httpPort;
 	}
 
 	public void setPassword(String password) {

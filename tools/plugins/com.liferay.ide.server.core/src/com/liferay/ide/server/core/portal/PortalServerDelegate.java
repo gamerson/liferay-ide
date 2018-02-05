@@ -78,7 +78,7 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
     }
 
     @Override
-    public String getHttpPort()
+    public int getHttpPort()
     {
         return getAttribute( ATTR_HTTP_PORT, DEFAULT_HTTP_PORT );
     }
@@ -250,7 +250,7 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
         setAttribute( ATTR_USERNAME, username );
     }
 
-    public void setHttpPort( String httpPort )
+    public void setHttpPort( int httpPort )
     {
         setAttribute( ATTR_HTTP_PORT, httpPort );
 

@@ -21,6 +21,7 @@ import com.liferay.ide.core.remote.APIException;
 import com.liferay.ide.core.remote.RemoteConnection;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
+import com.liferay.ide.server.core.portal.PortalServerConstants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.json.JSONObject;
 /**
  * @author Gregory Amerson
  * @author Cindy Li
+ * @author Simon Jiang
  */
 public class ServerManagerConnection extends RemoteConnection implements IServerManagerConnection
 {
@@ -45,10 +47,10 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 
     public ServerManagerConnection()
     {
-        this( null, null, null, null, null );
+        this( null, PortalServerConstants.DEFAULT_HTTP_PORT, null, null, null );
     }
 
-    public ServerManagerConnection( String host, String httpPort, String username, String pw, String managerContextPath )
+    public ServerManagerConnection( String host, int httpPort, String username, String pw, String managerContextPath )
     {
         setHost( host );
         setHttpPort( httpPort );

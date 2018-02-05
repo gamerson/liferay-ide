@@ -15,15 +15,16 @@
 
 package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.server.core.ILiferayServer;
 
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public interface PortalServer extends ILiferayServer
 {
+    public int DEFAULT_HTTP_PORT_VALUE = PortalServerConstants.DEFAULT_HTTP_PORT;
 
     String ID = "com.liferay.ide.server.portal";
 
@@ -41,7 +42,7 @@ public interface PortalServer extends ILiferayServer
 
     String PROPERTY_DEVELOPER_MODE = "developerMode";
 
-    String DEFAULT_HTTP_PORT = defaultPrefs.get( "default.http.port", StringPool.EMPTY );
+    int DEFAULT_HTTP_PORT = defaultPrefs.getInt( "default.http.port", DEFAULT_HTTP_PORT_VALUE );
 
     int getAutoPublishTime();
 
