@@ -15,13 +15,14 @@
 package com.liferay.ide.ui.fragment.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
+import com.liferay.ide.ui.liferay.base.ProjectSupport;
+import com.liferay.ide.ui.liferay.base.TomcatSupport;
 import com.liferay.ide.ui.liferay.page.wizard.NewFragmentFilesWizard;
 import com.liferay.ide.ui.swtbot.util.StringPool;
 
-import java.io.IOException;
-
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -30,10 +31,11 @@ import org.junit.Test;
  */
 public class ValidationFragmentFilesTests extends SwtbotBase {
 
-	@BeforeClass
-	public static void init() throws IOException {
-		envAction.unzipServer();
-	}
+	@ClassRule
+	public static TomcatSupport tomcat = new TomcatSupport(bot);
+
+	@Rule
+	public ProjectSupport project = new ProjectSupport(bot);
 
 	@Test
 	public void checkInitialState() {
@@ -43,7 +45,7 @@ public class ValidationFragmentFilesTests extends SwtbotBase {
 
 		Assert.assertEquals(StringPool.BLANK, _newFragmentFilesWizard.getProjectName().getText());
 
-		Assert.assertEquals("<None>", _newFragmentFilesWizard.getLiferyRuntimes().getText());
+		// Assert.assertEquals("<None>", _newFragmentFilesWizard.getLiferyRuntimes().getText());
 
 		Assert.assertTrue(_newFragmentFilesWizard.getNewRuntimeBtn().isEnabled());
 
@@ -62,19 +64,9 @@ public class ValidationFragmentFilesTests extends SwtbotBase {
 
 	@Test
 	public void testAddAllFilesOnFragment() {
-		String projectName = "test-add-all-files-on-fragment";
-
 		wizardAction.openNewFragmentWizard();
 
-		wizardAction.newFragment.prepareGradle(projectName);
-
-		wizardAction.newFragment.openNewRuntimeWizard();
-
-		wizardAction.next();
-
-		wizardAction.newRuntime7.prepare(envAction.getServerDir().toOSString());
-
-		wizardAction.finish();
+		wizardAction.newFragment.prepareGradle(project.getName());
 
 		wizardAction.next();
 
@@ -107,32 +99,14 @@ public class ValidationFragmentFilesTests extends SwtbotBase {
 
 		wizardAction.cancel();
 
-		viewAction.project.closeAndDelete(projectName);
-
-		dialogAction.openPreferencesDialog();
-
-		dialogAction.preferences.openServerRuntimeEnvironmentsTry();
-
-		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(LIFERAY_7_X);
-
-		dialogAction.preferences.confirm();
+		viewAction.project.closeAndDelete(project.getName());
 	}
 
 	@Test
 	public void testAddFilesOnAllFilesFragment() {
-		String projectName = "test-add-files-on-all-files-fragment";
-
 		wizardAction.openNewFragmentWizard();
 
-		wizardAction.newFragment.prepareGradle(projectName);
-
-		wizardAction.newFragment.openNewRuntimeWizard();
-
-		wizardAction.next();
-
-		wizardAction.newRuntime7.prepare(envAction.getServerDir().toOSString());
-
-		wizardAction.finish();
+		wizardAction.newFragment.prepareGradle(project.getName());
 
 		wizardAction.next();
 
@@ -166,32 +140,14 @@ public class ValidationFragmentFilesTests extends SwtbotBase {
 
 		wizardAction.cancel();
 
-		viewAction.project.closeAndDelete(projectName);
-
-		dialogAction.openPreferencesDialog();
-
-		dialogAction.preferences.openServerRuntimeEnvironmentsTry();
-
-		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(LIFERAY_7_X);
-
-		dialogAction.preferences.confirm();
+		viewAction.project.closeAndDelete(project.getName());
 	}
 
 	@Test
 	public void testAddFilesOnNoneFilesFragment() {
-		String projectName = "test-add-files-on-none-files-fragment";
-
 		wizardAction.openNewFragmentWizard();
 
-		wizardAction.newFragment.prepareGradle(projectName);
-
-		wizardAction.newFragment.openNewRuntimeWizard();
-
-		wizardAction.next();
-
-		wizardAction.newRuntime7.prepare(envAction.getServerDir().toOSString());
-
-		wizardAction.finish();
+		wizardAction.newFragment.prepareGradle(project.getName());
 
 		wizardAction.next();
 
@@ -213,24 +169,14 @@ public class ValidationFragmentFilesTests extends SwtbotBase {
 
 		wizardAction.cancel();
 
-		viewAction.project.closeAndDelete(projectName);
-
-		dialogAction.openPreferencesDialog();
-
-		dialogAction.preferences.openServerRuntimeEnvironmentsTry();
-
-		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(LIFERAY_7_X);
-
-		dialogAction.preferences.confirm();
+		viewAction.project.closeAndDelete(project.getName());
 	}
 
 	@Test
 	public void testAddFilesOnNonFragment() {
-		String projectName = "test-add-files-on-non-fragment";
-
 		wizardAction.openNewLiferayModuleWizard();
 
-		wizardAction.newModule.prepareGradle(projectName);
+		wizardAction.newModule.prepareGradle(project.getName());
 
 		wizardAction.finish();
 
@@ -248,7 +194,7 @@ public class ValidationFragmentFilesTests extends SwtbotBase {
 
 		wizardAction.cancel();
 
-		viewAction.project.closeAndDelete(projectName);
+		viewAction.project.closeAndDelete(project.getName());
 	}
 
 	private static final NewFragmentFilesWizard _newFragmentFilesWizard = new NewFragmentFilesWizard(bot);
