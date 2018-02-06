@@ -14,6 +14,7 @@
 
 package com.liferay.ide.ui;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.ui.util.ProjectExplorerLayoutUtil;
 
 import org.eclipse.jdt.ui.JavaUI;
@@ -73,9 +74,11 @@ public class LiferayWorkspacePerspectiveFactory extends AbstractPerspectiveFacto
 
 		addViewIfExist(layout, topRightBottom, ID_GRADLE_EXECUTIONS_VIEW);
 
-		IFolderLayout bottomTopLeft = layout.createFolder("bottomTopLeft", IPageLayout.BOTTOM, 0.7F, "topLeft");
+		if (!CoreUtil.isLinux()) {
+			IFolderLayout bottomTopLeft = layout.createFolder("bottomTopLeft", IPageLayout.BOTTOM, 0.7F, "topLeft");
 
-		bottomTopLeft.addView(ID_SERVERS_VIEW);
+			bottomTopLeft.addView(ID_SERVERS_VIEW);
+		}
 
 		// Bottom
 
