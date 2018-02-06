@@ -14,35 +14,27 @@
 
 package com.liferay.ide.ui;
 
-import com.liferay.ide.ui.util.ProjectExplorerLayoutUtil;
-
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.internal.e4.compatibility.ModeledPageLayout;
 import org.eclipse.ui.progress.IProgressConstants;
 
 /**
  * @author Lovett Li
- * @author Terry Jia
  */
-public class LiferayWorkspacePerspectiveFactory extends AbstractPerspectiveFactory {
+public class LiferayUpgradePerspectiveFactory extends AbstractPerspectiveFactory {
 
-	public static final String ID = "com.liferay.ide.eclipse.ui.perspective.liferayworkspace";
+	public static final String ID = "com.liferay.ide.eclipse.ui.perspective.liferayupgrade";
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
-		createLayout(layout);
+		_createLayout(layout);
 		addShortcuts(layout);
-		setupActions(layout);
 	}
 
-	protected void createLayout(IPageLayout layout) {
-
-		// Editors are placed for free.
-
+	private void _createLayout(IPageLayout layout) {
 		String editorArea = layout.getEditorArea();
-
-		// Top left.
 
 		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.20F, editorArea);
 
@@ -52,34 +44,15 @@ public class LiferayWorkspacePerspectiveFactory extends AbstractPerspectiveFacto
 		topLeft.addPlaceholder(JavaUI.ID_TYPE_HIERARCHY);
 		topLeft.addPlaceholder(JavaUI.ID_PACKAGES_VIEW);
 
-		// Top right.
+		((ModeledPageLayout)layout).stackView(ID_LIFERAY_UPGRADE_VIEW, layout.getEditorArea(), true);
 
-		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.68F, editorArea);
-
-		addViewIfExist(layout, topRight, ID_GRADLE_TASK_VIEW);
-
-		topRight.addPlaceholder(IPageLayout.ID_BOOKMARKS);
-
-		IFolderLayout topRightBottom = layout.createFolder("topRightBottom", IPageLayout.BOTTOM, 0.7F, "topRight");
-
-		addViewIfExist(layout, topRightBottom, ID_GRADLE_EXECUTIONS_VIEW);
-
-		IFolderLayout bottomTopLeft = layout.createFolder("bottomTopLeft", IPageLayout.BOTTOM, 0.7F, "topLeft");
-
-		bottomTopLeft.addView(ID_SERVERS_VIEW);
-
-		// Bottom
-
-		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.7F, editorArea);
+		IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.8F, editorArea);
 
 		bottom.addView(ID_MARKERS_VIEW);
 		bottom.addView(ID_CONSOLE_VIEW);
-
-		bottom.addPlaceholder(IPageLayout.ID_PROBLEM_VIEW);
-		bottom.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
-		bottom.addPlaceholder(ID_SEARCH_VIEW);
-
-		ProjectExplorerLayoutUtil.setNested(true);
+		bottom.addView(IPageLayout.ID_PROBLEM_VIEW);
+		bottom.addView(IProgressConstants.PROGRESS_VIEW_ID);
+		bottom.addView(ID_SEARCH_VIEW);
 	}
 
 }
