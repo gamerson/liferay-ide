@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -10,13 +10,12 @@
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
- *******************************************************************************/
+ */
 
 package com.liferay.ide.project.ui.upgrade;
 
 import com.liferay.ide.project.ui.upgrade.animated.UpgradeView;
-import com.liferay.ide.ui.LiferayWorkspacePerspectiveFactory;
+import com.liferay.ide.ui.LiferayUpgradePerspectiveFactory;
 import com.liferay.ide.ui.util.UIUtil;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -32,30 +31,29 @@ import org.eclipse.ui.PlatformUI;
  * @author Terry Jia
  * @author Lovett Li
  */
-public class CodeUpgradeHandler extends AbstractHandler
-{
+public class CodeUpgradeHandler extends AbstractHandler {
 
-    @Override
-    public Object execute( ExecutionEvent event ) throws ExecutionException
-    {
-        IWorkbench workbench = PlatformUI.getWorkbench();
-        IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		IWorkbench workbench = PlatformUI.getWorkbench();
 
-        if( window != null )
-        {
-            UIUtil.switchToLiferayPerspective( LiferayWorkspacePerspectiveFactory.ID, false );
-            IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 
-            try
-            {
-                activePage.showView( UpgradeView.ID );
-            }
-            catch( PartInitException e )
-            {
-            }
-        }
+		if (window != null) {
+			UIUtil.switchToLiferayPerspective(LiferayUpgradePerspectiveFactory.ID, false);
 
-        return null;
-    }
+			IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+
+			IWorkbenchPage activePage = workbenchWindow.getActivePage();
+
+			try {
+				activePage.showView(UpgradeView.ID);
+			}
+			catch (PartInitException pie) {
+			}
+		}
+
+		return null;
+	}
 
 }
