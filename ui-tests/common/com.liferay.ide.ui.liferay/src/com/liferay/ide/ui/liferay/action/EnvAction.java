@@ -52,6 +52,7 @@ import org.junit.Assert;
  */
 public class EnvAction extends UIAction {
 
+
 	public static EnvAction getInstance(SWTWorkbenchBot bot) {
 		if (_envAction == null) {
 			_envAction = new EnvAction(bot);
