@@ -47,7 +47,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -56,7 +56,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -77,7 +77,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -86,7 +86,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -109,7 +109,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -118,7 +118,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -139,7 +139,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -148,7 +148,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -169,7 +169,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -178,7 +178,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -199,7 +199,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -208,7 +208,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -229,7 +229,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -238,7 +238,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -259,7 +259,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -268,7 +268,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -289,7 +289,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -298,7 +298,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -319,7 +319,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -328,7 +328,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -349,7 +349,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -358,7 +358,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getModulesDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getModulesDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
@@ -380,7 +380,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -407,7 +407,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getLiferayWorkspaceName());
+		viewAction.project.openUpdateMavenProjectDialog(liferayWorkspace.getName());
 
 		dialogAction.updateMavenProject.selectAll();
 
@@ -416,7 +416,7 @@ public class NewPortletModuleLiferayWorkspaceMavenTests extends SwtbotBase {
 		jobAction.waitForUpdateMavenProject();
 
 		String[] projectNames =
-			{liferayWorkspace.getLiferayWorkspaceName(), liferayWorkspace.getWarsDirName(), project.getName()};
+			{liferayWorkspace.getName(), liferayWorkspace.getWarsDirName(), project.getName()};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
 
