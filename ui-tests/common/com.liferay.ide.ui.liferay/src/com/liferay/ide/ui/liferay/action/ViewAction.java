@@ -180,6 +180,14 @@ public class ViewAction extends UIAction {
 			_getProjects().contextMenu(LIFERAY_MODULE_FRAGMENT_FILES);
 		}
 
+		public void refreshGradleProject(String projectName) {
+			_getProjects().contextMenu("Refresh Gradle Project", projectName);
+
+			// should use job way instead
+
+			ide.sleep(2000);
+		}
+
 		public void openUpdateMavenProjectDialog(String projectName) {
 			_getProjects().contextMenu("Update Project...", projectName);
 		}
