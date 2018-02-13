@@ -16,15 +16,15 @@ package com.liferay.ide.maven.ui;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import org.osgi.framework.BundleContext;
 
 /**
  * @author Gregory Amerson
  */
-public class LiferayMavenUI extends Plugin {
+public class LiferayMavenUI extends AbstractUIPlugin {
 
 	// The plug-in ID
 
