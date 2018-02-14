@@ -16,6 +16,7 @@ package com.liferay.ide.maven.core;
 
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.LaunchHelper;
 import com.liferay.ide.core.util.MultiStatusBuilder;
 import com.liferay.ide.project.core.AbstractProjectBuilder;
@@ -263,15 +264,15 @@ public class MavenProjectBuilder extends AbstractProjectBuilder implements IWork
 
 	public IStatus initBundle(IProject project, String bundleUrl, IProgressMonitor monitor) throws CoreException {
 		if (bundleUrl != null) {
-			IFile pomFile = project.getFile("pom.xml");
+			File pomFile = FileUtil.getFile(project.getFile("pom.xml"));
 
 			MavenXpp3Reader mavenReader = new MavenXpp3Reader();
 			MavenXpp3Writer mavenWriter = new MavenXpp3Writer();
 
-			try (FileReader reader = new FileReader(pomFile.getLocation().toFile())) {
-
+			try (FileReader reader = new FileReader(pomFile)) {
 				Model model = mavenReader.read(reader);
-				try (FileWriter fileWriter = new FileWriter(pomFile.getLocation().toFile())) {
+
+				try (FileWriter fileWriter = new FileWriter(pomFile)) {
 					if (model != null) {
 						List<Plugin> plugins = model.getBuild().getPlugins();
 
@@ -285,14 +286,17 @@ public class MavenProjectBuilder extends AbstractProjectBuilder implements IWork
 								configuration.addChild(url);
 
 								plugin.setConfiguration(configuration);
+
+								break;
 							}
 						}
+
 						mavenWriter.write(fileWriter, model);
 					}
 				}
 			}
 			catch (Exception e) {
-				LiferayMavenCore.logError("Could not write file in" + pomFile.getLocation().toOSString(), e);
+				LiferayMavenCore.logError("Could not write file in" + pomFile, e);
 			}
 		}
 
