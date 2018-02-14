@@ -44,13 +44,7 @@ public class ServerTomcat62Tests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		dialogAction.preferences.confirm();
-
-		dialogAction.openPreferencesDialog();
-
-		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(tomcat62.getServerName());
-
-		dialogAction.preferences.confirm();
+		dialogAction.deleteRuntimFromPreferences(tomcat62.getServerName());
 	}
 
 	@Test
@@ -77,11 +71,7 @@ public class ServerTomcat62Tests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		dialogAction.openPreferencesDialog();
-
-		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(tomcat62.getServerName());
-
-		dialogAction.preferences.confirm();
+		dialogAction.deleteRuntimFromPreferences(tomcat62.getServerName());
 	}
 
 	@Test

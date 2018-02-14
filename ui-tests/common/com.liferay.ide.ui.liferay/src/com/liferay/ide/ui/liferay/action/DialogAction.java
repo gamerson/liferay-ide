@@ -90,6 +90,16 @@ public class DialogAction extends UIAction {
 		}
 	}
 
+	public void deleteRuntimFromPreferences(String runtimeName) {
+		openPreferencesDialog();
+
+		preferences.openServerRuntimeEnvironmentsTry();
+
+		serverRuntimeEnvironments.deleteRuntimeTryConfirm(runtimeName);
+
+		preferences.confirm();
+	}
+
 	public void prepareText(String text) {
 		_textDialog.getText().setText(text);
 
