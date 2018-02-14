@@ -86,7 +86,7 @@ public class LiferayMavenWorkspaceProjectProvider
 				MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder(workspaceProject);
 
 				mavenProjectBuilder.initBundle(workspaceProject, bundleUrl, monitor);
-				
+
 				workspaceProject.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 			}
 		}

@@ -125,12 +125,14 @@ public abstract class MavenGoalAction extends AbstractObjectAction {
 
 				};
 
-				job.addJobChangeListener(new JobChangeAdapter() {
+				job.addJobChangeListener(
+					new JobChangeAdapter() {
 
-					public void done(IJobChangeEvent event) {
-						afterGoal();
+						public void done(IJobChangeEvent event) {
+							afterGoal();
+						}
 					}
-				});
+				);
 
 				job.schedule();
 			}
