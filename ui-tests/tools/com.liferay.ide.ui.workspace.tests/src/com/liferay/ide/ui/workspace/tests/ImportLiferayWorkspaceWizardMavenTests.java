@@ -15,16 +15,16 @@
 package com.liferay.ide.ui.workspace.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
+import com.liferay.ide.ui.liferay.base.ImportLiferayWorkspaceProjectSupport;
 import com.liferay.ide.ui.swtbot.util.StringPool;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.swtbot.swt.finder.SWTBotAssert;
 
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -37,21 +37,17 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 	public void importLiferayWorkspaceWithBundle() throws IOException {
 		String liferayWorkspaceName = "test-liferay-workspace-maven";
 
-		IPath testProject = envAction.getProjectsFolder().append(liferayWorkspaceName);
+		String projectName = project.getName();
 
-		File workspaceProject = envAction.prepareBundlesProject(testProject.toFile());
-
-		String workspaceProjectName = workspaceProject.getName();
-
-		envAction.unzipServerToProject(workspaceProjectName);
+		project.prepareServer();
 
 		wizardAction.importProject.openImportLiferayWorkspaceWizard();
 
-		wizardAction.importLiferayWorkspace.prepareLocation(workspaceProject.getPath());
+		wizardAction.importLiferayWorkspace.prepareLocation(project.getPath());
 
 		wizardAction.finish();
 
-		String eclipseWorkspaceName = liferayWorkspaceName + " (in " + workspaceProjectName + ")";
+		String eclipseWorkspaceName = liferayWorkspaceName + " (in " + projectName + ")";
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(eclipseWorkspaceName, "bundles"));
 
@@ -69,7 +65,11 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		dialogAction.preferences.openServerRuntimeEnvironmentsTry();
 
-		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm("Liferay Community Edition Portal 7.0.4 GA5");
+		// TODO need to check with Charles
+
+		// dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm("Liferay Community Edition Portal 7.0.4 GA5");
+
+		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(projectName + " server");
 
 		dialogAction.preferences.confirm();
 	}
@@ -84,15 +84,11 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		String liferayWorkspaceName = "test-liferay-workspace-maven";
 
-		IPath testProject = envAction.getProjectsFolder().append(liferayWorkspaceName);
-
-		File workspaceProject = envAction.prepareBundlesProject(testProject.toFile());
-
-		String workspaceProjectName = workspaceProject.getName();
+		String projectName = project.getName();
 
 		wizardAction.importProject.openImportLiferayWorkspaceWizard();
 
-		wizardAction.importLiferayWorkspace.prepare(workspaceProject.getPath(), true, StringPool.EMPTY);
+		wizardAction.importLiferayWorkspace.prepare(project.getPath(), true, StringPool.EMPTY);
 
 		String bundleUrl =
 			"http://ide-resources-site/portal/7.0.4-ga5/liferay-ce-portal-tomcat-7.0-ga5-20171018150113838.zip";
@@ -101,7 +97,7 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		String eclipseWorkspaceName = liferayWorkspaceName + " (in " + workspaceProjectName + ")";
+		String eclipseWorkspaceName = liferayWorkspaceName + " (in " + projectName + ")";
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(eclipseWorkspaceName, "bundles"));
 
@@ -119,26 +115,24 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		dialogAction.preferences.openServerRuntimeEnvironmentsTry();
 
-		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(workspaceProjectName + " server");
+		dialogAction.serverRuntimeEnvironments.deleteRuntimeTryConfirm(projectName + " server");
 
 		dialogAction.preferences.confirm();
 	}
 
 	@Test
 	public void importLiferayWorkspaceWithoutBundle() throws IOException {
-		String liferayWorkspaceName = "test-liferay-workspace-maven";
-
-		IPath testProject = envAction.getProjectsFolder().append(liferayWorkspaceName);
-
-		File workspaceProject = envAction.prepareTempProject(testProject.toFile());
-
 		wizardAction.importProject.openImportLiferayWorkspaceWizard();
 
-		wizardAction.importLiferayWorkspace.prepareLocation(workspaceProject.getPath());
+		wizardAction.importLiferayWorkspace.prepareLocation(project.getPath());
 
 		wizardAction.finish();
 
-		viewAction.project.openFile(liferayWorkspaceName, "pom.xml");
+		String liferayWorkspaceName = "test-liferay-workspace-maven";
+
+		String eclipseWorkspaceName = liferayWorkspaceName + " (in " + project.getName() + ")";
+
+		viewAction.project.openFile(eclipseWorkspaceName, "pom.xml");
 
 		editorAction.pomXml.switchTabPomXml();
 
@@ -150,15 +144,15 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		editorAction.close();
 
-		String[] moduleNames = {liferayWorkspaceName, liferayWorkspaceName + "-modules (in modules)"};
+		String[] moduleNames = {eclipseWorkspaceName, liferayWorkspaceName + "-modules (in modules)"};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(moduleNames));
 
-		String[] themeNames = {liferayWorkspaceName, liferayWorkspaceName + "-themes (in themes)"};
+		String[] themeNames = {eclipseWorkspaceName, liferayWorkspaceName + "-themes (in themes)"};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(themeNames));
 
-		String[] warNames = {liferayWorkspaceName, liferayWorkspaceName + "-wars (in wars)"};
+		String[] warNames = {eclipseWorkspaceName, liferayWorkspaceName + "-wars (in wars)"};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(warNames));
 
@@ -166,7 +160,11 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 		viewAction.project.closeAndDelete(themeNames);
 		viewAction.project.closeAndDelete(warNames);
 
-		viewAction.project.closeAndDelete(liferayWorkspaceName);
+		viewAction.project.closeAndDelete(eclipseWorkspaceName);
 	}
+
+	@Rule
+	public ImportLiferayWorkspaceProjectSupport project = new ImportLiferayWorkspaceProjectSupport(
+		bot, "test-liferay-workspace-maven");
 
 }

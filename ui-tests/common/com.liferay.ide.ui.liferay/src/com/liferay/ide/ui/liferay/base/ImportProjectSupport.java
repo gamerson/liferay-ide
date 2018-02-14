@@ -14,42 +14,42 @@
 
 package com.liferay.ide.ui.liferay.base;
 
-import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import com.liferay.ide.ui.liferay.util.FileUtil;
 
-import org.junit.Assert;
+import java.io.File;
+import java.io.IOException;
+
+import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
  * @author Terry Jia
  */
-public class LiferayWorkspaceGradleSupport extends LiferayWorkspaceSupport {
+public class ImportProjectSupport extends ProjectSupport {
 
-	public LiferayWorkspaceGradleSupport(SWTWorkbenchBot bot) {
-		super(bot);
+	public ImportProjectSupport(SWTWorkbenchBot bot, String name) {
+		super(bot, name);
 	}
 
-	@Override
 	public void before() {
 		super.before();
 
-		wizardAction.openNewLiferayWorkspaceWizard();
+		try {
+			File source = new File(envAction.getProjectsDir(), name);
 
-		wizardAction.newLiferayWorkspace.prepareGradle(getName());
+			File dist = new File(envAction.getTempDir(), source.getName() + timestamp);
 
-		wizardAction.finish();
+			FileUtil.copyDirectiory(source.getPath(), dist.getPath());
 
-		Assert.assertTrue(viewAction.project.visibleFileTry(getName()));
+			_project = dist;
+		}
+		catch (IOException ioe) {
+		}
 	}
 
-	public String getModulesDirName() {
-		return "modules";
+	public String getPath() {
+		return _project.getPath();
 	}
 
-	public String getThemesDirName() {
-		return "themes";
-	}
-
-	public String getWarsDirName() {
-		return "wars";
-	}
+	private File _project;
 
 }

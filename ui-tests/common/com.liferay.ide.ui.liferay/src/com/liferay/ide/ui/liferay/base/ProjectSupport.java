@@ -26,16 +26,18 @@ public class ProjectSupport extends SupportBase {
 		super(bot);
 	}
 
+	public ProjectSupport(SWTWorkbenchBot bot, String name) {
+		super(bot);
+
+		this.name = name;
+	}
+
 	public String getName() {
-		return "test" + timestamp;
+		return name + timestamp;
 	}
 
 	public String getName(String suffix) {
-		return "test" + timestamp + suffix;
-	}
-
-	public String getNamePortlet() {
-		return "test" + timestamp + "-portlet";
+		return name + timestamp + suffix;
 	}
 
 	public String getStartedLabel() {
@@ -46,12 +48,6 @@ public class ProjectSupport extends SupportBase {
 		return getName() + "  [Started, Synchronized] (" + getName(suffix) + ")";
 	}
 
-	public String getStartedLabelPortlet() {
-		return getNamePortlet() + "  [Started, Synchronized] (" + getName() + ")";
-	}
-
-	public String getStartedLabelPortlet(String suffix) {
-		return getNamePortlet() + "  [Started, Synchronized] (" + getName(suffix) + ")";
-	}
+	protected String name = "test";
 
 }
