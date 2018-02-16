@@ -74,8 +74,11 @@ public class NewLiferayWorkspaceOpMethods {
 					bundlesLocation = new Path(location).append("bundles");
 				}
 
-				if (bundlesLocation.toFile().exists()) {
+				if (ServerUtil.isValidLiferayRuntime(bundlesLocation)) {
 					ServerUtil.addPortalRuntimeAndServer(serverRuntimeName, bundlesLocation, monitor);
+				} else {
+					String msg = "Liferay Portal bundle is invalid in " + bundlesLocation.toOSString();
+					ProjectCore.logWarning(msg);
 				}
 			}
 		}
