@@ -15,10 +15,12 @@
 package com.liferay.ide.gradle.action;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.gradle.core.GradleUtil;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -35,19 +37,23 @@ public class BuildServiceTaskAction extends GradleTaskAction {
 	protected void afterTask() {
 		boolean refresh = false;
 
-		IProject[] projects = CoreUtil.getClasspathProjects(project);
+		IFile classpathFile = project.getFile(".classpath");
 
-		for (IProject project : projects) {
-			List<IFolder> folders = CoreUtil.getSourceFolders(JavaCore.create(project));
+		if (FileUtil.exists(classpathFile)) {
+			IProject[] projects = CoreUtil.getClasspathProjects(project);
 
-			if (folders.isEmpty()) {
-				refresh = true;
-			}
-			else {
-				try {
-					project.refreshLocal(IResource.DEPTH_INFINITE, null);
+			for (IProject project : projects) {
+				List<IFolder> folders = CoreUtil.getSourceFolders(JavaCore.create(project));
+
+				if (folders.isEmpty()) {
+					refresh = true;
 				}
-				catch (CoreException ce) {
+				else {
+					try {
+						project.refreshLocal(IResource.DEPTH_INFINITE, null);
+					}
+					catch (CoreException ce) {
+					}
 				}
 			}
 		}
