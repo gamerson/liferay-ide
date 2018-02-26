@@ -13,6 +13,7 @@
     <url>http://www.liferay.com/community/liferay-projects/liferay-ide/overview</url>
     <description>The Liferay IDE is the official set of Eclipse plugins for supporting Liferay Portal development.</description>
 
+
     <developers>
         <developer>
             <name>Gregory Amerson</name>
