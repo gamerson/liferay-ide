@@ -15,8 +15,8 @@
 package com.liferay.ide.project.core.workspace;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.ValidationUtil;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
-import com.liferay.ide.project.core.util.ValidationUtil;
 
 import java.io.File;
 

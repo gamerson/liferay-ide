@@ -115,7 +115,6 @@ public class OpenJavaProjectSelectionDialogAction extends Action {
 		@Override
 		protected  void selectAllAction() {
 			fTableViewer.setAllChecked(true);
-			_combineExistedProblemCheckbox.setSelection(true);
 			getOkButton().setEnabled(true);
 		}
 
@@ -149,9 +148,8 @@ public class OpenJavaProjectSelectionDialogAction extends Action {
 			buttonComposite.setLayout(layout);
 
 			buttonComposite.setLayoutData(new GridData(SWT.BEGINNING, SWT.TOP, true, false));
-			//Button selectButton = createButton(buttonComposite, IDialogConstants.SELECT_ALL_ID, "Combine", false);
 			_combineExistedProblemCheckbox = SWTUtil.createCheckButton(
-				buttonComposite, "Combine existed problems list.", null, true, 1);
+				buttonComposite, "Combine existed problems list.", null, false, 1);
 
 			SelectionListener listener = new SelectionAdapter() {
 

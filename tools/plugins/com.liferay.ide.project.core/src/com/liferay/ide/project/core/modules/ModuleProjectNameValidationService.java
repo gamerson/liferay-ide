@@ -16,10 +16,10 @@ package com.liferay.ide.project.core.modules;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ValidationUtil;
 import com.liferay.ide.project.core.NewLiferayProjectProvider;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.model.ProjectName;
-import com.liferay.ide.project.core.util.ValidationUtil;
 
 import java.io.File;
 

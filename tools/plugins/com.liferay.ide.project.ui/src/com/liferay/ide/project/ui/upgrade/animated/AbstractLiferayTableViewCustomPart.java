@@ -16,10 +16,10 @@ package com.liferay.ide.project.ui.upgrade.animated;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.core.util.ValidationUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.project.core.util.ValidationUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.dialog.JavaProjectSelectionDialog;
 import com.liferay.ide.ui.util.UIUtil;

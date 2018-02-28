@@ -21,6 +21,7 @@ import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.ProgressMonitor;
 import com.liferay.blade.api.Reporter;
 import com.liferay.blade.util.FileHelper;
+import com.liferay.ide.core.util.ValidationUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +51,7 @@ import org.osgi.util.tracker.ServiceTracker;
 /**
  * @author Gregory Amerson
  * @author Terry Jia
+ * @author Simon Jiang
  */
 @Component
 public class ProjectMigrationService implements Migration {
@@ -232,6 +234,15 @@ public class ProjectMigrationService implements Migration {
 					return FileVisitResult.SKIP_SUBTREE;
 				}
 
+				if (dir.endsWith(".settings")) {
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+
+				if (ValidationUtil.isProjectTargetDirFile(dir.toFile())) {
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+
+
 				return super.preVisitDirectory(dir, attrs);
 			}
 
@@ -279,6 +290,14 @@ public class ProjectMigrationService implements Migration {
 			@Override
 			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 				if (dir.endsWith(".git")) {
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+
+				if (dir.endsWith(".settings")) {
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+
+				if (ValidationUtil.isProjectTargetDirFile(dir.toFile())) {
 					return FileVisitResult.SKIP_SUBTREE;
 				}
 

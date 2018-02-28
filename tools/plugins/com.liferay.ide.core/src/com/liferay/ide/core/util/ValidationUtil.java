@@ -12,9 +12,7 @@
  * details.
  */
 
-package com.liferay.ide.project.core.util;
-
-import com.liferay.ide.core.util.CoreUtil;
+package com.liferay.ide.core.util;
 
 import java.io.File;
 import java.io.IOException;
