@@ -69,6 +69,16 @@ public class DialogAction extends UIAction {
 		_jobAction.waitForShellClosed(title);
 	}
 
+	public void deleteRuntimFromPreferences(String runtimeName) {
+		openPreferencesDialog();
+
+		preferences.openServerRuntimeEnvironmentsTry();
+
+		serverRuntimeEnvironments.deleteRuntimeTryConfirm(runtimeName);
+
+		preferences.confirm();
+	}
+
 	public Button getConfirmBtn() {
 		return _getDialog().confirmBtn();
 	}
@@ -88,16 +98,6 @@ public class DialogAction extends UIAction {
 		else {
 			ide.getPreferencesMenu().click();
 		}
-	}
-
-	public void deleteRuntimFromPreferences(String runtimeName) {
-		openPreferencesDialog();
-
-		preferences.openServerRuntimeEnvironmentsTry();
-
-		serverRuntimeEnvironments.deleteRuntimeTryConfirm(runtimeName);
-
-		preferences.confirm();
 	}
 
 	public void prepareText(String text) {

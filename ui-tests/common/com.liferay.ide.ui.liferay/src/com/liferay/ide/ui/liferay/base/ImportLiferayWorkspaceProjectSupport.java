@@ -36,17 +36,31 @@ public class ImportLiferayWorkspaceProjectSupport extends ImportProjectSupport {
 	}
 
 	/**
-	 * this method will prepare both sdk and server in Liferay Workspace 
+	 * this method will prepare both sdk and server in Liferay Workspace
 	 */
 	public void prepareSdk() {
 		_prepareSdk(true);
 	}
 
 	/**
-	 * this method will prepare sdk only in Liferay Workspace 
+	 * this method will prepare sdk only in Liferay Workspace
 	 */
 	public void prepareSdkOnly() {
 		_prepareSdk(false);
+	}
+
+	public void prepareServer() {
+		File serverZip = envAction.getBundleFile(_server.getBundleZip());
+
+		File serverDir = new File(getPath(), "bundles");
+
+		serverDir.mkdirs();
+
+		try {
+			ZipUtil.unzip(serverZip, _server.getBundleDir(), serverDir, new NullProgressMonitor());
+		}
+		catch (IOException ioe) {
+		}
 	}
 
 	private void _prepareSdk(boolean needServer) {
@@ -74,20 +88,6 @@ public class ImportLiferayWorkspaceProjectSupport extends ImportProjectSupport {
 			File dest = new File(sdkDir, "ivy-settings.xml");
 
 			FileUtil.copyFile(source.toFile(), dest);
-		}
-	}
-
-	public void prepareServer() {
-		File serverZip = envAction.getBundleFile(_server.getBundleZip());
-
-		File serverDir = new File(getPath(), "bundles");
-
-		serverDir.mkdirs();
-
-		try {
-			ZipUtil.unzip(serverZip, _server.getBundleDir(), serverDir, new NullProgressMonitor());
-		}
-		catch (IOException ioe) {
 		}
 	}
 
