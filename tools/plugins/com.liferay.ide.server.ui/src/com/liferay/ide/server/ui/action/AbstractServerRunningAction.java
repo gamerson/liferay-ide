@@ -15,19 +15,35 @@
 
 package com.liferay.ide.server.ui.action;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.IServerModule;
+import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
+import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
+import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
+import org.eclipse.wst.server.ui.wizard.WizardFragment;
 
 /**
  * @author Greg Amerson
+ * @author Simon Jiang
  */
+@SuppressWarnings("restriction")
 public abstract class AbstractServerRunningAction implements IObjectActionDelegate
 {
 
@@ -59,6 +75,32 @@ public abstract class AbstractServerRunningAction implements IObjectActionDelega
 
     protected abstract int getRequiredServerState();
 
+	public void run(IAction action) {
+
+		if (selectedServer != null) {
+			IRuntime runtime = selectedServer.getRuntime();
+
+			IStatus validate = runtime.validate(new NullProgressMonitor());
+
+			if (!validate.isOK()) {
+				MessageDialog dialog = new MessageDialog(
+					getActiveShell(), "Server runtime configuration invalid", null,validate.getMessage(),
+					MessageDialog.ERROR, new String[] {"Edit runtime configuration", "Cancel"}, 0);
+
+				if (dialog.open() == 0) {
+					IRuntimeWorkingCopy runtimeWorkingCopy = runtime.createWorkingCopy();
+
+					showWizard(runtimeWorkingCopy);
+				}
+			}
+			else {
+				runAction(action);
+			}
+		}
+	}
+
+	protected abstract void runAction(IAction action);
+
     public void selectionChanged( IAction action, ISelection selection )
     {
         selectedServer = null;
@@ -89,5 +131,36 @@ public abstract class AbstractServerRunningAction implements IObjectActionDelega
     {
         this.activePart = targetPart;
     }
+
+	private int showWizard(IRuntimeWorkingCopy runtimeWorkingCopy) {
+		String title = _wizardTitle;
+		WizardFragment childFragment = ServerUIPlugin.getWizardFragment(runtimeWorkingCopy.getRuntimeType().getId());
+
+		if (childFragment == null) {
+			return Window.CANCEL;
+		}
+
+		TaskModel taskModel = new TaskModel();
+
+		taskModel.putObject(TaskModel.TASK_RUNTIME, runtimeWorkingCopy);
+
+		WizardFragment fragment = new WizardFragment() {
+
+			protected void createChildFragments(List<WizardFragment> list) {
+				list.add( childFragment );
+				list.add(WizardTaskUtil.SaveRuntimeFragment);
+			}
+
+		};
+
+		TaskWizard wizard = new TaskWizard(title, fragment, taskModel);
+
+		wizard.setForcePreviousAndNextButtons(true);
+		WizardDialog dialog = new WizardDialog(getActiveShell(), wizard);
+
+		return dialog.open();
+	}
+
+	private static String _wizardTitle = "Edit Server Runtime Environment";
 
 }
