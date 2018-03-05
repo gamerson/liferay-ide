@@ -64,7 +64,7 @@ public class OpenDeployedFolderAction extends AbstractServerRunningAction
             IServer.STATE_UNKNOWN;
     }
 
-    public void run( IAction action )
+    public void runAction( IAction action )
     {
         if( selectedModule == null )
         {
