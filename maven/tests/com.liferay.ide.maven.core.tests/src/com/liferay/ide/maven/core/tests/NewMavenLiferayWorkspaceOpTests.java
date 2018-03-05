@@ -36,6 +36,41 @@ public class NewMavenLiferayWorkspaceOpTests
 {
 
     @Test
+    public void testNewMavenLiferayWorkspaceSetUrl() throws Exception
+    {
+        NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
+
+        String projectName = "test-liferay-workspace";
+        String bundleUrl =
+            "https://cdn.lfrs.sl/releases.liferay.com/portal/7.0.4-ga5/liferay-ce-portal-tomcat-7.0-ga5-20171018150113838.zip";
+
+        IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
+
+        op.setWorkspaceName( projectName );
+        op.setUseDefaultLocation( false );
+        op.setLocation( workspaceLocation.toPortableString() );
+        op.setProjectProvider( "maven-liferay-workspace" );
+        op.setProvisionLiferayBundle( true );
+        op.setBundleUrl( bundleUrl );
+
+        op.execute( new ProgressMonitor() );
+
+        String projectLocation = workspaceLocation.append( projectName ).toPortableString();
+
+        File pomFile = new File( projectLocation, "pom.xml" );
+
+        assertTrue( pomFile.exists() );
+
+        File bundleDir = new File( projectLocation, "bundles" );
+
+        assertTrue( bundleDir.exists() );
+
+        String content = FileUtil.readContents( pomFile );
+
+        assertTrue( content.contains( bundleUrl ) );
+    }
+
+    @Test
     public void testNewMavenLiferayWorkspaceInitBundle() throws Exception
     {
         NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
