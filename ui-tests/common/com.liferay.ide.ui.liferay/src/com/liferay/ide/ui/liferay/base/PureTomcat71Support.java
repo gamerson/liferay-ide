@@ -19,10 +19,10 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 /**
  * @author Terry Jia
  */
-public class PureTomcatSupport extends ServerSupport {
+public class PureTomcat71Support extends ServerSupport {
 
-	public PureTomcatSupport(SWTWorkbenchBot bot) {
-		super(bot, "tomcat", "7.0-ga5");
+	public PureTomcat71Support(SWTWorkbenchBot bot) {
+		super(bot, "tomcat", "7.1-m1");
 	}
 
 }

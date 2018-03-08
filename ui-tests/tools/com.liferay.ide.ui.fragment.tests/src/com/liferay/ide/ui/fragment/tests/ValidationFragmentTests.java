@@ -16,6 +16,7 @@ package com.liferay.ide.ui.fragment.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
 import com.liferay.ide.ui.liferay.base.ProjectSupport;
+import com.liferay.ide.ui.liferay.base.PureTomcat70Support;
 import com.liferay.ide.ui.liferay.base.TomcatSupport;
 import com.liferay.ide.ui.liferay.util.ValidationMsg;
 import com.liferay.ide.ui.swtbot.util.StringPool;
@@ -28,6 +29,7 @@ import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 /**
  * @author Ashley Yuan
@@ -35,8 +37,10 @@ import org.junit.Test;
  */
 public class ValidationFragmentTests extends SwtbotBase {
 
+	public static PureTomcat70Support tomcat = new PureTomcat70Support(bot);
+
 	@ClassRule
-	public static TomcatSupport tomcat = new TomcatSupport(bot);
+	public static RuleChain chain = RuleChain.outerRule(tomcat).around(new TomcatSupport(bot, tomcat));
 
 	@Test
 	public void checkBuildType() {

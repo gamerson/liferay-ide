@@ -12,11 +12,12 @@
  * details.
  */
 
-package com.liferay.ide.ui.portlet.tests;
+package com.liferay.ide.ui.server.tests;
 
-import com.liferay.ide.ui.liferay.SwtbotBase;
-import com.liferay.ide.ui.liferay.base.PureTomcat70Support;
+import com.liferay.ide.ui.liferay.base.PureTomcat71Support;
 import com.liferay.ide.ui.liferay.base.SdkSupport;
+import com.liferay.ide.ui.liferay.base.ServerRunningSupport;
+import com.liferay.ide.ui.liferay.base.ServerSupport;
 import com.liferay.ide.ui.liferay.base.TomcatSupport;
 
 import org.junit.ClassRule;
@@ -26,35 +27,38 @@ import org.junit.rules.RuleChain;
 /**
  * @author Terry Jia
  */
-public class NewPortletProjectSdkTests extends SwtbotBase {
-
-	public static PureTomcat70Support tomcat = new PureTomcat70Support(bot);
+public class Tomcat71DeployTests extends Tomcat70DeployTests {
 
 	@ClassRule
 	public static RuleChain chain = RuleChain.outerRule(
-		tomcat).around(new TomcatSupport(bot, tomcat)).around(new SdkSupport(bot, tomcat));
+		getServer()).around(new TomcatSupport(bot, getServer())).around(new SdkSupport(bot, getServer())).around(new ServerRunningSupport(bot, getServer()));
+
+	public static ServerSupport getServer() {
+		if ((server == null) || !(server instanceof PureTomcat71Support)) {
+			server = new PureTomcat71Support(bot);
+		}
+
+		return server;
+	}
 
 	@Test
-	public void createMvcPortletProject() {
-		viewAction.switchLiferayPerspective();
+	public void deployFragment() {
+		super.deployFragment();
+	}
 
-		wizardAction.openNewLiferayPluginProjectWizard();
+	@Test
+	public void deployModule() {
+		super.deployModule();
+	}
 
-		String projectName = "test-mvc-portlet";
+	@Test
+	public void deployPluginPortlet() {
+		super.deployPluginPortlet();
+	}
 
-		wizardAction.newPlugin.preparePortletSdk(projectName);
-
-		wizardAction.finish();
-
-		jobAction.waitForIvy();
-
-		jobAction.waitForValidate(projectName);
-
-		wizardAction.openNewLiferayPortletWizard();
-
-		wizardAction.finish();
-
-		viewAction.project.closeAndDelete(projectName);
+	@Test
+	public void deployWar() {
+		super.deployWar();
 	}
 
 }

@@ -17,23 +17,27 @@ package com.liferay.ide.ui.service.builder.tests;
 import com.liferay.ide.ui.liferay.SwtbotBase;
 import com.liferay.ide.ui.liferay.base.LiferayWorkspaceGradleSupport;
 import com.liferay.ide.ui.liferay.base.ProjectSupport;
+import com.liferay.ide.ui.liferay.base.PureTomcat70Support;
 import com.liferay.ide.ui.liferay.base.TomcatSupport;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 /**
  * @author Joye Luo
  */
 public class NewServiceBuilderModuleLiferayWorkspaceGradleTest extends SwtbotBase {
 
-	@ClassRule
-	public static LiferayWorkspaceGradleSupport liferayWorkspace = new LiferayWorkspaceGradleSupport(bot);
+	public static PureTomcat70Support tomcat = new PureTomcat70Support(bot);
 
 	@ClassRule
-	public static TomcatSupport tomcat = new TomcatSupport(bot);
+	public static RuleChain chain = RuleChain.outerRule(tomcat).around(new TomcatSupport(bot, tomcat));
+
+	@ClassRule
+	public static LiferayWorkspaceGradleSupport liferayWorkspace = new LiferayWorkspaceGradleSupport(bot);
 
 	@Test
 	public void createServiceBuilder() {
