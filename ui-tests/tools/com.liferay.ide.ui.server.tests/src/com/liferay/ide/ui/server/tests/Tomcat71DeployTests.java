@@ -12,48 +12,53 @@
  * details.
  */
 
-package com.liferay.ide.ui.hook.tests;
+package com.liferay.ide.ui.server.tests;
 
-import com.liferay.ide.ui.liferay.SwtbotBase;
-import com.liferay.ide.ui.liferay.support.project.SdkProjectSupport;
 import com.liferay.ide.ui.liferay.support.sdk.SdkSupport;
-import com.liferay.ide.ui.liferay.support.server.PureTomcat70Support;
+import com.liferay.ide.ui.liferay.support.server.PureTomcat71Support;
+import com.liferay.ide.ui.liferay.support.server.ServerRunningSupport;
+import com.liferay.ide.ui.liferay.support.server.ServerSupport;
 import com.liferay.ide.ui.liferay.support.server.Tomcat7xSupport;
 
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 
 /**
  * @author Terry Jia
  */
-public class NewHookConfigTests extends SwtbotBase {
-
-	public static PureTomcat70Support tomcat = new PureTomcat70Support(bot);
+public class Tomcat71DeployTests extends TomcatDeployBase {
 
 	@ClassRule
 	public static RuleChain chain = RuleChain.outerRule(
-		tomcat).around(new Tomcat7xSupport(bot, tomcat)).around(new SdkSupport(bot, tomcat));
+		getServer()).around(new Tomcat7xSupport(bot, getServer())).around(new SdkSupport(bot, getServer())).around(new ServerRunningSupport(bot, getServer()));
 
-	@Test
-	public void createSampleProject() {
-		viewAction.switchLiferayPerspective();
+	public static ServerSupport getServer() {
+		if ((server == null) || !(server instanceof PureTomcat71Support)) {
+			server = new PureTomcat71Support(bot);
+		}
 
-		wizardAction.openNewLiferayPluginProjectWizard();
-
-		wizardAction.newPlugin.prepareHookSdk(project.getNameHook());
-
-		wizardAction.finish();
-
-		jobAction.waitForIvy();
-
-		jobAction.waitForValidate(project.getNameHook());
-
-		viewAction.project.closeAndDelete(project.getNameHook());
+		return server;
 	}
 
-	@Rule
-	public SdkProjectSupport project = new SdkProjectSupport(bot);
+	@Test
+	public void deployFragment() {
+		super.deployFragment();
+	}
+
+	@Test
+	public void deployModule() {
+		super.deployModule();
+	}
+
+	@Test
+	public void deployPluginPortlet() {
+		super.deployPluginPortlet();
+	}
+
+	@Test
+	public void deployWar() {
+		super.deployWar();
+	}
 
 }

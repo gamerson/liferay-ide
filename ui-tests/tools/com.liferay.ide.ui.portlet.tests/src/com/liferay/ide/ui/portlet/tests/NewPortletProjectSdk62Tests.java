@@ -15,8 +15,8 @@
 package com.liferay.ide.ui.portlet.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
-import com.liferay.ide.ui.liferay.base.Sdk62Support;
-import com.liferay.ide.ui.liferay.base.Tomcat62Support;
+import com.liferay.ide.ui.liferay.support.sdk.Sdk62Support;
+import com.liferay.ide.ui.liferay.support.server.Tomcat62Support;
 
 import org.junit.ClassRule;
 import org.junit.Ignore;
