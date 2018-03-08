@@ -23,15 +23,17 @@ import org.junit.Assert;
 /**
  * @author Terry Jia
  */
-public class TomcatSupport extends PureTomcatSupport {
+public class TomcatSupport extends SupportBase {
 
-	public TomcatSupport(SWTWorkbenchBot bot) {
+	public TomcatSupport(SWTWorkbenchBot bot, ServerSupport server) {
 		super(bot);
+
+		_server = server;
 	}
 
 	@Override
 	public void after() {
-		dialogAction.deleteRuntimFromPreferences(getServerName());
+		dialogAction.deleteRuntimFromPreferences(_server.getServerName());
 
 		super.after();
 	}
@@ -60,7 +62,7 @@ public class TomcatSupport extends PureTomcatSupport {
 
 		wizardAction.next();
 
-		wizardAction.newRuntime7.prepare(getServerName(), getFullServerDir());
+		wizardAction.newRuntime7.prepare(_server.getServerName(), _server.getFullServerDir());
 
 		wizardAction.finish();
 
@@ -72,9 +74,15 @@ public class TomcatSupport extends PureTomcatSupport {
 
 		wizardAction.openNewLiferayServerWizard();
 
-		wizardAction.newServer.prepare(getServerName());
+		wizardAction.newServer.prepare(_server.getServerName());
 
 		wizardAction.finish();
 	}
+
+	public ServerSupport getServer() {
+		return _server;
+	}
+
+	private ServerSupport _server;
 
 }

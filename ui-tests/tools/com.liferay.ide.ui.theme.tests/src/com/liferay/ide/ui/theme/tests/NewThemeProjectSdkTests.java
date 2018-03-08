@@ -15,6 +15,7 @@
 package com.liferay.ide.ui.theme.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
+import com.liferay.ide.ui.liferay.base.PureTomcat70Support;
 import com.liferay.ide.ui.liferay.base.SdkProjectSupport;
 import com.liferay.ide.ui.liferay.base.SdkSupport;
 import com.liferay.ide.ui.liferay.base.TomcatSupport;
@@ -30,10 +31,11 @@ import org.junit.rules.RuleChain;
  */
 public class NewThemeProjectSdkTests extends SwtbotBase {
 
-	public static TomcatSupport tomcat = new TomcatSupport(bot);
+	public static PureTomcat70Support tomcat = new PureTomcat70Support(bot);
 
 	@ClassRule
-	public static RuleChain chain = RuleChain.outerRule(tomcat).around(new SdkSupport(bot, tomcat));
+	public static RuleChain chain = RuleChain.outerRule(
+		tomcat).around(new TomcatSupport(bot, tomcat)).around(new SdkSupport(bot, tomcat));
 
 	@Ignore("ignore as the jre problem on testing server for right now")
 	@Test
