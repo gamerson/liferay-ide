@@ -12,14 +12,12 @@
  * details.
  */
 
-package com.liferay.ide.ui.server.tests;
+package com.liferay.ide.ui.module.deploy.tests;
 
-import com.liferay.ide.ui.liferay.support.sdk.SdkSupport;
 import com.liferay.ide.ui.liferay.support.server.PureTomcat71Support;
-import com.liferay.ide.ui.liferay.support.server.ServerRunningSupport;
 import com.liferay.ide.ui.liferay.support.server.ServerSupport;
-import com.liferay.ide.ui.liferay.support.server.Tomcat7xSupport;
 import com.liferay.ide.ui.liferay.util.RuleUtil;
+import com.liferay.ide.ui.module.deploy.tests.base.DeployModuleGradleTomcat7xBase;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -28,15 +26,13 @@ import org.junit.rules.RuleChain;
 /**
  * @author Terry Jia
  */
-public class Tomcat71DeployTests extends TomcatDeployBase {
+public class DeployModuleGradleTomcat71Tests extends DeployModuleGradleTomcat7xBase {
 
 	@ClassRule
-	public static RuleChain chain = RuleUtil.getRuleChain(
-		getServer(), new Tomcat7xSupport(bot, getServer()), new SdkSupport(bot, getServer()),
-		new ServerRunningSupport(bot, getServer()));
+	public static RuleChain chain = RuleUtil.getTomcat7xRunningRuleChain(bot, getServer());
 
 	public static ServerSupport getServer() {
-		if ((server == null) || !(server instanceof PureTomcat71Support)) {
+		if (PureTomcat71Support.isNot(server)) {
 			server = new PureTomcat71Support(bot);
 		}
 
@@ -44,23 +40,8 @@ public class Tomcat71DeployTests extends TomcatDeployBase {
 	}
 
 	@Test
-	public void deployFragment() {
-		super.deployFragment();
-	}
-
-	@Test
-	public void deployModule() {
-		super.deployModule();
-	}
-
-	@Test
-	public void deployPluginPortlet() {
-		super.deployPluginPortlet();
-	}
-
-	@Test
-	public void deployWar() {
-		super.deployWar();
+	public void deployActivator() {
+		super.deployActivator();
 	}
 
 }

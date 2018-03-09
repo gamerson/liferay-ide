@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.ide.ui.server.tests;
+package com.liferay.ide.ui.server.deploy.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
 
