@@ -14,7 +14,7 @@
 
 package com.liferay.ide.ui.server.tests;
 
-import com.liferay.ide.ui.liferay.support.server.PureTomcat70Support;
+import com.liferay.ide.ui.liferay.support.server.PureTomcat71Support;
 import com.liferay.ide.ui.liferay.support.server.ServerSupport;
 import com.liferay.ide.ui.server.tests.base.ServerTomcat7xBase;
 
@@ -28,7 +28,7 @@ import org.junit.Test;
  * @author Ashley Yuan
  * @author Ying Xu
  */
-public class ServerTomcat70Tests extends ServerTomcat7xBase {
+public class ServerTomcat71Tests extends ServerTomcat7xBase {
 
 	@Test
 	public void addLiferay7RuntimeFromPreferences() {
@@ -42,8 +42,8 @@ public class ServerTomcat70Tests extends ServerTomcat7xBase {
 
 	@Override
 	public ServerSupport getTestServer() {
-		if ((testServer == null) || !(testServer instanceof PureTomcat70Support)) {
-			testServer = new PureTomcat70Support(bot);
+		if ((testServer == null) || !(testServer instanceof PureTomcat71Support)) {
+			testServer = new PureTomcat71Support(bot);
 		}
 
 		return testServer;
