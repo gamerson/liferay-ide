@@ -55,9 +55,9 @@ public class LiferayWorkspaceUtilTests
 
         String workspaceLocation = workspaceProject.getLocation().toPortableString();
 
-        String homeValue = LiferayWorkspaceUtil.getHomeDir( workspaceLocation );
+        String bundlesDirName = LiferayWorkspaceUtil.getBundlesDir( workspaceLocation );
 
-        assertTrue( homeValue.equals( "bundles" ) );
+        assertTrue( bundlesDirName.equals( "bundles" ) );
 
         String modulesValue = LiferayWorkspaceUtil.getModulesDir( workspaceProject );
 
@@ -87,10 +87,10 @@ public class LiferayWorkspaceUtilTests
 
         workspaceProject.refreshLocal( IResource.DEPTH_INFINITE, new NullProgressMonitor() );
 
-        homeValue = LiferayWorkspaceUtil.getHomeDir( workspaceLocation );
+        bundlesDirName = LiferayWorkspaceUtil.getBundlesDir( workspaceLocation );
 
 
-        assertTrue( homeValue.equals( "bundles1" ) );
+        assertTrue( bundlesDirName.equals( "bundles1" ) );
 
         modulesValue = LiferayWorkspaceUtil.getModulesDir( workspaceProject );
 

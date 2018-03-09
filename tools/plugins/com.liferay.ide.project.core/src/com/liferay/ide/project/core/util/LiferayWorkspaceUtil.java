@@ -132,7 +132,7 @@ public class LiferayWorkspaceUtil {
 		return retVal;
 	}
 
-	public static String getHomeDir(String location) {
+	public static String getBundlesDir(String location) {
 		String result = getGradleProperty(location, LIFERAY_WORKSPACE_HOME_DIR, "bundles");
 
 		if (CoreUtil.empty(result)) {
@@ -142,12 +142,12 @@ public class LiferayWorkspaceUtil {
 		return result;
 	}
 
-	public static IPath getHomeLocation(IProject project) {
-		return getHomeLocation(project.getLocation().toOSString());
+	public static IPath getBundlesLocation(IProject project) {
+		return getBundlesLocation(project.getLocation().toOSString());
 	}
 
-	public static IPath getHomeLocation(String location) {
-		String homeNameOrPath = getHomeDir(location);
+	public static IPath getBundlesLocation(String location) {
+		String homeNameOrPath = getBundlesDir(location);
 
 		IPath homePath = new Path(location).append(homeNameOrPath);
 
@@ -281,9 +281,9 @@ public class LiferayWorkspaceUtil {
 	}
 
 	public static boolean hasBundlesDir(String location) {
-		File bundles = new File(location, getHomeDir(location));
+		File bundles = new File(location, getBundlesDir(location));
 
-		File outsideOfWorkspaceBundles = new File(getHomeDir(location));
+		File outsideOfWorkspaceBundles = new File(getBundlesDir(location));
 
 		if (FileUtil.isDir(bundles) || FileUtil.isDir(outsideOfWorkspaceBundles)) {
 			return true;
@@ -358,7 +358,7 @@ public class LiferayWorkspaceUtil {
 	public static void addPortalRuntime() {
 		IProject project = getWorkspaceProject();
 
-		IPath bundlesLocation = getHomeLocation(project);
+		IPath bundlesLocation = getBundlesLocation(project);
 
 		try {
 			if (FileUtil.exists(bundlesLocation)) {

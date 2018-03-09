@@ -14,6 +14,7 @@
 
 package com.liferay.ide.project.core.workspace;
 
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.server.util.ServerUtil;
@@ -76,13 +77,13 @@ public class ImportLiferayWorkspaceOpMethods {
 				String buildType = op.getBuildType().content();
 
 				if (buildType.equals("gradle-liferay-workspace")) {
-					bundlesLocation = LiferayWorkspaceUtil.getHomeLocation(location);
+					bundlesLocation = LiferayWorkspaceUtil.getBundlesLocation(location);
 				}
 				else {
 					bundlesLocation = new Path(location).append("bundles");
 				}
 
-				if ((bundlesLocation != null) && bundlesLocation.toFile().exists()) {
+				if (FileUtil.exists(bundlesLocation)) {
 					ServerUtil.addPortalRuntimeAndServer(serverRuntimeName, bundlesLocation, monitor);
 				}
 			}
