@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.ide.ui.server.tests;
+package com.liferay.ide.ui.server.deploy.tests.base;
 
 import com.liferay.ide.ui.liferay.ServerTestBase;
 import com.liferay.ide.ui.liferay.support.project.ProjectSupport;
@@ -23,7 +23,7 @@ import org.junit.Rule;
 /**
  * @author Terry Jia
  */
-public class TomcatDeployBase extends ServerTestBase {
+public class Tomcat7xDeployBase extends ServerTestBase {
 
 	public void deployFragment() {
 		wizardAction.openNewFragmentWizard();

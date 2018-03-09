@@ -12,14 +12,12 @@
  * details.
  */
 
-package com.liferay.ide.ui.server.tests;
+package com.liferay.ide.ui.server.deploy.tests;
 
-import com.liferay.ide.ui.liferay.support.sdk.SdkSupport;
 import com.liferay.ide.ui.liferay.support.server.PureTomcat70Support;
-import com.liferay.ide.ui.liferay.support.server.ServerRunningSupport;
 import com.liferay.ide.ui.liferay.support.server.ServerSupport;
-import com.liferay.ide.ui.liferay.support.server.Tomcat7xSupport;
 import com.liferay.ide.ui.liferay.util.RuleUtil;
+import com.liferay.ide.ui.server.deploy.tests.base.Tomcat7xDeployBase;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -28,12 +26,10 @@ import org.junit.rules.RuleChain;
 /**
  * @author Terry Jia
  */
-public class Tomcat70DeployTests extends TomcatDeployBase {
+public class Tomcat70DeployTests extends Tomcat7xDeployBase {
 
 	@ClassRule
-	public static RuleChain chain = RuleUtil.getRuleChain(
-		getServer(), new Tomcat7xSupport(bot, getServer()), new SdkSupport(bot, getServer()),
-		new ServerRunningSupport(bot, getServer()));
+	public static RuleChain chain = RuleUtil.getTomcat7xRunningSdkRuleChain(bot, getServer());
 
 	public static ServerSupport getServer() {
 		if ((server == null) || !(server instanceof PureTomcat70Support)) {

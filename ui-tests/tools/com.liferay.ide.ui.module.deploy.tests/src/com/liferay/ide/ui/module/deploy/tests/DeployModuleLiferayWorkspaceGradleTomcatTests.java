@@ -12,13 +12,12 @@
  * details.
  */
 
-package com.liferay.ide.ui.module.tests;
+package com.liferay.ide.ui.module.deploy.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
 import com.liferay.ide.ui.liferay.support.project.ProjectSupport;
 import com.liferay.ide.ui.liferay.support.server.PureTomcat70Support;
-import com.liferay.ide.ui.liferay.support.server.ServerRunningSupport;
-import com.liferay.ide.ui.liferay.support.server.Tomcat7xSupport;
+import com.liferay.ide.ui.liferay.support.workspace.LiferayWorkspaceGradleSupport;
 import com.liferay.ide.ui.liferay.util.RuleUtil;
 
 import org.junit.ClassRule;
@@ -31,13 +30,15 @@ import org.junit.rules.RuleChain;
  * @author Terry Jia
  */
 @Ignore("ignore for more research")
-public class DeployModuleGradleTomcatTests extends SwtbotBase {
+public class DeployModuleLiferayWorkspaceGradleTomcatTests extends SwtbotBase {
 
 	public static PureTomcat70Support tomcat = new PureTomcat70Support(bot);
 
 	@ClassRule
-	public static RuleChain chain = RuleUtil.getRuleChain(
-		tomcat, new Tomcat7xSupport(bot, tomcat), new ServerRunningSupport(bot, tomcat));
+	public static RuleChain chain = RuleUtil.getTomcat7xRunningRuleChain(bot, tomcat);
+
+	@ClassRule
+	public static LiferayWorkspaceGradleSupport liferayWorkspace = new LiferayWorkspaceGradleSupport(bot);
 
 	@Test
 	public void deployActivator() {
@@ -46,6 +47,10 @@ public class DeployModuleGradleTomcatTests extends SwtbotBase {
 		wizardAction.newModule.prepareGradle(project.getName(), ACTIVATOR);
 
 		wizardAction.finish();
+
+		// need to use job instead
+
+		ide.sleep(5000);
 
 		viewAction.servers.openAddAndRemoveDialog(tomcat.getStartedLabel());
 
@@ -57,7 +62,7 @@ public class DeployModuleGradleTomcatTests extends SwtbotBase {
 
 		jobAction.waitForConsoleContent(tomcat.getServerName(), "STARTED " + project.getName() + "_", 20 * 1000);
 
-		viewAction.project.closeAndDelete(project.getName());
+		viewAction.project.closeAndDelete(liferayWorkspace.getModuleFiles(project.getName()));
 	}
 
 	@Rule

@@ -12,14 +12,11 @@
  * details.
  */
 
-package com.liferay.ide.ui.module.tests;
+package com.liferay.ide.ui.module.deploy.tests;
 
 import com.liferay.ide.ui.liferay.SwtbotBase;
 import com.liferay.ide.ui.liferay.support.project.ProjectSupport;
 import com.liferay.ide.ui.liferay.support.server.PureTomcat70Support;
-import com.liferay.ide.ui.liferay.support.server.ServerRunningSupport;
-import com.liferay.ide.ui.liferay.support.server.Tomcat7xSupport;
-import com.liferay.ide.ui.liferay.support.workspace.LiferayWorkspaceGradleSupport;
 import com.liferay.ide.ui.liferay.util.RuleUtil;
 
 import org.junit.ClassRule;
@@ -32,28 +29,28 @@ import org.junit.rules.RuleChain;
  * @author Terry Jia
  */
 @Ignore("ignore for more research")
-public class DeployModuleLiferayWorkspaceGradleTomcatTests extends SwtbotBase {
+public class DeployModuleMavenTomcatTests extends SwtbotBase {
 
 	public static PureTomcat70Support tomcat = new PureTomcat70Support(bot);
 
 	@ClassRule
-	public static RuleChain chain = RuleUtil.getRuleChain(
-		tomcat, new Tomcat7xSupport(bot, tomcat), new ServerRunningSupport(bot, tomcat));
-
-	@ClassRule
-	public static LiferayWorkspaceGradleSupport liferayWorkspace = new LiferayWorkspaceGradleSupport(bot);
+	public static RuleChain chain = RuleUtil.getTomcat7xRunningRuleChain(bot, tomcat);
 
 	@Test
 	public void deployActivator() {
 		wizardAction.openNewLiferayModuleWizard();
 
-		wizardAction.newModule.prepareGradle(project.getName(), ACTIVATOR);
+		wizardAction.newModule.prepareMaven(project.getName(), ACTIVATOR);
 
 		wizardAction.finish();
 
-		// need to use job instead
+		viewAction.project.openUpdateMavenProjectDialog(project.getName());
 
-		ide.sleep(5000);
+		dialogAction.updateMavenProject.selectAll();
+
+		dialogAction.confirm();
+
+		jobAction.waitForUpdateMavenProject();
 
 		viewAction.servers.openAddAndRemoveDialog(tomcat.getStartedLabel());
 
@@ -63,9 +60,9 @@ public class DeployModuleLiferayWorkspaceGradleTomcatTests extends SwtbotBase {
 
 		viewAction.servers.visibleModuleTry(tomcat.getStartedLabel(), project.getName());
 
-		jobAction.waitForConsoleContent(tomcat.getServerName(), "STARTED " + project.getName() + "_", 20 * 1000);
+		jobAction.waitForConsoleContent(tomcat.getServerName(), "STARTED " + project.getName() + "_", 60 * 1000);
 
-		viewAction.project.closeAndDelete(liferayWorkspace.getModuleFiles(project.getName()));
+		viewAction.project.closeAndDelete(project.getName());
 	}
 
 	@Rule
