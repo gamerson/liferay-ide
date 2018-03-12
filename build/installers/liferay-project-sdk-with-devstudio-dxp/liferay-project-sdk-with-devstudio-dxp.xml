@@ -1,7 +1,7 @@
 <project>
-    <shortName>LiferayDeveloperStudio</shortName>
-    <fullName>Liferay Developer Studio</fullName>
-    <version>3.2.0-m1</version>
+    <shortName>LiferayProjectSDKwithDevStudioDXP</shortName>
+    <fullName>Liferay Project SDK with DevStudio - DXP</fullName>
+    <version>2018.3.12</version>
     <logoImage>../shared/images/studio_logo.png</logoImage>
     <componentList>
         <component>

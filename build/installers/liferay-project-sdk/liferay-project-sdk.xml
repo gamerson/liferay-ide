@@ -1,7 +1,7 @@
 <project>
-    <shortName>LiferayWorkspace</shortName>
-    <fullName>Liferay Workspace</fullName>
-    <version>1.8.0</version>
+    <shortName>LiferayProjectSDK</shortName>
+    <fullName>Liferay Project SDK</fullName>
+    <version>2018.3.12</version>
     <logoImage>../shared/images/liferay_logo_large.png</logoImage>
     <componentList>
         <component>
@@ -321,7 +321,7 @@
             <path>${installdir}</path>
         </deleteFile>
         <deleteFile>
-            <path>C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Liferay Workspace</path>
+            <path>C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Liferay Project SDK</path>
             <ruleList>
                 <compareText>
                     <logic>contains</logic>
