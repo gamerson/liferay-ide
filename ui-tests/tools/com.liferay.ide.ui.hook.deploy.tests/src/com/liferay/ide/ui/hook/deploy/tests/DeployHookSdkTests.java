@@ -25,6 +25,7 @@ public class DeployHookSdkTests extends SwtbotBase {
 
 	@Test
 	public void deployHook() {
+		
 	}
 
 }
