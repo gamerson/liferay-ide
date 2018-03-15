@@ -14,6 +14,7 @@
 
 package com.liferay.ide.project.core.workspace;
 
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 
 import org.eclipse.sapphire.DefaultValueService;
@@ -24,6 +25,7 @@ import org.eclipse.sapphire.modeling.Path;
 
 /**
  * @author Andy Wu
+ * @author Charles Wu
  */
 public class BundleUrlDefaultValueService extends DefaultValueService {
 
@@ -38,10 +40,9 @@ public class BundleUrlDefaultValueService extends DefaultValueService {
 		super.dispose();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected String compute() {
-		String bundleURL = null;
-
 		ImportLiferayWorkspaceOp op = _op();
 
 		Value<Path> workspaceLocationValue = op.getWorkspaceLocation();
@@ -57,20 +58,13 @@ public class BundleUrlDefaultValueService extends DefaultValueService {
 		String buildType = LiferayWorkspaceUtil.getWorkspaceType(workspaceLocation);
 
 		if (buildType == null) {
-			return bundleURL;
+			return null;
 		}
 
-		if (buildType.startsWith("gradle")) {
-			return LiferayWorkspaceUtil.getGradleProperty(
-				workspaceLocation, LiferayWorkspaceUtil.LIFERAY_WORKSPACE_BUNDLE_URL,
-				BaseLiferayWorkspaceOp.DEFAULT_BUNDLE_URL);
-		}
-		else {
+		NewLiferayWorkspaceProjectProvider<NewLiferayWorkspaceOp> provider =
+			(NewLiferayWorkspaceProjectProvider<NewLiferayWorkspaceOp>) LiferayCore.getProvider(buildType);
 
-			// for maven type liferay workspace
-
-			return bundleURL = BaseLiferayWorkspaceOp.DEFAULT_BUNDLE_URL;
-		}
+		return provider.getInitBundleUrl(workspaceLocation);
 	}
 
 	@Override

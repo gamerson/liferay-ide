@@ -340,7 +340,7 @@ public class ProjectCore extends Plugin {
 
 							String projectLocation = project.getLocation().toOSString();
 
-							IFolder bundlesFolder = project.getFolder(LiferayWorkspaceUtil.getHomeDir(projectLocation));
+							IFolder bundlesFolder = project.getFolder(LiferayWorkspaceUtil.getBundlesDir(projectLocation));
 
 							if (FileUtil.exists(bundlesFolder)) {
 								File file = bundlesFolder.getLocation().toFile();
@@ -371,7 +371,7 @@ public class ProjectCore extends Plugin {
 												return true;
 											}
 
-											IPath bundlesPath = LiferayWorkspaceUtil.getHomeLocation(project);
+											IPath bundlesPath = LiferayWorkspaceUtil.getBundlesLocation(project);
 
 											if (!delta.getFullPath().equals(bundlesPath)) {
 												return true;

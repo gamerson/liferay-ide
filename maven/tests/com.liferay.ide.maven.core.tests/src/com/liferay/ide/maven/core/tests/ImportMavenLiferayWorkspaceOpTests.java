@@ -43,6 +43,7 @@ import org.junit.Test;
 /**
  * @author Andy Wu
  * @author Joye Luo
+ * @author Charles Wu
  */
 public class ImportMavenLiferayWorkspaceOpTests
 {
@@ -142,6 +143,11 @@ public class ImportMavenLiferayWorkspaceOpTests
 
         op.setWorkspaceLocation( wsFolder.getAbsolutePath() );
         op.setProvisionLiferayBundle( true );
+
+        String defaultUrl = op.getBundleUrl().content( true );
+
+        assertEquals( existUrl, defaultUrl );
+
         op.setBundleUrl( bundleUrl );
 
         op.execute( new ProgressMonitor() );

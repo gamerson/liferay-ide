@@ -68,7 +68,7 @@ public class NewLiferayWorkspaceOpMethods {
 				String projectProvider = op.getProjectProvider().text();
 
 				if (projectProvider.equals("gradle-liferay-workspace")) {
-					bundlesLocation = LiferayWorkspaceUtil.getHomeLocation(location);
+					bundlesLocation = LiferayWorkspaceUtil.getBundlesLocation(location);
 				}
 				else {
 					bundlesLocation = new Path(location).append("bundles");
