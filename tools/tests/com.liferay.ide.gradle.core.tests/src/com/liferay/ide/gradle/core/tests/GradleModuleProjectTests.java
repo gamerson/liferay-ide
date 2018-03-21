@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -175,6 +176,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmAngularPortlet () throws Exception
     {
@@ -187,6 +189,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmBillboardjsPortlet() throws Exception
     {
@@ -199,6 +202,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmIsomorphicPortlet () throws Exception
     {
@@ -211,6 +215,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmJqueryPortlet() throws Exception
     {
@@ -223,6 +228,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmMetaljsPortlet() throws Exception
     {
@@ -235,6 +241,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmPortlet() throws Exception
     {
@@ -247,6 +254,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmReactPortlet() throws Exception
     {
@@ -259,6 +267,7 @@ public class GradleModuleProjectTests {
         createAndBuild(op);
     }
 
+    @Ignore("Ignore as IDE-3917")
     @Test
     public void testProjectTemplateNpmVuejsPortlet() throws Exception
     {
