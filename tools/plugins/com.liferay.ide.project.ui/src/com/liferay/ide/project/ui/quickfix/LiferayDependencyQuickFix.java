@@ -24,6 +24,7 @@ import com.liferay.ide.project.core.util.TargetPlatformUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -57,17 +58,13 @@ public class LiferayDependencyQuickFix implements IQuickFixProcessor {
 		throws CoreException {
 
 		if (ListUtil.isEmpty(locations)) {
-			return null;
+			return new IJavaCompletionProposal[0];
 		}
 
 		List<IJavaCompletionProposal> resultingCollections = new ArrayList<>();
 
 		for (IProblemLocation curr : locations) {
 			List<IJavaCompletionProposal> newProposals = _process(context, curr);
-
-			if (ListUtil.isEmpty(newProposals)) {
-				return null;
-			}
 
 			for (IJavaCompletionProposal newProposal : newProposals) {
 				boolean existed = false;
@@ -170,14 +167,14 @@ public class LiferayDependencyQuickFix implements IQuickFixProcessor {
 		ASTNode selectedNode = problem.getCoveringNode(context.getASTRoot());
 
 		if (selectedNode == null) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		ImportDeclaration importDeclaration = (ImportDeclaration)ASTNodes.getParent(
 			selectedNode, ASTNode.IMPORT_DECLARATION);
 
 		if (importDeclaration == null) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		String importName = importDeclaration.getName().toString();
