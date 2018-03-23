@@ -24,6 +24,7 @@ import com.liferay.ide.project.core.util.TargetPlatformUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -57,14 +58,12 @@ public class LiferayDependencyQuickFix implements IQuickFixProcessor {
 		throws CoreException {
 
 		if (ListUtil.isEmpty(locations)) {
-			return null;
+			return new IJavaCompletionProposal[0];
 		}
 
 		List<IJavaCompletionProposal> resultingCollections = new ArrayList<>();
 
-		for (int i = 0; i < locations.length; i++) {
-			IProblemLocation curr = locations[i];
-
+		for (IProblemLocation curr : locations) {
 			List<IJavaCompletionProposal> newProposals = _process(context, curr);
 
 			for (IJavaCompletionProposal newProposal : newProposals) {
@@ -146,13 +145,9 @@ public class LiferayDependencyQuickFix implements IQuickFixProcessor {
 	}
 
 	private List<IJavaCompletionProposal> _process(IInvocationContext context, IProblemLocation problem) {
-		int id = problem.getProblemId();
-
-		if (id == 0) {
-			return null;
-		}
-
 		List<IJavaCompletionProposal> proposals = new ArrayList<>();
+
+		int id = problem.getProblemId();
 
 		switch (id) {
 			case IProblem.ImportNotFound:
@@ -172,14 +167,14 @@ public class LiferayDependencyQuickFix implements IQuickFixProcessor {
 		ASTNode selectedNode = problem.getCoveringNode(context.getASTRoot());
 
 		if (selectedNode == null) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		ImportDeclaration importDeclaration = (ImportDeclaration)ASTNodes.getParent(
 			selectedNode, ASTNode.IMPORT_DECLARATION);
 
 		if (importDeclaration == null) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		String importName = importDeclaration.getName().toString();
