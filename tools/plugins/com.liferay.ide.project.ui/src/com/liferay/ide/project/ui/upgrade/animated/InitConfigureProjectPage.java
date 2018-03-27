@@ -866,7 +866,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 					progress.worked(60);
 
 					final IPath runtimeLocation =
-						sdkLocation.append(LiferayWorkspaceUtil.getHomeDir(sdkLocation.toOSString()));
+						sdkLocation.append(LiferayWorkspaceUtil.getBundlesDir(sdkLocation.toOSString()));
 
 					ServerUtil.addPortalRuntimeAndServer(bundleName, runtimeLocation, monitor);
 
