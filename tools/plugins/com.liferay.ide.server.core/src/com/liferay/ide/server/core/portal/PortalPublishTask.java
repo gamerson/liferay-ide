@@ -19,10 +19,11 @@ import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
+import com.liferay.ide.server.util.ServerUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -35,6 +36,7 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.PublishTaskDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.osgi.framework.dto.BundleDTO;
 
 /**
  * @author Gregory Amerson
@@ -186,7 +188,15 @@ public class PortalPublishTask extends PublishTaskDelegate
         {
             try
             {
-                isDeployed = new GogoBundleDeployer().getBundleId( bsn ) > 0;
+				PortalRuntime runtime =
+					(PortalRuntime) server.getRuntime().loadAdapter(
+						PortalRuntime.class, null);
+
+				if (runtime != null) {
+					BundleDTO bundle = ServerUtil.createBundleDeployer(
+						runtime, server).getBundle(bsn);
+					isDeployed = bundle != null;
+				}
             }
             catch( Exception e )
             {

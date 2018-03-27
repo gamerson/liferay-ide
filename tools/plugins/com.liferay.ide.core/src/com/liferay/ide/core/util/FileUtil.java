@@ -265,6 +265,14 @@ public class FileUtil {
 
 		return path.toFile();
 	}
+	
+	public static String getFileSuffix(IPath path) {
+		if (notExists(path)) {
+			return null;
+		}
+
+		return path.getFileExtension();
+	}	
 
 	public static IContainer getWorkspaceContainer(File file) {
 		IWorkspaceRoot root = CoreUtil.getWorkspaceRoot();

@@ -14,16 +14,10 @@
 
 package com.liferay.ide.server.core.gogo;
 
-import com.liferay.ide.core.IBundleProject;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.server.core.portal.BundleDTOWithStatus;
-import com.liferay.ide.server.util.ServerUtil;
-
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.dto.BundleDTO;
 
@@ -31,6 +25,24 @@ import org.osgi.framework.dto.BundleDTO;
  * @author Terry Jia
  */
 public class GogoBundleDeployer {
+
+	private static Map<String, GogoBundleDeployer> _instance = null;
+
+	public static GogoBundleDeployer getInstance(String host, int port) {
+
+		if (_instance == null) {
+			_instance = new HashMap<String, GogoBundleDeployer>();
+		}
+
+		GogoBundleDeployer deployer = _instance.get(host + port);
+		if (deployer == null) {
+
+			deployer = new GogoBundleDeployer(host, port);
+			_instance.put(host + port, deployer);
+		}
+
+		return deployer;
+	}
 
 	private static int _getState(String state) {
 		if ("Active".equals(state)) {
@@ -127,235 +139,56 @@ public class GogoBundleDeployer {
 		_port = port;
 	}
 
-	public long getBundleId(String bsn) throws IOException {
-		String result = run("lb -s " + bsn, true);
+	public BundleDTO getBundle(long bid)
+		throws IOException {
 
-		if ("No matching bundles found".equals(result)) {
-			return -1;
-		}
+		try (GogoTelnetClient client = new GogoTelnetClient(_host, _port)) {
+			String result = client.send("lb -s ", true);
 
-		BundleDTO[] bundles = _parseBundleInfos(result);
-
-		for (BundleDTO bundle : bundles) {
-			if (bundle.symbolicName.equals(bsn)) {
-				return bundle.id;
+			if ("No matching bundles found".equals(result)) {
+				return null;
 			}
-		}
 
-		return -1;
-	}
+			BundleDTO[] bundles = _parseBundleInfos(result);
 
-	public BundleDTO install(File bundle) throws IOException {
-		URL url = bundle.toURI().toURL();
-
-		return install(url.toExternalForm());
-	}
-
-	public BundleDTO install(String url) throws IOException {
-		String result = run("install " + url, true);
-
-		String[] lines = _split(result, "\r\n");
-
-		BundleDTO bundle = new BundleDTO();
-
-		bundle.id = -1;
-
-		for (String line : lines) {
-			if (line.startsWith("Bundle ID")) {
-				bundle.id = Long.parseLong(line.split(":")[1].trim());
-
-				break;
-			}
-		}
-
-		return bundle;
-	}
-
-	public BundleDTO[] listBundles() throws IOException {
-		String result = run("lb -s", true);
-
-		BundleDTO[] bundles = _parseBundleInfos(result);
-
-		return bundles;
-	}
-
-	public String refresh(long id) throws IOException {
-		return run("refresh " + id);
-	}
-
-	public String refresh(String bsn) throws IOException {
-		return run("refresh " + bsn);
-	}
-
-	public String run(String cmd) throws IOException {
-		return run(cmd, false);
-	}
-
-	public String run(String cmd, boolean successResult) throws IOException {
-		GogoTelnetClient client = new GogoTelnetClient(_host, _port);
-
-		String result = client.send(cmd);
-
-		client.close();
-
-		String retval = result;
-
-		if (successResult) {
-			if (result.startsWith(cmd)) {
-				retval = result.substring(result.indexOf(cmd) + cmd.length()).trim();
-
-				if ("".equals(retval)) {
-					retval = null;
+			for (BundleDTO bundle : bundles) {
+				if (bundle.id == bid) {
+					return bundle;
 				}
 			}
 		}
-		else {
-			if (cmd.equals(result)) {
-				retval = null;
+
+		return null;
+	}
+
+	public BundleDTO getBundle(String bsn)
+		throws IOException {
+
+		try (GogoTelnetClient client = new GogoTelnetClient(_host, _port)) {
+			String result = client.send("lb -s ", true);
+
+			if ("No matching bundles found".equals(result)) {
+				return null;
+			}
+
+			BundleDTO[] bundles = _parseBundleInfos(result);
+
+			for (BundleDTO bundle : bundles) {
+				if (bundle.symbolicName.equals(bsn)) {
+					return bundle;
+				}
 			}
 		}
 
-		return retval;
+		return null;
 	}
 
-	public String start(long id) throws IOException {
-		return run("start " + id, true);
+	public String run(String command)
+		throws IOException {
+
+		try (GogoTelnetClient client = new GogoTelnetClient(_host, _port)) {
+			String response = client.send(command, true);
+			return response;
+		}
 	}
-
-	public String stop(long id) throws IOException {
-		return run("stop " + id);
-	}
-
-	public String uninstall(long id) throws IOException {
-		return run("uninstall " + id);
-	}
-
-	public String uninstall(String bsn) throws IOException {
-		return run("uninstall " + bsn);
-	}
-
-	public String update(long id, File bundle) throws IOException {
-		URL url = bundle.toURI().toURL();
-
-		return update(id, url.toExternalForm());
-	}
-
-	public String update(long id, String url) throws IOException {
-		return run("update " + id + " " + url, true);
-	}
-
-	public BundleDTO deploy( final String bsn, final File bundleFile, final String bundleUrl ) throws Exception
-    {
-        BundleDTO retval = null;
-
-        boolean isFragment = false;
-        String fragmentHostName = null;
-
-        if( !bundleUrl.contains( "webbundle:" ) )
-        {
-            fragmentHostName = ServerUtil.getFragemtHostName( bundleFile );
-
-            isFragment = ( fragmentHostName != null );
-        }
-
-        long bundleId = getBundleId( bsn );
-
-        if( bundleId > 0 )
-        {
-            if( !isFragment )
-            {
-                stop( bundleId );
-            }
-
-            if( bundleUrl.contains( "webbundle:" ) )
-            {
-                update( bundleId, bundleUrl );
-            }
-            else
-            {
-                update( bundleId, bundleFile );
-            }
-
-            if( !isFragment )
-            {
-                String startStatus = start( bundleId );
-
-                if( startStatus != null )
-                {
-                    retval = new BundleDTO();
-
-                    retval.id = bundleId;
-
-                    retval = new BundleDTOWithStatus( retval, startStatus );
-                }
-            }
-
-            if( retval == null )
-            {
-                retval = new BundleDTO();
-
-                retval.id = bundleId;
-            }
-        }
-        else
-        {
-            if( bundleUrl.contains( "webbundle:" ) )
-            {
-                retval = install( bundleUrl );
-            }
-            else
-            {
-                retval = install( bundleFile );
-            }
-
-            if( !isFragment )
-            {
-                String startStatus = start( retval.id );
-
-                if( startStatus != null )
-                {
-                    retval = new BundleDTOWithStatus( retval, startStatus );
-                }
-            }
-            else
-            {
-                refresh( fragmentHostName );
-            }
-        }
-
-        return retval;
-    }
-
-    public String uninstall( IBundleProject bundleProject, IPath outputJar ) throws Exception
-    {
-        if (FileUtil.notExists(outputJar))
-        {
-            return null;
-        }
-
-        String retVal = null;
-
-        String fragmentHostName = ServerUtil.getFragemtHostName( outputJar.toFile() );
-
-        boolean isFragment = ( fragmentHostName != null );
-
-        final String symbolicName = bundleProject.getSymbolicName();
-
-        if( symbolicName != null )
-        {
-            long bundleId = getBundleId( symbolicName );
-
-            if( bundleId > 0 )
-            {
-                retVal = uninstall( bundleId );
-
-                if( isFragment )
-                {
-                    	refresh( fragmentHostName );
-                }
-            }
-        }
-
-        return retVal;
-    }
 }

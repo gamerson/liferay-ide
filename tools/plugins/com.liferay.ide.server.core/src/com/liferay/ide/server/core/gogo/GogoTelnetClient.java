@@ -29,6 +29,7 @@ import java.util.List;
  * reference: http://www.laynetworks.com/telnet.htm
  *
  * @author Gregory Amerson
+ * @author Simon Jiang
  */
 public class GogoTelnetClient implements AutoCloseable {
 
@@ -97,6 +98,41 @@ public class GogoTelnetClient implements AutoCloseable {
 		return output.trim();
 	}
 
+	private String _readUntilNextGogoPrompt(int ignoreLenth)
+		throws IOException {
+
+		StringBuilder sb = new StringBuilder();
+
+		int c = _inputStream.read();
+
+		int replyCount = 0;
+
+		while (c != -1) {
+
+			if (ignoreLenth > 0) {
+				if (replyCount >= ignoreLenth) {
+					sb.append((char) c);
+				}
+				else {
+					replyCount++;
+				}
+			}
+			else {
+				sb.append((char) c);
+			}
+
+			if (sb.toString().endsWith("g! ")) {
+				break;
+			}
+
+			c = _inputStream.read();
+		}
+
+		String output = sb.substring(0, sb.length() - 3);
+
+		return output.trim();
+	}
+
 	public String send(String command) throws IOException {
 		byte[] bytes = command.getBytes();
 
@@ -112,6 +148,24 @@ public class GogoTelnetClient implements AutoCloseable {
 		_sendCommand(codes);
 
 		return _readUntilNextGogoPrompt();
+	}
+
+	public String send(String command, boolean ignoreInput)
+		throws IOException {
+
+		byte[] bytes = command.getBytes();
+		int[] codes = new int[bytes.length + 2];
+
+		for (int i = 0; i < bytes.length; i++) {
+			codes[i] = bytes[i];
+		}
+
+		codes[bytes.length] = '\r';
+		codes[bytes.length + 1] = '\n';
+
+		_sendCommand(codes);
+
+		return _readUntilNextGogoPrompt(ignoreInput ? codes.length : 0);
 	}
 
 	private void _sendCommand(int... codes) throws IOException {

@@ -533,6 +533,11 @@ public class LiferayServerCore extends Plugin
         logInfo( info( msg ) );
     }
 
+    public static void logWarning( String msg )
+    {
+        getDefault().getLog().log( new Status( IStatus.WARNING, PLUGIN_ID, msg, null ) );
+    }
+
     public static void setPreference( String key, String value )
     {
         try

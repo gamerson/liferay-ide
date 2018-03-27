@@ -17,13 +17,14 @@ package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
+import com.liferay.ide.server.core.gogo.BundleDeployCommand;
+import com.liferay.ide.server.core.gogo.CommandFactory;
+import com.liferay.ide.server.core.portal.BundleDTOWithStatus.ResponseState;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 
 import org.eclipse.core.resources.IProject;
@@ -35,7 +36,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.osgi.framework.dto.BundleDTO;
 
 /**
  * @author Gregory Amerson
@@ -118,7 +118,19 @@ public class BundlePublishFullAdd extends BundlePublishOperation
                             monitor.subTask(
                                 "Remotely deploying " + module.getName() + " to Liferay module framework..." );
 
-                            retval = remoteDeploy( bundleProject.getSymbolicName(), outputJar );
+                            BundleDeployCommand deployCommand = new CommandFactory(bundleProject).createCommand(outputJar);
+                            deployCommand.setHelper(createBundleDeployer());
+                            deployCommand.run();
+                            BundleDTOWithStatus generateResponse = deployCommand.getResponseStatus();
+
+                            if ( generateResponse.getResponseState()!= ResponseState.ok) {
+                            	retval = LiferayServerCore.error(generateResponse.getStatus());
+                            }
+                            else {
+                                if ( !CoreUtil.isNullOrEmpty(generateResponse.getStatus())) {
+                                    LiferayServerCore.logInfo(LiferayServerCore.info(generateResponse.getStatus()));
+                                }
+                            }
                         }
                         else
                         {
@@ -129,12 +141,12 @@ public class BundlePublishFullAdd extends BundlePublishOperation
                     }
                     else
                     {
-                        retval = LiferayServerCore.error( "Could not create output jar" );
+                        retval = LiferayServerCore.error( "Could not create output jar for " + project.getName());
                     }
                 }
                 catch( Exception e )
                 {
-                    retval = LiferayServerCore.error( "Deploy module project error", e );
+                    retval = LiferayServerCore.error( "Deploy module project error for " + project.getName(), e );
                 }
             }
             else
@@ -160,63 +172,4 @@ public class BundlePublishFullAdd extends BundlePublishOperation
             }
         }
     }
-
-    private String getBundleUrl( File bundleFile, String bsn ) throws MalformedURLException
-    {
-        String bundleUrl = null;
-
-        if( bundleFile.toPath().toString().toLowerCase().endsWith( ".war" ) )
-        {
-            bundleUrl = "webbundle:" + bundleFile.toURI().toURL().toExternalForm() + "?Web-ContextPath=/" + bsn;
-        }
-        else
-        {
-            bundleUrl = bundleFile.toURI().toURL().toExternalForm();
-        }
-
-        return bundleUrl;
-    }
-
-    private IStatus remoteDeploy( String bsn , IPath output )
-    {
-        IStatus retval = null;
-
-        if( FileUtil.exists(output) )
-        {
-            GogoBundleDeployer bundleDeployer = null;
-
-            try
-            {
-                bundleDeployer = createBundleDeployer();
-
-                BundleDTO deployed = bundleDeployer.deploy(
-                    bsn, output.toFile(), getBundleUrl( output.toFile(), bsn ) );
-
-                if( deployed instanceof BundleDTOWithStatus )
-                {
-                    BundleDTOWithStatus withStatus = (BundleDTOWithStatus) deployed;
-
-                    retval = LiferayServerCore.error("Problem with deploying bundle: " + withStatus._status );
-                }
-                else
-                {
-                    retval = new Status( IStatus.OK, LiferayServerCore.PLUGIN_ID, (int) deployed.id, null, null );
-                }
-            }
-            catch( Exception e )
-            {
-                retval = LiferayServerCore.error( "Unable to deploy bundle remotely " +
-                    output.toPortableString(), e );
-            }
-        }
-        else
-        {
-            retval =
-                LiferayServerCore.error( "Unable to deploy bundle remotely " +
-                    output.toPortableString() );
-        }
-
-        return retval;
-    }
-
 }

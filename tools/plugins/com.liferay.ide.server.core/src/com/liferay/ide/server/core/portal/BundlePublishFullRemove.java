@@ -18,12 +18,13 @@ package com.liferay.ide.server.core.portal;
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
+import com.liferay.ide.server.core.gogo.BundleCommand;
+import com.liferay.ide.server.core.gogo.BundleUninstallCommand;
+import com.liferay.ide.server.core.portal.BundleDTOWithStatus.ResponseState;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -34,6 +35,7 @@ import org.eclipse.wst.server.core.IServer;
  * @author Gregory Amerson
  * @author Andy Wu
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class BundlePublishFullRemove extends BundlePublishOperation
 {
@@ -94,28 +96,22 @@ public class BundlePublishFullRemove extends BundlePublishOperation
 
     private IStatus remoteUninstall( IBundleProject bundleProject, String symbolicName, IProgressMonitor monitor ) throws CoreException
     {
-        //TODO we should get bsn first and try use the bsn to uninstall
         IStatus retval = null;
-
-        IPath outputJar = bundleProject.getOutputBundlePath();
-
-        GogoBundleDeployer bundleDeployer = null;
-
         try
         {
-            bundleDeployer = createBundleDeployer();
-
-            String error = bundleDeployer.uninstall( bundleProject, outputJar );
-
-            if( error == null )
-            {
-                retval = Status.OK_STATUS;
+            BundleCommand removeCommand = new BundleUninstallCommand(bundleProject);
+            removeCommand.setHelper(createBundleDeployer());
+            removeCommand.run();
+            BundleDTOWithStatus generateResponse = removeCommand.getResponseStatus();
+            if ( generateResponse.getResponseState()!= ResponseState.ok) {
+            	retval = LiferayServerCore.error("Unable to uninstall bundle " + bundleProject.getSymbolicName());
             }
-            else
-            {
-                retval = LiferayServerCore.error( "Unable to uninstall bundle " + error );
+            else {
+            	String status = generateResponse.getStatus();
+            	if ( status != null ) {
+            		LiferayServerCore.logInfo(LiferayServerCore.info(status));	
+            	}
             }
-
         }
         catch( Exception e )
         {
