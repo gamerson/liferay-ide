@@ -22,6 +22,7 @@ import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.StringBufferOutputStream;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.hook.core.HookCore;
 import com.liferay.ide.hook.core.dd.HookDescriptorHelper;
@@ -29,16 +30,21 @@ import com.liferay.ide.hook.core.util.HookUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import java.nio.file.Files;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
@@ -269,29 +275,70 @@ public class AddHookOperation extends AbstractDataModelOperation implements INew
 
 		List<String[]> languagePropertiesFiles = (List<String[]>)dm.getProperty(LANGUAGE_PROPERTIES_ITEMS);
 
-		if (languagePropertiesFiles != null) {
-			for (String[] languagePropertyFile : languagePropertiesFiles) {
-				try {
-					if (!languagePropertyFile[0].contains("*")) {
-						IFile createdFile = ProjectUtil.createEmptyProjectFile(languagePropertyFile[0], contentFolder);
+		ILiferayProject liferayProject = LiferayCore.create(project);
 
-						if (createdFile != null) {
-							Set<IFile> languageFilesCreated = (Set<IFile>)dm.getProperty(
-								LANGUAGE_PROPERTIES_FILES_CREATED);
+		File portalImpl = null;
 
-							languageFilesCreated.add(createdFile);
+		try {
+			ILiferayPortal portal = liferayProject.adapt(ILiferayPortal.class);
 
-							dm.setProperty(LANGUAGE_PROPERTIES_FILES_CREATED, languageFilesCreated);
-						}
-					}
-				}
-				catch (Exception e) {
-					HookCore.logError(e);
-				}
-			}
+			IPath portalDir = portal.getAppServerPortalDir();
+
+			portalImpl = portalDir.append("/WEB-INF/lib/portal-impl.jar").toFile();
+		}
+		catch (Exception e) {
+			//ignore when any exceptions happen
 		}
 
-		HookDescriptorHelper hookDescHelper = new HookDescriptorHelper(getTargetProject());
+		//list all properties
+		String[] languagePropertyFiles = languagePropertiesFiles.stream().flatMap(
+			Arrays::stream
+		).filter(
+			property -> !property.contains("*")
+		).toArray(
+			String[]::new
+		);
+
+		Set<IFile> files = null;
+
+		//try to copy language properties from portal
+		Stream<String> languagePropertyStream = Stream.of(languagePropertyFiles);
+
+		try (ZipFile jar = new ZipFile(portalImpl)) {
+			files = languagePropertyStream.map(
+				name -> {
+					ZipEntry entry = jar.getEntry("content/" + name);
+
+					try (InputStream entryInputStream = jar.getInputStream(entry)) {
+						return ProjectUtil.createNewProjectFile(name, contentFolder, entryInputStream);
+					}
+					catch (Exception e) {
+					}
+
+					return ProjectUtil.createNewProjectFile(name, contentFolder, null);
+				}
+			).collect(
+				Collectors.toSet()
+			);
+		}
+		catch (Exception e) {
+		}
+
+		if (ListUtil.isEmpty(files)) {
+			files = languagePropertyStream.map(
+				property -> ProjectUtil.createNewProjectFile(property, contentFolder, null)
+			).collect(
+				Collectors.toSet()
+			);
+		}
+
+		Set<IFile> filesCreated = (Set<IFile>)dm.getProperty(LANGUAGE_PROPERTIES_FILES_CREATED);
+
+		filesCreated.addAll(files);
+
+		dm.setProperty(LANGUAGE_PROPERTIES_FILES_CREATED, filesCreated);
+
+		HookDescriptorHelper hookDescHelper = new HookDescriptorHelper(project);
 
 		Set<IFile> languageFilesCreated = (Set<IFile>)dm.getProperty(LANGUAGE_PROPERTIES_FILES_CREATED);
 
@@ -365,29 +412,23 @@ public class AddHookOperation extends AbstractDataModelOperation implements INew
 			}
 		}
 
-		StringBufferOutputStream buffer = new StringBufferOutputStream();
-
-		try {
+		try(StringBufferOutputStream buffer = new StringBufferOutputStream()) {
 			properties.store(buffer, StringPool.EMPTY);
+
+			try(ByteArrayInputStream bis = new ByteArrayInputStream(buffer.toString().getBytes("UTF-8"))) {
+
+				if (propertiesFile.exists()) {
+					propertiesFile.setContents(bis, IResource.FORCE, null);
+				}
+				else {
+					CoreUtil.prepareFolder((IFolder)propertiesFile.getParent());
+
+					propertiesFile.create(bis, true, null);
+				}
+			}
 		}
-		catch (IOException ioe) {
+		catch (Exception ioe) {
 			return HookCore.createErrorStatus(ioe);
-		}
-
-		try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(buffer.toString().getBytes("UTF-8"));
-
-			if (propertiesFile.exists()) {
-				propertiesFile.setContents(bis, IResource.FORCE, null);
-			}
-			else {
-				CoreUtil.prepareFolder((IFolder)propertiesFile.getParent());
-
-				propertiesFile.create(bis, true, null);
-			}
-		}
-		catch (Exception e) {
-			return HookCore.createErrorStatus(e);
 		}
 
 		HookDescriptorHelper hookDescHelper = new HookDescriptorHelper(getTargetProject());
