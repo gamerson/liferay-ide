@@ -14,12 +14,14 @@
 
 package com.liferay.ide.hook.ui.wizard;
 
+import com.liferay.ide.core.ILiferayPortal;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.hook.core.operation.INewHookDataModelProperties;
 import com.liferay.ide.hook.ui.HookUI;
 import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.project.ui.wizard.StringArrayTableWizardSection;
 import com.liferay.ide.project.ui.wizard.StringArrayTableWizardSectionCallback;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -28,6 +30,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -61,6 +64,7 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPa
 
 /**
  * @author Greg Amerson
+ * @author Charles Wu
  */
 @SuppressWarnings("restriction")
 public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage implements INewHookDataModelProperties {
@@ -108,7 +112,7 @@ public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage imp
 
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 
-		languagePropertiesSection = new StringArrayTableWizardSection(
+		languagePropertiesSection = new CustomLanguagePropertiesTableWizardSection(
 			composite, Msgs.languagePropertyFiles, Msgs.languagePropertyFileTitle, Msgs.add, Msgs.edit, Msgs.remove,
 			new String[] {Msgs.add}, new String[] {Msgs.languagePropertyFileLabel}, null, getDataModel(),
 			LANGUAGE_PROPERTIES_ITEMS);
@@ -120,6 +124,23 @@ public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage imp
 		languagePropertiesSection.setLayoutData(gd);
 
 		languagePropertiesSection.setCallback(new StringArrayTableWizardSectionCallback());
+
+		IProject project = CoreUtil.getProject(getDataModel().getStringProperty(PROJECT_NAME));
+
+		try {
+			ILiferayProject liferayProject = LiferayCore.create(project);
+
+			ILiferayPortal portal = liferayProject.adapt(ILiferayPortal.class);
+
+			IPath portalDir = portal.getAppServerPortalDir();
+
+			languagePropertiesSection.setPortalDir(portalDir);
+		}
+		catch (Exception e) {
+
+			// ignore when any exceptions happen
+
+		}
 	}
 
 	@Override
@@ -247,7 +268,7 @@ public class NewLanguagePropertiesHookWizardPage extends DataModelWizardPage imp
 	}
 
 	protected Text contentFolder;
-	protected StringArrayTableWizardSection languagePropertiesSection;
+	protected CustomLanguagePropertiesTableWizardSection languagePropertiesSection;
 
 	private static class Msgs extends NLS {
 
