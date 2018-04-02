@@ -118,6 +118,9 @@ public class ViewAction extends UIAction {
 			delete(items);
 		}
 
+		/**
+		 * We will ignore the NullPointerException in some unstable cases when closing projects.
+		 */
 		public void closeProjectTry(String... items) {
 			ide.sleep();
 
