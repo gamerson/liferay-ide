@@ -22,8 +22,6 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotMenu;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
-import org.junit.Assert;
-
 /**
  * @author Li Lu
  * @author Ashley Yuan
@@ -47,7 +45,7 @@ public class Tree extends AbstractWidget {
 		long current = System.currentTimeMillis();
 
 		while (true) {
-			if (System.currentTimeMillis() > (current + timeout)) {
+			if ((item != null) || System.currentTimeMillis() > (current + timeout)) {
 				break;
 			}
 
@@ -65,7 +63,7 @@ public class Tree extends AbstractWidget {
 			}
 		}
 
-		Assert.assertNotNull("Could not find " + items[items.length - 1] + " after " + timeout, item);
+		// Assert.assertNotNull("Could not find " + items[items.length - 1] + " after " + timeout, item);
 
 		SWTBotMenu botMenu = item.contextMenu(menu);
 
