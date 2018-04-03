@@ -17,62 +17,150 @@ package com.liferay.ide.gradle.action;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.gradle.core.GradleUtil;
+import com.liferay.ide.project.core.util.SearchFilesVisitor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.action.IAction;
+
+import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.ModelBuilder;
+import org.gradle.tooling.ProjectConnection;
+import org.gradle.tooling.model.eclipse.EclipseProject;
 
 /**
  * @author Lovett Li
  * @author Terry Jia
  * @author Andy Wu
+ * @author Simon Jiang
  */
 public class BuildServiceTaskAction extends GradleTaskAction {
 
-	protected void afterTask() {
-		boolean refresh = false;
+	public BuildServiceTaskAction() {
+		_serviceBuildProjects = new ArrayList<>();
+	}
 
-		IProject[] projects = CoreUtil.getClasspathProjects(project);
+	public boolean getServiceParentProject(IProject checkProject) {
+		if (checkProject != null) {
+			List<IFile> serviceXmlFiles = new SearchFilesVisitor().searchFiles(checkProject, "service.xml");
 
-		for (IProject project : projects) {
-			List<IFolder> folders = CoreUtil.getSourceFolders(JavaCore.create(project));
+			if (serviceXmlFiles.size() == 1) {
+				IPath servicePath = serviceXmlFiles.get(0).getFullPath();
 
-			if (ListUtil.isEmpty(folders)) {
-				refresh = true;
-			}
-			else {
-				try {
-					project.refreshLocal(IResource.DEPTH_INFINITE, null);
+				IPath serviceProjectLocation = servicePath.removeLastSegments(1);
+				IProject serviceProject = CoreUtil.getProject(servicePath.segment(servicePath.segmentCount() - 2));
+
+				if ((servicePath.segmentCount() == 2) && checkProject.equals(serviceProject)) {
+					_serviceBuildProjects.add(_getParentProject(checkProject));
+
+					return true;
 				}
-				catch (CoreException ce) {
+				else {
+					if (servicePath.segmentCount() == 3) {
+						String paretnProjectName = serviceProjectLocation.segment(
+							serviceProjectLocation.segmentCount() - 2);
+
+						IProject sbProject = CoreUtil.getProject(paretnProjectName);
+
+						if (checkProject.equals(sbProject)) {
+							project = serviceProject;
+							_serviceBuildProjects.add(sbProject);
+
+							return true;
+						}
+					}
+					else {
+						return true;
+					}
 				}
 			}
-		}
+			else if (serviceXmlFiles.size() > 1) {
+				Stream<IFile> stream = serviceXmlFiles.stream();
 
-		List<IFolder> folders = CoreUtil.getSourceFolders(JavaCore.create(project));
+				stream.forEach(
+					_serviceXmlPath -> {
+						IPath servicePath = _serviceXmlPath.getFullPath();
 
-		if (ListUtil.isEmpty(folders) || refresh) {
+						int segmentCounts = servicePath.segmentCount();
 
-			// refresh this project will also transmit to refresh -api project
+						if (segmentCounts > 3) {
+							IPath prefixPath = servicePath.removeLastSegments(3);
 
-			GradleUtil.refreshGradleProject(project);
+							servicePath = servicePath.makeRelativeTo(prefixPath);
+						}
+
+						if (servicePath.segmentCount() == 3) {
+							IPath serviceProjectLocation = servicePath.removeLastSegments(1);
+
+							String paretnProjectName = serviceProjectLocation.segment(
+								serviceProjectLocation.segmentCount() - 2);
+
+							IProject sbProject = CoreUtil.getProject(paretnProjectName);
+
+							if (sbProject.exists()) {
+								_serviceBuildProjects.add(sbProject);
+							}
+						}
+					});
+
+				return true;
+			}
+			else if (ListUtil.isEmpty(serviceXmlFiles)) {
+				return getServiceParentProject(_getParentProject(checkProject));
+			}
 		}
 		else {
-			try {
-				project.refreshLocal(IResource.DEPTH_INFINITE, null);
-			}
-			catch (CoreException ce) {
-			}
+			return false;
 		}
+
+		return false;
+	}
+
+	protected void afterTask() {
+		Stream<IProject> stream = _serviceBuildProjects.stream();
+
+		stream.forEach(_gradleProject -> GradleUtil.refreshGradleProject(_gradleProject));
 	}
 
 	@Override
 	protected String getGradleTask() {
 		return "buildService";
 	}
+
+	@Override
+	protected void setEnableTaskAction(IAction action) {
+		_serviceBuildProjects.clear();
+		boolean enabled = getServiceParentProject(project);
+
+		action.setEnabled(enabled);
+	}
+
+	private IProject _getParentProject(IProject checkProject) {
+		ProjectConnection connection = null;
+
+		GradleConnector connector = GradleConnector.newConnector().forProjectDirectory(
+			checkProject.getLocation().toFile());
+
+		connection = connector.connect();
+
+		ModelBuilder<EclipseProject> modelBuilder = connection.model(EclipseProject.class);
+
+		EclipseProject eclipseProject = modelBuilder.get();
+
+		EclipseProject serviceParentEclipseProject = eclipseProject.getParent();
+
+		if (serviceParentEclipseProject != null) {
+			return CoreUtil.getProject(serviceParentEclipseProject.getProjectDirectory());
+		}
+
+		return null;
+	}
+
+	private List<IProject> _serviceBuildProjects;
 
 }
