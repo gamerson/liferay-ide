@@ -37,7 +37,6 @@ import org.eclipse.jdt.launching.sourcelookup.containers.JavaSourcePathComputer;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 
-
 /**
  * @author Gregory Amerson
  */
@@ -59,7 +58,9 @@ public class PortalSourcePathComputerDelegate extends JavaSourcePathComputer {
 		IWorkspaceProject workspaceProject = LiferayCore.create(IWorkspaceProject.class, server);
 
 		if (workspaceProject != null) {
-			addSourceContainers(configuration, monitor, sourceContainers, workspaceProject.getProject());
+			// TODO ignore as IDE-3943 and wait for Target Platform
+
+			// addSourceContainers(configuration, monitor, sourceContainers, workspaceProject.getProject());
 		}
 
 		Stream.of(

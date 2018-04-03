@@ -158,7 +158,7 @@ public class LiferayGradleWorkspaceProjectProvider
 			LiferayWorkspaceUtil.getWorkspaceProject()
 		).filter(
 			workspaceProject -> {
-				IPath workspaceLocation = workspaceProject.getRawLocation();
+				IPath workspaceLocation = workspaceProject.getLocation();
 
 				return workspaceLocation.isPrefixOf(liferayHome);
 			}
