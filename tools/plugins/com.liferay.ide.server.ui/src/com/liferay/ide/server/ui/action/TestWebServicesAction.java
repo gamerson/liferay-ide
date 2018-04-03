@@ -50,7 +50,7 @@ public class TestWebServicesAction extends AbstractServerRunningAction
         super();
     }
 
-    public void run( IAction action )
+    public void runAction( IAction action )
     {
         if( selectedServer == null && selectedModule == null )
         {
