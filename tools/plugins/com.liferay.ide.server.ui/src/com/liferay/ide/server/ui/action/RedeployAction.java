@@ -53,7 +53,7 @@ public class RedeployAction extends AbstractServerRunningAction
         return IServer.STATE_STARTED | IServer.STATE_STOPPED;
     }
 
-    public void run( IAction action )
+    public void runAction( IAction action )
     {
         if( selectedModules == null )
         {

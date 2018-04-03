@@ -49,7 +49,7 @@ public class OpenGogoShellAction extends AbstractServerRunningAction
         return IServer.STATE_STARTED;
     }
 
-    public void run( IAction action )
+    public void runAction( IAction action )
     {
         if( selectedServer != null )
         {

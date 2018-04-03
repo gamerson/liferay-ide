@@ -30,6 +30,7 @@ import org.eclipse.wst.server.core.IServer;
 
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class OpenLiferayHomeFolderServerAction extends AbstractServerRunningAction
 {
@@ -45,7 +46,7 @@ public class OpenLiferayHomeFolderServerAction extends AbstractServerRunningActi
         return IServer.STATE_STARTED | IServer.STATE_STARTING | IServer.STATE_STOPPING | IServer.STATE_STOPPED;
     }
 
-    public void run( IAction action )
+    public void runAction( IAction action )
     {
         if( selectedServer != null )
         {
