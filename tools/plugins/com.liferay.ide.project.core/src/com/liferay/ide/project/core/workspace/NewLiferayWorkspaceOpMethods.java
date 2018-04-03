@@ -76,11 +76,8 @@ public class NewLiferayWorkspaceOpMethods {
 					bundlesLocation = new Path(location).append("bundles");
 				}
 
-				if (FileUtil.exists(bundlesLocation) &&
-					LiferayServerCore.isPortalBundlePath(bundlesLocation)) {
-
-					ServerUtil.addPortalRuntimeAndServer(
-						serverRuntimeName, bundlesLocation, monitor);
+				if (FileUtil.exists(bundlesLocation) && LiferayServerCore.isPortalBundlePath(bundlesLocation)) {
+					ServerUtil.addPortalRuntimeAndServer(serverRuntimeName, bundlesLocation, monitor);
 				}
 				else {
 					ProjectCore.logWarning("bundles init failed");
