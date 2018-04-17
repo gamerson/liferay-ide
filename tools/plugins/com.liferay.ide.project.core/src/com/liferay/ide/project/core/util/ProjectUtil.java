@@ -112,6 +112,7 @@ import org.osgi.framework.Version;
  * @author Kuo Zhang
  * @author Terry Jia
  * @author Simon Jiang
+ * @author Charles Wu
  */
 @SuppressWarnings("restriction")
 public class ProjectUtil {
@@ -277,16 +278,26 @@ public class ProjectUtil {
 		}
 	}
 
-	public static IFile createEmptyProjectFile(String fileName, IFolder folder) throws CoreException {
-		IFile emptyFile = folder.getFile(fileName);
 
-		if (FileUtil.exists(emptyFile)) {
-			return emptyFile;
+	public static IFile createNewProjectFile(String fileName, IFolder folder, InputStream inputStream) {
+		IFile newFile = folder.getFile(fileName);
+
+		if (FileUtil.exists(newFile)) {
+			return newFile;
 		}
 
-		emptyFile.create(new ByteArrayInputStream(StringPool.EMPTY.getBytes()), true, null);
+		try {
+			if (inputStream == null) {
+				inputStream = new ByteArrayInputStream(StringPool.EMPTY.getBytes());
+			}
 
-		return emptyFile;
+			newFile.create(inputStream, true, null);
+		}
+		catch (CoreException e) {
+			ProjectCore.logError(e);
+		}
+
+		return newFile;
 	}
 
 	public static IProject createExistingProject(ProjectRecord record, IPath sdkLocation, IProgressMonitor monitor)

@@ -16,6 +16,7 @@ package com.liferay.ide.ui.dialog;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jdt.internal.ui.viewsupport.FilteredElementTreeSelectionDialog;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -42,7 +43,7 @@ public class StringsFilteredDialog extends FilteredElementTreeSelectionDialog {
 
 		setComparator(new StringsViewerComparator());
 
-		addFilter(new StringsFilter(fixedPattern));
+		addFilter(getViewFilter(fixedPattern));
 
 		setValidator(new StringsSelectionValidator(false));
 
@@ -85,6 +86,10 @@ public class StringsFilteredDialog extends FilteredElementTreeSelectionDialog {
 	public static class StringsLabelProvider extends LabelProvider {
 	}
 
+	protected ViewerFilter getViewFilter(String fixedPattern) {
+		return new StringsFilter(fixedPattern);
+	}
+	
 	public class StringsFilter extends ViewerFilter {
 
 		public StringsFilter(String fixedPattern) {
@@ -114,7 +119,7 @@ public class StringsFilteredDialog extends FilteredElementTreeSelectionDialog {
 		}
 
 		public IStatus validate(Object[] selection) {
-			return Status.OK_STATUS;
+			return new StatusInfo();
 		}
 
 	}
