@@ -20,6 +20,7 @@ import com.liferay.ide.ui.swtbot.condition.CancelIvyJobCondition;
 import com.liferay.ide.ui.swtbot.condition.CancelValidateJobCondition;
 import com.liferay.ide.ui.swtbot.condition.CloseProjectJobCondition;
 import com.liferay.ide.ui.swtbot.condition.ConsoleContentCondition;
+import com.liferay.ide.ui.swtbot.condition.GradleSynchronousCondition;
 import com.liferay.ide.ui.swtbot.condition.IvyJobsCondition;
 import com.liferay.ide.ui.swtbot.condition.NoRunningJobsCondition;
 import com.liferay.ide.ui.swtbot.condition.RefreshForSubnodeCondition;
@@ -56,6 +57,10 @@ public class JobAction extends UIAction {
 
 	public void waitForCancelValidate(String projectName) {
 		ide.waitUntil(new CancelValidateJobCondition(projectName), 120 * 1000);
+	}
+
+	public void waitForGradle() {
+		ide.waitUntil(new GradleSynchronousCondition());
 	}
 
 	public void waitForCloseProject() {
