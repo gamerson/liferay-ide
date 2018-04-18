@@ -21,7 +21,7 @@ import com.liferay.ide.core.util.FileUtil;
 
 import java.io.File;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,6 +57,7 @@ import org.eclipse.debug.core.ILaunchManager;
 /**
  * @author Andy Wu
  * @author Lovett Li
+ * @author Terry Jia
  */
 @SuppressWarnings("restriction")
 public class GradleUtil {
@@ -96,7 +97,8 @@ public class GradleUtil {
 
 		build.synchronize(NewProjectHandler.IMPORT_AND_MERGE, AsyncHandler.NO_OP);
 
-		waitImport();
+		// We should import asynchronous or not wait the gradle job finished 
+		// waitImport();
 
 		return Status.OK_STATUS;
 	}
@@ -137,9 +139,13 @@ public class GradleUtil {
 	}
 
 	public static void runGradleTask(IProject project, String[] tasks, IProgressMonitor monitor) throws CoreException {
+		runGradleTask(project, tasks, new String[0], monitor);
+	}
+
+	public static void runGradleTask(IProject project, String[] tasks, String[] arguments, IProgressMonitor monitor) throws CoreException {
 		ILaunchConfiguration launchConfiguration =
 			CorePlugin.gradleLaunchConfigurationManager().getOrCreateRunConfiguration(
-				_getRunConfigurationAttributes(project, tasks));
+				_getRunConfigurationAttributes(project, Arrays.asList(tasks), Arrays.asList(arguments)));
 
 		final ILaunchConfigurationWorkingCopy launchConfigurationWC = launchConfiguration.getWorkingCopy();
 
@@ -175,7 +181,7 @@ public class GradleUtil {
 		}
 	}
 
-	private static GradleRunConfigurationAttributes _getRunConfigurationAttributes(IProject project, String[] tasks) {
+	private static GradleRunConfigurationAttributes _getRunConfigurationAttributes(IProject project, List<String> tasks, List<String> arguments) {
 		File rootDir = project.getLocation().toFile();
 
 		BuildConfiguration buildConfig = CorePlugin.configurationManager().loadBuildConfiguration(rootDir);
@@ -194,18 +200,12 @@ public class GradleUtil {
 		String gradleUserHome =
 			buildConfig.getGradleUserHome() == null ? "" : buildConfig.getGradleUserHome().getAbsolutePath();
 
-		List<String> taskList = new ArrayList<>();
-
-		for (String task : tasks) {
-			taskList.add(task);
-		}
-
 		String serializeString = GradleDistributionSerializer.INSTANCE.serializeToString(
 			buildConfig.getGradleDistribution());
 
 		return new GradleRunConfigurationAttributes(
-			taskList, projectDirectoryExpression, serializeString, gradleUserHome, null,
-			Collections.<String>emptyList(), Collections.<String>emptyList(), true, true,
+			tasks, projectDirectoryExpression, serializeString, gradleUserHome, null,
+			Collections.<String>emptyList(), arguments, true, true,
 			buildConfig.isOverrideWorkspaceSettings(), buildConfig.isOfflineMode(), buildConfig.isBuildScansEnabled());
 	}
 

@@ -20,6 +20,7 @@ import com.liferay.blade.gradle.model.CustomModel;
 import com.liferay.ide.core.BaseLiferayProject;
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.IResourceBundleProject;
+import com.liferay.ide.core.IWatchableProject;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
@@ -38,11 +39,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -51,13 +56,14 @@ import org.eclipse.jdt.core.JavaCore;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
+import org.gradle.tooling.model.GradleProject;
 
 /**
  * @author Gregory Amerson
  * @author Terry Jia
  * @author Andy Wu
  */
-public class LiferayGradleProject extends BaseLiferayProject implements IBundleProject, IResourceBundleProject {
+public class LiferayGradleProject extends BaseLiferayProject implements IBundleProject, IResourceBundleProject, IWatchableProject {
 
 	public LiferayGradleProject(IProject project) {
 		super(project);
@@ -353,5 +359,85 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 	}
 
 	private static final String[] _ignorePaths = {".gradle", "build", "dist", "liferay-theme.json"};
+
+	public void watch() {
+		Job[] jobs = Job.getJobManager().find(_watch_job_name);
+
+		if (ListUtil.isNotEmpty(jobs)) {
+			return;
+		}
+
+		Job job = new Job(_watch_job_name) {
+
+			public boolean belongsTo(Object family) {
+				return _watch_job_name.equals(family);
+			}
+
+			@Override
+			public IStatus run(IProgressMonitor monitor) {
+				IStatus status = Status.OK_STATUS;
+
+				try {
+					GradleUtil.runGradleTask(getProject(), new String[] {
+						"watch"
+					}, new String[] {
+						"-t"
+					}, monitor);
+				}
+				catch (CoreException e) {
+					status = GradleCore.createErrorStatus(e);
+				}
+
+				return status;
+			}
+
+		};
+
+		job.setSystem(true);
+
+		job.schedule();
+	}
+
+
+	@Override
+	public void unwatch() {
+		Job[] jobs = Job.getJobManager().find(_watch_job_name);
+
+		if (ListUtil.isNotEmpty(jobs)) {
+			jobs[0].cancel();
+		}
+	}
+
+	@Override
+	public boolean supported() {
+		boolean supported = false;
+
+		ProjectConnection connection = null;
+
+		IPath location = getProject().getLocation();
+
+		File projectFile = location.toFile();
+
+		try {
+			GradleConnector connector = GradleConnector.newConnector().forProjectDirectory(projectFile);
+
+			connection = connector.connect();
+
+			GradleProject project = connection.getModel(GradleProject.class);
+
+			supported = project.getTasks().stream().filter(task -> "watch".equals(task.getName())).findFirst().isPresent();
+		}
+		catch (Exception e) {
+		}
+		finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+
+		return supported;
+	}
+
+	private final String _watch_job_name = "watching on " + getProject().getName();
 
 }

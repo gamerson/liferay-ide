@@ -82,6 +82,8 @@ public class WizardAction extends UIAction {
 		_jobAction.waitForShellClosed(title);
 
 		ide.sleepLinux(2000);
+
+		_jobAction.waitForGradle();
 	}
 
 	public Button getBackBtn() {
