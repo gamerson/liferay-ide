@@ -16,6 +16,7 @@
 package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.IWatchableProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
@@ -103,6 +104,13 @@ public class BundlePublishFullAdd extends BundlePublishOperation
 
             if( bundleProject != null )
             {
+				if ((bundleProject instanceof IWatchableProject) && (server.getServerState() == IServer.STATE_STARTED)
+					&& (((IWatchableProject) bundleProject)).supported()) {
+					IWatchableProject watchableProject = (IWatchableProject) bundleProject;
+
+					watchableProject.watch();
+				}
+				else {
                 // TODO catch error in getOutputJar and show a popup notification instead
 
                 monitor.subTask( "Building " + module.getName() + " output bundle..." );
@@ -135,6 +143,7 @@ public class BundlePublishFullAdd extends BundlePublishOperation
                 catch( Exception e )
                 {
                     retval = LiferayServerCore.error( "Deploy module project error", e );
+                }
                 }
             }
             else

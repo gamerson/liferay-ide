@@ -14,6 +14,9 @@
  *******************************************************************************/
 package com.liferay.ide.server.core.portal;
 
+import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.IWatchableProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
 
@@ -31,6 +34,7 @@ import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
@@ -132,8 +136,30 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
                         LiferayServerCore.logError( "Could not reinitialize source lookup director", e );
                     }
                 }
+                else if((event.getKind() & ServerEvent.SERVER_CHANGE)>0 && event.getState() == IServer.STATE_STARTED) {
+					IModule[] modules = server.getModules();
+
+					for (IModule module : modules) {
+						IBundleProject project = LiferayCore.create(IBundleProject.class, module.getProject());
+						if (project != null && project instanceof IWatchableProject
+							&& ((IWatchableProject) project).supported()) {
+							((IWatchableProject) project).watch();
+						}
+					}
+                }
                 else if((event.getKind() & ServerEvent.SERVER_CHANGE)>0 && event.getState() == IServer.STATE_STOPPED)
                 {
+					IModule[] modules = server.getModules();
+
+					for (IModule module : modules) {
+						IBundleProject project = LiferayCore.create(IBundleProject.class, module.getProject());
+
+						if (project != null && project instanceof IWatchableProject
+							&& ((IWatchableProject) project).supported()) {
+							((IWatchableProject) project).unwatch();
+						}
+					}
+
                     server.removeServerListener( this );
                 }
             }

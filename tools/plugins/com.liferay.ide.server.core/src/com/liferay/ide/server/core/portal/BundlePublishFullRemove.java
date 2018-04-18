@@ -16,6 +16,7 @@
 package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.IWatchableProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
@@ -61,6 +62,10 @@ public class BundlePublishFullRemove extends BundlePublishOperation
 
             if( bundleProject != null )
             {
+				if (bundleProject instanceof IWatchableProject) {
+					((IWatchableProject) bundleProject).unwatch();
+				}
+				else {
                 final String symbolicName = bundleProject.getSymbolicName();
 
                 if( this.server.getServerState() == IServer.STATE_STARTED )
@@ -68,6 +73,7 @@ public class BundlePublishFullRemove extends BundlePublishOperation
                     monitor.subTask( "Remotely undeploying " + module.getName() + " from Liferay module framework..." );
 
                     status = remoteUninstall( bundleProject, symbolicName , monitor);
+                }
                 }
 
                 if( status != null && status.isOK() )
