@@ -696,8 +696,8 @@ public class WizardAction extends UIAction {
 			return _newLiferayWorkspaceWizard.getDownloadLiferayBundle();
 		}
 
-		public String getBundleUrl() {
-			return _newLiferayWorkspaceWizard.getBundleUrl().getText();
+		public Text getBundleUrl() {
+			return _newLiferayWorkspaceWizard.getBundleUrl();
 		}
 
 		public void prepareGradle(String projectName) {

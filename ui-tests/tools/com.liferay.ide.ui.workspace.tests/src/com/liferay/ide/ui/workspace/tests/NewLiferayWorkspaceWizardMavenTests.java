@@ -14,8 +14,6 @@
 
 package com.liferay.ide.ui.workspace.tests;
 
-import static org.junit.Assert.assertTrue;
-
 import com.liferay.ide.ui.liferay.SwtbotBase;
 import com.liferay.ide.ui.liferay.support.project.ProjectSupport;
 
@@ -96,10 +94,6 @@ public class NewLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 		wizardAction.newLiferayWorkspace.selectDownloadLiferayBundle();
 
 		wizardAction.newLiferayWorkspace.prepareMaven(project.getName(), "7.1");
-
-		String bundleUrl = wizardAction.newLiferayWorkspace.getBundleUrl();
-
-		assertTrue(bundleUrl.contains("7.1"));
 
 		wizardAction.newLiferayWorkspace.deselectDownloadLiferayBundle();
 

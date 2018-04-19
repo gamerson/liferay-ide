@@ -45,10 +45,6 @@ public class Text extends AbstractWidget {
 		super(bot, label, index);
 	}
 
-	public String getText() {
-		return getWidget().getText();
-	}
-
 	public void setText(String text) {
 		getWidget().setText(text);
 	}
