@@ -261,6 +261,10 @@ public class CoreUtil {
 		return null;
 	}
 
+	public static IFile getFileFromWorkspaceRoot(IPath path) {
+		return getWorkspaceRoot().getFile(path);
+	}
+
 	public static IProject getLiferayProject(IResource resource) {
 		IProject project = null;
 
@@ -303,6 +307,7 @@ public class CoreUtil {
 				for (int j = 0; j < oldObjects.length; j++) {
 					if (oldObjects[j] == object) {
 						found = true;
+
 						break;
 					}
 				}
@@ -380,20 +385,22 @@ public class CoreUtil {
 		IClasspathEntry[] entries = project.readRawClasspath();
 
 		for (IClasspathEntry entry : entries) {
-			if ((entry.getEntryKind() != IClasspathEntry.CPE_SOURCE) || (entry.getPath().segmentCount() == 0)) {
+			IPath path = entry.getPath();
+
+			if ((entry.getEntryKind() != IClasspathEntry.CPE_SOURCE) || (path.segmentCount() == 0)) {
 				continue;
 			}
 
 			IContainer container = null;
 
-			if (entry.getPath().segmentCount() == 1) {
-				container = getProject(entry.getPath().segment(0));
+			if (path.segmentCount() == 1) {
+				container = getProject(path.segment(0));
 			}
 			else {
-				container = getWorkspaceRoot().getFolder(entry.getPath());
+				container = getWorkspaceRoot().getFolder(path);
 			}
 
-			if (!folders.contains(container) && container instanceof IFolder) {
+			if (!folders.contains(container) && (container instanceof IFolder)) {
 				folders.add((IFolder)container);
 			}
 		}
@@ -406,7 +413,7 @@ public class CoreUtil {
 	}
 
 	public static IWorkspaceRoot getWorkspaceRoot() {
-		return ResourcesPlugin.getWorkspace().getRoot();
+		return getWorkspace().getRoot();
 	}
 
 	public static IPath getWorkspaceRootLocation() {
@@ -456,16 +463,16 @@ public class CoreUtil {
 		return Platform.OS_MACOSX.equals(Platform.getOS());
 	}
 
+	public static boolean isNotNullOrEmpty(String val) {
+		return !isNullOrEmpty(val);
+	}
+
 	public static boolean isNullOrEmpty(String val) {
-		if ((val == null) || val.equals(StringPool.EMPTY) || val.trim().equals(StringPool.EMPTY)) {
+		if ((val == null) || val.equals(StringPool.EMPTY) || StringUtil.equals(val.trim(), StringPool.EMPTY)) {
 			return true;
 		}
 
 		return false;
-	}
-
-	public static boolean isNotNullOrEmpty(String val) {
-		return !isNullOrEmpty(val);
 	}
 
 	public static boolean isNumeric(String str) {

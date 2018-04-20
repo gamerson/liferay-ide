@@ -23,6 +23,14 @@ import static com.liferay.ide.core.util.StringPool.SINGLE_QUOTE_CHAR;
  */
 public class StringUtil {
 
+	public static boolean equals(String string1, String string2) {
+		if ((string1 == null) || (string2 == null)) {
+			return false;
+		}
+
+		return string1.equals(string2);
+	}
+
 	public static boolean isQuoted(String string) {
 		if ((string == null) || (string.length() < 2)) {
 			return false;
@@ -89,6 +97,14 @@ public class StringUtil {
 		sb.append(content.substring(position, content.length()));
 
 		return sb.toString();
+	}
+
+	public static String trim(String string) {
+		if (string == null) {
+			return null;
+		}
+
+		return string.trim();
 	}
 
 }

@@ -32,6 +32,8 @@ import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
+import java.net.URI;
+
 import java.nio.file.Files;
 
 import java.util.ArrayList;
@@ -215,8 +217,12 @@ public class FileUtil {
 	}
 
 	public static boolean exists(IPath path) {
-		if ((path != null) && path.toFile().exists()) {
-			return true;
+		if (path != null) {
+			File file = path.toFile();
+
+			if (file.exists()) {
+				return true;
+			}
 		}
 
 		return false;
@@ -255,7 +261,9 @@ public class FileUtil {
 			return null;
 		}
 
-		return file.getLocation().toFile();
+		IPath location = file.getLocation();
+
+		return location.toFile();
 	}
 
 	public static File getFile(IPath path) {
@@ -266,12 +274,28 @@ public class FileUtil {
 		return path.toFile();
 	}
 
+	public static String getFileName(File file) {
+		if (exists(file)) {
+			return file.getName();
+		}
+
+		return null;
+	}
+
+	public static File getParent(File file) {
+		if (exists(file)) {
+			return file.getParentFile();
+		}
+
+		return null;
+	}
+
 	public static IContainer getWorkspaceContainer(File file) {
 		IWorkspaceRoot root = CoreUtil.getWorkspaceRoot();
 
 		IPath path = new Path(file.getAbsolutePath());
 
-		IContainer[] containers = root.findContainersForLocationURI(path.toFile().toURI());
+		IContainer[] containers = root.findContainersForLocationURI(toURI(path.toFile()));
 
 		if (containers.length == 0) {
 			return null;
@@ -285,14 +309,16 @@ public class FileUtil {
 
 		IPath path = new Path(file.getAbsolutePath());
 
-		IFile[] files = root.findFilesForLocationURI(path.toFile().toURI());
+		IFile[] files = root.findFilesForLocationURI(toURI(path.toFile()));
 
 		if (files.length == 0) {
 			return null;
 		}
 
 		for (IFile wsFile : files) {
-			String projectName = wsFile.getProject().getName();
+			IProject project = wsFile.getProject();
+
+			String projectName = project.getName();
 
 			if (projectName.equals(expectedProjectName)) {
 				return wsFile;
@@ -303,15 +329,7 @@ public class FileUtil {
 	}
 
 	public static boolean hasChildren(File dir) {
-		if (isDir(dir) && dir.list().length > 0) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public static boolean isFile(File file) {
-		if (exists(file) && file.isFile()) {
+		if (isDir(dir) && ListUtil.isNotEmpty(dir.list())) {
 			return true;
 		}
 
@@ -320,6 +338,14 @@ public class FileUtil {
 
 	public static boolean isDir(File file) {
 		if (exists(file) && file.isDirectory()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean isFile(File file) {
+		if (exists(file) && file.isFile()) {
 			return true;
 		}
 
@@ -348,16 +374,17 @@ public class FileUtil {
 			IContainer wsContainer = getWorkspaceContainer(f);
 
 			if (wsContainer != null) {
+
 				// Should be a folder...
 
-				IFolder iFolder = (IFolder) wsContainer;
+				IFolder iFolder = (IFolder)wsContainer;
 
 				iFolder.create(true, true, null);
 			}
 			else {
-				boolean isSuccessful = f.mkdir();
+				boolean successful = f.mkdir();
 
-				if (!isSuccessful) {
+				if (!successful) {
 					String msg = NLS.bind(Msgs.failedToCreateDirectory, f.getAbsolutePath());
 
 					throw new CoreException(LiferayCore.createErrorStatus(msg));
@@ -399,7 +426,13 @@ public class FileUtil {
 	}
 
 	public static boolean notExists(IPath path) {
-		if ((path == null) || !path.toFile().exists()) {
+		if (path == null) {
+			return true;
+		}
+
+		File file = path.toFile();
+
+		if (!file.exists()) {
 			return true;
 		}
 
@@ -423,15 +456,17 @@ public class FileUtil {
 	}
 
 	public static boolean notExists(org.eclipse.sapphire.modeling.Path path) {
-		if ((path == null) || !path.toFile().exists()) {
+		if (path == null) {
+			return true;
+		}
+
+		File file = path.toFile();
+
+		if (!file.exists()) {
 			return true;
 		}
 
 		return false;
-	}
-
-	public static String readContents(IFile file) {
-		return readContents(getFile(file), false);
 	}
 
 	public static String readContents(File file) {
@@ -448,7 +483,6 @@ public class FileUtil {
 		try (FileReader fileReader = new FileReader(file);
 			BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
-
 			String line;
 
 			while ((line = bufferedReader.readLine()) != null) {
@@ -464,6 +498,10 @@ public class FileUtil {
 		}
 
 		return contents.toString();
+	}
+
+	public static String readContents(IFile file) {
+		return readContents(getFile(file), false);
 	}
 
 	public static String readContents(InputStream contents) throws IOException {
@@ -567,7 +605,7 @@ public class FileUtil {
 
 				return strs;
 			}
-			catch (IOException e) {
+			catch (IOException ioe) {
 				return null;
 			}
 		}
@@ -643,6 +681,14 @@ public class FileUtil {
 		return replaced;
 	}
 
+	public static URI toURI(File file) {
+		if (exists(file)) {
+			file.toURI();
+		}
+
+		return null;
+	}
+
 	public static void validateEdit(IFile... files) throws CoreException {
 		IWorkspace ws = CoreUtil.getWorkspace();
 
@@ -666,15 +712,19 @@ public class FileUtil {
 			return Msgs.folderValueInvalid;
 		}
 
-		IPath path = folder.getFolder(folderValue).getFullPath();
+		IFolder folder2 = folder.getFolder(folderValue);
 
-		IStatus result = CoreUtil.getWorkspace().validatePath(path.toString(), IResource.FOLDER);
+		IPath path = folder2.getFullPath();
+
+		IWorkspace workspace = CoreUtil.getWorkspace();
+
+		IStatus result = workspace.validatePath(path.toString(), IResource.FOLDER);
 
 		if (!result.isOK()) {
 			return result.getMessage();
 		}
 
-		if (folder.getFolder(new Path(folderValue)).exists()) {
+		if (exists(folder.getFolder(new Path(folderValue)))) {
 			return Msgs.folderAlreadyExists;
 		}
 
@@ -786,7 +836,9 @@ public class FileUtil {
 
 		transformer.transform(new DOMSource(document), new StreamResult(writer));
 
-		return writer.getBuffer().toString();
+		StringBuffer sb = writer.getBuffer();
+
+		return sb.toString();
 	}
 
 	private static class Msgs extends NLS {
