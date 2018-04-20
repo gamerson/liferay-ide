@@ -28,27 +28,22 @@ public enum ScriptLanguageType {
 		@EnumSerialization(primary = "beanshell")
 		@DefaultValue(text = "script.bsh")
 	BEANSHELL,
-
 	@Label(standard = "Drl")
 		@EnumSerialization(primary = "drl")
 		@DefaultValue(text = "script.drl")
 	DRL,
-
 	@Label(standard = "Groovy")
 		@EnumSerialization(primary = "groovy")
 		@DefaultValue(text = "script.groovy")
 	GROOVY,
-
 	@Label(standard = "Javascript")
 		@EnumSerialization(primary = "javascript")
 		@DefaultValue(text = "script.js")
 	JAVASCRIPT,
-
 	@Label(standard = "Python")
 		@EnumSerialization(primary = "python")
 		@DefaultValue(text = "script.py")
 	PYTHON,
-
 	@Label(standard = "Ruby")
 		@EnumSerialization(primary = "ruby")
 		@DefaultValue(text = "script.rb")

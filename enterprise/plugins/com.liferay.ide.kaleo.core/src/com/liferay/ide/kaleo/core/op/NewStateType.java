@@ -26,13 +26,11 @@ public enum NewStateType {
 	@Label(standard = "default")
 		@EnumSerialization(primary = "default")
 	DEFAULT,
-
-	@Label(standard = "start")
-		@EnumSerialization(primary = "start")
-	START,
-
 	@Label(standard = "end")
 		@EnumSerialization(primary = "end")
 	END,
+	@Label(standard = "start")
+		@EnumSerialization(primary = "start")
+	START,
 
 }

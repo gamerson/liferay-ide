@@ -39,8 +39,9 @@ public class RoleNamePossibleValuesMetaService extends Service {
 	protected String[] getRoleNames() {
 		Set<String> retval = new TreeSet<>();
 
-		for (String roleName : _additionalRoleNames.keySet()) {
-			Integer nameVlue = _additionalRoleNames.get(roleName);
+		for (Map.Entry<String, Integer> entry : _additionalRoleNames.entrySet()) {
+			String roleName = entry.getKey();
+			Integer nameVlue = entry.getValue();
 
 			if (nameVlue.intValue() > 0) {
 				retval.add(roleName);
