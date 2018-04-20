@@ -23,11 +23,13 @@ import static org.junit.Assert.assertTrue;
 import com.liferay.ide.core.ILiferayProjectImporter;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.project.core.tests.ProjectCoreBase;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
+import com.liferay.ide.project.core.workspace.BaseLiferayWorkspaceOp;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
 import java.io.File;
@@ -41,7 +43,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -50,8 +52,8 @@ import org.junit.Test;
 public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
 {
 
-    @BeforeClass
-    public static void removeAllProjects() throws Exception
+    @Before
+    public void removeAllProjects() throws Exception
     {
         IProgressMonitor monitor = new NullProgressMonitor();
 
@@ -103,6 +105,7 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
 
         IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
 
+        op.setProjectProvider("gradle-liferay-workspace");
         op.setWorkspaceName( projectName );
         op.setUseDefaultLocation( false );
         op.setLocation( workspaceLocation.toPortableString() );
@@ -159,4 +162,62 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
 
         assertTrue( CoreUtil.getProject( "testThemeWar2" ).exists() );
     }
+
+	@Test
+	public void testNewGradleLiferayWorkspaceWithBundle71() throws Exception {
+		NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
+
+		String projectName = "test-liferay-workspace";
+
+		op.setWorkspaceName(projectName);
+		op.setLiferayVersion("7.1");
+
+		IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
+
+		op.setProjectProvider("gradle-liferay-workspace");
+		op.setLocation(workspaceLocation.toPortableString());
+		op.setProvisionLiferayBundle(false);
+		op.execute(new ProgressMonitor());
+
+		String wsLocation = workspaceLocation.append(projectName).toPortableString();
+
+		File wsFile = new File(wsLocation);
+
+		File propertiesFile = new File(wsFile, "gradle.properties");
+
+		Properties prop = PropertiesUtil.loadProperties(propertiesFile);
+
+		String wsBundleUrl = (String) prop.get("liferay.workspace.bundle.url");
+
+		assertEquals(wsBundleUrl, BaseLiferayWorkspaceOp.LIFERAY_71_BUNDLE_URL);
+	}
+
+	@Test
+	public void testNewMavenLiferayWorkspaceWithBundle71() throws Exception {
+		NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
+
+		String projectName = "test-liferay-workspace";
+
+		op.setWorkspaceName(projectName);
+		op.setLiferayVersion("7.1");
+
+		IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
+
+		op.setProjectProvider("maven-liferay-workspace");
+		op.setLocation(workspaceLocation.toPortableString());
+		op.setProvisionLiferayBundle(false);
+		op.execute(new ProgressMonitor());
+
+		String wsLocation = workspaceLocation.append(projectName).toPortableString();
+
+		File wsFile = new File(wsLocation);
+
+		File xmlFile = new File(wsFile, "pom.xml");
+
+		String xml = FileUtil.readContents(xmlFile);
+
+		boolean is71BundleUrl = xml.contains(BaseLiferayWorkspaceOp.LIFERAY_71_BUNDLE_URL);
+
+		assertTrue(is71BundleUrl);
+	}
 }
