@@ -31,6 +31,7 @@ public class NewServiceWrapperClassDataModelProvider
 		IDataModel model, String qualifiedClassname, String qualifiedSuperclassname) {
 
 		hookModel = model;
+
 		this.qualifiedClassname = qualifiedClassname;
 		this.qualifiedSuperclassname = qualifiedSuperclassname;
 	}
