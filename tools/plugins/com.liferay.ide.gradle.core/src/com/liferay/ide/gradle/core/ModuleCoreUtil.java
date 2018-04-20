@@ -128,7 +128,9 @@ public class ModuleCoreUtil {
 						try {
 							IPath childProject = resource.getLocation().append(".project");
 
-							File childFile = childProject.toFile().getCanonicalFile();
+							File file = childProject.toFile();
+
+							File childFile = file.getCanonicalFile();
 
 							// don't check child project
 
@@ -138,7 +140,9 @@ public class ModuleCoreUtil {
 
 							String path = resource.getLocation().toPortableString();
 
-							if (path.contains("resources/META-INF/resources") && resource.getName().endsWith(".jsp")) {
+							String name = resource.getName();
+
+							if (path.contains("resources/META-INF/resources") && name.endsWith(".jsp")) {
 								list.add(path);
 							}
 						}
