@@ -26,11 +26,9 @@ public enum TemplateLanguageType {
 	@Label(standard = "Freemarker")
 		@EnumSerialization(primary = "freemarker")
 	FREEMARKER,
-
 	@Label(standard = "Text")
 		@EnumSerialization(primary = "text")
 	TEXT,
-
 	@Label(standard = "Velocity")
 		@EnumSerialization(primary = "velocity")
 	VELOCITY,

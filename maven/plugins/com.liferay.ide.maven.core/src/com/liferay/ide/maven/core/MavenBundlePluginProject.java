@@ -24,12 +24,14 @@ import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.server.remote.IRemoteServerPublisher;
 
 import java.io.File;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -126,16 +128,17 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
 
 		Stream<IMarker> buildProblemsStream = Stream.of(buildProblems);
 
-		List<IMarker> errorMarkerList = buildProblemsStream.filter(marker -> {
-			try {
-				int severirty = (int)marker.getAttribute(IMarker.SEVERITY);
+		List<IMarker> errorMarkerList = buildProblemsStream.filter(
+			marker -> {
+				try {
+					int severirty = (int)marker.getAttribute(IMarker.SEVERITY);
 
-				return (IMarker.SEVERITY_ERROR == severirty);
-			}
-			catch (CoreException e) {
-				return false;
-			}
-		}).collect(Collectors.toList());
+					return IMarker.SEVERITY_ERROR == severirty;
+				}
+				catch (CoreException ce) {
+					return false;
+				}
+			}).collect(Collectors.toList());
 
 		if (ListUtil.isNotEmpty(errorMarkerList)) {
 			return outputJar;

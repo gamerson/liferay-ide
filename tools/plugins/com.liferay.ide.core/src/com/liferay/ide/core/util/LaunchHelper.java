@@ -51,11 +51,15 @@ public class LaunchHelper implements IDebugEventSetListener {
 	}
 
 	public ILaunchConfigurationWorkingCopy createLaunchConfiguration() throws CoreException {
-		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
+		DebugPlugin debugPlugin = DebugPlugin.getDefault();
+
+		ILaunchManager manager = debugPlugin.getLaunchManager();
 
 		ILaunchConfigurationType type = manager.getLaunchConfigurationType(launchConfigTypeId);
 
-		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+		debugPlugin = DebugPlugin.getDefault();
+
+		ILaunchManager launchManager = debugPlugin.getLaunchManager();
 
 		String name = launchManager.generateLaunchConfigurationName(getNewLaunchConfigurationName());
 
@@ -69,9 +73,7 @@ public class LaunchHelper implements IDebugEventSetListener {
 
 		List<String> mementos = new ArrayList<>(classpath.length);
 
-		for (int i = 0; i < classpath.length; i++) {
-			IRuntimeClasspathEntry entry = classpath[i];
-
+		for (IRuntimeClasspathEntry entry : classpath) {
 			mementos.add(entry.getMemento());
 		}
 
@@ -115,9 +117,13 @@ public class LaunchHelper implements IDebugEventSetListener {
 			Object source = event.getSource();
 
 			if (source instanceof IProcess) {
-				if (((IProcess)source).getLaunch().equals(runningLaunch) && (event.getKind() == DebugEvent.TERMINATE)) {
+				ILaunch launch = ((IProcess)source).getLaunch();
+
+				if (launch.equals(runningLaunch) && (event.getKind() == DebugEvent.TERMINATE)) {
 					synchronized (this) {
-						DebugPlugin.getDefault().removeDebugEventListener(this);
+						DebugPlugin debugPlugin = DebugPlugin.getDefault();
+
+						debugPlugin.removeDebugEventListener(this);
 
 						// launchRunning = false;
 
@@ -173,12 +179,16 @@ public class LaunchHelper implements IDebugEventSetListener {
 		}
 
 		if (isLaunchSync()) {
-			DebugPlugin.getDefault().addDebugEventListener(this);
+			DebugPlugin debugPlugin = DebugPlugin.getDefault();
+
+			debugPlugin.addDebugEventListener(this);
 		}
 
 		ILaunch launch = config.launch(mode, new NullProgressMonitor());
 
-		IProcess process = launch.getProcesses().length > 0 ? launch.getProcesses()[0] : null;
+		IProcess[] processes = launch.getProcesses();
+
+		IProcess process = processes.length > 0 ? processes[0] : null;
 
 		if (isLaunchSync()) {
 			runningLaunch = launch;
@@ -267,9 +277,11 @@ public class LaunchHelper implements IDebugEventSetListener {
 			switch (entry.getClasspathProperty()) {
 				case IRuntimeClasspathEntry.USER_CLASSES:
 					model.addEntry(RuntimeClasspathModel.USER, entry);
+
 					break;
 
 				default:
+
 					break;
 			}
 		}

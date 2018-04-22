@@ -100,6 +100,7 @@ public class WorkflowDefinitionsActionProvider extends CommonActionProvider {
 
 	public void init(ICommonActionExtensionSite site) {
 		super.init(site);
+
 		_actionSite = site;
 		ICommonViewerSite viewerSite = site.getViewSite();
 

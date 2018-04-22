@@ -23,14 +23,12 @@ import org.eclipse.sapphire.modeling.annotations.Label;
 @Label(standard = "role type")
 public enum RoleType {
 
-	@Label(standard = "regular")
-		@EnumSerialization(primary = "regular")
-	REGULAR,
-
 	@Label(standard = "organization")
 		@EnumSerialization(primary = "organization")
 	ORGANIZATION,
-
+	@Label(standard = "regular")
+		@EnumSerialization(primary = "regular")
+	REGULAR,
 	@Label(standard = "site")
 		@EnumSerialization(primary = "site")
 	SITE,

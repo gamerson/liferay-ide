@@ -246,7 +246,9 @@ public class PropertiesUtil {
 			String resourceBundleValue = null;
 
 			for (IType type : srcJavaTypes) {
-				IPath path = type.getResource().getLocation();
+				IResource resource = type.getResource();
+
+				IPath path = resource.getLocation();
 
 				File file = path.toFile();
 
@@ -296,9 +298,11 @@ public class PropertiesUtil {
 			IFolder[] srcFolders = lrproject.getSourceFolders();
 
 			for (IFolder srcFolder : srcFolders) {
-				IPath path = srcFolder.getFullPath().append(resourceBundle + PROPERTIES_FILE_SUFFIX);
+				IPath fullPath = srcFolder.getFullPath();
 
-				IFile languageFile = CoreUtil.getWorkspaceRoot().getFile(path);
+				IPath path = fullPath.append(resourceBundle + PROPERTIES_FILE_SUFFIX);
+
+				IFile languageFile = CoreUtil.getFileFromWorkspaceRoot(path);
 
 				if (FileUtil.exists(languageFile)) {
 					retvals.add(languageFile);
@@ -340,9 +344,11 @@ public class PropertiesUtil {
 			String resourceBundleValue = (String)resourceBundles.toArray()[i];
 
 			for (IFolder srcFolder : srcFolders) {
-				IPath path = srcFolder.getFullPath().append(resourceBundleValue + PROPERTIES_FILE_SUFFIX);
+				IPath fullPath = srcFolder.getFullPath();
 
-				IFile languageFile = CoreUtil.getWorkspaceRoot().getFile(path);
+				IPath path = fullPath.append(resourceBundleValue + PROPERTIES_FILE_SUFFIX);
+
+				IFile languageFile = CoreUtil.getFileFromWorkspaceRoot(path);
 
 				if (FileUtil.exists(languageFile)) {
 					retvals.add(languageFile);
@@ -499,7 +505,9 @@ public class PropertiesUtil {
 	 *  Check if the file is a language properties file referenced from portlet.xml or liferay-hook.xml
 	 */
 	public static boolean isLanguagePropertiesFile(IFile targetFile) {
-		if (!targetFile.getName().endsWith(PROPERTIES_FILE_SUFFIX)) {
+		String targetFileName = targetFile.getName();
+
+		if (!targetFileName.endsWith(PROPERTIES_FILE_SUFFIX)) {
 			return false;
 		}
 
@@ -527,9 +535,13 @@ public class PropertiesUtil {
 
 				for (String resourceBundleValue : resourceBundleValues) {
 					for (IFolder srcFolder : srcFolders) {
-						String location = targetFileLocation.makeRelativeTo(srcFolder.getLocation()).toString();
+						IPath path = targetFileLocation.makeRelativeTo(srcFolder.getLocation());
 
-						if (location.replace(PROPERTIES_FILE_SUFFIX, "").matches(resourceBundleValue)) {
+						String location = path.toString();
+
+						location = location.replace(PROPERTIES_FILE_SUFFIX, "");
+
+						if (location.matches(resourceBundleValue)) {
 							return true;
 						}
 					}
@@ -539,9 +551,13 @@ public class PropertiesUtil {
 
 				for (String suportedLocaleValue : supportedLocaleValues) {
 					for (IFolder srcFolder : srcFolders) {
-						String location = targetFileLocation.makeRelativeTo(srcFolder.getLocation()).toString();
+						IPath path = targetFileLocation.makeRelativeTo(srcFolder.getLocation());
 
-						if (location.replace(PROPERTIES_FILE_SUFFIX, "").matches(suportedLocaleValue)) {
+						String location = path.toString();
+
+						location = location.replace(PROPERTIES_FILE_SUFFIX, "");
+
+						if (location.matches(suportedLocaleValue)) {
 							return true;
 						}
 					}
@@ -553,9 +569,13 @@ public class PropertiesUtil {
 
 				for (String languagePropertyValue : languagePropertyValues) {
 					for (IFolder srcFolder : srcFolders) {
-						String location = targetFileLocation.makeRelativeTo(srcFolder.getLocation()).toString();
+						IPath path = targetFileLocation.makeRelativeTo(srcFolder.getLocation());
 
-						if (location.replace(PROPERTIES_FILE_SUFFIX, "").matches(languagePropertyValue)) {
+						String location = path.toString();
+
+						location = location.replace(PROPERTIES_FILE_SUFFIX, "");
+
+						if (location.matches(languagePropertyValue)) {
 							return true;
 						}
 					}
@@ -597,9 +617,11 @@ public class PropertiesUtil {
 		}
 
 		try {
-			IPath path = container.getFullPath().append(relativePath + PROPERTIES_FILE_SUFFIX);
+			IPath fullPath = container.getFullPath();
 
-			IFile file = CoreUtil.getWorkspaceRoot().getFile(path);
+			IPath path = fullPath.append(relativePath + PROPERTIES_FILE_SUFFIX);
+
+			IFile file = CoreUtil.getFileFromWorkspaceRoot(path);
 
 			if (FileUtil.exists(file)) {
 				return new IFile[] {file};
@@ -628,7 +650,9 @@ public class PropertiesUtil {
 	 * Search all language properties files referenced by liferay-hook.xml
 	 */
 	private static synchronized LanguageFileInfo _getLanguageFileInfo(IFile liferayHookXml) {
-		if ((_tmpLanguageFileInfo == null) || !_tmpLanguageFileInfo.getLiferayHookXml().equals(liferayHookXml) ||
+		IFile tempHookXml = _tmpLanguageFileInfo.getLiferayHookXml();
+
+		if ((_tmpLanguageFileInfo == null) || !tempHookXml.equals(liferayHookXml) ||
 			(_tmpLanguageFileInfo.getModificationStamp() != liferayHookXml.getModificationStamp())) {
 
 			LanguageFileInfo retval = new LanguageFileInfo(liferayHookXml);
@@ -700,7 +724,9 @@ public class PropertiesUtil {
 	}
 
 	private static synchronized ResourceNodeInfo _getResourceNodeInfo(IFile portletXml) {
-		if ((_tmpResourceNodeInfo == null) || !_tmpResourceNodeInfo.getPortletXml().equals(portletXml) ||
+		IFile tempPortletXml = _tmpResourceNodeInfo.getPortletXml();
+
+		if ((_tmpResourceNodeInfo == null) || !tempPortletXml.equals(portletXml) ||
 			(_tmpResourceNodeInfo.getModificationStamp() != portletXml.getModificationStamp())) {
 
 			ResourceNodeInfo retval = new ResourceNodeInfo(portletXml);
@@ -740,7 +766,9 @@ public class PropertiesUtil {
 									}
 								}
 
-								if (ListUtil.isNotEmpty(_supportedLocaleValues) && ListUtil.isNotEmpty(resourceBundlesPatterns)) {
+								if (ListUtil.isNotEmpty(_supportedLocaleValues) &&
+									ListUtil.isNotEmpty(resourceBundlesPatterns)) {
+
 									String resourceBundleValueBase = resourceBundlesPatterns[0];
 
 									for (String supportedLocaleValue : _supportedLocaleValues) {
@@ -863,9 +891,9 @@ public class PropertiesUtil {
 
 		@Override
 		public boolean visit(IResourceProxy resourceProxy) {
-			if ((resourceProxy.getType() != IResource.FILE) ||
-				!resourceProxy.getName().endsWith(PROPERTIES_FILE_SUFFIX)) {
+			String proxyName = resourceProxy.getName();
 
+			if ((resourceProxy.getType() != IResource.FILE) || !proxyName.endsWith(PROPERTIES_FILE_SUFFIX)) {
 				return true;
 			}
 
@@ -875,9 +903,13 @@ public class PropertiesUtil {
 				return true;
 			}
 
-			IPath path = resource.getLocation().makeRelativeTo(_entryResource.getLocation());
+			IPath location = resource.getLocation();
 
-			String relativePath = path.toString().replace(PROPERTIES_FILE_SUFFIX, "");
+			IPath path = location.makeRelativeTo(_entryResource.getLocation());
+
+			String pathString = path.toString();
+
+			String relativePath = pathString.replace(PROPERTIES_FILE_SUFFIX, "");
 
 			try {
 				if (relativePath.matches(_matchedRelativePath)) {

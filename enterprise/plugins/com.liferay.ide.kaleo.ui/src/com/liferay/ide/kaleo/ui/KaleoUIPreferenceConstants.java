@@ -21,6 +21,6 @@ public interface KaleoUIPreferenceConstants {
 
 	public String EDITOR_PERSPECTIVE_SWITCH = "com.liferay.ide.kaleo.ui.editorPerspectiveSwitch";
 
-	public String prefix = "com.liferay.ide.kaleo.ui.";
+	public String PREFIX = "com.liferay.ide.kaleo.ui.";
 
 }

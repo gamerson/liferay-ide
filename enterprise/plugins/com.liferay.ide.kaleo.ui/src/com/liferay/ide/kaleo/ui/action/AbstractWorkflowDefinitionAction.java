@@ -35,6 +35,7 @@ public abstract class AbstractWorkflowDefinitionAction extends SelectionProvider
 
 	public AbstractWorkflowDefinitionAction(Shell shell, ISelectionProvider selectionProvider, String text) {
 		super(selectionProvider, text);
+
 		this.shell = shell;
 		setEnabled(false);
 	}

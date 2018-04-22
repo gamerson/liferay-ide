@@ -310,6 +310,7 @@ public class WorkflowDefinitionLayoutPersistenceService extends DiagramLayoutPer
 				}
 
 				retval = transitionData;
+
 				break;
 			}
 		}
@@ -380,17 +381,21 @@ public class WorkflowDefinitionLayoutPersistenceService extends DiagramLayoutPer
 		switch (event.getDiagramPageEventType()) {
 			case GridStateChange:
 				_setGridVisible(diagramPart.isGridVisible());
+
 				break;
 
 			case GuideStateChange:
 				_setGuidesVisible(diagramPart.isShowGuides());
+
 				break;
 
 			case DiagramSave:
 				_save();
+
 				break;
 
 			default:
+
 				break;
 		}
 	}
@@ -483,6 +488,7 @@ public class WorkflowDefinitionLayoutPersistenceService extends DiagramLayoutPer
 
 					if ((newPt.getX() != oldPt.getX()) || (newPt.getY() != oldPt.getY())) {
 						changed = true;
+
 						break;
 					}
 				}
@@ -521,6 +527,7 @@ public class WorkflowDefinitionLayoutPersistenceService extends DiagramLayoutPer
 			for (DiagramNodePart nodePart : part.getNodes()) {
 				if (!nodePart.getLocalModelElement().disposed() && _isNodeLayoutChanged(nodePart)) {
 					changed = true;
+
 					break;
 				}
 			}
@@ -528,6 +535,7 @@ public class WorkflowDefinitionLayoutPersistenceService extends DiagramLayoutPer
 			for (DiagramConnectionPart connPart : connService.list()) {
 				if (!connPart.getLocalModelElement().disposed() && _isConnectionLayoutChanged(connPart)) {
 					changed = true;
+
 					break;
 				}
 			}

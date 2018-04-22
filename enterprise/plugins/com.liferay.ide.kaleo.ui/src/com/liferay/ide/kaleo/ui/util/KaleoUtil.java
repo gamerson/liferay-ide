@@ -121,6 +121,7 @@ public class KaleoUtil {
 
 				if (languageId.equals(defaultLocale)) {
 					jsonTitleMap.put(languageId, titleValue);
+
 					break;
 				}
 			}

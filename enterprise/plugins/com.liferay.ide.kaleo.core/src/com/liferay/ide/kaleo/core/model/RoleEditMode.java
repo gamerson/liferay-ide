@@ -22,10 +22,8 @@ import org.eclipse.sapphire.modeling.annotations.Label;
 @Label(standard = "edit mode")
 public enum RoleEditMode {
 
-	@Label(standard = "by role id")
-	BY_ROLE_ID,
-
 	@Label(standard = "by name")
-	BY_NAME,
+	BY_NAME, @Label(standard = "by role id")
+	BY_ROLE_ID,
 
 }
