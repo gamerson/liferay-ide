@@ -609,7 +609,13 @@ public class MigrateProjectHandler extends AbstractHandler {
 		if (path.endsWith("java")) {
 			CompilationUnit ast = CUCache.getCU(file, FileUtil.readContents(file).toCharArray());
 
-			Name superClass = ((TypeDeclaration)ast.types().get(0)).getSuperclass();
+			List types = ast.types();
+
+			if (ListUtil.isEmpty(types)) {
+				return false;
+			}
+
+			Name superClass = ((TypeDeclaration)types.get(0)).getSuperclass();
 
 			if (superClass != null) {
 				return !_checkClassIgnore(ast, superClass.toString());
