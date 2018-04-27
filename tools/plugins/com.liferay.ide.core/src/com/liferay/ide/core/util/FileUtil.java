@@ -303,15 +303,7 @@ public class FileUtil {
 	}
 
 	public static boolean hasChildren(File dir) {
-		if (isDir(dir) && dir.list().length > 0) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public static boolean isFile(File file) {
-		if (exists(file) && file.isFile()) {
+		if (isDir(dir) && (dir.list().length > 0)) {
 			return true;
 		}
 
@@ -320,6 +312,14 @@ public class FileUtil {
 
 	public static boolean isDir(File file) {
 		if (exists(file) && file.isDirectory()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean isFile(File file) {
+		if (exists(file) && file.isFile()) {
 			return true;
 		}
 
@@ -348,16 +348,17 @@ public class FileUtil {
 			IContainer wsContainer = getWorkspaceContainer(f);
 
 			if (wsContainer != null) {
+
 				// Should be a folder...
 
-				IFolder iFolder = (IFolder) wsContainer;
+				IFolder iFolder = (IFolder)wsContainer;
 
 				iFolder.create(true, true, null);
 			}
 			else {
-				boolean isSuccessful = f.mkdir();
+				boolean successful = f.mkdir();
 
-				if (!isSuccessful) {
+				if (!successful) {
 					String msg = NLS.bind(Msgs.failedToCreateDirectory, f.getAbsolutePath());
 
 					throw new CoreException(LiferayCore.createErrorStatus(msg));
@@ -430,10 +431,6 @@ public class FileUtil {
 		return false;
 	}
 
-	public static String readContents(IFile file) {
-		return readContents(getFile(file), false);
-	}
-
 	public static String readContents(File file) {
 		return readContents(file, false);
 	}
@@ -447,7 +444,6 @@ public class FileUtil {
 
 		try (FileReader fileReader = new FileReader(file);
 			BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-
 
 			String line;
 
@@ -464,6 +460,10 @@ public class FileUtil {
 		}
 
 		return contents.toString();
+	}
+
+	public static String readContents(IFile file) {
+		return readContents(getFile(file), false);
 	}
 
 	public static String readContents(InputStream contents) throws IOException {
@@ -567,7 +567,7 @@ public class FileUtil {
 
 				return strs;
 			}
-			catch (IOException e) {
+			catch (IOException ioe) {
 				return null;
 			}
 		}

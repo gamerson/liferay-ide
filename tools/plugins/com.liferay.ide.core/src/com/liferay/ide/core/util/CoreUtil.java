@@ -303,6 +303,7 @@ public class CoreUtil {
 				for (int j = 0; j < oldObjects.length; j++) {
 					if (oldObjects[j] == object) {
 						found = true;
+
 						break;
 					}
 				}
@@ -415,7 +416,7 @@ public class CoreUtil {
 
 	public static Object invoke(String methodName, Object object, Class<?>[] argTypes, Object[] args)
 		throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
-			SecurityException {
+			   SecurityException {
 
 		Class<?> clazz = object.getClass();
 
@@ -456,16 +457,16 @@ public class CoreUtil {
 		return Platform.OS_MACOSX.equals(Platform.getOS());
 	}
 
+	public static boolean isNotNullOrEmpty(String val) {
+		return !isNullOrEmpty(val);
+	}
+
 	public static boolean isNullOrEmpty(String val) {
 		if ((val == null) || val.equals(StringPool.EMPTY) || val.trim().equals(StringPool.EMPTY)) {
 			return true;
 		}
 
 		return false;
-	}
-
-	public static boolean isNotNullOrEmpty(String val) {
-		return !isNullOrEmpty(val);
 	}
 
 	public static boolean isNumeric(String str) {
@@ -499,7 +500,7 @@ public class CoreUtil {
 		}
 	}
 
-	public static IProgressMonitor newSubMonitor(IProgressMonitor parent, int ticks) {
+	public static IProgressMonitor newSubmonitor(IProgressMonitor parent, int ticks) {
 		if (parent == null) {
 			return null;
 		}
