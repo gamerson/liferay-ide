@@ -331,6 +331,7 @@ public class WorkflowDefinitionEditor extends SapphireEditorForXml {
 
 					if ((value != null) && value.contains(titleCurrentValue)) {
 						localeCode = key.toString();
+
 						break;
 					}
 				}

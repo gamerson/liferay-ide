@@ -19,6 +19,7 @@ import com.liferay.ide.server.core.ILiferayServer;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
 import java.util.Locale;
 
 import org.eclipse.core.resources.IFile;
@@ -122,6 +123,7 @@ public class KaleoUtil {
 
 					if (languageId.equals(defaultLocale)) {
 						jsonTitleMap.put(languageId, titleValue);
+
 						break;
 					}
 				}
