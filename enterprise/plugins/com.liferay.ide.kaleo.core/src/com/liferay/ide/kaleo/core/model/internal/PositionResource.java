@@ -30,6 +30,7 @@ public class PositionResource extends Resource {
 
 	public PositionResource(Point point, Resource parent) {
 		super(parent);
+
 		_point = point;
 	}
 

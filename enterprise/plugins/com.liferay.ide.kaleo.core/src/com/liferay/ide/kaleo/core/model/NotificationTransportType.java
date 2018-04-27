@@ -26,11 +26,9 @@ public enum NotificationTransportType {
 	@Label(standard = "email")
 		@EnumSerialization(primary = "email")
 	EMAIL,
-
 	@Label(standard = "im")
 		@EnumSerialization(primary = "im")
 	IM,
-
 	@Label(standard = "private message")
 		@EnumSerialization(primary = "private-message")
 	PRIVATE_MESSAGE,
