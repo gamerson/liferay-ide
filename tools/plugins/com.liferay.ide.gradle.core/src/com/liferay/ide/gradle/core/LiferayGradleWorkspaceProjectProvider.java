@@ -31,6 +31,7 @@ import com.liferay.ide.server.util.ServerUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+
 import java.util.Optional;
 
 import org.eclipse.core.resources.IFile;
@@ -87,6 +88,13 @@ public class LiferayGradleWorkspaceProjectProvider
 		String bundleUrl = op.getBundleUrl().content(false);
 
 		return importProject(workspaceLocation, monitor, initBundle, bundleUrl);
+	}
+
+	@Override
+	public String getInitBundleUrl(String workspaceLocation) {
+		return LiferayWorkspaceUtil.getGradleProperty(
+			workspaceLocation, LiferayWorkspaceUtil.LIFERAY_WORKSPACE_BUNDLE_URL,
+			BaseLiferayWorkspaceOp.LIFERAY_70_BUNDLE_URL);
 	}
 
 	@Override
@@ -151,13 +159,22 @@ public class LiferayGradleWorkspaceProjectProvider
 		).map(
 			liferayRuntime -> liferayRuntime.getLiferayHome()
 		).map(
-			LiferayGradleWorkspaceProjectProvider::getWorkspaceProjectFromLiferayHome
+			LiferayGradleWorkspaceProjectProvider::_getWorkspaceProjectFromLiferayHome
 		).orElse(
 			null
 		);
 	}
 
-	private static IWorkspaceProject getWorkspaceProjectFromLiferayHome(final IPath liferayHome) {
+	@Override
+	public IStatus validateProjectLocation(String projectName, IPath path) {
+		IStatus retval = Status.OK_STATUS;
+
+		// TODO validation gradle project location
+
+		return retval;
+	}
+
+	private static IWorkspaceProject _getWorkspaceProjectFromLiferayHome(final IPath liferayHome) {
 		return Optional.ofNullable(
 			LiferayWorkspaceUtil.getWorkspaceProject()
 		).filter(
@@ -175,23 +192,6 @@ public class LiferayGradleWorkspaceProjectProvider
 		).orElse(
 			null
 		);
-	}
-
-	@Override
-	public String getInitBundleUrl(String workspaceLocation) {
-		return LiferayWorkspaceUtil.getGradleProperty(
-			workspaceLocation, LiferayWorkspaceUtil.LIFERAY_WORKSPACE_BUNDLE_URL,
-			BaseLiferayWorkspaceOp.LIFERAY_70_BUNDLE_URL
-		);
-	}
-
-	@Override
-	public IStatus validateProjectLocation(String projectName, IPath path) {
-		IStatus retval = Status.OK_STATUS;
-
-		// TODO validation gradle project location
-
-		return retval;
 	}
 
 }
