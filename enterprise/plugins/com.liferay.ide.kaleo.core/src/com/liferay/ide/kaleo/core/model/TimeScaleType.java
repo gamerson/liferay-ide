@@ -23,27 +23,23 @@ import org.eclipse.sapphire.modeling.annotations.Label;
 @Label(standard = "scale type")
 public enum TimeScaleType {
 
-	@Label(standard = "second")
-		@EnumSerialization(primary = "second")
-	SECOND,
-
-	@Label(standard = "minute")
-		@EnumSerialization(primary = "minute")
-	MINUTE,
-
-	@Label(standard = "hour")
-		@EnumSerialization(primary = "hour")
-	HOUR,
-
 	@Label(standard = "day")
 		@EnumSerialization(primary = "day")
 	DAY,
-
+	@Label(standard = "hour")
+		@EnumSerialization(primary = "hour")
+	HOUR,
+	@Label(standard = "minute")
+		@EnumSerialization(primary = "minute")
+	MINUTE,
+	@Label(standard = "second")
+		@EnumSerialization(primary = "second")
+	SECOND,
 	@Label(standard = "week")
 		@EnumSerialization(primary = "week")
 	WEEK,
-
 	@Label(standard = "year")
 		@EnumSerialization(primary = "year")
 	YEAR,
+
 }
