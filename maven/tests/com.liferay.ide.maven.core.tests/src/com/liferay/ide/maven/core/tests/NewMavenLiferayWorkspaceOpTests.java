@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.m2e.tests.common.JobHelpers;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.wst.server.core.IServer;
@@ -43,6 +44,7 @@ import org.junit.Test;
  * @author Andy Wu
  * @author Joye Luo
  */
+@SuppressWarnings("restriction")
 public class NewMavenLiferayWorkspaceOpTests
 {
 
@@ -51,6 +53,7 @@ public class NewMavenLiferayWorkspaceOpTests
     {
         for( IProject project : CoreUtil.getAllProjects() )
         {
+            project.close(new NullProgressMonitor());
             project.delete( true, new NullProgressMonitor() );
         }
     }
@@ -75,6 +78,18 @@ public class NewMavenLiferayWorkspaceOpTests
         op.setBundleUrl( bundleUrl );
 
         op.execute( new ProgressMonitor() );
+
+        JobHelpers.waitForJobs(job -> {
+
+            String jobName = job.getName();
+
+            if (jobName.equals("Init Liferay Bundle")) {
+                return true;
+            }
+
+            return false;
+
+        }, 30*60*1000);
 
         String projectLocation = workspaceLocation.append( projectName ).toPortableString();
 
@@ -114,6 +129,18 @@ public class NewMavenLiferayWorkspaceOpTests
             bundleUrl );
 
         op.execute( new ProgressMonitor() );
+
+        JobHelpers.waitForJobs(job -> {
+
+            String jobName = job.getName();
+
+            if (jobName.equals("Init Liferay Bundle")) {
+                return true;
+            }
+
+            return false;
+
+        }, 30*60*1000);
 
         String projectLocation = workspaceLocation.append( projectName ).toPortableString();
 
