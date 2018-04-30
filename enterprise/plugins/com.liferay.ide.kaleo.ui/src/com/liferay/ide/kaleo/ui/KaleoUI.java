@@ -95,6 +95,7 @@ public class KaleoUI extends AbstractUIPlugin {
 		for (IKaleoEditorHelper editoHelper : getDefault().getKaleoEditorHelpers()) {
 			if (editoHelper.getLanguageType().equals(languageType)) {
 				retval = editoHelper;
+
 				break;
 			}
 		}
@@ -112,6 +113,7 @@ public class KaleoUI extends AbstractUIPlugin {
 		for (IKaleoEditorHelper editoHelper : getDefault().getKaleoEditorHelpers()) {
 			if (editoHelper.getEditorId().equals(editorId)) {
 				retval = editoHelper;
+
 				break;
 			}
 		}
@@ -218,6 +220,7 @@ public class KaleoUI extends AbstractUIPlugin {
 
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+
 		_plugin = this;
 	}
 

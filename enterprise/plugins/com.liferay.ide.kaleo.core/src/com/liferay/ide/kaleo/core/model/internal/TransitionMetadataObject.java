@@ -38,7 +38,7 @@ public class TransitionMetadataObject {
 		if (this != obj) {
 			if (obj instanceof TransitionMetadataObject) {
 				try {
-					if (!(toJSONString().equals(((TransitionMetadataObject)obj).toJSONString()))) {
+					if (!toJSONString().equals(((TransitionMetadataObject)obj).toJSONString())) {
 						retval = false;
 					}
 				}

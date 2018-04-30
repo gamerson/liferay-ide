@@ -32,7 +32,9 @@ import org.w3c.dom.Element;
 public class WorkflowDefinitionRootElementController extends VersionedSchemaRootElementController {
 
 	public WorkflowDefinitionRootElementController() {
-		super(_xmlBindingPath, _namespacePattern, _schemaPattern, _namespaceTemplate, _schemaTemplate, _defaultVersion);
+		super(
+			_XML_BINDING_PATH, _namespacePattern, _schemaPattern, _NAMESPACE_TEMPLATE, _SCHEMA_TEMPLATE,
+			_DEFAULT_VERSION);
 	}
 
 	@Override
@@ -56,14 +58,18 @@ public class WorkflowDefinitionRootElementController extends VersionedSchemaRoot
 		}
 	}
 
+	private static final String _DEFAULT_VERSION = KaleoCore.DEFAULT_KALEO_VERSION;
+
+	private static final String _NAMESPACE_TEMPLATE = "urn:liferay.com:liferay-workflow_{0}";
+
+	private static final String _SCHEMA_TEMPLATE = "http://www.liferay.com/dtd/liferay-workflow-definition_{0}.xsd";
+
 	private static final String _XML_1998_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
 
-	private static final String _defaultVersion = KaleoCore.DEFAULT_KALEO_VERSION;
+	private static final String _XML_BINDING_PATH = WorkflowDefinition.class.getAnnotation(XmlBinding.class).path();
+
 	private static final Pattern _namespacePattern = Pattern.compile("urn:liferay.com:liferay-workflow_(.*)$");
-	private static final String _namespaceTemplate = "urn:liferay.com:liferay-workflow_{0}";
 	private static final Pattern _schemaPattern = Pattern.compile(
 		"urn:liferay.com:liferay-workflow_.*(http://www.liferay.com/dtd/liferay-workflow-definition_(.*).xsd)$");
-	private static final String _schemaTemplate = "http://www.liferay.com/dtd/liferay-workflow-definition_{0}.xsd";
-	private static final String _xmlBindingPath = WorkflowDefinition.class.getAnnotation(XmlBinding.class).path();
 
 }

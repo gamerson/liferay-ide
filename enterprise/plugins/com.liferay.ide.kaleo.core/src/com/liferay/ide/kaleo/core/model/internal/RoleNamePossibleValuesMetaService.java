@@ -24,6 +24,7 @@ import com.liferay.ide.kaleo.core.op.AssignableOp;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -39,8 +40,9 @@ public class RoleNamePossibleValuesMetaService extends Service {
 	protected String[] getRoleNames() {
 		Set<String> retval = new TreeSet<>();
 
-		for (String roleName : _additionalRoleNames.keySet()) {
-			Integer nameVlue = _additionalRoleNames.get(roleName);
+		for (Entry<String, Integer> map : _additionalRoleNames.entrySet()) {
+			String roleName = map.getKey();
+			Integer nameVlue = map.getValue();
 
 			if (nameVlue.intValue() > 0) {
 				retval.add(roleName);

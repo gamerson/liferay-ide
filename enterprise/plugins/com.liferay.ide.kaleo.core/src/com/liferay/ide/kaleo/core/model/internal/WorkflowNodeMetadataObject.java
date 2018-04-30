@@ -54,7 +54,7 @@ public class WorkflowNodeMetadataObject {
 					for (int i = 0; i < _transitionsMetadata.size(); i++) {
 						TransitionMetadataObject transitionMetadataObject = _transitionsMetadata.get(i);
 
-						if (!(transitionMetadataObject.equals(object._transitionsMetadata.get(i)))) {
+						if (!transitionMetadataObject.equals(object._transitionsMetadata.get(i))) {
 							retval = false;
 						}
 					}
