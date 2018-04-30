@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -242,10 +243,9 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IWebProj
 	}
 
 	private File[] _getSDKOutputFiles(IPath distPath) {
-
 		File[] distFiles = null;
 
-		if ( FileUtil.notExists(distPath)) {
+		if (FileUtil.notExists(distPath)) {
 			return null;
 		}
 
@@ -255,8 +255,7 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IWebProj
 
 					@Override
 					public boolean accept(File dir, String name) {
-
-						if ( FileUtil.isNotDir(dir)) {
+						if (FileUtil.isNotDir(dir)) {
 							return false;
 						}
 
@@ -265,10 +264,9 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IWebProj
 						return name.contains(location.lastSegment());
 					}
 
-				}
-			);
+				});
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 		}
 
 		return distFiles;
