@@ -21,16 +21,10 @@ import org.eclipse.sapphire.modeling.annotations.Label;
  */
 public enum AssignmentsEditMode {
 
-	@Label(standard = "specify the roles")
-	ROLES,
-
-	@Label(standard = "from a script")
-	SCRIPTED_ASSIGNMENT,
-
-	@Label(standard = "specify a single user")
-	USER,
-
 	@Label(standard = "resource actions")
-	RESOURCE_ACTIONS,
+	RESOURCE_ACTIONS, @Label(standard = "specify the roles")
+	ROLES, @Label(standard = "from a script")
+	SCRIPTED_ASSIGNMENT, @Label(standard = "specify a single user")
+	USER,
 
 }

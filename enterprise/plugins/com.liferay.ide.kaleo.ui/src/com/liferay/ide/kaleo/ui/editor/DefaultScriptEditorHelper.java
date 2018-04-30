@@ -87,6 +87,7 @@ public class DefaultScriptEditorHelper extends AbstractKaleoEditorHelper {
 			for (IConfigurationElement config : editorConfigs) {
 				if (editorId.equals(config.getAttribute("id"))) {
 					editorPart = (IEditorPart)config.createExecutableExtension("class");
+
 					break;
 				}
 			}

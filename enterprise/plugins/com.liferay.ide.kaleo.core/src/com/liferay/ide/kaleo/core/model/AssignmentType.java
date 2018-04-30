@@ -22,21 +22,11 @@ import org.eclipse.sapphire.modeling.annotations.Label;
 public enum AssignmentType {
 
 	@Label(standard = "assign to asset creator")
-	CREATOR,
-
-	@Label(standard = "assign to several role types")
-	ROLE_TYPE,
-
-	@Label(standard = "assign to a specific role by id")
-	ROLE,
-
-	@Label(standard = "write a script to determine assignments")
-	SCRIPTED_ASSIGNMENT,
-
-	@Label(standard = "assign to a specific user")
+	CREATOR, @Label(standard = "specify resource actions")
+	RESOURCE_ACTIONS, @Label(standard = "assign to a specific role by id")
+	ROLE, @Label(standard = "assign to several role types")
+	ROLE_TYPE, @Label(standard = "write a script to determine assignments")
+	SCRIPTED_ASSIGNMENT, @Label(standard = "assign to a specific user")
 	USER,
-
-	@Label(standard = "specify resource actions")
-	RESOURCE_ACTIONS
 
 }

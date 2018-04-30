@@ -23,16 +23,14 @@ import org.eclipse.sapphire.modeling.annotations.Label;
 @Label(standard = "execution type")
 public enum ExecutionType {
 
-	@Label(standard = "On entry")
-		@EnumSerialization(primary = "onEntry")
-	ON_ENTRY,
-
-	@Label(standard = "On exit")
-		@EnumSerialization(primary = "onExit")
-	ON_EXIT,
-
 	@Label(standard = "On assignment")
 		@EnumSerialization(primary = "onAssignment")
 	ON_ASSIGNMENT,
+	@Label(standard = "On entry")
+		@EnumSerialization(primary = "onEntry")
+	ON_ENTRY,
+	@Label(standard = "On exit")
+		@EnumSerialization(primary = "onExit")
+	ON_EXIT,
 
 }
