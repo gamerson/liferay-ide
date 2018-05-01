@@ -92,6 +92,17 @@
 		</runtime>
 	</extension>
 	<extension
+		id="com.liferay.ide.core.liferayWorkspaceNature"
+		point="org.eclipse.core.resources.natures"
+	>
+		<runtime>
+			<run
+				class="com.liferay.ide.core.LiferayWorkspaceNature"
+			>
+			</run>
+		</runtime>
+	</extension>
+	<extension
 		id="MigrationProblemMarker"
 		name="Migration Problem"
 		point="org.eclipse.core.resources.markers"

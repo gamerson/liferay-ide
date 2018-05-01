@@ -850,4 +850,20 @@
 		>
 		</liferayComponentTemplate>
 	</extension>
+	<extension
+		point="org.eclipse.ui.propertyPages">
+		<page
+			category="org.eclipse.ui.propertypages.info.file"
+			class="org.eclipse.ui.internal.ide.dialogs.ProjectLinkedResourcePage"
+			id="org.eclipse.ui.propertypages.project.linkedResourcesPage"
+			name="%linked_resources">
+			<filter
+				name="open"
+				value="true">
+			</filter>
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject"/>
+			</enabledWhen>
+		</page>
+	</extension>
 </plugin>
