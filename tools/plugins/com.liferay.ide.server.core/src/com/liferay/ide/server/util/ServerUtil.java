@@ -17,6 +17,7 @@ package com.liferay.ide.server.util;
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.ILiferayPortal;
 import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.IWatchableProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
@@ -196,6 +197,10 @@ public class ServerUtil {
 
 			targetRuntime.delete();
 		}
+	}
+
+	public static boolean enableWatch(IWatchableProject project) {
+		return (project != null) && project.enable();
 	}
 
 	public static IProject findProjectByContextName(String contextName) {
