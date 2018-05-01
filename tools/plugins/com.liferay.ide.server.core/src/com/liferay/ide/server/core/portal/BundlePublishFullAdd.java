@@ -15,6 +15,7 @@
 package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.IWatchableProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
@@ -68,33 +69,39 @@ public class BundlePublishFullAdd extends BundlePublishOperation {
 			IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
 
 			if (bundleProject != null) {
+				IWatchableProject watchableProject = LiferayCore.create(IWatchableProject.class, project);
 
-				// TODO catch error in getOutputJar and show a popup notification instead
+				if ((server.getServerState() == IServer.STATE_STARTED) && (watchableProject != null)) {
+					watchableProject.watch();
+				}
+				else {
+					// TODO catch error in getOutputJar and show a popup notification instead
 
-				monitor.subTask("Building " + module.getName() + " output bundle...");
+					monitor.subTask("Building " + module.getName() + " output bundle...");
 
-				try {
-					IPath outputJar = bundleProject.getOutputBundle(cleanBuildNeeded(), monitor);
+					try {
+						IPath outputJar = bundleProject.getOutputBundle(cleanBuildNeeded(), monitor);
 
-					if (FileUtil.exists(outputJar)) {
-						if (server.getServerState() == IServer.STATE_STARTED) {
-							monitor.subTask(
-								"Remotely deploying " + module.getName() + " to Liferay module framework...");
+						if (FileUtil.exists(outputJar)) {
+							if (server.getServerState() == IServer.STATE_STARTED) {
+								monitor.subTask(
+									"Remotely deploying " + module.getName() + " to Liferay module framework...");
 
-							retval = _remoteDeploy(bundleProject.getSymbolicName(), outputJar);
+								retval = _remoteDeploy(bundleProject.getSymbolicName(), outputJar);
+							}
+							else {
+								retval = _autoDeploy(outputJar);
+							}
+
+							portalServerBehavior.setModuleState2(new IModule[] {module}, IServer.STATE_STARTED);
 						}
 						else {
-							retval = _autoDeploy(outputJar);
+							retval = LiferayServerCore.error("Could not create output jar");
 						}
-
-						portalServerBehavior.setModuleState2(new IModule[] {module}, IServer.STATE_STARTED);
 					}
-					else {
-						retval = LiferayServerCore.error("Could not create output jar");
+					catch (Exception e) {
+						retval = LiferayServerCore.error("Deploy module project error", e);
 					}
-				}
-				catch (Exception e) {
-					retval = LiferayServerCore.error("Deploy module project error", e);
 				}
 			}
 			else {
@@ -202,5 +209,4 @@ public class BundlePublishFullAdd extends BundlePublishOperation {
 
 		return retval;
 	}
-
 }
