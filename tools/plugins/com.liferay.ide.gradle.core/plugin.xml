@@ -13,6 +13,14 @@
 		>
 		</liferayProjectProvider>
 		<liferayProjectProvider
+			class="com.liferay.ide.gradle.core.GradleWatchableProjectProvider"
+			displayName="Gradle Watchable"
+			id="com.liferay.ide.gradle.core.gradleWatchableProjectProvider"
+			projectType="watchable"
+			shortName="gradle-watchable"
+		>
+		</liferayProjectProvider>
+		<liferayProjectProvider
 			class="com.liferay.ide.gradle.core.GradleModuleFragmentProjectProvider"
 			displayName="Gradle"
 			id="com.liferay.ide.gradle.core.gradleModuleFragmentProjectProvider"

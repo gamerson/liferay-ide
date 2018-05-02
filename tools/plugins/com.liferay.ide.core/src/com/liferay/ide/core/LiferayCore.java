@@ -14,11 +14,9 @@
 
 package com.liferay.ide.core;
 
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
 
 import org.eclipse.core.net.proxy.IProxyService;
-import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;

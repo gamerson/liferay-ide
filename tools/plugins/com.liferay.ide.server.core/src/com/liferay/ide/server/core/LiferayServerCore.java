@@ -14,6 +14,7 @@
 
 package com.liferay.ide.server.core;
 
+import com.liferay.ide.core.IWatchableProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -614,6 +616,16 @@ public class LiferayServerCore extends Plugin {
 
 		ServerCore.removeRuntimeLifecycleListener(_runtimeLifecycleListener);
 		ServerCore.removeServerLifecycleListener(_serverLifecycleListener);
+
+		IProject[] projects = CoreUtil.getAllProjects();
+
+		for (IProject project : projects) {
+			IWatchableProject watchableProject = LiferayCore.create(IWatchableProject.class, project);
+
+			if (watchableProject != null) {
+				watchableProject.unwatch();
+			}
+		}
 	}
 
 	private boolean _addRuntimeToMemento(IRuntime runtime, IMemento memento) {

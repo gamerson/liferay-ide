@@ -14,6 +14,8 @@
 
 package com.liferay.ide.server.core.portal;
 
+import com.liferay.ide.core.IWatchableProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
 
@@ -33,6 +35,7 @@ import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
@@ -42,6 +45,7 @@ import org.eclipse.wst.server.core.ServerUtil;
 /**
  * @author Gregory Amerson
  * @author Charles Wu
+ * @author Terry Jia
  */
 public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
@@ -150,8 +154,31 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 							LiferayServerCore.logError("Could not reinitialize source lookup director", ce);
 						}
 					}
+					else if(((event.getKind() & ServerEvent.SERVER_CHANGE) > 0) &&
+							(event.getState() == IServer.STATE_STARTED)) {
+
+						IModule[] modules = server.getModules();
+
+						for (IModule module : modules) {
+							IWatchableProject project = LiferayCore.create(IWatchableProject.class, module.getProject());
+
+							if (project != null) {
+								project.watch();
+							}
+						}
+					}
 					else if (((event.getKind() & ServerEvent.SERVER_CHANGE) > 0) &&
 							 (event.getState() == IServer.STATE_STOPPED)) {
+
+						IModule[] modules = server.getModules();
+
+						for (IModule module : modules) {
+							IWatchableProject project = LiferayCore.create(IWatchableProject.class, module.getProject());
+
+							if (project != null) {
+								project.unwatch();
+							}
+						}
 
 						server.removeServerListener(this);
 					}
@@ -167,5 +194,4 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 			portalServer.cleanup();
 		}
 	}
-
 }

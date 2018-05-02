@@ -1710,4 +1710,27 @@
             id="com.liferay.ide.project.ui.quickfix.liferayQuickFix">
       </quickFixProcessor>
    </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="com.liferay.ide.project.ui.pref.ProjectSettingPage"
+            id="com.liferay.ui.workspaceproject.setting"
+            name="Liferay"
+            >
+         <filter name="nature" value="com.liferay.ide.core.liferayWorkspaceNature"/>
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IProject"/>
+         </enabledWhen>
+      </page>
+      <page
+            class="com.liferay.ide.project.ui.pref.ProjectSettingPage"
+            id="com.liferay.ui.project.setting"
+            name="Liferay"
+            >
+         <filter name="nature" value="com.liferay.ide.core.liferayNature"/>
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IProject"/>
+         </enabledWhen>
+     </page>
+   </extension>
 </plugin>
