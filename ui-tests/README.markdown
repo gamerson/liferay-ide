@@ -1,4 +1,5 @@
 # Liferay IDE Ui Tests
+# To run tests
 
 ## How to run ui tests in local command line
 1. make sure you already have the local ui testing repository under *ui-tests/com.liferay.ide.ui.testing-repository/target/repository* before you run the ui tests, if there is not or you run first time, use the following command in *ui-tests* folder to generate it:
