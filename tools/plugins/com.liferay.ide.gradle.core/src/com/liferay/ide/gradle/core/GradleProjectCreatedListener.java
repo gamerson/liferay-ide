@@ -16,8 +16,10 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.blade.gradle.model.CustomModel;
 import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.core.LiferayWorkspaceNature;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.io.File;
@@ -61,9 +63,45 @@ public class GradleProjectCreatedListener implements EventListener {
 		}
 	}
 
-	private void _configureIfLiferayProject(final IProject project) throws CoreException {
-		if (GradleProjectNature.isPresentOn(project) && !LiferayNature.hasNature(project)) {
-			final boolean[] needAddNature = new boolean[1];
+	private void _configureIfLiferayProject(IProject project) throws CoreException {
+		if (GradleProjectNature.isPresentOn(project)) {
+			if (!LiferayWorkspaceNature.hasNature(project) && LiferayWorkspaceUtil.isValidWorkspace(project)) {
+				Job job = new WorkspaceJob("Checking gradle configuration") {
+
+					@Override
+					public boolean belongsTo(Object family) {
+						if ((family != null) && family.toString().equals(GradleCore.JOB_FAMILY_ID)) {
+							return true;
+						}
+
+						return false;
+					}
+
+					@Override
+					public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+						try {
+							LiferayWorkspaceNature.addLiferayNature(project, monitor);
+						}
+						catch (CoreException e) {
+							GradleCore.logError("Unable to get tooling model", e);
+						}
+
+						return Status.OK_STATUS;
+					}
+
+				};
+
+				job.setRule(CoreUtil.getWorkspaceRoot());
+				job.schedule();
+
+				return;
+			}
+
+			if (LiferayNature.hasNature(project)) {
+				return;
+			}
+
+			boolean[] needAddNature = new boolean[1];
 
 			needAddNature[0] = false;
 
