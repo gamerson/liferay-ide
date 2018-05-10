@@ -46,6 +46,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -53,6 +54,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
@@ -79,6 +81,7 @@ import org.eclipse.swt.widgets.TaskItem;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextFileDocumentProvider;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -87,11 +90,10 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
- * The activator class controls the plugin life cycle
- *
  * @author Gregory Amerson
  */
 @SuppressWarnings({"restriction", "deprecation"})
@@ -124,14 +126,11 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 	public static IWorkbenchPage getActivePage() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 
-		return workbench.getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
+
+		return activeWorkbenchWindow.getActivePage();
 	}
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
 	public static LiferayUIPlugin getDefault() {
 		return _plugin;
 	}
@@ -156,7 +155,9 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 	public static void logError(String msg, Exception e) {
 		LiferayUIPlugin uiPlugin = getDefault();
 
-		uiPlugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, msg, e));
+		ILog log = uiPlugin.getLog();
+
+		log.log(new Status(IStatus.ERROR, PLUGIN_ID, msg, e));
 	}
 
 	/**
@@ -200,16 +201,13 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 		return fTextFileDocumentProvider;
 	}
 
-	/**
-	 * (non-Javadoc)
-	 * @see AbstractUIPlugin#start(org.osgi.framework.
-	 * BundleContext )
-	 */
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
 		_addRepository();
+
+		_enableGradleAutoSync();
 
 		_plugin = this;
 
@@ -217,15 +215,17 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 
 			@Override
 			public void serviceChanged(ServiceEvent event) {
-				String[] objectClass = (String[])event.getServiceReference().getProperty("objectClass");
+				ServiceReference<?> serviceReference = event.getServiceReference();
+
+				String[] objectClass = (String[])serviceReference.getProperty("objectClass");
 
 				if (event.getType() == ServiceEvent.UNREGISTERING) {
 					if (objectClass[0].equals("org.eclipse.e4.ui.workbench.IWorkbench")) {
 						IPath location = Platform.getLocation();
 
-						File file = new File(
-							location.append(".metadata/.plugins/org.eclipse.e4.workbench").toOSString(),
-							"workbench.xmi");
+						IPath workbenchLocation = location.append(".metadata/.plugins/org.eclipse.e4.workbench");
+
+						File file = new File(workbenchLocation.toOSString(), "workbench.xmi");
 
 						String content = FileUtil.readContents(file, true);
 
@@ -247,11 +247,6 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 		context.addServiceListener(_serviceListener);
 	}
 
-	/**
-	 * (non-Javadoc)
-	 * @see AbstractUIPlugin#stop(org.osgi.framework.
-	 * BundleContext )
-	 */
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		_plugin = null;
@@ -294,11 +289,9 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 
 		URI liferayUri = new URI("https://releases.liferay.com/tools/ide/latest/stable/");
 
-		boolean containLifreayUri = Stream.of(
-			knownRepositories
-		).anyMatch(
-			uri -> Objects.equals(uri, liferayUri)
-		);
+		Stream<URI> stream = Stream.of(knownRepositories);
+
+		boolean containLifreayUri = stream.anyMatch(uri -> Objects.equals(uri, liferayUri));
 
 		if (!containLifreayUri) {
 			repositoryTracker.addRepository(liferayUri, "Liferay IDE Stable releases", provisioningSession);
@@ -308,7 +301,9 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 	private void _applyWorkspaceBadge() {
 		IWorkspaceRoot workspaceRoot = CoreUtil.getWorkspaceRoot();
 
-		String workspaceName = workspaceRoot.getLocation().lastSegment();
+		IPath workspaceLocation = workspaceRoot.getLocation();
+
+		String workspaceName = workspaceLocation.lastSegment();
 
 		UIUtil.async(
 			new Runnable() {
@@ -339,12 +334,35 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 			});
 	}
 
+	private void _enableGradleAutoSync() {
+		IEclipsePreferences gradlePrefs = InstanceScope.INSTANCE.getNode("org.eclipse.buildship.core");
+
+		String autoSync = "auto.sync";
+
+		try {
+			String[] gradlePrefsKeys = gradlePrefs.keys();
+
+			Stream<String> gradlePrefsKeysSteam = Stream.of(gradlePrefsKeys);
+
+			boolean exist = gradlePrefsKeysSteam.anyMatch(
+				gradlePrefsKey -> Objects.equals(gradlePrefsKey, autoSync));
+
+			if (!exist) {
+				gradlePrefs.putBoolean(autoSync, true);
+
+				gradlePrefs.flush();
+			}
+		}
+		catch (BackingStoreException bse) {
+		}
+	}
+
 	private void _firstStartupComplete() {
 		_getPreferences().putBoolean(FIRST_STARTUP_COMPLETE, true);
 	}
 
 	private IEclipsePreferences _getPreferences() {
-		return new InstanceScope().getNode(PLUGIN_ID);
+		return InstanceScope.INSTANCE.getNode(PLUGIN_ID);
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -377,14 +395,18 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 			// manager.setSelected(eclipseProfile);
 			// manager.commitChanges(instanceScope);
 
-			instanceScope.getNode(JavaUI.ID_PLUGIN).flush();
+			IEclipsePreferences javaUiPrefs = instanceScope.getNode(JavaUI.ID_PLUGIN);
+
+			javaUiPrefs.flush();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		finally {
 			try {
-				instanceScope.getNode(JavaCore.PLUGIN_ID).flush();
+				IEclipsePreferences javaCorePrefs = instanceScope.getNode(JavaCore.PLUGIN_ID);
+
+				javaCorePrefs.flush();
 			}
 			catch (BackingStoreException bse) {
 			}
@@ -392,9 +414,11 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 	}
 
 	private boolean _isFirstStartup() {
-		IScopeContext[] scopes = {new InstanceScope()};
+		IScopeContext[] scopes = {InstanceScope.INSTANCE};
 
-		return !(Platform.getPreferencesService().getBoolean(PLUGIN_ID, FIRST_STARTUP_COMPLETE, false, scopes));
+		IPreferencesService prefsService = Platform.getPreferencesService();
+
+		return !(prefsService.getBoolean(PLUGIN_ID, FIRST_STARTUP_COMPLETE, false, scopes));
 	}
 
 	private void _lookupLiferay7SDKDir() {
@@ -440,7 +464,9 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 	}
 
 	private void _registerResolvers() {
-		ContextTypeRegistry templateContextRegistry = JavaPlugin.getDefault().getTemplateContextRegistry();
+		JavaPlugin javaPlugin = JavaPlugin.getDefault();
+
+		ContextTypeRegistry templateContextRegistry = javaPlugin.getTemplateContextRegistry();
 
 		Iterator<?> ctIter = templateContextRegistry.contextTypes();
 
@@ -450,7 +476,9 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 			if (next instanceof TemplateContextType) {
 				TemplateContextType contextType = (TemplateContextType)next;
 
-				if (contextType.getId().equals("java")) {
+				String contextId = contextType.getId();
+
+				if (contextId.equals("java")) {
 					contextType.addResolver(new ServiceClassNameResolver());
 				}
 			}
