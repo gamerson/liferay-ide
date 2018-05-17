@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.platform.PathBridge;
 
 /**
@@ -77,11 +78,13 @@ public class LiferayMavenWorkspaceProjectProvider
 			return ProjectCore.createErrorStatus(bclie);
 		}
 
-		String workspaceLocation = location.append(wsName).toPortableString();
-		boolean initBundle = op.getProvisionLiferayBundle().content();
-		String bundleUrl = op.getBundleUrl().content(false);
+		IPath workspaceLocation = location.append(wsName);
 
-		return importProject(workspaceLocation, monitor, initBundle, bundleUrl);
+		Value<Boolean> initBundle = op.getProvisionLiferayBundle();
+		Value<String> bundleUrl = op.getBundleUrl();
+
+		return importProject(
+			workspaceLocation.toPortableString(), monitor, initBundle.content(), bundleUrl.content(false));
 	}
 
 	@Override
