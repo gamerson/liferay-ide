@@ -15,6 +15,7 @@
 package com.liferay.ide.server.core.portal;
 
 import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.IWatchableProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
@@ -53,19 +54,24 @@ public class BundlePublishFullRemove extends BundlePublishOperation {
 			IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
 
 			if (bundleProject != null) {
-				String symbolicName = bundleProject.getSymbolicName();
-
-				if (server.getServerState() == IServer.STATE_STARTED) {
-					monitor.subTask("Remotely undeploying " + module.getName() + " from Liferay module framework...");
-
-					status = _remoteUninstall(bundleProject, symbolicName);
+				if (bundleProject instanceof IWatchableProject) {
+					((IWatchableProject)bundleProject).unwatch();
 				}
+				else {
+					String symbolicName = bundleProject.getSymbolicName();
 
-				if ((status != null) && status.isOK()) {
-					this.portalServerBehavior.setModulePublishState2(
-						new IModule[] {module}, IServer.PUBLISH_STATE_NONE);
+					if (server.getServerState() == IServer.STATE_STARTED) {
+						monitor.subTask("Remotely undeploying " + module.getName() + " from Liferay module framework...");
 
-					project.deleteMarkers(LiferayServerCore.BUNDLE_OUTPUT_ERROR_MARKER_TYPE, false, 0);
+						status = _remoteUninstall(bundleProject, symbolicName);
+					}
+
+					if ((status != null) && status.isOK()) {
+						this.portalServerBehavior.setModulePublishState2(
+							new IModule[] {module}, IServer.PUBLISH_STATE_NONE);
+
+						project.deleteMarkers(LiferayServerCore.BUNDLE_OUTPUT_ERROR_MARKER_TYPE, false, 0);
+					}
 				}
 			}
 			else {
@@ -108,5 +114,4 @@ public class BundlePublishFullRemove extends BundlePublishOperation {
 
 		return retval;
 	}
-
 }
