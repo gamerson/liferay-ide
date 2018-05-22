@@ -19,7 +19,6 @@ import com.liferay.ide.ui.liferay.support.server.PureTomcat70Support;
 import com.liferay.ide.ui.liferay.util.RuleUtil;
 
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 
@@ -58,7 +57,6 @@ public class NewFragmentWizardLiferayWorkspaceGradleTomcat70Tests extends NewFra
 		super.createFragmentWithPortletProperites();
 	}
 
-	@Ignore("ignore as unstable, need more research")
 	@Test
 	public void createFragmentWithResourceAction() {
 		super.createFragmentWithResourceAction();

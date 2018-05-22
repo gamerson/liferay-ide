@@ -265,7 +265,6 @@ public class NewPortletModuleLiferayWorkspaceGradleTests extends SwtbotBase {
 		viewAction.project.closeAndDeleteFromDisk(projectNames);
 	}
 
-	@Ignore("ignore to wait IDE-3579 as it will take too long unexpected")
 	@Test
 	public void createSoyPortlet() {
 		String packageName = "test.soy.portlet.gradle";
