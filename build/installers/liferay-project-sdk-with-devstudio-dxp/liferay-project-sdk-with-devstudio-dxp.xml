@@ -68,36 +68,280 @@
         <include file="../components/autodetect-java.xml" />
     </preInstallationActionList>
     <postInstallationActionList>
-        <createDirectory>
-            <path>${user_home_directory}${platform_path_separator}.liferay</path>
-            <progressText>Creating directory...</progressText>
-        </createDirectory>
         <if>
             <actionList>
-                <writeFile>
-                    <encoding>utf-8</encoding>
-                    <path>${installdir}${platform_path_separator}pwd</path>
-                    <text>${password.password}</text>
-                </writeFile>
-                <runProgram>
-                    <customErrorMessage>Could not create DXP download token. Make sure you type correct email address and password and are connected to the internet.</customErrorMessage>
-                    <program>${java_executable}</program>
-                    <programArguments>-jar "${installdir}${platform_path_separator}com.liferay.portal.tools.bundle.support.jar" createToken --force --email "${email}" --password-file "${installdir}${platform_path_separator}pwd"</programArguments>
-                    <onErrorActionList>
+                <createDirectory>
+                    <path>${user_home_directory}${platform_path_separator}.liferay</path>
+                    <progressText>Creating directory...</progressText>
+                </createDirectory>
+                <if>
+                    <actionList>
+                        <writeFile>
+                            <encoding>utf-8</encoding>
+                            <path>${installdir}${platform_path_separator}pwd</path>
+                            <text>${password.password}</text>
+                        </writeFile>
+                        <runProgram>
+                            <customErrorMessage>Could not create DXP download token. Make sure you type correct email address and password and are connected to the internet.</customErrorMessage>
+                            <program>${java_executable}</program>
+                            <programArguments>-jar "${installdir}${platform_path_separator}com.liferay.portal.tools.bundle.support.jar" createToken --force --email "${email}" --password-file "${installdir}${platform_path_separator}pwd"</programArguments>
+                            <onErrorActionList>
+                                <deleteFile>
+                                    <path>${installdir}</path>
+                                </deleteFile>
+                            </onErrorActionList>
+                        </runProgram>
                         <deleteFile>
-                            <path>${installdir}</path>
+                            <path>${installdir}${platform_path_separator}pwd</path>
                         </deleteFile>
-                    </onErrorActionList>
+                    </actionList>
+                    <conditionRuleList>
+                        <fileTest>
+                            <condition>not_exists</condition>
+                            <path>${user_home_directory}${platform_path_separator}.liferay${platform_path_separator}token</path>
+                        </fileTest>
+                    </conditionRuleList>
+                </if>
+                <setInstallerVariable>
+                    <name>liferayBundlesPath</name>
+                    <value>${user_home_directory}${platform_path_separator}.liferay${platform_path_separator}bundles</value>
+                </setInstallerVariable>
+                <createDirectory>
+                    <path>${liferayBundlesPath}</path>
+                    <progressText>Creating directory...</progressText>
+                </createDirectory>
+                <copyFile>
+                    <destination>${liferayBundlesPath}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp7-20180307180151313.zip</destination>
+                    <origin>${installdir}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp7-20180307180151313.zip</origin>
+                </copyFile>
+                <copyFile>
+                    <destination>${liferayBundlesPath}${platform_path_separator}com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip</destination>
+                    <origin>${installdir}${platform_path_separator}com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip</origin>
+                </copyFile>
+                <include file="../components/run-java-jpm.xml" />
+                <if>
+                    <explanation>is linux</explanation>
+                    <actionList>
+                        <setInstallerVariable name="jpmSystemPath" value="${user_home_directory}/jpm/bin"/>
+                        <setInstallerVariable name="jpmSettingPath" value="${user_home_directory}/.jpm"/>
+                    </actionList>
+                    <conditionRuleList>
+                        <compareText>
+                            <logic>contains</logic>
+                            <nocase>1</nocase>
+                            <text>${platform_name}</text>
+                            <value>linux</value>
+                        </compareText>
+                    </conditionRuleList>
+                    <elseActionList>
+                        <if>
+                            <explanation>is mac</explanation>
+                            <actionList>
+                                <setInstallerVariable name="jpmSystemPath" value="${user_home_directory}/Library/PackageManager/bin"/>
+                                <setInstallerVariable name="jpmSettingPath" value="${user_home_directory}/.jpm"/>
+                            </actionList>
+                            <conditionRuleList>
+                                <compareText>
+                                    <logic>contains</logic>
+                                    <nocase>1</nocase>
+                                    <text>${platform_name}</text>
+                                    <value>osx</value>
+                                </compareText>
+                            </conditionRuleList>
+                            <elseActionList>
+                                <setInstallerVariable>
+                                    <name>jpmSystemPath</name>
+                                    <value>${user_home_directory}\.jpm\windows\bin</value>
+                                </setInstallerVariable>
+                            </elseActionList>
+                        </if>
+                    </elseActionList>
+                </if>
+                <addDirectoryToPath>
+                    <insertAt>end</insertAt>
+                    <path>${jpmSystemPath}</path>
+                </addDirectoryToPath>
+                <include file="../components/set-installer-variable-jpm.xml" />
+                <include file="../components/set-installer-variable-blade.xml" />
+                <include file="../components/set-installer-variable-gw.xml" />
+                <include file="../components/set-installer-variable-bnd.xml" />
+                <include file="../components/run-jpm-install-blade.xml" />
+                <include file="../components/run-jpm-install-gw.xml" />
+                <include file="../components/run-jpm-install-bnd.xml" />
+                <runProgram>
+                    <program>chown</program>
+                    <programArguments>-R ${env(SUDO_USER)} "${user_home_directory}/jpm"</programArguments>
+                    <ruleList>
+                        <isTrue>
+                            <value>${installer_is_root_install}</value>
+                        </isTrue>
+                        <compareText>
+                            <logic>does_not_contain</logic>
+                            <nocase>1</nocase>
+                            <text>${platform_name}</text>
+                            <value>win</value>
+                        </compareText>
+                        <fileExists>
+                            <path>${user_home_directory}/jpm</path>
+                        </fileExists>
+                    </ruleList>
                 </runProgram>
-                <deleteFile>
-                    <path>${installdir}${platform_path_separator}pwd</path>
-                </deleteFile>
+                <runProgram>
+                    <program>chown</program>
+                    <programArguments>-R ${env(SUDO_USER)} ${jpmSettingPath}</programArguments>
+                    <ruleList>
+                        <isTrue>
+                            <value>${installer_is_root_install}</value>
+                        </isTrue>
+                        <compareText>
+                            <logic>does_not_contain</logic>
+                            <nocase>1</nocase>
+                            <text>${platform_name}</text>
+                            <value>win</value>
+                        </compareText>
+                        <fileExists>
+                            <path>${jpmSettingPath}</path>
+                        </fileExists>
+                    </ruleList>
+                </runProgram>
+                <setInstallerVariable>
+                    <name>bladeCommandPath</name>
+                    <value>${jpmSystemPath}${platform_path_separator}blade</value>
+                </setInstallerVariable>
+                <runProgram>
+                    <program>chown</program>
+                    <programArguments>-R ${env(SUDO_USER)} ${user_home_directory}/.gradle</programArguments>
+                    <ruleList>
+                        <isTrue>
+                            <value>${installer_is_root_install}</value>
+                        </isTrue>
+                        <compareText>
+                            <logic>does_not_contain</logic>
+                            <nocase>1</nocase>
+                            <text>${platform_name}</text>
+                            <value>win</value>
+                        </compareText>
+                    </ruleList>
+                </runProgram>
+                <runProgram>
+                    <program>${bladeCommandPath}</program>
+                    <programArguments>--base "${lrws}" init</programArguments>
+                </runProgram>
+                <propertiesFileSet>
+                    <file>${lrws}${platform_path_separator}gradle.properties</file>
+                    <key>liferay.workspace.bundle.token.download</key>
+                    <value>true</value>
+                </propertiesFileSet>
+                <propertiesFileSet>
+                    <file>${lrws}${platform_path_separator}gradle.properties</file>
+                    <key>liferay.workspace.bundle.url</key>
+                    <value>https://api.liferay.com/downloads/portal/7.0.10.7/liferay-dxp-digital-enterprise-tomcat-7.0-sp7-20180307180151313.zip</value>
+                </propertiesFileSet>
+                <createDirectory>
+                    <path>${lrws}${platform_path_separator}configs${platform_path_separator}common${platform_path_separator}deploy</path>
+                    <ruleList>
+                        <fileTest>
+                            <condition>exists</condition>
+                            <path>${activationKey}</path>
+                        </fileTest>
+                    </ruleList>
+                </createDirectory>
+                <copyFile>
+                    <destination>${lrws}${platform_path_separator}configs${platform_path_separator}common${platform_path_separator}deploy${platform_path_separator}activation_key.xml</destination>
+                    <origin>${activationKey}</origin>
+                    <ruleList>
+                        <fileTest>
+                            <condition>exists</condition>
+                            <path>${activationKey}</path>
+                        </fileTest>
+                    </ruleList>
+                </copyFile>
+                <createDirectory>
+                    <path>${user_home_directory}${platform_path_separator}.gradle</path>
+                </createDirectory>
+                <if>
+                    <actionList>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.https.proxyHost</key>
+                            <value>${proxyhost}</value>
+                        </propertiesFileSet>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.https.proxyPort</key>
+                            <value>${proxyport}</value>
+                        </propertiesFileSet>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.https.proxyUser</key>
+                            <value>${proxyusername}</value>
+                        </propertiesFileSet>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.https.proxyPassword</key>
+                            <value>${proxypassword}</value>
+                        </propertiesFileSet>
+                    </actionList>
+                    <conditionRuleList>
+                        <isTrue>
+                            <value>${proxyhttps}</value>
+                        </isTrue>
+                    </conditionRuleList>
+                    <elseActionList>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.http.proxyHost</key>
+                            <value>${proxyhost}</value>
+                        </propertiesFileSet>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.http.proxyPort</key>
+                            <value>${proxyport}</value>
+                        </propertiesFileSet>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.http.proxyUser</key>
+                            <value>${proxyusername}</value>
+                        </propertiesFileSet>
+                        <propertiesFileSet>
+                            <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
+                            <key>systemProp.http.proxyPassword</key>
+                            <value>${proxypassword}</value>
+                        </propertiesFileSet>
+                    </elseActionList>
+                    <ruleList>
+                        <compareValues>
+                            <logic>equals</logic>
+                            <value1>${proxy}</value1>
+                            <value2>proxysetting</value2>
+                        </compareValues>
+                    </ruleList>
+                </if>
+                <runProgram>
+                    <program>chown</program>
+                    <programArguments>-R ${env(SUDO_USER)} ${lrws}</programArguments>
+                    <ruleList>
+                        <isTrue>
+                            <value>${installer_is_root_install}</value>
+                        </isTrue>
+                        <compareText>
+                            <logic>does_not_contain</logic>
+                            <nocase>1</nocase>
+                            <text>${platform_name}</text>
+                            <value>win</value>
+                        </compareText>
+                        <fileExists>
+                            <path>${lrws}</path>
+                        </fileExists>
+                    </ruleList>
+                </runProgram>
             </actionList>
             <conditionRuleList>
-                <fileTest>
-                    <condition>not_exists</condition>
-                    <path>${user_home_directory}${platform_path_separator}.liferay${platform_path_separator}token</path>
-                </fileTest>
+                <compareText>
+                    <logic>equals</logic>
+                    <text>${installcli}</text>
+                    <value>devstudiowithcli</value>
+                </compareText>
             </conditionRuleList>
         </if>
         <if>
@@ -168,239 +412,6 @@
                 </unzip>
             </elseActionList>
         </if>
-        <setInstallerVariable>
-            <name>liferayBundlesPath</name>
-            <value>${user_home_directory}${platform_path_separator}.liferay${platform_path_separator}bundles</value>
-        </setInstallerVariable>
-        <createDirectory>
-            <path>${liferayBundlesPath}</path>
-            <progressText>Creating directory...</progressText>
-        </createDirectory>
-        <copyFile>
-            <destination>${liferayBundlesPath}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp7-20180307180151313.zip</destination>
-            <origin>${installdir}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp7-20180307180151313.zip</origin>
-        </copyFile>
-        <copyFile>
-            <destination>${liferayBundlesPath}${platform_path_separator}com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip</destination>
-            <origin>${installdir}${platform_path_separator}com.liferay.portal.plugins.sdk-1.0.16-withdependencies.zip</origin>
-        </copyFile>
-        <include file="../components/run-java-jpm.xml" />
-        <if>
-            <explanation>is linux</explanation>
-            <actionList>
-                <setInstallerVariable name="jpmSystemPath" value="${user_home_directory}/jpm/bin"/>
-                <setInstallerVariable name="jpmSettingPath" value="${user_home_directory}/.jpm"/>
-            </actionList>
-            <conditionRuleList>
-                <compareText>
-                    <logic>contains</logic>
-                    <nocase>1</nocase>
-                    <text>${platform_name}</text>
-                    <value>linux</value>
-                </compareText>
-            </conditionRuleList>
-            <elseActionList>
-                <if>
-                    <explanation>is mac</explanation>
-                    <actionList>
-                        <setInstallerVariable name="jpmSystemPath" value="${user_home_directory}/Library/PackageManager/bin"/>
-                        <setInstallerVariable name="jpmSettingPath" value="${user_home_directory}/.jpm"/>
-                    </actionList>
-                    <conditionRuleList>
-                        <compareText>
-                            <logic>contains</logic>
-                            <nocase>1</nocase>
-                            <text>${platform_name}</text>
-                            <value>osx</value>
-                        </compareText>
-                    </conditionRuleList>
-                    <elseActionList>
-                        <setInstallerVariable>
-                            <name>jpmSystemPath</name>
-                            <value>${user_home_directory}\.jpm\windows\bin</value>
-                        </setInstallerVariable>
-                    </elseActionList>
-                </if>
-            </elseActionList>
-        </if>
-        <addDirectoryToPath>
-            <insertAt>end</insertAt>
-            <path>${jpmSystemPath}</path>
-        </addDirectoryToPath>
-        <include file="../components/set-installer-variable-jpm.xml" />
-        <include file="../components/set-installer-variable-blade.xml" />
-        <include file="../components/set-installer-variable-gw.xml" />
-        <include file="../components/set-installer-variable-bnd.xml" />
-        <include file="../components/run-jpm-install-blade.xml" />
-        <include file="../components/run-jpm-install-gw.xml" />
-        <include file="../components/run-jpm-install-bnd.xml" />
-        <runProgram>
-            <program>chown</program>
-            <programArguments>-R ${env(SUDO_USER)} "${user_home_directory}/jpm"</programArguments>
-            <ruleList>
-                <isTrue>
-                    <value>${installer_is_root_install}</value>
-                </isTrue>
-                <compareText>
-                    <logic>does_not_contain</logic>
-                    <nocase>1</nocase>
-                    <text>${platform_name}</text>
-                    <value>win</value>
-                </compareText>
-                <fileExists>
-                    <path>${user_home_directory}/jpm</path>
-                </fileExists>
-            </ruleList>
-        </runProgram>
-        <runProgram>
-            <program>chown</program>
-            <programArguments>-R ${env(SUDO_USER)} ${jpmSettingPath}</programArguments>
-            <ruleList>
-                <isTrue>
-                    <value>${installer_is_root_install}</value>
-                </isTrue>
-                <compareText>
-                    <logic>does_not_contain</logic>
-                    <nocase>1</nocase>
-                    <text>${platform_name}</text>
-                    <value>win</value>
-                </compareText>
-                <fileExists>
-                    <path>${jpmSettingPath}</path>
-                </fileExists>
-            </ruleList>
-        </runProgram>
-        <setInstallerVariable>
-            <name>bladeCommandPath</name>
-            <value>${jpmSystemPath}${platform_path_separator}blade</value>
-        </setInstallerVariable>
-        <runProgram>
-            <program>chown</program>
-            <programArguments>-R ${env(SUDO_USER)} ${user_home_directory}/.gradle</programArguments>
-            <ruleList>
-                <isTrue>
-                    <value>${installer_is_root_install}</value>
-                </isTrue>
-                <compareText>
-                    <logic>does_not_contain</logic>
-                    <nocase>1</nocase>
-                    <text>${platform_name}</text>
-                    <value>win</value>
-                </compareText>
-            </ruleList>
-        </runProgram>
-        <runProgram>
-            <program>${bladeCommandPath}</program>
-            <programArguments>--base "${lrws}" init</programArguments>
-        </runProgram>
-        <propertiesFileSet>
-            <file>${lrws}${platform_path_separator}gradle.properties</file>
-            <key>liferay.workspace.bundle.token.download</key>
-            <value>true</value>
-        </propertiesFileSet>
-        <propertiesFileSet>
-            <file>${lrws}${platform_path_separator}gradle.properties</file>
-            <key>liferay.workspace.bundle.url</key>
-            <value>https://api.liferay.com/downloads/portal/7.0.10.7/liferay-dxp-digital-enterprise-tomcat-7.0-sp7-20180307180151313.zip</value>
-        </propertiesFileSet>
-        <createDirectory>
-            <path>${lrws}${platform_path_separator}configs${platform_path_separator}common${platform_path_separator}deploy</path>
-            <ruleList>
-                <fileTest>
-                    <condition>exists</condition>
-                    <path>${activationKey}</path>
-                </fileTest>
-            </ruleList>
-        </createDirectory>
-        <copyFile>
-            <destination>${lrws}${platform_path_separator}configs${platform_path_separator}common${platform_path_separator}deploy${platform_path_separator}activation_key.xml</destination>
-            <origin>${activationKey}</origin>
-            <ruleList>
-                <fileTest>
-                    <condition>exists</condition>
-                    <path>${activationKey}</path>
-                </fileTest>
-            </ruleList>
-        </copyFile>
-        <createDirectory>
-            <path>${user_home_directory}${platform_path_separator}.gradle</path>
-        </createDirectory>
-        <if>
-            <actionList>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.https.proxyHost</key>
-                    <value>${proxyhost}</value>
-                </propertiesFileSet>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.https.proxyPort</key>
-                    <value>${proxyport}</value>
-                </propertiesFileSet>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.https.proxyUser</key>
-                    <value>${proxyusername}</value>
-                </propertiesFileSet>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.https.proxyPassword</key>
-                    <value>${proxypassword}</value>
-                </propertiesFileSet>
-            </actionList>
-            <conditionRuleList>
-                <isTrue>
-                    <value>${proxyhttps}</value>
-                </isTrue>
-            </conditionRuleList>
-            <elseActionList>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.http.proxyHost</key>
-                    <value>${proxyhost}</value>
-                </propertiesFileSet>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.http.proxyPort</key>
-                    <value>${proxyport}</value>
-                </propertiesFileSet>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.http.proxyUser</key>
-                    <value>${proxyusername}</value>
-                </propertiesFileSet>
-                <propertiesFileSet>
-                    <file>${user_home_directory}${platform_path_separator}.gradle${platform_path_separator}gradle.properties</file>
-                    <key>systemProp.http.proxyPassword</key>
-                    <value>${proxypassword}</value>
-                </propertiesFileSet>
-            </elseActionList>
-            <ruleList>
-                <compareValues>
-                    <logic>equals</logic>
-                    <value1>${proxy}</value1>
-                    <value2>proxysetting</value2>
-                </compareValues>
-            </ruleList>
-        </if>
-        <runProgram>
-            <program>chown</program>
-            <programArguments>-R ${env(SUDO_USER)} ${lrws}</programArguments>
-            <ruleList>
-                <isTrue>
-                    <value>${installer_is_root_install}</value>
-                </isTrue>
-                <compareText>
-                    <logic>does_not_contain</logic>
-                    <nocase>1</nocase>
-                    <text>${platform_name}</text>
-                    <value>win</value>
-                </compareText>
-                <fileExists>
-                    <path>${lrws}</path>
-                </fileExists>
-            </ruleList>
-        </runProgram>
         <deleteFile>
             <path>${installdir}${platform_path_separator}liferay-dxp-digital-enterprise-tomcat-7.0-sp7-20180307180151313.zip</path>
         </deleteFile>
@@ -478,6 +489,30 @@
                 </if>
             </validationActionList>
         </directoryParameter>
+        <choiceParameterGroup>
+            <name>installcli</name>
+            <title>Install with cli tools?</title>
+            <description></description>
+            <explanation></explanation>
+            <value></value>
+            <default>devstudiowithcli</default>
+            <parameterList>
+                <labelParameter>
+                    <name>devstudiowithcli</name>
+                    <title>devstudiowithcli</title>
+                    <description>Dev Studio with cli tools(jpm, blade, gw, etc...)</description>
+                    <explanation></explanation>
+                    <image></image>
+                </labelParameter>
+                <labelParameter>
+                    <name>devstudioonly</name>
+                    <title>devstudioonly</title>
+                    <description>Dev Studio only</description>
+                    <explanation></explanation>
+                    <image></image>
+                </labelParameter>
+            </parameterList>
+        </choiceParameterGroup>
         <directoryParameter>
             <name>lrws</name>
             <title>Liferay Workspace</title>
@@ -526,6 +561,11 @@
                     <condition>not_exists</condition>
                     <path>${user_home_directory}${platform_path_separator}.liferay${platform_path_separator}token</path>
                 </fileTest>
+                <compareText>
+                    <logic>equals</logic>
+                    <text>${installcli}</text>
+                    <value>devstudiowithcli</value>
+                </compareText>
             </ruleList>
         </parameterGroup>
         <fileParameter>
@@ -539,6 +579,13 @@
             <mustBeWritable>0</mustBeWritable>
             <mustExist>1</mustExist>
             <width>30</width>
+            <ruleList>
+                <compareText>
+                    <logic>equals</logic>
+                    <text>${installcli}</text>
+                    <value>devstudiowithcli</value>
+                </compareText>
+            </ruleList>
         </fileParameter>
         <choiceParameterGroup>
             <name>proxy</name>
@@ -560,6 +607,13 @@
                     <image></image>
                 </labelParameter>
             </parameterList>
+            <ruleList>
+                <compareText>
+                    <logic>equals</logic>
+                    <text>${installcli}</text>
+                    <value>devstudiowithcli</value>
+                </compareText>
+            </ruleList>
         </choiceParameterGroup>
         <parameterGroup>
             <name>proxyinfo</name>
