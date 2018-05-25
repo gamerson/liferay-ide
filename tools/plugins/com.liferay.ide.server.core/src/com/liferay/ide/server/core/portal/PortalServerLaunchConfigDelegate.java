@@ -125,11 +125,11 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 	}
 
 	private static String _getJavaagentLocation() {
-		return LaunchingPlugin.getFileInPlugin(new Path("lib/javaagent-shaded.jar")).getAbsolutePath(); //$NON-NLS-1$
+		return LaunchingPlugin.getFileInPlugin(new Path("lib/javaagent-shaded.jar")).getAbsolutePath();
 	}
 
 	private static String _getJavaagentString() {
-		return "-javaagent:\"" + _getJavaagentLocation() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+		return "-javaagent:\"" + _getJavaagentLocation() + "\"";
 	}
 
 	private static boolean _isAdvancedSourcelookupEnabled() {
@@ -143,11 +143,11 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 		throws CoreException {
 
 		if (!_isAdvancedSourcelup(mode)) {
-			return ""; //$NON-NLS-1$
+			return "";
 		}
 
 		if (!_isJavaagentOptionSupported(configuration)) {
-			return ""; //$NON-NLS-1$
+			return "";
 		}
 
 		return _getJavaagentString();
