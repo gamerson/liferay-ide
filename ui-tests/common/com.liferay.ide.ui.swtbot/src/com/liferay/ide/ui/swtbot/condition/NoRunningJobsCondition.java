@@ -14,9 +14,11 @@
 
 package com.liferay.ide.ui.swtbot.condition;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 
 /**
@@ -54,34 +56,15 @@ public class NoRunningJobsCondition extends JobCondition {
 	}
 
 	private List<Job> _checkRunningJobs() {
-		Job[] jobs = Job.getJobManager().find(family);
+		IJobManager jobManager = Job.getJobManager();
 
-		List<Job> runningJobs = new ArrayList<>();
+		Stream<Job> jobs = Stream.of(jobManager.find(family));
 
-		for (Job job : jobs) {
-			boolean found = false;
-
-			for (String expectedJob : _expectedJobs) {
-				if (job.getName().equals(expectedJob)) {
-					found = true;
-
-					break;
-				}
-			}
-
-			if (!found) {
-				runningJobs.add(job);
-			}
-		}
-
-		return runningJobs;
+		return jobs.filter(
+			job -> job.getState() != Job.SLEEPING
+		).collect(
+			Collectors.toList()
+		);
 	}
-
-	private final String[] _expectedJobs = {
-		"Open Notification Job", "Activity Monitor Job", "Task List Save Job", "Git Repository Change Scanner",
-		"Workbench Auto-Save Job", "Compacting resource model", "Synchronizing Relevant Tasks",
-		"Periodic workspace save.", "Synchronizing Task List", "Task Data Snapshot", "Refreshing server adapter list",
-		"File Transport Reader", "File Transport Cancel Handler"
-	};
 
 }
