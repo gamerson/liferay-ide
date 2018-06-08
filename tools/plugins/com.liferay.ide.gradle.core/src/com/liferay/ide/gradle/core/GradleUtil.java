@@ -44,23 +44,14 @@ import org.eclipse.buildship.core.workspace.SynchronizationJob;
 import org.eclipse.buildship.core.workspace.WorkspaceOperations;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobManager;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-
-import org.gradle.tooling.GradleConnector;
 
 /**
  * @author Andy Wu
@@ -70,7 +61,7 @@ import org.gradle.tooling.GradleConnector;
 @SuppressWarnings("restriction")
 public class GradleUtil {
 
-	public static IStatus importGradleProject(File dir, IProgressMonitor monitor) throws CoreException {
+	public static IStatus importGradleProject(IPath dir, IProgressMonitor monitor) {
 		if (FileUtil.notExists(dir)) {
 			return GradleCore.createErrorStatus("Unbale to find gralde project under " + dir);
 		}
@@ -97,7 +88,7 @@ public class GradleUtil {
 
 		GradleDistribution gradleDistribution = gradleConfig.getGradleDistribution();
 
-		configuration.setProjectDir(dir);
+		configuration.setProjectDir(dir.toFile());
 		configuration.setOverwriteWorkspaceSettings(false);
 		configuration.setDistributionInfo(gradleDistribution.getDistributionInfo());
 		configuration.setGradleUserHome(gradleConfig.getGradleUserHome());
@@ -116,13 +107,7 @@ public class GradleUtil {
 
 		synchronizeJob.schedule();
 
-		waitImport();
-
 		return Status.OK_STATUS;
-	}
-
-	public static IStatus importGradleProject(String dir, IProgressMonitor monitor) throws CoreException {
-		return importGradleProject(new File(dir), monitor);
 	}
 
 	public static boolean isBuildFile(IFile buildFile) {
@@ -155,14 +140,7 @@ public class GradleUtil {
 
 		GradleBuild build = optional.get();
 
-		try {
-			build.synchronize(
-				NewProjectHandler.IMPORT_AND_MERGE, GradleConnector.newCancellationTokenSource(),
-				new NullProgressMonitor());
-		}
-		catch (CoreException ce) {
-			GradleCore.logError(ce);
-		}
+		new SynchronizationJob(NewProjectHandler.IMPORT_AND_MERGE, build).schedule();
 	}
 
 	public static void runGradleTask(IProject project, String task, IProgressMonitor monitor) throws CoreException {
@@ -184,34 +162,6 @@ public class GradleUtil {
 		launchConfigurationWC.doSave();
 
 		launchConfigurationWC.launch(ILaunchManager.RUN_MODE, monitor);
-	}
-
-	public static void waitImport() {
-		IWorkspaceRoot root = null;
-
-		IJobManager jobManager = Job.getJobManager();
-
-		try {
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-			workspace.checkpoint(true);
-
-			jobManager.join(CorePlugin.GRADLE_JOB_FAMILY, new NullProgressMonitor());
-			jobManager.join(GradleCore.JOB_FAMILY_ID, new NullProgressMonitor());
-			Thread.sleep(200);
-			jobManager.beginRule(root = workspace.getRoot(), null);
-		}
-		catch (InterruptedException ie) {
-		}
-		catch (IllegalArgumentException iae) {
-		}
-		catch (OperationCanceledException oce) {
-		}
-		finally {
-			if (root != null) {
-				jobManager.endRule(root);
-			}
-		}
 	}
 
 	private static GradleRunConfigurationAttributes _getRunConfigurationAttributes(IProject project, String[] tasks) {
