@@ -38,6 +38,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
+		jobAction.waitForNoRunningJobs();
+
 		String[] moduleNames = {project.getName(), "modules"};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(moduleNames));
@@ -65,6 +67,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
+		jobAction.waitForNoRunningJobs();
+
 		viewAction.project.closeAndDelete(project.getName());
 	}
 
@@ -84,6 +88,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
+		jobAction.waitForNoRunningJobs();
+
 		viewAction.project.closeAndDelete(project.getName());
 	}
 
@@ -94,6 +100,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		wizardAction.newLiferayWorkspace.prepareGradle(project.getName());
 
 		wizardAction.finish();
+
+		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.openFile(project.getName(), "gradle.properties");
 
@@ -119,6 +127,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
+		jobAction.waitForNoRunningJobs();
+
 		String[] projectNames = {project.getName(), newModulesFolderName, projectName};
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectNames));
@@ -139,6 +149,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		wizardAction.newLiferayWorkspace.prepareGradle(project.getName());
 
 		wizardAction.finish();
+
+		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.openFile(project.getName(), "gradle.properties");
 
@@ -163,6 +175,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		wizardAction.newModule.prepareGradle("test-theme", THEME);
 
 		wizardAction.finish();
+
+		jobAction.waitForNoRunningJobs();
 
 		String[] projectNames = {project.getName(), newWarsFolderName, projectName};
 
@@ -199,7 +213,6 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		dialogAction.preferences.confirm();
 	}
 
-	@Ignore("waiting for server configuration")
 	@Test
 	public void createLiferayWorkspaceWithDownloadBundleChangeBundleUrl() {
 		if (!envAction.internal()) {
@@ -222,6 +235,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		wizardAction.newLiferayWorkspace.setBundleUrl(bundleUrl);
 
 		wizardAction.finish();
+
+		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.closeAndDelete(project.getName());
 
