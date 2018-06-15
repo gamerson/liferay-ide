@@ -90,6 +90,15 @@
 				menubarPath="liferayPopupMenuCategory/merge-lang"
 			>
 			</action>
+			<action
+				class="com.liferay.ide.gradle.action.UninstallTaskAction"
+				enablesFor="1"
+				icon="icons/e16/liferay_logo_16.png"
+				id="com.liferay.ide.gradle.popup.action.uninstall"
+				label="uninstall"
+				menubarPath="liferayPopupMenuCategory/uninstall"
+			>
+			</action>
 			<enablement>
 				<adapt type="org.eclipse.core.resources.IResource">
 					<or>
