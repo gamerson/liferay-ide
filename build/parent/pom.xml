@@ -27,10 +27,10 @@
     <name>Liferay IDE Parent</name>
 
     <properties>
-        <tycho-packaging-format>yyyyMMddHHmm'-m1a'</tycho-packaging-format>
+        <tycho-packaging-format>yyyyMMddHHmm'-m2'</tycho-packaging-format>
         <tycho-version>1.0.0</tycho-version>
         <tycho-extras-version>1.0.0</tycho-extras-version>
-        <eclipse-site>http://download.eclipse.org/releases/oxygen/201803211000/</eclipse-site>
+        <eclipse-site>http://download.eclipse.org/releases/photon/201806271001/</eclipse-site>
         <orbit-site>http://download.eclipse.org/tools/orbit/downloads/drops/R20180206163158/repository/</orbit-site>
         <tm-site>http://download.eclipse.org/tm/terminal/updates/4.2/</tm-site>
         <liferay-ide-swtbot-testing-site>http://files.liferay.org.es/staged/public-files/liferay-ide/unstable/build/com.liferay.ide.testing-repository/target/repository/</liferay-ide-swtbot-testing-site>
