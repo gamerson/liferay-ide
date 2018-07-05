@@ -14,12 +14,17 @@
 
 package com.liferay.ide.core.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.EqualPredicate;
+
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class ListUtil {
 
@@ -71,4 +76,11 @@ public class ListUtil {
 		return !isEmpty(set);
 	}
 
+	public static boolean contains(Collection<?> list, Object value) {
+		return CollectionUtils.exists(list, new EqualPredicate(value));
+	}
+
+	public static boolean contains(Object[] array, Object value) {
+		return CollectionUtils.exists(Arrays.asList(array), new EqualPredicate(value));
+	}	
 }
