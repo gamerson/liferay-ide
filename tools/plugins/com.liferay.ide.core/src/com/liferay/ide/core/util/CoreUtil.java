@@ -266,6 +266,10 @@ public class CoreUtil {
 		return null;
 	}
 
+	public static IFile getIFileFromWorkspaceRoot(IPath path) {
+		return getWorkspaceRoot().getFile(path);
+	}
+
 	public static IProject getLiferayProject(IResource resource) {
 		IProject project = null;
 

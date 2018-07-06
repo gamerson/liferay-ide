@@ -229,9 +229,9 @@ public class PropertiesUtil {
 			String resourceBundleValue = null;
 
 			for (IType type : srcJavaTypes) {
-				IPath path = type.getResource().getLocation();
+				IResource resource = type.getResource();
 
-				File file = path.toFile();
+				File file = FileUtil.getFile(resource.getLocation());
 
 				String content = FileUtil.readContents(file);
 
@@ -279,9 +279,11 @@ public class PropertiesUtil {
 			IFolder[] srcFolders = lrproject.getSourceFolders();
 
 			for (IFolder srcFolder : srcFolders) {
-				IPath path = srcFolder.getFullPath().append(resourceBundle + PROPERTIES_FILE_SUFFIX);
+				IPath path = srcFolder.getFullPath();
 
-				IFile languageFile = CoreUtil.getWorkspaceRoot().getFile(path);
+				path = path.append(resourceBundle + PROPERTIES_FILE_SUFFIX);
+
+				IFile languageFile = CoreUtil.getIFileFromWorkspaceRoot(path);
 
 				if (FileUtil.exists(languageFile)) {
 					retvals.add(languageFile);
@@ -323,9 +325,11 @@ public class PropertiesUtil {
 			String resourceBundleValue = (String)resourceBundles.toArray()[i];
 
 			for (IFolder srcFolder : srcFolders) {
-				IPath path = srcFolder.getFullPath().append(resourceBundleValue + PROPERTIES_FILE_SUFFIX);
+				IPath path = srcFolder.getFullPath();
 
-				IFile languageFile = CoreUtil.getWorkspaceRoot().getFile(path);
+				path = path.append(resourceBundleValue + PROPERTIES_FILE_SUFFIX);
+
+				IFile languageFile = CoreUtil.getIFileFromWorkspaceRoot(path);
 
 				if (FileUtil.exists(languageFile)) {
 					retvals.add(languageFile);
@@ -441,7 +445,13 @@ public class PropertiesUtil {
 	 *  Check if the file is a language properties file referenced from portlet.xml or liferay-hook.xml
 	 */
 	public static boolean isLanguagePropertiesFile(IFile targetFile) {
-		if (!targetFile.getName().endsWith(PROPERTIES_FILE_SUFFIX)) {
+		if (FileUtil.notExists(targetFile)) {
+			return false;
+		}
+
+		String fileName = targetFile.getName();
+
+		if (!fileName.endsWith(PROPERTIES_FILE_SUFFIX)) {
 			return false;
 		}
 
@@ -469,9 +479,13 @@ public class PropertiesUtil {
 
 				for (String resourceBundleValue : resourceBundleValues) {
 					for (IFolder srcFolder : srcFolders) {
-						String location = targetFileLocation.makeRelativeTo(srcFolder.getLocation()).toString();
+						IPath location = targetFileLocation.makeRelativeTo(srcFolder.getLocation());
 
-						if (location.replace(PROPERTIES_FILE_SUFFIX, "").matches(resourceBundleValue)) {
+						String locationString = location.toString();
+
+						locationString = locationString.replace(PROPERTIES_FILE_SUFFIX, "");
+
+						if (locationString.matches(resourceBundleValue)) {
 							return true;
 						}
 					}
@@ -481,9 +495,13 @@ public class PropertiesUtil {
 
 				for (String suportedLocaleValue : supportedLocaleValues) {
 					for (IFolder srcFolder : srcFolders) {
-						String location = targetFileLocation.makeRelativeTo(srcFolder.getLocation()).toString();
+						IPath location = targetFileLocation.makeRelativeTo(srcFolder.getLocation());
 
-						if (location.replace(PROPERTIES_FILE_SUFFIX, "").matches(suportedLocaleValue)) {
+						String locationString = location.toString();
+
+						locationString = locationString.replace(PROPERTIES_FILE_SUFFIX, "");
+
+						if (locationString.matches(suportedLocaleValue)) {
 							return true;
 						}
 					}
