@@ -14,6 +14,7 @@
 
 package com.liferay.ide.kaleo.ui.wizard;
 
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.kaleo.core.op.NewWorkflowDefinitionOp;
 
 import org.eclipse.core.resources.IContainer;
@@ -79,7 +80,7 @@ public class NewWorkflowDefinitionWizard
 				op.setProject(selectedProject.getName());
 
 				if (selectedFolder != null) {
-					op.setFolder(selectedFolder.getProjectRelativePath().toPortableString());
+					op.setFolder(FileUtil.toPortableString(selectedFolder.getProjectRelativePath()));
 				}
 			}
 		}

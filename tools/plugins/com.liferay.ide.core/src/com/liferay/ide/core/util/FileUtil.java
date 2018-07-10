@@ -294,6 +294,24 @@ public class FileUtil {
 		return toPortableString(folder.getFullPath());
 	}
 
+	public static String getFullPathPortableString(IFolder folder, String path) {
+		if (folder == null) {
+			return null;
+		}
+
+		IPath fullPath = folder.getFullPath();
+
+		return toPortableString(fullPath.append(path));
+	}
+
+	public static String getFullPathPortableString(IProject project) {
+		if (project == null) {
+			return null;
+		}
+
+		return toPortableString(project.getFullPath());
+	}
+
 	public static String getLocationPortableString(IFile file) {
 		if (file == null) {
 			return null;
@@ -308,6 +326,22 @@ public class FileUtil {
 		}
 
 		return toPortableString(folder.getLocation());
+	}
+
+	public static String getLocationPortableString(IProject project) {
+		if (project == null) {
+			return null;
+		}
+
+		return toPortableString(project.getLocation());
+	}
+
+	public static String getLocationPortableString(IResource resource) {
+		if (resource == null) {
+			return null;
+		}
+
+		return toPortableString(resource.getLocation());
 	}
 
 	public static IContainer getWorkspaceContainer(File file) {
@@ -711,6 +745,16 @@ public class FileUtil {
 		if (path == null) {
 			return null;
 		}
+
+		return path.toPortableString();
+	}
+
+	public static String toPortableString(IPath path, String path1) {
+		if (path == null) {
+			return null;
+		}
+
+		path = path.append(path1);
 
 		return path.toPortableString();
 	}
