@@ -82,9 +82,7 @@ public class NewHookDataModelProvider
 			if (webproject != null) {
 				IFolder defaultWebappRootFolder = webproject.getDefaultDocrootFolder();
 
-				IPath fullPath = defaultWebappRootFolder.getFullPath();
-
-				String defaultWebappRootPath = fullPath.toPortableString();
+				String defaultWebappRootPath = FileUtil.getFullPathPortableString(defaultWebappRootFolder);
 
 				if (targetProject != null) {
 					HookDescriptorHelper hookDescriptorHelper = new HookDescriptorHelper(targetProject);
@@ -99,11 +97,8 @@ public class NewHookDataModelProvider
 						IFolder defaultDocroot = webproject.getDefaultDocrootFolder();
 
 						if (defaultDocroot != null) {
-							IPath defaultDocrootPath = defaultDocroot.getFullPath();
-
-							IPath path = defaultDocrootPath.append(customJspFolder);
-
-							String containerFullPath = path.toPortableString();
+							String containerFullPath =
+									FileUtil.getFullPathPortableString(defaultDocroot, customJspFolder);
 
 							int index = containerFullPath.indexOf(defaultWebappRootPath);
 
@@ -133,9 +128,7 @@ public class NewHookDataModelProvider
 
 				IPath sourcePath = source.getFullPath();
 
-				sourcePath = sourcePath.append("portal.properties");
-
-				return sourcePath.toPortableString();
+				return FileUtil.toPortableString(sourcePath.append("portal.properties"));
 			}
 		}
 		else if (CONTENT_FOLDER.equals(propertyName)) {
@@ -146,11 +139,7 @@ public class NewHookDataModelProvider
 			if ((targetProject != null) && !sources.isEmpty()) {
 				IFolder source = sources.get(0);
 
-				IPath sourcePath = source.getFullPath();
-
-				sourcePath = sourcePath.append("content");
-
-				return sourcePath.toPortableString();
+				return FileUtil.getFullPathPortableString(source, "content");
 			}
 		}
 		else if (SELECTED_PROJECT.equals(propertyName)) {
@@ -178,9 +167,7 @@ public class NewHookDataModelProvider
 			IFolder sourceFolder = getDefaultJavaSourceFolder();
 
 			if (FileUtil.exists(sourceFolder)) {
-				IPath fullPath = sourceFolder.getFullPath();
-
-				return fullPath.toPortableString();
+				return FileUtil.getFullPathPortableString(sourceFolder);
 			}
 		}
 		else if (propertyName.equals(INewJavaClassDataModelProperties.JAVA_SOURCE_FOLDER)) {
@@ -268,11 +255,7 @@ public class NewHookDataModelProvider
 			if (webproject != null) {
 				IFolder defaultWebappRootFolder = webproject.getDefaultDocrootFolder();
 
-				IPath defaultWebappRootFolderPath = defaultWebappRootFolder.getFullPath();
-
-				IPath path = defaultWebappRootFolderPath.append(jspFolder);
-
-				String jspFolderPath = path.toPortableString();
+				String jspFolderPath = FileUtil.getFullPathPortableString(defaultWebappRootFolder, jspFolder);
 
 				IWorkspace workspace = CoreUtil.getWorkspace();
 

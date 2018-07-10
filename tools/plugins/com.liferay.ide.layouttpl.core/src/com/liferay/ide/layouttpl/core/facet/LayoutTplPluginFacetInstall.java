@@ -115,7 +115,7 @@ public class LayoutTplPluginFacetInstall extends PluginFacetInstall {
 					continue;
 				}
 				else if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-					String path = entry.getPath().toPortableString();
+					String path = FileUtil.toPortableString(entry.getPath());
 
 					if (path.contains("org.eclipse.jdt.launching.JRE_CONTAINER") ||
 						path.contains("org.eclipse.jst.j2ee.internal.web.container") ||

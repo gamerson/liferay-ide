@@ -29,7 +29,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -266,16 +265,12 @@ public class NewPortalPropertiesHookWizardPage extends DataModelWizardPage imple
 				if (element instanceof IFile) {
 					IFile file = (IFile)element;
 
-					text.setText(FileUtil.toPortableString(file.getFullPath()));
+					text.setText(FileUtil.getFullPathPortableString(file));
 				}
 				else if (element instanceof IFolder) {
 					IFolder folder = (IFolder)element;
 
-					IPath fullPath = folder.getFullPath();
-
-					IPath portalPropertiesPath = fullPath.append("portal.properties");
-
-					text.setText(portalPropertiesPath.toPortableString());
+					text.setText(FileUtil.getFullPathPortableString(folder, "portal.properties"));
 				}
 			}
 			catch (Exception ex) {
