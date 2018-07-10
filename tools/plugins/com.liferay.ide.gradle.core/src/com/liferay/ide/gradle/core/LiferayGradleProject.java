@@ -105,11 +105,9 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 		ProjectConnection connection = null;
 
 		try {
-			IPath projectLocation = getProject().getLocation();
+			GradleConnector connector = GradleConnector.newConnector();
 
-			File projectFile = projectLocation.toFile();
-
-			GradleConnector connector = GradleConnector.newConnector().forProjectDirectory(projectFile);
+			connector = connector.forProjectDirectory(FileUtil.getFile(getProject().getLocation()));
 
 			connection = connector.connect();
 
@@ -118,11 +116,13 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 			BlockingResultHandler<Object> handler = new BlockingResultHandler<>(Object.class);
 
 			if (cleanBuild) {
-				launcher.forTasks("clean", "assemble").run(handler);
+				launcher = launcher.forTasks("clean", "assemble");
 			}
 			else {
-				launcher.forTasks("assemble").run(handler);
+				launcher = launcher.forTasks("assemble");
 			}
+
+			launcher.run(handler);
 
 			handler.getResult();
 		}
@@ -150,7 +150,9 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 	public IPath getOutputBundlePath() {
 		IProject gradleProject = getProject();
 
-		IPath buildLocation = gradleProject.getLocation().append("build/libs");
+		IPath projectLocation = gradleProject.getLocation();
+
+		IPath buildLocation = projectLocation.append("build/libs");
 
 		File buildFolder = buildLocation.toFile();
 
@@ -164,9 +166,7 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 			return new Path(outputFile.getAbsolutePath());
 		}
 		else {
-			IPath gradleProjectLocation = gradleProject.getLocation();
-
-			File nodeThemeOutput = gradleProjectLocation.append("dist/" + gradleProject.getName() + ".war").toFile();
+			File nodeThemeOutput = FileUtil.getFile(projectLocation.append("dist/" + gradleProject.getName() + ".war"));
 
 			if (FileUtil.exists(nodeThemeOutput)) {
 				return new Path(nodeThemeOutput.getAbsolutePath());
@@ -189,7 +189,9 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 					File bundleFile = null;
 
 					for (File outputFile : outputFiles) {
-						if (outputFile.getName().endsWith(".war")) {
+						String name = outputFile.getName();
+
+						if (name.endsWith(".war")) {
 							bundleFile = outputFile;
 
 							break;
@@ -198,7 +200,7 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 
 					if (bundleFile == null) {
 						for (File outputFile : outputFiles) {
-							final String name = outputFile.getName();
+							String name = outputFile.getName();
 
 							if (name.endsWith("javadoc.jar") || name.endsWith("jspc.jar") ||
 								name.endsWith("sources.jar")) {
@@ -219,7 +221,9 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 					}
 				}
 				else if (model.hasPlugin("com.liferay.gradle.plugins.gulp.GulpPlugin")) {
-					retval = gradleProject.getLocation().append("dist/" + gradleProject.getName() + ".war");
+					retval = gradleProject.getLocation();
+
+					retval = retval.append("dist/" + gradleProject.getName() + ".war");
 				}
 
 				return retval;
@@ -238,7 +242,9 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 		IFolder[] sourceFolders = getSourceFolders();
 
 		for (IFolder folder : sourceFolders) {
-			if (folder.getName().equals(classification)) {
+			String folderName = folder.getName();
+
+			if (folderName.equals(classification)) {
 				retval = folder;
 
 				break;
@@ -277,10 +283,17 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 
 		IPath outputBundle = getOutputBundlePath();
 
-		if ((outputBundle == null) || outputBundle.lastSegment().endsWith(".war")) {
+		if (outputBundle == null) {
 			return getProject().getName();
 		}
-		else if (FileUtil.exists(outputBundle)) {
+
+		String lastSegment = outputBundle.lastSegment();
+
+		if (lastSegment.endsWith(".war")) {
+			return getProject().getName();
+		}
+
+		if (FileUtil.exists(outputBundle)) {
 			try (final Jar jar = new Jar(outputBundle.toFile())) {
 				retval = jar.getBsn();
 			}
@@ -324,8 +337,10 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 
 			IClasspathAttribute[] attributes = {JavaCore.newClasspathAttribute("FROM_GRADLE_MODEL", "true")};
 
+			IPath path = project.getFullPath();
+
 			IClasspathEntry resourcesEntry = JavaCore.newSourceEntry(
-				project.getFullPath().append("src/main/resources"), new IPath[0], new IPath[0], null, attributes);
+				path.append("src/main/resources"), new IPath[0], new IPath[0], null, attributes);
 
 			for (IClasspathEntry entry : existingRawClasspath) {
 				newRawClasspath.add(entry);
@@ -342,7 +357,9 @@ public class LiferayGradleProject extends BaseLiferayProject implements IBundleP
 			IFolder[] sourceFolders = getSourceFolders();
 
 			for (IFolder folder : sourceFolders) {
-				if (folder.getName().equals("resources")) {
+				String folderName = folder.getName();
+
+				if (folderName.equals("resources")) {
 					return folder;
 				}
 			}

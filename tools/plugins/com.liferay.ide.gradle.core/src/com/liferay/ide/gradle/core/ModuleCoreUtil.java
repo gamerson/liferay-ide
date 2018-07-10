@@ -67,9 +67,13 @@ public class ModuleCoreUtil {
 		sb.append("</project-modules>");
 		sb.append("\n");
 
-		String finalContent = sb.toString().replace("PROJECT_NAME", project.getName());
+		String s = sb.toString();
 
-		File compoment = new File(project.getLocation().toFile(), ".settings/org.eclipse.wst.common.component");
+		String finalContent = s.replace("PROJECT_NAME", project.getName());
+
+		IPath location = project.getLocation();
+
+		File compoment = new File(location.toFile(), ".settings/org.eclipse.wst.common.component");
 
 		if (FileUtil.notExists(compoment)) {
 			FileUtil.writeFile(compoment, finalContent.getBytes(), project.getName());
@@ -116,9 +120,13 @@ public class ModuleCoreUtil {
 		List<String> list = new ArrayList<>();
 
 		try {
-			IPath projectPath = project.getLocation().append(".project");
+			IPath path = project.getLocation();
 
-			File projectFile = projectPath.toFile().getCanonicalFile();
+			IPath projectPath = path.append(".project");
+
+			File file = projectPath.toFile();
+
+			File projectFile = file.getCanonicalFile();
 
 			project.accept(
 				new IResourceVisitor() {
@@ -126,9 +134,11 @@ public class ModuleCoreUtil {
 					@Override
 					public boolean visit(IResource resource) throws CoreException {
 						try {
-							IPath childProject = resource.getLocation().append(".project");
+							IPath childProject = FileUtil.pathAppend(resource.getLocation(), ".project");
 
-							File childFile = childProject.toFile().getCanonicalFile();
+							File f = childProject.toFile();
+
+							File childFile = f.getCanonicalFile();
 
 							// don't check child project
 
@@ -136,9 +146,13 @@ public class ModuleCoreUtil {
 								return false;
 							}
 
-							String path = resource.getLocation().toPortableString();
+							IPath location = resource.getLocation();
 
-							if (path.contains("resources/META-INF/resources") && resource.getName().endsWith(".jsp")) {
+							String path = location.toPortableString();
+
+							String name = resource.getName();
+
+							if (path.contains("resources/META-INF/resources") && name.endsWith(".jsp")) {
 								list.add(path);
 							}
 						}
