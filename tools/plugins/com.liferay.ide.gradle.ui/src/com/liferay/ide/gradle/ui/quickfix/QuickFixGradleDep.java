@@ -182,7 +182,9 @@ public class QuickFixGradleDep implements IQuickFixProcessor {
 		}
 
 		try {
-			List<String> serviceWrapperList = TargetPlatformUtil.getServiceWrapperList().getServiceList();
+			ServiceContainer serviceWrapperListContainer = TargetPlatformUtil.getServiceWrapperList();
+
+			List<String> serviceWrapperList = serviceWrapperListContainer.getServiceList();
 
 			Name name = importDeclaration.getName();
 
@@ -198,7 +200,9 @@ public class QuickFixGradleDep implements IQuickFixProcessor {
 			}
 
 			if (!depWrapperCanFixed) {
-				List<String> servicesList = TargetPlatformUtil.getServicesList().getServiceList();
+				ServiceContainer servicesListContainer = TargetPlatformUtil.getServicesList();
+
+				List<String> servicesList = servicesListContainer.getServiceList();
 
 				if (servicesList.contains(importName)) {
 					ServiceContainer bundle = TargetPlatformUtil.getServiceBundle(importName);
@@ -254,7 +258,9 @@ public class QuickFixGradleDep implements IQuickFixProcessor {
 		boolean depWrapperCanFixed = false;
 
 		try {
-			List<String> serviceWrapperList = TargetPlatformUtil.getServiceWrapperList().getServiceList();
+			ServiceContainer serviceWrapperListContainer = TargetPlatformUtil.getServiceWrapperList();
+
+			List<String> serviceWrapperList = serviceWrapperListContainer.getServiceList();
 
 			for (String wrapper : serviceWrapperList) {
 				if (wrapper.endsWith(fullyQualifiedName)) {
@@ -265,7 +271,9 @@ public class QuickFixGradleDep implements IQuickFixProcessor {
 			}
 
 			if (!depWrapperCanFixed) {
-				List<String> servicesList = TargetPlatformUtil.getServicesList().getServiceList();
+				ServiceContainer serviceListContainer = TargetPlatformUtil.getServicesList();
+
+				List<String> servicesList = serviceListContainer.getServiceList();
 
 				for (String service : servicesList) {
 					if (service.endsWith(fullyQualifiedName)) {
