@@ -146,9 +146,7 @@ public class ModuleCoreUtil {
 								return false;
 							}
 
-							IPath location = resource.getLocation();
-
-							String path = location.toPortableString();
+							String path = FileUtil.getLocationPortableString(resource);
 
 							String name = resource.getName();
 
