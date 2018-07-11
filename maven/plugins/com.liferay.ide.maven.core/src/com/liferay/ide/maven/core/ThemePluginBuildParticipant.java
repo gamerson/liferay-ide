@@ -14,6 +14,8 @@
 
 package com.liferay.ide.maven.core;
 
+import com.liferay.ide.core.util.FileUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -91,9 +93,8 @@ public abstract class ThemePluginBuildParticipant extends AbstractBuildParticipa
 	protected void configureExecution(IMavenProjectFacade facade, Xpp3Dom config) {
 		IPath m2eLiferayFolder = MavenUtil.getM2eLiferayFolder(facade.getMavenProject(), facade.getProject());
 
-		IPath themeResourcesFolder = m2eLiferayFolder.append(ILiferayMavenConstants.THEME_RESOURCES_FOLDER);
-
-		String targetFolderValue = themeResourcesFolder.toPortableString();
+		String targetFolderValue =
+			FileUtil.toPortableString(m2eLiferayFolder, ILiferayMavenConstants.THEME_RESOURCES_FOLDER);
 
 		MavenUtil.setConfigValue(config, ILiferayMavenConstants.PLUGIN_CONFIG_WEBAPP_DIR, targetFolderValue);
 	}

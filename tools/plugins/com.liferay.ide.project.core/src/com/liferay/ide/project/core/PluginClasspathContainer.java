@@ -377,7 +377,7 @@ public abstract class PluginClasspathContainer implements IClasspathContainer {
 		 * IDE-226 the file may be missing because we are in an ext plugin which has a different layout
 		 * check for ext-web in the path to the docroot
 		 */
-		String webrootFullPath = webroot.getFullPath().toPortableString();
+		String webrootFullPath = FileUtil.getFullPathPortableString(webroot);
 
 		if (!pluginPackageFile.exists() && webrootFullPath.endsWith("WEB-INF/ext-web/docroot")) {
 
