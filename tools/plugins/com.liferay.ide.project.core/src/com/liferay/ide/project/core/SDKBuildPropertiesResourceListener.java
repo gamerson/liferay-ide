@@ -15,6 +15,7 @@
 package com.liferay.ide.project.core;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.MarkerUtil;
 import com.liferay.ide.project.core.util.ClasspathUtil;
@@ -222,7 +223,7 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 				if (canAdd) {
 					MarkerUtil.setMarker(
 						deltaFile, IMarker.PROBLEM, IMarker.SEVERITY_ERROR, status.getMessage(),
-						deltaFile.getFullPath().toPortableString(), _MARKER_ID_SDK_PROPERTIES_INVALID);
+						FileUtil.getFullPathPortableString(deltaFile), _MARKER_ID_SDK_PROPERTIES_INVALID);
 				}
 			}
 		}
@@ -235,7 +236,7 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 		IProject[] projects = CoreUtil.getAllProjects();
 
 		for (IProject existProject : projects) {
-			if (SDKUtil.isValidSDKLocation(existProject.getLocation().toPortableString())) {
+			if (SDKUtil.isValidSDKLocation(FileUtil.getLocationPortableString(existProject))) {
 				IMarker[] problemMarkers = MarkerUtil.findMarkers(
 					existProject, IMarker.PROBLEM, _ID_WORKSPACE_SDK_INVALID);
 
@@ -250,7 +251,7 @@ public class SDKBuildPropertiesResourceListener implements IResourceChangeListen
 					if ((problemMarkers == null) || (problemMarkers.length < 1)) {
 						MarkerUtil.setMarker(
 							existProject, IMarker.PROBLEM, IMarker.SEVERITY_ERROR, "Workspace has more than one SDK",
-							existProject.getFullPath().toPortableString(), _ID_WORKSPACE_SDK_INVALID);
+							FileUtil.getFullPathPortableString(existProject), _ID_WORKSPACE_SDK_INVALID);
 					}
 
 					hasMultipleSDK = true;

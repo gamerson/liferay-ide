@@ -58,6 +58,7 @@ public class PortletColumnsListener extends FilteredListener<PropertyContentEven
 					// when new child is added, the parent column will have no numId
 
 					column.setNumId("N/A");
+
 					numId = updateColumns(column, numId++);
 				}
 

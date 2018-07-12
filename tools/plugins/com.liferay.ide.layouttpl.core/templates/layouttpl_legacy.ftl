@@ -11,9 +11,9 @@
 <#assign rowElement ="div" trBegin="" trEnd="" columnElement="div" columnNewline="\n" />
 </#if>
 <#assign rowCounter = 0 />
-<#if (this.getPortletLayouts().size() > 0)>
+<#if this.getPortletLayouts().size() > 0>
 <#list this.getPortletLayouts() as row>
-<#if (rowCounter > 0)>
+<#if rowCounter > 0>
 
 </#if>
 <#assign rowCounter = rowCounter + 1 />
@@ -23,7 +23,7 @@
 ${columnNewline}<#rt>
 </#if>
 			${appendIndent}<${columnElement} class="aui-w${col.getWeight().content()} portlet-column<#if (col.getColumnDescriptor().content()?exists)> ${col.getColumnDescriptor().content()}</#if>"<#if !(col.getNumId().content()=="N/A")> id="column-${col.getNumId().content()}"</#if>>
-<#if (col.getPortletLayouts().size() > 0)>
+<#if col.getPortletLayouts().size() > 0>
 <#assign appendIndent = stack.push(appendIndent) + "\t\t" />
 <@printLayout
 	this=col
@@ -42,7 +42,7 @@ ${columnNewline}<#rt>
 </#list>
 </#if>
 </#macro>
-<#if (root.getPortletLayouts().size() >= 0)>
+<#if root.getPortletLayouts().size() >= 0>
 <div class="${className}" id="${root.getId().content()}" role="${root.getRole().content()}">
 	#if ($browserSniffer.isIe($request) && $browserSniffer.getMajorVersion($request) < 8)
 <@printLayout

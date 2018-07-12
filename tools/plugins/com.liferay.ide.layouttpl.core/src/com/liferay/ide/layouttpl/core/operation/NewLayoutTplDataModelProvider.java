@@ -108,8 +108,8 @@ public class NewLayoutTplDataModelProvider
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		boolean layoutOption = false;
 
-		for (int i = 0; i < LAYOUT_PROPERTIES.length; i++) {
-			if (LAYOUT_PROPERTIES[i].equals(propertyName)) {
+		for (String property : LAYOUT_PROPERTIES) {
+			if (property.equals(propertyName)) {
 				layoutOption = true;
 
 				break;
@@ -119,8 +119,8 @@ public class NewLayoutTplDataModelProvider
 		if (layoutOption && !ignoreLayoutOptionPropertySet) {
 			ignoreLayoutOptionPropertySet = true;
 
-			for (int i = 0; i < LAYOUT_PROPERTIES.length; i++) {
-				setBooleanProperty(LAYOUT_PROPERTIES[i], false);
+			for (String property : LAYOUT_PROPERTIES) {
+				setBooleanProperty(property, false);
 			}
 
 			setProperty(propertyName, propertyValue);
