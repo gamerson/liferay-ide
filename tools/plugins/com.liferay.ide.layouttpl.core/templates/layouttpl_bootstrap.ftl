@@ -5,25 +5,25 @@
 <#assign className ="" />
 </#if>
 <#macro printLayout this>
-<#if (this.getPortletLayouts().size() > 0)>
+<#if this.getPortletLayouts().size() > 0>
 <#assign
 	appendIndent=stack.push(appendIndent)+"\t"
 	rowCounter=0
 />
 
 <#list this.getPortletLayouts() as row>
-<#if (this.getPortletLayouts().indexOf(row) > 0)>
+<#if this.getPortletLayouts().indexOf(row) > 0>
 
 </#if>
 ${appendIndent}<${layoutElement} class="${row.getClassName().content()}">
-<#if (row.getPortletColumns().size() > 0)>
+<#if row.getPortletColumns().size() > 0>
 <#assign
 	appendIndent=stack.push(appendIndent)+"\t"
 	colCounter=0
 />
 
 <#list row.getPortletColumns() as col>
-<#if (row.getPortletColumns().indexOf(col) > 0)>
+<#if row.getPortletColumns().indexOf(col) > 0>
 
 </#if>
 <#if root.getIs62().content()>
@@ -31,7 +31,7 @@ ${appendIndent}<${columnElement} class="portlet-column<#if (col.getColumnDescrip
 <#else>
 ${appendIndent}<${columnElement} class="portlet-column<#if (col.getColumnDescriptor().content()?exists)> ${col.getColumnDescriptor().content()}</#if> col-md-${col.getWeight().content()}"<#if !(col.getNumId().content()=="N/A")> id="column-${col.getNumId().content()}"</#if>>
 </#if>
-<#if (col.getPortletLayouts().size() > 0)>
+<#if col.getPortletLayouts().size() > 0>
 <@printLayout this=col />
 <#else>
 ${appendIndent+"\t"}$processor.processColumn("column-${col.getNumId().content()}", "portlet-column-content<#if (col.getColumnContentDescriptor().content()?exists) > ${col.getColumnContentDescriptor().content()}</#if>")

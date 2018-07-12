@@ -31,6 +31,7 @@ import org.apache.commons.collections.ArrayStack;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.sapphire.Value;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 
@@ -58,8 +59,8 @@ public class LayoutTplUtil {
 
 		List<Element> divChildren = getChildElementsByTagName(parentElement, childElementTag);
 
-		for (int i = 0; i < divChildren.size(); i++) {
-			IDOMElement childDivElement = (IDOMElement)divChildren.get(i);
+		for (Element child : divChildren) {
+			IDOMElement childDivElement = (IDOMElement)child;
 
 			if (hasClassName(childDivElement, className)) {
 				childElements.add(childDivElement);
@@ -206,7 +207,9 @@ public class LayoutTplUtil {
 		try {
 			ITemplateOperation op = null;
 
-			if (diagramElement.getBootstrapStyle().content()) {
+			Value<Boolean> bootstrapStyleValue = diagramElement.getBootstrapStyle();
+
+			if (bootstrapStyleValue.content()) {
 				op = TemplatesCore.getTemplateOperation("com.liferay.ide.layouttpl.core.layoutTemplate.bootstrap");
 			}
 			else {
