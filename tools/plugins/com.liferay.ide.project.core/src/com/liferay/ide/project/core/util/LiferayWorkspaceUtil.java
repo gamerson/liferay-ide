@@ -107,7 +107,7 @@ public class LiferayWorkspaceUtil {
 
 				ServerUtil.addPortalRuntimeAndServer(serverName, bundlesLocation, new NullProgressMonitor());
 
-				IProject pluginsSDK = CoreUtil.getProject(getPluginsSDKDir(project.getLocation().toPortableString()));
+				IProject pluginsSDK = CoreUtil.getProject(getPluginsSDKDir(FileUtil.getLocationPortableString(project)));
 
 				if (FileUtil.exists(pluginsSDK)) {
 					SDK sdk = SDKUtil.createSDKFromLocation(pluginsSDK.getLocation());
