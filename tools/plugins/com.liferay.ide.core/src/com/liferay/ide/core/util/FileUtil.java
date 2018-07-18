@@ -262,6 +262,50 @@ public class FileUtil {
 		return path.toFile();
 	}
 
+	public static IPath getResourceLocation(IResource resource) {
+		if (resource == null) {
+			return null;
+		}
+
+		IPath location = resource.getLocation();
+
+		if (location == null) {
+			return resource.getRawLocation();
+		}
+
+		return location;
+	}
+
+	public static IPath getLocation(IResource resource) {
+		return resource.getLocation();
+	}
+
+	public static String getLocationString(IResource resource) {
+		IPath fileLocation = resource.getLocation();
+
+		return fileLocation.toString();
+	}
+	
+	public static int segmentCount(IPath resourcePath) {
+		return resourcePath.segmentCount();
+	}
+
+	public static String getFilePath(IPath resourcePath) {
+		File resourceFile = resourcePath.toFile();
+
+		return resourceFile.getPath();
+	}
+
+	public static String getLocationPortableString(IResource resource) {
+		IPath location = resource.getLocation();
+
+		return location.toPortableString();
+	}
+
+	public static String getFilePath(File resourceFile) {
+		return resourceFile.getPath();
+	}
+
 	public static IContainer getWorkspaceContainer(File file) {
 		IWorkspaceRoot root = CoreUtil.getWorkspaceRoot();
 
@@ -791,5 +835,6 @@ public class FileUtil {
 		}
 
 	}
+
 
 }
