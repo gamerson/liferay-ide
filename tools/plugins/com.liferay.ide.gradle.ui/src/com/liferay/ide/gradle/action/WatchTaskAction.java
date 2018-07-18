@@ -18,20 +18,24 @@ import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.gradle.core.GradleUtil;
 import com.liferay.ide.gradle.ui.GradleUI;
+import com.liferay.ide.gradle.ui.WatchDecorator;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.gogo.GogoTelnetClient;
 import com.liferay.ide.ui.action.AbstractObjectAction;
+import com.liferay.ide.ui.util.UIUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -48,6 +52,9 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IDecoratorManager;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * @author Terry Jia
@@ -77,6 +84,10 @@ public class WatchTaskAction extends AbstractObjectAction {
 				return;
 			}
 
+			IWorkbench workbench = PlatformUI.getWorkbench();
+
+			IDecoratorManager decoratorManager = workbench.getDecoratorManager();
+
 			Job job = new Job(jobName) {
 
 				@Override
@@ -87,12 +98,17 @@ public class WatchTaskAction extends AbstractObjectAction {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
+						GradleUtil.runGradleTask(
+							project, new String[] {"watch"}, new String[] {"--continuous"}, monitor);
 
-						GradleUtil.runGradleTask(project, new String[] {
-							"watch"
-						}, new String[] {
-							"--continuous"
-						}, monitor);
+						UIUtil.async(
+							new Runnable() {
+
+								public void run() {
+									decoratorManager.update("com.liferay.ide.gradle.ui.watchDecorator");
+								}
+
+							});
 					}
 					catch (Exception e) {
 						return ProjectUI.createErrorStatus("Error running Gradle watch task for project " + project, e);
@@ -119,11 +135,9 @@ public class WatchTaskAction extends AbstractObjectAction {
 								Properties properties = new Properties();
 
 								try (InputStream in = Files.newInputStream(bndPath)) {
-
 									properties.load(in);
 
 									String bsn = properties.getProperty("Bundle-SymbolicName");
-
 
 									String cmd = "uninstall " + bsn;
 
@@ -133,9 +147,19 @@ public class WatchTaskAction extends AbstractObjectAction {
 								}
 							}
 						}
-						catch (IOException e) {
-							GradleUI.logError("Could not uninstall bundles installed by watch task", e);
+						catch (IOException ioe) {
+							GradleUI.logError("Could not uninstall bundles installed by watch task", ioe);
 						}
+					}
+
+					@Override
+					@SuppressWarnings("deprecation")
+					public void running(IJobChangeEvent event) {
+						WatchDecorator lightweightLabelDecorator =
+							(WatchDecorator)decoratorManager.getLightweightLabelDecorator(
+								"com.liferay.ide.gradle.ui.watchDecorator");
+
+						lightweightLabelDecorator.refresh(project);
 					}
 
 				});
@@ -156,12 +180,11 @@ public class WatchTaskAction extends AbstractObjectAction {
 
 			try {
 				Files.walkFileTree(
-					Paths.get(location.toOSString()), new SimpleFileVisitor<Path>() {
+					Paths.get(location.toOSString()),
+					new SimpleFileVisitor<Path>() {
 
 						@Override
-						public FileVisitResult postVisitDirectory(Path dir, IOException e)
-							throws IOException {
-
+						public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
 							if (FileUtil.exists(new File(dir.toFile(), "bnd.bnd"))) {
 								return FileVisitResult.SKIP_SUBTREE;
 							}
@@ -170,9 +193,7 @@ public class WatchTaskAction extends AbstractObjectAction {
 						}
 
 						@Override
-						public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
-							throws IOException {
-
+						public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
 							if (path.endsWith("bnd.bnd")) {
 								bndPaths.add(path);
 
@@ -181,9 +202,10 @@ public class WatchTaskAction extends AbstractObjectAction {
 
 							return FileVisitResult.CONTINUE;
 						}
+
 					});
 			}
-			catch (IOException e) {
+			catch (IOException ioe) {
 			}
 		}
 		else {

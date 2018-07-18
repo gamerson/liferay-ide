@@ -15,6 +15,7 @@
 package com.liferay.ide.gradle.ui;
 
 import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.ui.util.UIUtil;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.jobs.IJobManager;
@@ -22,6 +23,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 
 /**
  * @author Terry Jia
@@ -48,6 +50,21 @@ public class WatchDecorator extends LabelProvider implements ILightweightLabelDe
 		else {
 			decoration.addSuffix("");
 		}
+	}
+
+	public void refresh(IProject element) {
+		_fireLabelEvent(new LabelProviderChangedEvent(this, element));
+	}
+
+	private void _fireLabelEvent(final LabelProviderChangedEvent event) {
+		UIUtil.async(
+			new Runnable() {
+
+				public void run() {
+					fireLabelProviderChanged(event);
+				}
+
+			});
 	}
 
 }
