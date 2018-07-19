@@ -1338,6 +1338,19 @@ public class ProjectUtil {
 		return false;
 	}
 
+	public static boolean isGradleProject(IProject project) {
+		boolean retval = false;
+
+		try {
+			retval = FileUtil.exists(project) && project.hasNature("org.eclipse.buildship.core.gradleprojectnature") &&
+				FileUtil.exists(project.getFile("build.gradle"));
+		}
+		catch (Exception e) {
+		}
+
+		return retval;
+	}
+
 	public static boolean isMavenProject(IProject project) {
 		boolean retval = false;
 
