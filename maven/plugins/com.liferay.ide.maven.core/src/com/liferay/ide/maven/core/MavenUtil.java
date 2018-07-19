@@ -521,6 +521,10 @@ public class MavenUtil {
 
 		Job job = new Job("Updating maven project configuration") {
 
+			public boolean belongsTo(Object family) {
+				return "Updating maven project configuration".equals(family);
+			}
+
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
