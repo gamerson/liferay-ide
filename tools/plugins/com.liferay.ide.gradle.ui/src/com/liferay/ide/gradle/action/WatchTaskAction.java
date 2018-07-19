@@ -22,16 +22,19 @@ import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.gogo.GogoTelnetClient;
 import com.liferay.ide.ui.action.AbstractObjectAction;
+import com.liferay.ide.ui.util.UIUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -48,9 +51,13 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IDecoratorManager;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class WatchTaskAction extends AbstractObjectAction {
 
@@ -93,6 +100,8 @@ public class WatchTaskAction extends AbstractObjectAction {
 						}, new String[] {
 							"--continuous"
 						}, monitor);
+
+						_refreshDecorator();
 					}
 					catch (Exception e) {
 						return ProjectUI.createErrorStatus("Error running Gradle watch task for project " + project, e);
@@ -136,6 +145,11 @@ public class WatchTaskAction extends AbstractObjectAction {
 						catch (IOException e) {
 							GradleUI.logError("Could not uninstall bundles installed by watch task", e);
 						}
+					}
+
+					@Override
+					public void running(IJobChangeEvent event) {
+						_refreshDecorator();
 					}
 
 				});
@@ -195,4 +209,18 @@ public class WatchTaskAction extends AbstractObjectAction {
 		return bndPaths;
 	}
 
+
+	private void _refreshDecorator() {
+		IWorkbench workbench = PlatformUI.getWorkbench();
+
+		IDecoratorManager decoratorManager = workbench.getDecoratorManager();
+
+		UIUtil.async(
+			new Runnable() {
+
+				public void run() {
+					decoratorManager.update("com.liferay.ide.gradle.ui.watchDecorator");
+				}
+			});
+	}
 }
