@@ -14,6 +14,7 @@
 
 package com.liferay.ide.kaleo.core.op.internal;
 
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.kaleo.core.KaleoCore;
 import com.liferay.ide.kaleo.core.model.Action;
 import com.liferay.ide.kaleo.core.model.ExecutionType;
@@ -237,20 +238,9 @@ public class NewWorkflowDefinitionOpMethods {
 			finalStatePosition.setX(520);
 			finalStatePosition.setY(50);
 
-			/*
-			 * Document document = rootXmlResource.getDomDocument(); Element
-			 * docElement = document.getDocumentElement(); Attr schemaLocation =
-			 * docElement.getAttributeNode( "xsi:schemaLocation" ); =
-			 * schemaLocation.getNodeValue(); String nodeValue =
-			 * schemaLocation.getNodeValue(); schemaLocation.setNodeValue(
-			 * nodeValue.replaceAll( " http://www.w3.org/XML/1998/namespace ",
-			 * "" ) );
-			 */
 			rootXmlResource.save();
 
-			IPath fullPath = newDefinitionFile.getFullPath();
-
-			op.setNewFilePath(fullPath.toPortableString());
+			op.setNewFilePath(FileUtil.getFullPathPortableString(newDefinitionFile));
 
 			return Status.createOkStatus();
 		}

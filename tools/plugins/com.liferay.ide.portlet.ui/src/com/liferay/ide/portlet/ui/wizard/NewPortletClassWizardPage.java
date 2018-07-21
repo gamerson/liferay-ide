@@ -15,6 +15,7 @@
 package com.liferay.ide.portlet.ui.wizard;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
@@ -156,7 +157,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
 				IFolder folder = getDefaultJavaSourceFolder(targetProject);
 
 				if (folder != null) {
-					folderText.setText(folder.getFullPath().toPortableString());
+					folderText.setText(FileUtil.getFullPathPortableString(folder));
 				}
 			}
 			else {
