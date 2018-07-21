@@ -169,12 +169,6 @@ public class GradleUtil {
 		job.schedule();
 	}
 
-	public static void runGradleTask(IProject project, String[] tasks, IProgressMonitor monitor)
-		throws CoreException {
-
-		runGradleTask(project, tasks, new String[0], monitor);
-	}
-
 	public static void runGradleTask(IProject project, String task, IProgressMonitor monitor) throws CoreException {
 		runGradleTask(project, new String[] {task}, monitor);
 	}
