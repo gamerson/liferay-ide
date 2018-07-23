@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -56,7 +57,9 @@ public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter 
 
 						IPath gradleFilelocation = Path.fromOSString(gradleFile.getAbsolutePath());
 
-						IFile gradleWorkspaceFile = CoreUtil.getWorkspaceRoot().getFileForLocation(gradleFilelocation);
+						IWorkspaceRoot workspaceRoot = CoreUtil.getWorkspaceRoot();
+
+						IFile gradleWorkspaceFile = workspaceRoot.getFileForLocation(gradleFilelocation);
 
 						if ((gradleWorkspaceFile != null) && (gradleWorkspaceFile.getProject() != null)) {
 							_refreshProject = gradleWorkspaceFile.getProject();
@@ -110,7 +113,9 @@ public class GradleModuleProjectImporter extends AbstractLiferayProjectImporter 
 		File[] files = dir.listFiles();
 
 		for (File file : files) {
-			if (FileUtil.isNotDir(file) && file.getName().equals(name)) {
+			String fileName = file.getName();
+
+			if (FileUtil.isNotDir(file) && fileName.equals(name)) {
 				return true;
 			}
 		}
