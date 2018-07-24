@@ -18,7 +18,9 @@ import com.liferay.blade.api.AutoMigrateException;
 import com.liferay.blade.api.AutoMigrator;
 import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.MarkerUtil;
 import com.liferay.ide.project.core.util.SapphireUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.upgrade.animated.FindBreakingChangesPage;
@@ -75,12 +77,12 @@ public class AutoCorrectAction extends ProblemAction {
 	}
 
 	public IStatus runWithAutoCorrect(final List<Problem> problems) {
-		final IResource file = MigrationUtil.getIResourceFromProblem(problems.get(0));
+		IResource file = MigrationUtil.getIResourceFromProblem(problems.get(0));
 		Bundle bundle = FrameworkUtil.getBundle(AutoCorrectAction.class);
 
-		final BundleContext context = bundle.getBundleContext();
+		BundleContext context = bundle.getBundleContext();
 
-		final FindBreakingChangesPage page = UpgradeView.getPage(
+		FindBreakingChangesPage page = UpgradeView.getPage(
 			Page.findbreackingchangesPageId, FindBreakingChangesPage.class);
 
 		LiferayUpgradeDataModel dataModel = page.getDataModel();
@@ -100,11 +102,11 @@ public class AutoCorrectAction extends ProblemAction {
 				IStatus retval = Status.OK_STATUS;
 
 				try {
-					final Problem problem = problems.get(0);
+					Problem problem = problems.get(0);
 
 					String autoCorrectKey = null;
 
-					final int filterKeyIndex = problem.autoCorrectContext.indexOf(":");
+					int filterKeyIndex = problem.autoCorrectContext.indexOf(":");
 
 					if (filterKeyIndex > -1) {
 						autoCorrectKey = problem.autoCorrectContext.substring(0, filterKeyIndex);
@@ -113,7 +115,7 @@ public class AutoCorrectAction extends ProblemAction {
 						autoCorrectKey = problem.autoCorrectContext;
 					}
 
-					final Collection<ServiceReference<AutoMigrator>> refs = context.getServiceReferences(
+					Collection<ServiceReference<AutoMigrator>> refs = context.getServiceReferences(
 						AutoMigrator.class, "(auto.correct=" + autoCorrectKey + ")");
 
 					for (ServiceReference<AutoMigrator> ref : refs) {
@@ -128,7 +130,7 @@ public class AutoCorrectAction extends ProblemAction {
 							if (resource != null) {
 								IMarker problemMarker = resource.findMarker(problem.markerId);
 
-								if ((problemMarker != null) && problemMarker.exists()) {
+								if (MarkerUtil.exists(problemMarker)) {
 									problemMarker.delete();
 								}
 							}
@@ -146,7 +148,7 @@ public class AutoCorrectAction extends ProblemAction {
 					String projectName = "";
 					IProject project = CoreUtil.getProject(problem.getFile());
 
-					if (project.exists() && (project != null)) {
+					if (FileUtil.exists(project)) {
 						projectName = project.getName();
 					}
 
