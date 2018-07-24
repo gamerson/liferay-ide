@@ -46,7 +46,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -54,6 +53,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -72,9 +72,9 @@ public class AutoCorrectAllAction extends Action {
 	public void run() {
 		Bundle bundle = FrameworkUtil.getBundle(AutoCorrectAction.class);
 
-		final BundleContext context = bundle.getBundleContext();
+		BundleContext context = bundle.getBundleContext();
 
-		final FindBreakingChangesPage page = UpgradeView.getPage(
+		FindBreakingChangesPage page = UpgradeView.getPage(
 			Page.findbreackingchangesPageId, FindBreakingChangesPage.class);
 
 		LiferayUpgradeDataModel dataModel = page.getDataModel();
@@ -108,7 +108,7 @@ public class AutoCorrectAllAction extends Action {
 										}
 
 										String fixedKey =
-												FileUtil.getLocationString(file) + "," + problem.autoCorrectContext;
+											FileUtil.getLocationString(file) + "," + problem.autoCorrectContext;
 
 										if ((problem.autoCorrectContext == null) || fixed.contains(fixedKey)) {
 											continue;
