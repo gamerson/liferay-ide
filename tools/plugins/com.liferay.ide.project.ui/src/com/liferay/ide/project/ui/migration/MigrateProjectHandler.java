@@ -215,8 +215,8 @@ public class MigrateProjectHandler extends AbstractHandler {
 
 					boolean singleFile = false;
 
-					if ((locations.length == 1) && FileUtil.exists(locations[0].toFile()) &&
-						FileUtil.isFile(locations[0].toFile())) {
+					if ((locations.length == 1) && FileUtil.exists(locations[0]) &&
+						FileUtil.isFile(locations[0])) {
 
 						singleFile = true;
 					}
@@ -241,23 +241,25 @@ public class MigrateProjectHandler extends AbstractHandler {
 						}
 					}
 
-					for (int j = 0; j < locations.length; j++) {
+					for (int i = 0; i < locations.length; i++) {
 						allProblems = new ArrayList<>();
 
-						if (!override.isCanceled() && _shouldSearch(locations[j].toFile())) {
+						File searchFile = locations[i].toFile();
+
+						if (!override.isCanceled() && _shouldSearch(searchFile)) {
 							List<Problem> problems = null;
 
 							if (singleFile) {
-								_clearFileMarkers(locations[j].toFile());
+								_clearFileMarkers(searchFile);
 
 								Set<File> files = new HashSet<>();
 
-								files.add(locations[j].toFile());
+								files.add(searchFile);
 
 								problems = m.findProblems(files, versions, override);
 							}
 							else {
-								problems = m.findProblems(locations[j].toFile(), versions, override);
+								problems = m.findProblems(searchFile, versions, override);
 							}
 
 							for (Problem problem : problems) {
@@ -278,9 +280,9 @@ public class MigrateProjectHandler extends AbstractHandler {
 							migrationProblems.setProblems(fileProblems);
 
 							migrationProblems.setType("Code Problems");
-							migrationProblems.setSuffix(projectName[j]);
+							migrationProblems.setSuffix(projectName[i]);
 
-							int index = _isAlreadyExist(migrationProblemsList, projectName, j);
+							int index = _isAlreadyExist(migrationProblemsList, projectName, i);
 
 							if (index != -1) {
 								if (singleFile) {
@@ -312,7 +314,7 @@ public class MigrateProjectHandler extends AbstractHandler {
 							}
 						}
 						else {
-							int index = _isAlreadyExist(migrationProblemsList, projectName, j);
+							int index = _isAlreadyExist(migrationProblemsList, projectName, i);
 
 							if (index != -1) {
 								if (singleFile) {
@@ -453,9 +455,9 @@ public class MigrateProjectHandler extends AbstractHandler {
 		for (Problem problem : problems) {
 			IResource workspaceResource = null;
 
-			File file = problem.file;
+			File problemFile = problem.file;
 
-			IResource[] containers = ws.findContainersForLocationURI(file.toURI());
+			IResource[] containers = ws.findContainersForLocationURI(problemFile.toURI());
 
 			if (ListUtil.isNotEmpty(containers)) {
 
@@ -481,23 +483,23 @@ public class MigrateProjectHandler extends AbstractHandler {
 				}
 
 				if (workspaceResource == null) {
-					final IFile[] files = ws.findFilesForLocationURI(file.toURI());
+					final IFile[] files = ws.findFilesForLocationURI(problemFile.toURI());
 
-					for (IFile iFile : files) {
-						if (iFile.exists()) {
+					for (IFile file : files) {
+						if (file.exists()) {
 							if (workspaceResource == null) {
-								if (CoreUtil.isLiferayProject(iFile.getProject())) {
-									workspaceResource = iFile;
+								if (CoreUtil.isLiferayProject(file.getProject())) {
+									workspaceResource = file;
 								}
 							}
 							else {
 
 								// prefer the path that is shortest (to avoid a nested version)
 
-								if (FileUtil.segmentCount(iFile.getFullPath()) <
+								if (FileUtil.segmentCount(file.getFullPath()) <
 										FileUtil.segmentCount(workspaceResource.getFullPath())) {
 
-									workspaceResource = iFile;
+									workspaceResource = file;
 								}
 							}
 						}
@@ -523,9 +525,9 @@ public class MigrateProjectHandler extends AbstractHandler {
 				}
 			}
 
-			if ((workspaceResource != null) && workspaceResource.exists()) {
+			if (FileUtil.exists(workspaceResource)) {
 				try {
-					final IMarker marker = workspaceResource.createMarker(MigrationConstants.MARKER_TYPE);
+					IMarker marker = workspaceResource.createMarker(MigrationConstants.MARKER_TYPE);
 
 					problem.setMarkerId(marker.getId());
 
@@ -574,7 +576,7 @@ public class MigrateProjectHandler extends AbstractHandler {
 
 		IFile projectFile = root.getFileForLocation(location);
 
-		if (projectFile.exists() && (projectFile != null)) {
+		if (FileUtil.exists(projectFile)) {
 			MarkerUtil.clearMarkers(projectFile, MigrationConstants.MARKER_TYPE, null);
 		}
 	}
@@ -611,11 +613,11 @@ public class MigrateProjectHandler extends AbstractHandler {
 			Set<String> ticketSet = problemMap.keySet();
 
 			if ((ticketSet != null) && ticketSet.contains(problem.getTicket())) {
-				final IResource resource = MigrationUtil.getIResourceFromProblem(problem);
+				IResource resource = MigrationUtil.getIResourceFromProblem(problem);
 
-				final IMarker marker = resource.getMarker(problem.getMarkerId());
+				IMarker marker = resource.getMarker(problem.getMarkerId());
 
-				if (marker.exists()) {
+				if (MarkerUtil.exists(marker)) {
 					try {
 						marker.delete();
 					}

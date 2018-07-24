@@ -11,6 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
+
 package com.liferay.ide.project.core.util;
 
 import org.eclipse.sapphire.Listener;
@@ -19,19 +20,20 @@ import org.eclipse.sapphire.Value;
 /**
  * @author Simon Jiang
  */
-
 public class SapphireUtil {
 
-	public static <T> T getValue( Value<T> valueProperty ) {
-		if ( valueProperty != null) {
-			return valueProperty.content();	
+	public static <T> T getValue(Value<T> valueProperty) {
+		if (valueProperty != null) {
+			return valueProperty.content();
 		}
+
 		return null;
 	}
-	
-	public static void propertyAttachListener( Value<?> valueProperty, Listener listener ) {
+
+	public static void propertyAttachListener(Value<?> valueProperty, Listener listener) {
 		if ( valueProperty != null) {
 			valueProperty.attach(listener);
 		}
 	}
+
 }
