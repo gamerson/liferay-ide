@@ -319,6 +319,24 @@ public class FileUtil {
 		return new File(url.getFile());
 	}
 
+	public static String getFilePath(File file) {
+		if (file == null) {
+			return "";
+		}
+
+		return file.getPath();
+	}
+
+	public static String getFilePath(IPath path) {
+		if (path == null) {
+			return "";
+		}
+
+		File file = path.toFile();
+
+		return file.getPath();
+	}
+
 	public static String getFullPathPortableString(IFile file) {
 		if (file == null) {
 			return null;
@@ -351,6 +369,14 @@ public class FileUtil {
 		return getLastSegment(project.getLocation());
 	}
 
+	public static IPath getLocation(IResource resource) {
+		if (resource == null) {
+			return null;
+		}
+
+		return resource.getLocation();
+	}
+
 	public static String getLocationOSString(IProject project) {
 		if (project == null) {
 			return null;
@@ -375,6 +401,26 @@ public class FileUtil {
 		return toPortableString(folder.getLocation());
 	}
 
+	public static String getLocationPortableString(IResource resource) {
+		if (resource == null) {
+			return "";
+		}
+
+		IPath location = resource.getLocation();
+
+		return location.toPortableString();
+	}
+
+	public static String getLocationString(IResource resource) {
+		if (resource == null) {
+			return "";
+		}
+
+		IPath location = resource.getLocation();
+
+		return location.toString();
+	}
+
 	public static IPath getResourceLocation(IResource resource) {
 		if (resource == null) {
 			return null;
@@ -389,34 +435,12 @@ public class FileUtil {
 		return location;
 	}
 
-	public static IPath getLocation(IResource resource) {
-		return resource.getLocation();
-	}
+	public static int getSegmentCount(IPath path) {
+		if (path == null) {
+			return -1;
+		}
 
-	public static String getLocationString(IResource resource) {
-		IPath fileLocation = resource.getLocation();
-
-		return fileLocation.toString();
-	}
-	
-	public static int segmentCount(IPath resourcePath) {
-		return resourcePath.segmentCount();
-	}
-
-	public static String getFilePath(IPath resourcePath) {
-		File resourceFile = resourcePath.toFile();
-
-		return resourceFile.getPath();
-	}
-
-	public static String getLocationPortableString(IResource resource) {
-		IPath location = resource.getLocation();
-
-		return location.toPortableString();
-	}
-
-	public static String getFilePath(File resourceFile) {
-		return resourceFile.getPath();
+		return path.segmentCount();
 	}
 
 	public static IContainer getWorkspaceContainer(File file) {
@@ -480,6 +504,18 @@ public class FileUtil {
 	public static boolean isFile(File file) {
 		if (exists(file) && file.isFile()) {
 			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean isFile(IPath location) {
+		if (exists(location)) {
+			File file = location.toFile();
+
+			if (file.isFile()) {
+				return true;
+			}
 		}
 
 		return false;
@@ -988,6 +1024,5 @@ public class FileUtil {
 		}
 
 	}
-
 
 }

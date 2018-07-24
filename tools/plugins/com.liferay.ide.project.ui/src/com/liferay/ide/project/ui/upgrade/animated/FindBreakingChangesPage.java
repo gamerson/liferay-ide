@@ -19,6 +19,7 @@ import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.MarkerUtil;
+import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.project.core.upgrade.FileProblems;
 import com.liferay.ide.project.core.upgrade.MigrationProblemsContainer;
 import com.liferay.ide.project.core.upgrade.ProblemsContainer;
@@ -91,8 +92,6 @@ import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
@@ -109,8 +108,6 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 	public FindBreakingChangesPage(Composite parent, int style, LiferayUpgradeDataModel dataModel) {
 		super(parent, style, dataModel, findbreackingchangesPageId, true);
-
-		IWorkbench workbench = PlatformUI.getWorkbench();
 
 		final Composite findBreakingchangesContainer = SWTUtil.createComposite(this, 2, 1, GridData.FILL_BOTH, 0, 0);
 
@@ -137,7 +134,7 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 		_treeViewer.setContentProvider(_migrationContentProvider);
 
-		IDecoratorManager decoratorManager = workbench.getDecoratorManager();
+		IDecoratorManager decoratorManager = UIUtil.getDecoratorManager();
 
 		ILabelDecorator decorator = decoratorManager.getLabelDecorator();
 
@@ -304,7 +301,7 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 		Button collapseAll = new Button(buttonContainer, SWT.NONE);
 
-		ISharedImages sharedImages = workbench.getSharedImages();
+		ISharedImages sharedImages = UIUtil.getSharedImages();
 
 		Image collapseAllImage = sharedImages.getImage(ISharedImages.IMG_ELCL_COLLAPSEALL);
 
@@ -608,7 +605,7 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 				public String getText(Object element) {
 					Problem p = (Problem)element;
 
-					return p.title.trim();
+					return StringUtil.trim(p.title);
 				}
 
 			});
