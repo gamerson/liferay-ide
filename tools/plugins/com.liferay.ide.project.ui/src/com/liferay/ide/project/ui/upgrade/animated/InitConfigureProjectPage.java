@@ -22,6 +22,7 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.IOUtil;
 import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.SapphireUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.IWorkspaceProjectBuilder;
 import com.liferay.ide.project.core.ProjectCore;
@@ -31,7 +32,6 @@ import com.liferay.ide.project.core.modules.ImportLiferayModuleProjectOpMethods;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.util.ProjectImportUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.project.core.util.SapphireUtil;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceProjectProvider;
 import com.liferay.ide.project.ui.BreakingChangeVersion;
@@ -151,11 +151,11 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 	public InitConfigureProjectPage(final Composite parent, int style, LiferayUpgradeDataModel dataModel) {
 		super(parent, style, dataModel, initConfigureProjectPageId, false);
 
-		SapphireUtil.propertyAttachListener(dataModel.getSdkLocation(), new LiferayUpgradeValidationListener());
-		SapphireUtil.propertyAttachListener(dataModel.getBundleName(), new LiferayUpgradeValidationListener());
-		SapphireUtil.propertyAttachListener(dataModel.getBundleUrl(), new LiferayUpgradeValidationListener());
-		SapphireUtil.propertyAttachListener(dataModel.getBackupLocation(), new LiferayUpgradeValidationListener());
-		SapphireUtil.propertyAttachListener(dataModel.getBreakingChangeVersion(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getSdkLocation(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBundleName(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBundleUrl(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBackupLocation(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBreakingChangeVersion(), new LiferayUpgradeValidationListener());
 
 		ScrolledComposite scrolledComposite = new ScrolledComposite(this, SWT.V_SCROLL);
 		GridData scrolledData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -448,9 +448,9 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 	}
 
 	protected void importProject() throws CoreException {
-		String layout = SapphireUtil.getValue(dataModel.getLayout());
+		String layout = SapphireUtil.getContent(dataModel.getLayout());
 
-		IPath location = PathBridge.create(SapphireUtil.getValue(dataModel.getSdkLocation()));
+		IPath location = PathBridge.create(SapphireUtil.getContent(dataModel.getSdkLocation()));
 
 		if (_isAlreadyImported(location)) {
 			Stream.of(CoreUtil.getAllProjects()).forEach(this::_checkProjectType);
@@ -561,7 +561,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 									jobManager.join("org.eclipse.buildship.core.jobs", null);
 
-									if (SapphireUtil.getValue(dataModel.getDownloadBundle())) {
+									if (SapphireUtil.getContent(dataModel.getDownloadBundle())) {
 										_createInitBundle(monitor);
 									}
 
@@ -577,7 +577,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 									_deleteSDKLegacyProjects(location);
 
-									String serverName = SapphireUtil.getValue(dataModel.getLiferay70ServerName());
+									String serverName = SapphireUtil.getContent(dataModel.getLiferay70ServerName());
 
 									IServer server = ServerUtil.getServer(serverName);
 
@@ -614,7 +614,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 	}
 
 	private void _backup(IProgressMonitor monitor) {
-		Boolean backup = SapphireUtil.getValue(dataModel.getBackupSdk());
+		Boolean backup = SapphireUtil.getContent(dataModel.getBackupSdk());
 
 		if (!backup) {
 			return;
@@ -625,10 +625,10 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 		try {
 			progress.setTaskName("Backup origial project folder into Eclipse workspace...");
 
-			org.eclipse.sapphire.modeling.Path originalPath = SapphireUtil.getValue(dataModel.getSdkLocation());
+			org.eclipse.sapphire.modeling.Path originalPath = SapphireUtil.getContent(dataModel.getSdkLocation());
 
 			if (originalPath != null) {
-				IPath backupLocation = PathBridge.create(SapphireUtil.getValue(dataModel.getBackupLocation()));
+				IPath backupLocation = PathBridge.create(SapphireUtil.getContent(dataModel.getBackupLocation()));
 
 				FileUtil.mkdirs(backupLocation.toFile());
 
@@ -850,7 +850,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 		Display pageDdisplay = _pageParent.getDisplay();
 
-		String bundleName = SapphireUtil.getValue(dataModel.getBundleName());
+		String bundleName = SapphireUtil.getContent(dataModel.getBundleName());
 
 		_bundleNameField.setText(bundleName != null ? bundleName : "");
 
@@ -860,7 +860,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 		_bundleUrlField.setForeground(pageDdisplay.getSystemColor(SWT.COLOR_DARK_GRAY));
 
-		_bundleUrlField.setText(SapphireUtil.getValue(dataModel.getBundleUrl()));
+		_bundleUrlField.setText(SapphireUtil.getContent(dataModel.getBundleUrl()));
 
 		_bundleUrlField.addModifyListener(
 			new ModifyListener() {
@@ -949,7 +949,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					try {
-						Boolean importFinished = SapphireUtil.getValue(dataModel.getImportFinished());
+						Boolean importFinished = SapphireUtil.getContent(dataModel.getImportFinished());
 
 						if (_isPageValidate() && !importFinished) {
 							_saveSettings();
@@ -1010,16 +1010,16 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 		try {
 			progress.beginTask("Execute Liferay Worksapce Bundle Init Command...", 100);
 
-			String layout = SapphireUtil.getValue(dataModel.getLayout());
+			String layout = SapphireUtil.getContent(dataModel.getLayout());
 
 			if (layout.equals(_layoutNames[0])) {
-				IPath sdkLocation = PathBridge.create(SapphireUtil.getValue(dataModel.getSdkLocation()));
+				IPath sdkLocation = PathBridge.create(SapphireUtil.getContent(dataModel.getSdkLocation()));
 
 				IProject project = CoreUtil.getProject(sdkLocation.lastSegment());
 
-				String bundleUrl = SapphireUtil.getValue(dataModel.getBundleUrl());
+				String bundleUrl = SapphireUtil.getContent(dataModel.getBundleUrl());
 
-				String bundleName = SapphireUtil.getValue(dataModel.getBundleName());
+				String bundleName = SapphireUtil.getContent(dataModel.getBundleName());
 
 				IWorkspaceProjectBuilder projectBuilder = _getWorkspaceProjectBuilder(project);
 
@@ -1039,10 +1039,10 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 					ServerUtil.addPortalRuntimeAndServer(bundleName, runtimeLocation, monitor);
 
-					IServer bundleServer = ServerCore.findServer(SapphireUtil.getValue(dataModel.getBundleName()));
+					IServer bundleServer = ServerCore.findServer(SapphireUtil.getContent(dataModel.getBundleName()));
 
 					if (bundleServer != null) {
-						IPath newIpath = PathBridge.create(SapphireUtil.getValue(dataModel.getSdkLocation()));
+						IPath newIpath = PathBridge.create(SapphireUtil.getContent(dataModel.getSdkLocation()));
 
 						SDK sdk = SDKUtil.createSDKFromLocation(newIpath.append("plugins-sdk"));
 
@@ -1110,9 +1110,9 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 		_breakingChangeVersionComb.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		String breakingChangeVersionValue = SapphireUtil.getValue(dataModel.getBreakingChangeVersion());
+		String breakingChangeVersionValue = SapphireUtil.getContent(dataModel.getBreakingChangeVersion());
 
-		Boolean inputIsLiferayWorkspaceElement = SapphireUtil.getValue(dataModel.getIsLiferayWorkspace());
+		Boolean inputIsLiferayWorkspaceElement = SapphireUtil.getContent(dataModel.getIsLiferayWorkspace());
 
 		if (inputIsLiferayWorkspaceElement) {
 			String[] itemNamesWorkspace = BreakingChangeVersion.getBreakingChangeVersionNames(true);
@@ -1140,7 +1140,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 		_layoutComb.setItems(_layoutNames);
 		_layoutComb.select(0);
 
-		String layoutValue = SapphireUtil.getValue(dataModel.getLayout());
+		String layoutValue = SapphireUtil.getContent(dataModel.getLayout());
 
 		if (layoutValue != null) {
 			for (int i = 0; i < _layoutNames.length; i++) {
@@ -1458,7 +1458,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 			String[] breakingChangeVersions = BreakingChangeVersion.getBreakingChangeVersionValues(false);
 			_breakingChangeVersionComb.setItems(itemNames);
 
-			String breakingChangeVersion = SapphireUtil.getValue(dataModel.getBreakingChangeVersion());
+			String breakingChangeVersion = SapphireUtil.getContent(dataModel.getBreakingChangeVersion());
 
 			_breakingChangeVersionComb.select(0);
 
@@ -1627,9 +1627,9 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 					boolean inputValidation = true;
 					boolean layoutValidation = true;
 
-					boolean downloadBundle = SapphireUtil.getValue(dataModel.getDownloadBundle());
+					boolean downloadBundle = SapphireUtil.getContent(dataModel.getDownloadBundle());
 
-					String bundUrl = SapphireUtil.getValue(dataModel.getBundleUrl());
+					String bundUrl = SapphireUtil.getContent(dataModel.getBundleUrl());
 
 					String message = "ok";
 
@@ -1689,7 +1689,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 						}
 					}
 
-					Boolean importFinished = SapphireUtil.getValue(dataModel.getImportFinished());
+					Boolean importFinished = SapphireUtil.getContent(dataModel.getImportFinished());
 
 					if (importFinished) {
 						message = "Import has finished. If you want to reset, please click reset icon in view toolbar.";
@@ -1765,7 +1765,7 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 				return;
 			}
 
-			org.eclipse.sapphire.modeling.Path path = SapphireUtil.getValue(dataModel.getSdkLocation());
+			org.eclipse.sapphire.modeling.Path path = SapphireUtil.getContent(dataModel.getSdkLocation());
 
 			Status compute = _sdkValidation.compute();
 

@@ -147,9 +147,9 @@ public interface LiferayUpgradeDataModel extends Element {
 
 	public void setImportFinished(String importFinished);
 
-	public void setIsLiferayWorkspace(Boolean inputIsLifeayWorkspace);
+	public void setIsLiferayWorkspace(Boolean isLifeayWorkspace);
 
-	public void setInputIsLiferayWorkspace(String inputIsLifeayWorkspace);
+	public void setIsLiferayWorkspace(String isLifeayWorkspace);
 
 	public void setLayout(String layout);
 
@@ -251,7 +251,7 @@ public interface LiferayUpgradeDataModel extends Element {
 
 	@DefaultValue(text = "false")
 	@Type(base = Boolean.class)
-	public ValueProperty PROP_INPUT_IS_LIFERAY_WORKSPACE = new ValueProperty(TYPE, "InputIsLiferayWorkspace");
+	public ValueProperty PROP_IS_LIFERAY_WORKSPACE = new ValueProperty(TYPE, "IsLiferayWorkspace");
 
 	public ValueProperty PROP_LAYOUT = new ValueProperty(TYPE, "Layout");
 

@@ -14,7 +14,7 @@
 
 package com.liferay.ide.project.ui.migration;
 
-import com.liferay.ide.project.core.util.SapphireUtil;
+import com.liferay.ide.core.util.SapphireUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.upgrade.animated.FindBreakingChangesPage;
 import com.liferay.ide.project.ui.upgrade.animated.LiferayUpgradeDataModel;
@@ -65,7 +65,7 @@ public class RunMigrationToolAction extends OpenJavaProjectSelectionDialogAction
 
 				breakingChangeParameters.put("CombineExistedProblem", getCombineExistedProjects());
 
-				String versions = SapphireUtil.getValue(dataModel.getBreakingChangeVersion());
+				String versions = SapphireUtil.getContent(dataModel.getBreakingChangeVersion());
 
 				String[] versionArray = versions.split(",");
 
