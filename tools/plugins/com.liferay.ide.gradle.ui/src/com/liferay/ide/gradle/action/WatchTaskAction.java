@@ -21,6 +21,7 @@ import com.liferay.ide.gradle.ui.GradleUI;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.gogo.GogoTelnetClient;
+import com.liferay.ide.server.core.portal.PortalServerBehavior;
 import com.liferay.ide.ui.action.AbstractObjectAction;
 
 import java.io.File;
@@ -37,12 +38,14 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobManager;
@@ -50,9 +53,11 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.wst.server.core.ServerCore;
 
 /**
  * @author Terry Jia
+ * @author Simon Jiang
  */
 public class WatchTaskAction extends AbstractObjectAction {
 
@@ -60,6 +65,10 @@ public class WatchTaskAction extends AbstractObjectAction {
 	public void run(IAction action) {
 		if (fSelection instanceof IStructuredSelection) {
 			Object[] elems = ((IStructuredSelection)fSelection).toArray();
+
+			if (elems.length < 1) {
+				return;
+			}
 
 			Object elem = elems[0];
 
@@ -91,6 +100,17 @@ public class WatchTaskAction extends AbstractObjectAction {
 					try {
 						GradleUtil.runGradleTask(
 							project, new String[] {"watch"}, new String[] {"--continuous"}, monitor);
+
+						Stream.of(
+							ServerCore.getServers()
+						).map(
+							server -> (PortalServerBehavior)server.loadAdapter(
+								PortalServerBehavior.class, new NullProgressMonitor())
+						).filter(
+							serverBehavior -> serverBehavior != null
+						).forEach(
+							serverBehavior -> serverBehavior.removeWatchProject(project)
+						);
 					}
 					catch (Exception e) {
 						return ProjectUI.createErrorStatus("Error running Gradle watch task for project " + project, e);
@@ -132,6 +152,20 @@ public class WatchTaskAction extends AbstractObjectAction {
 						catch (IOException ioe) {
 							GradleUI.logError("Could not uninstall bundles installed by watch task", ioe);
 						}
+					}
+
+					@Override
+					public void scheduled(IJobChangeEvent event) {
+						Stream.of(
+							ServerCore.getServers()
+						).map(
+							server -> (PortalServerBehavior)server.loadAdapter(
+								PortalServerBehavior.class, new NullProgressMonitor())
+						).filter(
+							serverBehavior -> serverBehavior != null
+						).forEach(
+							serverBehavior -> serverBehavior.addWatchProject(project)
+						);
 					}
 
 				});
