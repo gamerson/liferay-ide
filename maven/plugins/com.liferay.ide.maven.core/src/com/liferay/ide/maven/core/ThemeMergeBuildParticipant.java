@@ -19,6 +19,7 @@ import com.liferay.ide.theme.core.ThemeCSSBuilder;
 
 import java.util.Set;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
@@ -68,10 +69,12 @@ public class ThemeMergeBuildParticipant extends ThemePluginBuildParticipant {
 
 		String warSourceDirectory = MavenUtil.getWarSourceDirectory(facade);
 
-		if (!CoreUtil.isNullOrEmpty(warSourceDirectory)) {
+		if (CoreUtil.isNotNullOrEmpty(warSourceDirectory)) {
 			IProject project = facade.getProject();
 
-			IPath warSourceProjectPath = project.getFolder(warSourceDirectory).getProjectRelativePath();
+			IFolder folder = project.getFolder(warSourceDirectory);
+
+			IPath warSourceProjectPath = folder.getProjectRelativePath();
 
 			if ((delta != null) &&
 				((delta.findMember(warSourceProjectPath) != null) ||
