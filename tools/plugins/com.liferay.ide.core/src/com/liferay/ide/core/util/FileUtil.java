@@ -31,12 +31,9 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-
 import java.net.URI;
 import java.net.URL;
-
 import java.nio.file.Files;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -65,9 +62,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.osgi.util.NLS;
-
 import org.w3c.dom.Document;
-
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 
