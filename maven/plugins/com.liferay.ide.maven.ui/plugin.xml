@@ -235,6 +235,11 @@
 									property="com.liferay.ide.maven.ui.isMavenProject"
 									value="true"
 								/>
+								<test
+									forcePluginActivation="true"
+									property="com.liferay.ide.maven.ui.isLeagcyMavenProject"
+									value="true"
+								/>
 							</adapt>
 						</and>
 					</or>
@@ -259,6 +264,22 @@
 			namespace="com.liferay.ide.maven.ui"
 			properties="isPomFile"
 			type="org.eclipse.core.resources.IFile"
+		>
+		</propertyTester>
+		<propertyTester
+			class="com.liferay.ide.maven.ui.LeagcyMavenProjectPropertyTester"
+			id="com.liferay.ide.maven.ui.isLeagcyMavenProject"
+			namespace="com.liferay.ide.maven.ui"
+			properties="isLeagcyMavenProject"
+			type="org.eclipse.core.resources.IProject"
+		>
+		</propertyTester>
+		<propertyTester
+			class="com.liferay.ide.maven.ui.OsgiModuleMavenProjectPropertyTester"
+			id="com.liferay.ide.maven.ui.isOsigMavenProject"
+			namespace="com.liferay.ide.maven.ui"
+			properties="isOsigMavenProject"
+			type="org.eclipse.core.resources.IProject"
 		>
 		</propertyTester>
 	</extension>
@@ -286,5 +307,39 @@
 			name="Maven"
 		>
 		</page>
+	</extension>
+
+	<extension
+		point="org.eclipse.ui.menus"
+	>
+		<menuContribution allPopups="false" locationURI="popup:org.eclipse.ui.popup.any">
+			<menu id="com.liferay.ide.maven.dyanmic.menu" label="Liferay Maven">
+				<visibleWhen checkEnabled="false">
+					<with variable="activeMenuSelection">
+						<reference definitionId="com.liferay.ide.maven.ui.menu.definition" />
+					</with>
+				</visibleWhen>
+				<dynamic
+					class="com.liferay.ide.maven.ui.action.LiferayMavenDynamicMenuCreator"
+					id="com.liferay.ide.maven.ui.dynamic"
+				>
+				</dynamic>
+			</menu>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.core.expressions.definitions">
+		<definition id="com.liferay.ide.maven.ui.menu.definition">
+			<iterate>
+				<and>
+					<adapt type="org.eclipse.core.resources.IResource">
+						<test
+							forcePluginActivation="true"
+							property="com.liferay.ide.maven.ui.isOsigMavenProject"
+							value="true"
+						/>
+					</adapt>
+				</and>
+			</iterate>
+		</definition>
 	</extension>
 </plugin>
