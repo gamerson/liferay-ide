@@ -19,6 +19,7 @@ import com.liferay.blade.api.Problem;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.MarkerUtil;
+import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.project.core.upgrade.FileProblems;
 import com.liferay.ide.project.core.upgrade.MigrationProblemsContainer;
 import com.liferay.ide.project.core.upgrade.ProblemsContainer;
@@ -70,7 +71,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
@@ -87,10 +87,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
@@ -125,13 +126,15 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 		_treeViewer = new TreeViewer(nestedSashForm);
 
-		_treeViewer.getTree().setLayoutData(treeData);
+		Tree tree = _treeViewer.getTree();
+
+		tree.setLayoutData(treeData);
 
 		_migrationContentProvider = new MigrationContentProvider();
 
 		_treeViewer.setContentProvider(_migrationContentProvider);
 
-		IDecoratorManager decoratorManager = PlatformUI.getWorkbench().getDecoratorManager();
+		IDecoratorManager decoratorManager = UIUtil.getDecoratorManager();
 
 		ILabelDecorator decorator = decoratorManager.getLabelDecorator();
 
@@ -144,9 +147,9 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 		menuMgr.add(removeAction);
 
-		Menu menu = menuMgr.createContextMenu(_treeViewer.getTree());
+		Menu menu = menuMgr.createContextMenu(tree);
 
-		_treeViewer.getTree().setMenu(menu);
+		tree.setMenu(menu);
 
 		_treeViewer.expandAll();
 
@@ -218,8 +221,8 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 						else {
 							TreePath[] paths = treeSelection.getPathsFor(selectedItem);
 
-							for (int i = 0; i < paths.length; i++) {
-								_treeViewer.setExpandedState(paths[i], !_treeViewer.getExpandedState(paths[i]));
+							for (TreePath path : paths) {
+								_treeViewer.setExpandedState(path, !_treeViewer.getExpandedState(path));
 							}
 						}
 					}
@@ -250,7 +253,9 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 				public void handleEvent(Event event) {
 					IViewPart view = UIUtil.findView(UpgradeView.ID);
 
-					new RunMigrationToolAction("Run Migration Tool", view.getViewSite().getShell()).run();
+					IViewSite viewSite = view.getViewSite();
+
+					new RunMigrationToolAction("Run Migration Tool", viewSite.getShell(), dataModel).run();
 				}
 
 			});
@@ -296,7 +301,7 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 		Button collapseAll = new Button(buttonContainer, SWT.NONE);
 
-		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+		ISharedImages sharedImages = UIUtil.getSharedImages();
 
 		Image collapseAllImage = sharedImages.getImage(ISharedImages.IMG_ELCL_COLLAPSEALL);
 
@@ -384,11 +389,11 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 		_problemsViewer = new TableViewer(
 			tableComposite, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 
-		_problemsViewer.getTable().setLayoutData(gridData);
+		final Table table = _problemsViewer.getTable();
+
+		table.setLayoutData(gridData);
 
 		_createColumns(_problemsViewer);
-
-		final Table table = _problemsViewer.getTable();
 
 		table.setHeaderVisible(true);
 
@@ -410,6 +415,7 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 		menuMgr.add(ignoreAction);
 		menuMgr.add(autoCorrectAction);
 		menuMgr.add(ignoreAlways);
+
 		Menu menu = menuMgr.createContextMenu(table);
 
 		table.setMenu(menu);
@@ -502,11 +508,9 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 	}
 
 	private void _createColumns(final TableViewer problemsViewer) {
-		final String[] titles = {"Resolved", "Line", "Problem"};
+		final String[] titles = {"Resolved", "Line", "Version", "Problem"};
 
 		TableViewerColumn col0 = _createTableViewerColumn(titles[0], problemsViewer);
-
-		col0.getColumn().pack();
 
 		col0.setEditingSupport(
 			new EditingSupport(problemsViewer) {
@@ -555,14 +559,12 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 				@Override
 				public String getText(Object element) {
-					return null;
+					return "";
 				}
 
 			});
 
 		TableViewerColumn col1 = _createTableViewerColumn(titles[1], problemsViewer);
-
-		col1.getColumn().pack();
 
 		col1.setLabelProvider(
 			new ColumnLabelProvider() {
@@ -578,8 +580,6 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 		TableViewerColumn col2 = _createTableViewerColumn(titles[2], problemsViewer);
 
-		col2.getColumn().pack();
-
 		col2.setLabelProvider(
 			new ColumnLabelProvider() {
 
@@ -587,16 +587,25 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 				public String getText(Object element) {
 					Problem p = (Problem)element;
 
-					return p.title;
+					if (p.version == null) {
+						return "7.0";
+					}
+
+					return p.version;
 				}
 
+			});
+
+		TableViewerColumn col3 = _createTableViewerColumn(titles[3], problemsViewer);
+
+		col3.setLabelProvider(
+			new ColumnLabelProvider() {
+
 				@Override
-				public void update(ViewerCell cell) {
-					super.update(cell);
+				public String getText(Object element) {
+					Problem p = (Problem)element;
 
-					Table table = problemsViewer.getTable();
-
-					table.getColumn(2).pack();
+					return StringUtil.trim(p.title);
 				}
 
 			});
@@ -606,14 +615,18 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 		TableColumn column0 = col0.getColumn();
 		TableColumn column1 = col1.getColumn();
 		TableColumn column2 = col2.getColumn();
+		TableColumn column3 = col3.getColumn();
 
-		tableLayout.setColumnData(column0, new ColumnWeightData(50, column0.getWidth()));
-		tableLayout.setColumnData(column1, new ColumnWeightData(50, column1.getWidth()));
-		tableLayout.setColumnData(column2, new ColumnWeightData(100, column2.getWidth()));
+		tableLayout.setColumnData(column0, new ColumnWeightData(35, column0.getWidth()));
+		tableLayout.setColumnData(column1, new ColumnWeightData(30, column1.getWidth()));
+		tableLayout.setColumnData(column2, new ColumnWeightData(30, column2.getWidth()));
+		tableLayout.setColumnData(column3, new ColumnWeightData(100, column3.getWidth()));
 
 		Table table = problemsViewer.getTable();
 
-		table.getParent().setLayout(tableLayout);
+		Composite parentComposite = table.getParent();
+
+		parentComposite.setLayout(tableLayout);
 	}
 
 	private TableViewerColumn _createTableViewerColumn(String title, TableViewer viewer) {
@@ -621,10 +634,13 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 
 		final TableColumn column = viewerColumn.getColumn();
 
+		Table table = viewer.getTable();
+
 		column.setText(title);
 		column.setResizable(true);
 		column.setMoveable(true);
-		column.addSelectionListener(_getSelectionAdapter(column, viewer.getTable().indexOf(column)));
+		column.addSelectionListener(_getSelectionAdapter(column, table.indexOf(column)));
+		column.pack();
 
 		return viewerColumn;
 	}
@@ -663,7 +679,9 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 	}
 
 	private Image _getImage(String imageName) {
-		return ProjectUI.getDefault().getImage(imageName);
+		ProjectUI projectUI = ProjectUI.getDefault();
+
+		return projectUI.getImage(imageName);
 	}
 
 	private String _getLinkTags(String ticketNumbers) {
@@ -693,11 +711,13 @@ public class FindBreakingChangesPage extends Page implements IDoubleClickListene
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				_comparator.setColumn(index);
+
 				int dir = _comparator.getDirection();
+				Table problemViewTable = _problemsViewer.getTable();
 
-				_problemsViewer.getTable().setSortDirection(dir);
+				problemViewTable.setSortDirection(dir);
+				problemViewTable.setSortColumn(column);
 
-				_problemsViewer.getTable().setSortColumn(column);
 				_problemsViewer.refresh();
 			}
 
