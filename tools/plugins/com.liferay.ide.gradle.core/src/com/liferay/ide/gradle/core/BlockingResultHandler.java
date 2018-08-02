@@ -32,7 +32,8 @@ import org.gradle.tooling.ResultHandler;
  *
  * @author Gregory Amerson
  */
-public class BlockingResultHandler<T> implements ResultHandler<T> {
+public class BlockingResultHandler<T> implements ResultHandler<T> 
+{
 
 	public BlockingResultHandler(Class<T> resultType) {
 		_resultType = resultType;
