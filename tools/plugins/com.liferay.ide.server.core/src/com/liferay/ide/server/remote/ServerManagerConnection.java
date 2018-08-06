@@ -59,7 +59,12 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 		String debugPort = getRemoteServerConfig(_getDebugPortAPI());
 
 		if (debugPort != null) {
-			return Integer.parseInt(debugPort);
+			try {
+				return Integer.parseInt(debugPort);
+			}
+			catch (NumberFormatException nfe) {
+				return -1;
+			}
 		}
 
 		return -1;
@@ -73,7 +78,12 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 		String fmDebugPort = getRemoteServerConfig(_getFMDebugPortAPI());
 
 		if (fmDebugPort != null) {
-			return Integer.parseInt(fmDebugPort);
+			try {
+				return Integer.parseInt(fmDebugPort);
+			}
+			catch (NumberFormatException nfe) {
+				return -1;
+			}
 		}
 
 		return -1;
@@ -197,7 +207,7 @@ public class ServerManagerConnection extends RemoteConnection implements IServer
 			status = (JSONObject)jsonResponse;
 		}
 		else {
-			throw new APIException(_getIsAliveAPI(), "Unable to connect to server manager.");
+			throw new APIException(_getIsAliveAPI(), "Unable to connect to server manager");
 		}
 
 		if (_isSuccess(status)) {

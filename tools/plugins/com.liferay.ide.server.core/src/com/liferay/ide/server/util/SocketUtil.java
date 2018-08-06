@@ -127,10 +127,19 @@ public class SocketUtil {
 	public static boolean isPortAvailable(String port) {
 		ServerSocket serverSocket = null;
 
+		int p = -1;
+
+		try {
+			p = Integer.parseInt(port);
+		}
+		catch (NumberFormatException nfe) {
+			return false;
+		}
+
 		try {
 			serverSocket = new ServerSocket();
 
-			serverSocket.bind(new InetSocketAddress(Integer.parseInt(port)));
+			serverSocket.bind(new InetSocketAddress(p));
 
 			return true;
 		}
