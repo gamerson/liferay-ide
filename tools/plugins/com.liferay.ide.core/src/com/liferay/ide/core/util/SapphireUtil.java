@@ -15,6 +15,7 @@
 package com.liferay.ide.core.util;
 
 import org.eclipse.sapphire.Element;
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.Listener;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.modeling.Status;
@@ -47,6 +48,14 @@ public class SapphireUtil {
 		}
 
 		return null;
+	}
+
+	public static boolean isNotEmpty(ElementList<?> elementList) {
+		if ((elementList != null) && !elementList.isEmpty()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public static boolean ok(Element element) {
