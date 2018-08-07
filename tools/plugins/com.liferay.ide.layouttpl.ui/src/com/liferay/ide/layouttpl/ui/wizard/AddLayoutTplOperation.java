@@ -172,15 +172,15 @@ public class AddLayoutTplOperation extends LiferayDataModelOperation implements 
 			LayoutTplUtil.saveToFile(element, templateFile, null);
 		}
 		else {
-			try(ByteArrayInputStream input = new ByteArrayInputStream(StringPool.EMPTY.getBytes())){
-				if (FileUtil.exists(templateFile)) {
+			try (ByteArrayInputStream input = new ByteArrayInputStream(StringPool.EMPTY.getBytes())) {
+				if (templateFile.exists()) {
 					templateFile.setContents(input, IResource.FORCE, null);
 				}
 				else {
 					templateFile.create(input, true, null);
 				}
 			}
-			catch(IOException ioe) {
+			catch (IOException ioe) {
 				throw new CoreException(LayoutTplUI.createErrorStatus(ioe));
 			}
 		}

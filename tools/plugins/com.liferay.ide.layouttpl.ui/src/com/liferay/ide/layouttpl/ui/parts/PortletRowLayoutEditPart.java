@@ -23,6 +23,7 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.Panel;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.sapphire.ElementList;
@@ -40,7 +41,9 @@ public abstract class PortletRowLayoutEditPart extends BaseGraphicalEditPart {
 		 * column
 		 */
 		if (panel != null) {
-			return panel.getSize().width - (getMargin() * 2);
+			Dimension dimension = panel.getSize();
+
+			return dimension.width - (getMargin() * 2);
 		}
 
 		return 0;

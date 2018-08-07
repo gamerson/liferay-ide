@@ -82,7 +82,7 @@ public class StringUtil {
 
 	public static String merge(String[] array, String delimiter) {
 		if (array == null) {
-			return null;
+			return "";
 		}
 
 		if (array.length == 0) {
@@ -104,7 +104,7 @@ public class StringUtil {
 
 	public static String replace(String content, String source, String target) {
 		if (content == null) {
-			return null;
+			return "";
 		}
 
 		int length = content.length();
@@ -140,7 +140,7 @@ public class StringUtil {
 
 	public static String toLowerCase(String s) {
 		if (s == null) {
-			return null;
+			return "";
 		}
 
 		return s.toLowerCase();
@@ -148,7 +148,7 @@ public class StringUtil {
 
 	public static String toLowerCase(StringBuilder sb) {
 		if (sb == null) {
-			return null;
+			return "";
 		}
 
 		String string = sb.toString();
@@ -158,7 +158,7 @@ public class StringUtil {
 
 	public static String toUpperCase(String s) {
 		if (s == null) {
-			return null;
+			return "";
 		}
 
 		return s.toUpperCase();
@@ -166,7 +166,7 @@ public class StringUtil {
 
 	public static String trim(String string) {
 		if (string == null) {
-			return null;
+			return "";
 		}
 
 		return string.trim();
@@ -174,7 +174,7 @@ public class StringUtil {
 
 	public static String trim(StringBuffer sb) {
 		if (sb == null) {
-			return null;
+			return "";
 		}
 
 		String string = sb.toString();
@@ -184,7 +184,7 @@ public class StringUtil {
 
 	public static String trim(StringBuilder sb) {
 		if (sb == null) {
-			return null;
+			return "";
 		}
 
 		String string = sb.toString();
