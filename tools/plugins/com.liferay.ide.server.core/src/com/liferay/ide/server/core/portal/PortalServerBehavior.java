@@ -130,6 +130,7 @@ public class PortalServerBehavior
 	public void cleanup() {
 		if (_ping != null) {
 			_ping.stop();
+
 			_ping = null;
 		}
 
@@ -378,6 +379,7 @@ public class PortalServerBehavior
 	public void stop(boolean force) {
 		if (force) {
 			terminate();
+
 			return;
 		}
 
@@ -390,6 +392,7 @@ public class PortalServerBehavior
 		}
 		else if (state == IServer.STATE_STARTING) {
 			terminate();
+
 			return;
 		}
 
@@ -694,15 +697,15 @@ public class PortalServerBehavior
 			// remove excluded arguments
 
 			if (ListUtil.isNotEmpty(excludeArgs)) {
-				for (int i = 0; i < excludeArgs.length; i++) {
-					int ind = excludeArgs[i].indexOf(" ");
-					int ind2 = excludeArgs[i].indexOf("=");
+				for (String excludeArg : excludeArgs) {
+					int ind = excludeArg.indexOf(" ");
+					int ind2 = excludeArg.indexOf("=");
 
 					if ((ind >= 0) && ((ind2 == -1) || (ind < ind2))) {
 
 						// -a bc style
 
-						int index = retval.indexOf(excludeArgs[i].substring(0, ind + 1));
+						int index = retval.indexOf(excludeArg.substring(0, ind + 1));
 
 						if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
 
@@ -726,7 +729,7 @@ public class PortalServerBehavior
 
 						// a =b style
 
-						int index = retval.indexOf(excludeArgs[i].substring(0, ind2 + 1));
+						int index = retval.indexOf(excludeArg.substring(0, ind2 + 1));
 
 						if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
 
@@ -750,7 +753,7 @@ public class PortalServerBehavior
 
 						// abc style
 
-						int index = retval.indexOf(excludeArgs[i]);
+						int index = retval.indexOf(excludeArg);
 
 						if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
 
@@ -836,6 +839,7 @@ public class PortalServerBehavior
 
 			if (entry2PathSeg2.isPrefixOf(newJRECp.getPath())) {
 				oldCp.set(i, newJRECp);
+
 				return;
 			}
 		}

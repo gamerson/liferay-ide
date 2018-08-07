@@ -35,7 +35,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.sourcelookup.containers.JavaSourcePathComputer;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 
@@ -70,9 +69,9 @@ public class PortalSourcePathComputerDelegate extends JavaSourcePathComputer {
 			}
 		}
 
-		Stream<IModule> moduleStream = Stream.of(server.getModules());
-
-		moduleStream.map(
+		Stream.of(
+			server.getModules()
+		).map(
 			module -> LiferayCore.create(module.getProject())
 		).filter(
 			liferayProject -> liferayProject != null
@@ -110,11 +109,13 @@ public class PortalSourcePathComputerDelegate extends JavaSourcePathComputer {
 
 			ISourceContainer[] computedSourceContainers = super.computeSourceContainers(sourceLookupConfig, monitor);
 
-			Stream<ISourceContainer> stream = Stream.of(computedSourceContainers);
-
-			stream.filter(
-				computedSourceContainer -> !sourceContainers.contains(
-					computedSourceContainer)).forEach(sourceContainers::add);
+			Stream.of(
+				computedSourceContainers
+			).filter(
+				computedSourceContainer -> !sourceContainers.contains(computedSourceContainer)
+			).forEach(
+				sourceContainers::add
+			);
 		}
 		catch (CoreException ce) {
 			LiferayServerCore.logError("Unable to add source container for project " + projectName, ce);
