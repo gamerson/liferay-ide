@@ -124,7 +124,7 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
 
 				wapTemplateFile = SWTUtil.createText(parent, 1);
 
-				this.synchHelper.synchText(wapTemplateFile, LAYOUT_WAP_TEMPLATE_FILE, null);
+				synchHelper.synchText(wapTemplateFile, LAYOUT_WAP_TEMPLATE_FILE, null);
 
 				Button wapTemplateFileBrowse = SWTUtil.createPushButton(parent, Msgs.browse, null);
 
@@ -146,7 +146,7 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
 
 		thumbnailFile = SWTUtil.createText(parent, 1);
 
-		this.synchHelper.synchText(thumbnailFile, LAYOUT_THUMBNAIL_FILE, null);
+		synchHelper.synchText(thumbnailFile, LAYOUT_THUMBNAIL_FILE, null);
 
 		Button thumbnailFileBrowse = SWTUtil.createPushButton(parent, Msgs.browse, null);
 
@@ -162,7 +162,9 @@ public class NewLayoutTplWizardPage extends LiferayDataModelWizardPage implement
 
 			});
 
-		synchHelper.getDataModel().addListener(
+		IDataModel dataModel = synchHelper.getDataModel();
+
+		dataModel.addListener(
 			new IDataModelListener() {
 
 				public void propertyChanged(DataModelEvent event) {
