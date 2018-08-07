@@ -14,6 +14,7 @@
 
 package com.liferay.ide.layouttpl.core.model.internal;
 
+import com.liferay.ide.core.util.SapphireUtil;
 import com.liferay.ide.layouttpl.core.model.CanAddPortletLayouts;
 import com.liferay.ide.layouttpl.core.model.LayoutTplElement;
 import com.liferay.ide.layouttpl.core.model.PortletColumnElement;
@@ -50,14 +51,15 @@ public class PortletColumnsListener extends FilteredListener<PropertyContentEven
 			for (int i = 0; i < size; i++) {
 				PortletColumnElement column = columns.get(i);
 
-				if (column.getPortletLayouts().size() == 0) {
+				if (SapphireUtil.isNotEmpty(column.getPortletLayouts())) {
 					column.setNumId(String.valueOf(numId++));
 				}
-				else if (column.getPortletLayouts().size() > 0) {
+				else if (SapphireUtil.isNotEmpty(column.getPortletLayouts())) {
 
 					// when new child is added, the parent column will have no numId
 
 					column.setNumId("N/A");
+
 					numId = updateColumns(column, numId++);
 				}
 
