@@ -55,7 +55,6 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 
 /**
  * @author Terry Jia
- * @author Ying Xu
  * @author Ashley Yuan
  * @author Lily Li
  * @author Rui Wang
@@ -293,7 +292,7 @@ public class WizardAction extends UIAction {
 
 	}
 
-	public class ImportLiferayWorkspaceWizardAction {
+	public class ImportLiferayWorkspaceWizardAction extends NewProjectWizardAction{
 
 		public CheckBox addProjectToWorkingSet() {
 			return _importLiferayWorkspaceProjectWizard.getAddProjectToWorkingSet();
@@ -303,12 +302,16 @@ public class WizardAction extends UIAction {
 			return _importLiferayWorkspaceProjectWizard.getBrowseLocationBtn();
 		}
 
-		public Text buildType() {
-			return _importLiferayWorkspaceProjectWizard.getBuildTypeText();
-		}
-
 		public CheckBox downloadLiferayBundle() {
 			return _importLiferayWorkspaceProjectWizard.getDownloadLiferaybundle();
+		}
+		
+		public void selectDownloadLiferayBundle() {
+			downloadLiferayBundle().select();
+		}
+		
+		public void deselectDownloadLiferayBundle() {
+			downloadLiferayBundle().deselect();
 		}
 
 		public void prepare(String location, boolean downloadLiferayBundle) {
@@ -335,10 +338,6 @@ public class WizardAction extends UIAction {
 
 		public void prepareBundleUrl(String bundleUrl) {
 			_importLiferayWorkspaceProjectWizard.getBundleUrl().setText(bundleUrl);
-		}
-
-		public void prepareLocation(String location) {
-			workspaceLocation().setText(location);
 		}
 
 		public void prepareServerName(String serverName) {
@@ -388,6 +387,10 @@ public class WizardAction extends UIAction {
 
 		public CheckBox contactAllUpdateSites() {
 			return _installNewSoftwareWizard.contactAllUpdateSites();
+		}
+
+		public void deselectContactAllUpdateSites() {
+			contactAllUpdateSites().deselect();
 		}
 
 		public void selectAcceptTerms() {
@@ -644,6 +647,10 @@ public class WizardAction extends UIAction {
 
 			ide.sleep();
 		}
+		
+		public void preparePackage(String packageName) {
+			packageName().setText(packageName);
+		}
 
 		public void prepare(String projectName, String packageName) {
 			projectName().setSelection(projectName);
@@ -664,7 +671,7 @@ public class WizardAction extends UIAction {
 
 			ide.sleep();
 
-			componentClassName().setText(className);
+			prepareComponentClass(className);
 
 			ide.sleep();
 
@@ -677,6 +684,10 @@ public class WizardAction extends UIAction {
 			_newLiferayComponentWizard.getModelClassName().setText(modelClass);
 
 			ide.sleep();
+		}
+
+		public void prepareComponentClass(String componentClass) {
+			componentClassName().setText(componentClass);
 		}
 
 		public void prepareProjectName(String projectName) {
@@ -813,6 +824,10 @@ public class WizardAction extends UIAction {
 
 		public ToolbarButtonWithTooltip deleteBtn() {
 			return _newModuleInfoWizard.getDeleteBtn();
+		}
+		
+		public void clickDeleteBtn() {
+			deleteBtn().click();
 		}
 
 		public void openSelectServiceDialog() {
@@ -966,20 +981,31 @@ public class WizardAction extends UIAction {
 			return _newProjectWizard.getBuildTypes();
 		}
 
+		public String[] buildTypes() {
+			return buildType().items();
+		}
 		public void deselectUseDefaultLocation() {
 			useDefaultLocation().deselect();
-		}
-
-		public ComboBox getBuildTypes() {
-			return _newProjectWizard.getBuildTypes();
 		}
 
 		public Text location() {
 			return _newProjectWizard.getLocation();
 		}
+		
+		public String getLocation() {
+			return location().getText();
+		}
+		
+		public void prepareLocation(String location) {
+			location().setText(location);
+		}
 
 		public Text projectName() {
 			return _newProjectWizard.getProjectName();
+		}
+		
+		public void prepareProjectName(String projectName) {
+			projectName().setText(projectName);
 		}
 
 		public void selectUseDefaultLocation() {

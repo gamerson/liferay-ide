@@ -18,16 +18,18 @@ import com.liferay.ide.ui.liferay.UIAction;
 import com.liferay.ide.ui.swtbot.page.AbstractWidget;
 import com.liferay.ide.ui.swtbot.page.CheckBox;
 import com.liferay.ide.ui.swtbot.page.ComboBox;
-import com.liferay.ide.ui.swtbot.page.Text;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
-
+import org.eclipse.swtbot.swt.finder.SWTBotAssert;
 import org.junit.Assert;
 
 /**
  * @author Terry Jia
+ * @author Ashely Yuan
  */
 public class ValidationAction extends UIAction {
+
+	private static ValidationAction _validationAction;
 
 	public static ValidationAction getInstance(SWTWorkbenchBot bot) {
 		if (_validationAction == null) {
@@ -37,12 +39,28 @@ public class ValidationAction extends UIAction {
 		return _validationAction;
 	}
 
+	private ValidationAction(SWTWorkbenchBot bot) {
+		super(bot);
+	}
+
+	public void assertActiveFalse(AbstractWidget widget) {
+		Assert.assertFalse(widget.isActive());
+	}
+
+	public void assertActiveTrue(AbstractWidget widget) {
+		Assert.assertTrue(widget.isActive());
+	}
+
 	public void assertCheckedFalse(CheckBox checkBox) {
 		Assert.assertFalse(checkBox.isChecked());
 	}
 
 	public void assertCheckedTrue(CheckBox checkBox) {
 		Assert.assertTrue(checkBox.isChecked());
+	}
+
+	public void assertContains(String expect, String stack) {
+		SWTBotAssert.assertContains(expect, stack);
 	}
 
 	public void assertEnabledFalse(AbstractWidget widget) {
@@ -66,15 +84,13 @@ public class ValidationAction extends UIAction {
 			Assert.assertEquals(expects[i], items[i]);
 		}
 	}
-
-	public void assertTextEquals(String expect, Text text) {
-		Assert.assertEquals(expect, text.getText());
+	
+	public void assertLengthEquals(Object[] a1, Object[] a2) {
+		Assert.assertEquals(a1.length, a2.length);
 	}
 
-	private ValidationAction(SWTWorkbenchBot bot) {
-		super(bot);
+	public void assertTextEquals(String expect, AbstractWidget widget) {
+		Assert.assertEquals(expect, widget.getText());
 	}
-
-	private static ValidationAction _validationAction;
 
 }
