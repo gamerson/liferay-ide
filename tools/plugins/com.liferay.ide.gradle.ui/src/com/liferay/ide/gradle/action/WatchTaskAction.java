@@ -66,7 +66,7 @@ public class WatchTaskAction extends AbstractObjectAction {
 		if (fSelection instanceof IStructuredSelection) {
 			Object[] elems = ((IStructuredSelection)fSelection).toArray();
 
-			if (elems.length < 1) {
+			if (ListUtil.isEmpty(elems)) {
 				return;
 			}
 
