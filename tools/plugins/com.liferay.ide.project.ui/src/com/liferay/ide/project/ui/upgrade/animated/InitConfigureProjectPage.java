@@ -35,6 +35,7 @@ import com.liferay.ide.project.core.util.ProjectImportUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceProjectProvider;
+import com.liferay.ide.project.ui.BreakingChangeVersion;
 import com.liferay.ide.project.ui.IvyUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.upgrade.animated.UpgradeView.PageNavigatorListener;
@@ -48,6 +49,7 @@ import com.liferay.ide.ui.util.SWTUtil;
 import com.liferay.ide.ui.util.UIUtil;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -87,6 +89,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.sapphire.Event;
 import org.eclipse.sapphire.Listener;
 import org.eclipse.sapphire.Property;
@@ -149,10 +152,11 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 	public InitConfigureProjectPage(final Composite parent, int style, LiferayUpgradeDataModel dataModel) {
 		super(parent, style, dataModel, initConfigureProjectPageId, false);
 
-		dataModel.getSdkLocation().attach(new LiferayUpgradeValidationListener());
-		dataModel.getBundleName().attach(new LiferayUpgradeValidationListener());
-		dataModel.getBundleUrl().attach(new LiferayUpgradeValidationListener());
-		dataModel.getBackupLocation().attach(new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getSdkLocation(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBundleName(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBundleUrl(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBackupLocation(), new LiferayUpgradeValidationListener());
+		SapphireUtil.attachListener(dataModel.getBreakingChangeVersion(), new LiferayUpgradeValidationListener());
 
 		ScrolledComposite scrolledComposite = new ScrolledComposite(this, SWT.V_SCROLL);
 		GridData scrolledData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -187,6 +191,10 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 						_disposeServerEelment();
 
 						_disposeImportElement();
+
+						_disposeBreakingChangeElement();
+
+						_createMigrateBreakingChangeVersion();
 
 						_createMigrateLayoutElement();
 
@@ -223,6 +231,8 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 				}
 
 			});
+
+		_createMigrateBreakingChangeVersion();
 
 		_createMigrateLayoutElement();
 
@@ -630,6 +640,41 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 		finally {
 			progress.done();
 		}
+	}
+
+	private void _breakingChangeCombSetting(String[] itemNames, String[] itemValues, String breakChangeValue) {
+		_breakingChangeVersionComb.setItems(itemNames);
+
+		_breakingChangeVersionComb.select(0);
+
+		for (int i = 0; i < itemValues.length; i++) {
+			if (itemValues != null) {
+				if (breakChangeValue.equals(breakChangeValue)) {
+					_breakingChangeVersionComb.select(i);
+				}
+			}
+		}
+
+		_breakingChangeVersionComb.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String breakingChangeName = _breakingChangeVersionComb.getText();
+
+				for (int i = 0; i < itemValues.length; i++) {
+					if (breakingChangeName.equals(itemNames[i])) {
+						dataModel.setBreakingChangeVersion(itemValues[i]);
+					}
+				}
+
+				_startCheckThread();
+			}
+
+		});
 	}
 
 	private void _checkProjectType(IProject project) {
@@ -1055,6 +1100,35 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 		}
 	}
 
+	private void _createMigrateBreakingChangeVersion() {
+		_breakingChangeVersionLabel = createLabel(_pageParent, "Select Liferay Breaking Change Version: ");
+
+		_breakingChangeVersionComb = new Combo(_pageParent, SWT.DROP_DOWN | SWT.READ_ONLY);
+
+		_breakingChangeVersionComb.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		String breakingChangeVersionValue = SapphireUtil.getContent(dataModel.getBreakingChangeVersion());
+
+		Boolean inputIsLiferayWorkspaceElement = SapphireUtil.getContent(dataModel.getIsLiferayWorkspace());
+
+		if (inputIsLiferayWorkspaceElement) {
+			String[] itemNamesWorkspace = BreakingChangeVersion.getBreakingChangeVersionNames(true);
+
+			String[] breakingChangeVersionsWorkspace = BreakingChangeVersion.getBreakingChangeVersionValues(true);
+
+			_breakingChangeCombSetting(itemNamesWorkspace, breakingChangeVersionsWorkspace, breakingChangeVersionValue);
+		}
+		else {
+			String[] itemNames = BreakingChangeVersion.getBreakingChangeVersionNames(false);
+
+			String[] breakingChangeVersions = BreakingChangeVersion.getBreakingChangeVersionValues(false);
+
+			_breakingChangeCombSetting(itemNames, breakingChangeVersions, breakingChangeVersionValue);
+		}
+
+		dataModel.setBreakingChangeVersion(_breakingChangeVersionComb.getText());
+	}
+
 	private void _createMigrateLayoutElement() {
 		_layoutLabel = createLabel(_pageParent, "Select Migrate Layout:");
 		_layoutComb = new Combo(_pageParent, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -1062,6 +1136,20 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 		_layoutComb.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		_layoutComb.setItems(_layoutNames);
 		_layoutComb.select(0);
+
+		String layoutValue = SapphireUtil.getContent(dataModel.getLayout());
+
+		if (layoutValue != null) {
+			for (int i = 0; i < _layoutNames.length; i++) {
+				if (layoutValue.equals(_layoutNames[i])) {
+					_layoutComb.select(i);
+				}
+			}
+		}
+		else {
+			_layoutComb.select(0);
+		}
+
 		_layoutComb.addSelectionListener(
 			new SelectionListener() {
 
@@ -1189,6 +1277,13 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 		}
 		catch (CoreException ce) {
 			ProjectUI.logError(ce);
+		}
+	}
+
+	private void _disposeBreakingChangeElement() {
+		if ((_breakingChangeVersionLabel != null) && (_breakingChangeVersionComb != null)) {
+			_breakingChangeVersionLabel.dispose();
+			_breakingChangeVersionComb.dispose();
 		}
 	}
 
@@ -1348,6 +1443,29 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 	private boolean _isPageValidate() {
 		return _validationResult;
+	}
+
+	private void _refreshMigrateBreakingChangeVersion() {
+		if ((_breakingChangeVersionLabel != null) && (_breakingChangeVersionComb != null) &&
+			!_breakingChangeVersionComb.isDisposed()) {
+
+			String[] itemNames = BreakingChangeVersion.getBreakingChangeVersionNames(false);
+			String[] breakingChangeVersions = BreakingChangeVersion.getBreakingChangeVersionValues(false);
+			_breakingChangeVersionComb.setItems(itemNames);
+
+			String breakingChangeVersion = SapphireUtil.getContent(dataModel.getBreakingChangeVersion());
+
+			_breakingChangeVersionComb.select(0);
+
+			for (int i = 0; i < breakingChangeVersions.length; i++) {
+				if (breakingChangeVersion != null) {
+					if (breakingChangeVersion.equals(breakingChangeVersions[i])) {
+						_breakingChangeVersionComb.select(i);
+						return;
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1591,6 +1709,9 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 	private static Color _gray;
 
 	private Composite _blankComposite;
+	private String[] _breakingChangeNames = {"7.0_7.0_N", "7.1_7.0,7.1_N", "7.1_7.1_Y"};
+	private Combo _breakingChangeVersionComb;
+	private Label _breakingChangeVersionLabel;
 	private Text _bundleNameField;
 	private Label _bundleNameLabel;
 	private BundleNameValidationService _bundleNameValidation =
@@ -1628,8 +1749,13 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 
 			final Property property = ((ValuePropertyContentEvent)event).property();
 
+			if ("BreakingChangeVersion".equals(property.name())) {
+				_refreshMigrateBreakingChangeVersion();
+			}
+
 			if (!"SdkLocation".equals(property.name())) {
 				_startCheckThread();
+				_refreshMigrateBreakingChangeVersion();
 
 				return;
 			}
@@ -1643,7 +1769,11 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 					_layoutComb.setEnabled(true);
 				}
 
+				dataModel.setIsLiferayWorkspace(false);
+				_refreshMigrateBreakingChangeVersion();
+
 				_startCheckThread();
+
 				return;
 			}
 
@@ -1652,6 +1782,14 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 				_disposeBundleElement();
 				_disposeServerEelment();
 				_disposeMigrateLayoutElement();
+				_disposeBreakingChangeElement();
+
+				if (LiferayWorkspaceUtil.isValidWorkspaceLocation(path.toPortableString())) {
+					dataModel.setIsLiferayWorkspace(true);
+				}
+				else {
+					dataModel.setIsLiferayWorkspace(false);
+				}
 
 				_importButton.setText("Continue");
 				_pageParent.layout();
@@ -1661,6 +1799,9 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 				_disposeBundleCheckboxElement();
 				_disposeBundleElement();
 				_disposeServerEelment();
+				_disposeBreakingChangeElement();
+
+				dataModel.setIsLiferayWorkspace(true);
 
 				_pageParent.layout();
 			}
@@ -1669,13 +1810,23 @@ public class InitConfigureProjectPage extends Page implements IServerLifecycleLi
 				_disposeBundleElement();
 				_disposeServerEelment();
 				_disposeMigrateLayoutElement();
+				_disposeBreakingChangeElement();
+				_disposeImportElement();
+
+				_createMigrateBreakingChangeVersion();
+				_createImportElement();
+				dataModel.setIsLiferayWorkspace(false);
 				_pageParent.layout();
 			}
 			else {
+				_disposeBreakingChangeElement();
 				_disposeMigrateLayoutElement();
+				_createMigrateBreakingChangeVersion();
 				_createMigrateLayoutElement();
 
 				_createBundleControl();
+
+				dataModel.setIsLiferayWorkspace(false);
 				_pageParent.layout();
 
 				SDK sdk = SDKUtil.createSDKFromLocation(PathBridge.create(path));
