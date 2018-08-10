@@ -23,7 +23,9 @@ import com.liferay.ide.ui.swtbot.page.Text;
 import com.liferay.ide.ui.swtbot.page.View;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotPerspective;
 import org.eclipse.swtbot.swt.finder.waits.ICondition;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 
 /**
  * @author Terry Jia
@@ -36,11 +38,25 @@ public class Eclipse extends BasePageObject {
 	public Eclipse(SWTWorkbenchBot bot) {
 		super(bot);
 
-		label = bot.activeShell().getText();
+		SWTBotShell botActiveShell = bot.activeShell();
+
+		label = botActiveShell.getText();
 
 		_shell = new Shell(bot, label);
 
 		_welcomeView = new View(bot, WELCOME);
+	}
+
+	public void clickFileMenu(String menu) {
+		getFileMenu().clickMenu(menu);
+	}
+
+	public void clickFileMenu(String menu, String submenu) {
+		getFileMenu().clickMenu(menu, submenu);
+	}
+
+	public void clickInstallMenu() {
+		getInstallMenu().click();
 	}
 
 	public Editor getEditor(String fileName) {
@@ -48,13 +64,13 @@ public class Eclipse extends BasePageObject {
 	}
 
 	public Menu getFileMenu() {
-		return new Menu(bot.shell(label).bot(), FILE);
+		return new Menu(_botShell.bot(), FILE);
 	}
 
 	public Menu getInstallMenu() {
 		String[] installLabel = {HELP, INSTALL_NEW_SOFTWARE};
 
-		return new Menu(bot.shell(label).bot(), installLabel);
+		return new Menu(_botShell.bot(), installLabel);
 	}
 
 	public String getLabel() {
@@ -64,17 +80,19 @@ public class Eclipse extends BasePageObject {
 	public Menu getOtherMenu() {
 		String[] otherLabel = {WINDOW, SHOW_VIEW, OTHER};
 
-		return new Menu(bot.shell(label).bot(), otherLabel);
+		return new Menu(_botShell.bot(), otherLabel);
 	}
 
 	public String getPerspectiveLabel() {
-		return ((SWTWorkbenchBot)bot).activePerspective().getLabel();
+		SWTBotPerspective botActivePerspective = ((SWTWorkbenchBot)bot).activePerspective();
+
+		return botActivePerspective.getLabel();
 	}
 
 	public Menu getPreferencesMenu() {
 		String[] preferencesLabel = {WINDOW, PREFERENCES};
 
-		return new Menu(bot.shell(label).bot(), preferencesLabel);
+		return new Menu(_botShell.bot(), preferencesLabel);
 	}
 
 	public Text getQuickAccess() {
@@ -110,7 +128,9 @@ public class Eclipse extends BasePageObject {
 
 		TextDialog showViewDialog = _getShowViewDialog();
 
-		showViewDialog.getText().setText(viewName);
+		Text showViewText = showViewDialog.getText();
+
+		showViewText.setText(viewName);
 
 		sleep(3000);
 
@@ -123,6 +143,7 @@ public class Eclipse extends BasePageObject {
 		return new TextDialog(bot);
 	}
 
+	private SWTBotShell _botShell = bot.shell(label);
 	private Shell _shell;
 	private View _welcomeView;
 
