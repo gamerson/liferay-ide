@@ -352,6 +352,10 @@ public class WizardAction extends UIAction {
 			serverName().setText(serverName);
 		}
 
+		public void selectDownloadLiferayBundle() {
+			downloadLiferayBundle().select();
+		}
+
 		public Text serverName() {
 			return _importLiferayWorkspaceProjectWizard.getServerName();
 		}
@@ -821,6 +825,10 @@ public class WizardAction extends UIAction {
 	}
 
 	public class NewModuleInfoWizardAction {
+
+		public void clickDeleteBtn() {
+			_newModuleInfoWizard.clickDeleteBtn();
+		}
 
 		public Text componentClassName() {
 			return _newModuleInfoWizard.getComponentClassName();
