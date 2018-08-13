@@ -27,4 +27,5 @@ public interface IWorkspaceProject extends ILiferayProject {
 	public List<ILiferayProject> getChildProjects();
 
 	public List<IPath> getTargetPlatformArtifacts();
+
 }
