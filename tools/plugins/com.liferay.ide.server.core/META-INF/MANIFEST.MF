@@ -28,7 +28,8 @@ Require-Bundle: org.eclipse.wst.server.core;visibility:=reexport,
  org.apache.commons.lang,
  org.apache.commons.io,
  org.eclipse.core.commands,
- org.eclipse.wst.validation
+ org.eclipse.wst.validation,
+ org.apache.commons.collections
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.server.core,

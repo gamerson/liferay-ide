@@ -12,20 +12,17 @@
  * details.
  */
 
-package com.liferay.ide.core;
+package com.liferay.ide.server.core;
 
-import java.util.List;
-
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.resources.IProject;
 
 /**
- * @author Gregory Amerson
  * @author Simon Jiang
  */
-public interface IWorkspaceProject extends ILiferayProject {
+public interface ILiferyPortalServerWatch {
 
-	public List<ILiferayProject> getChildProjects();
+	public void addWatchProject(IProject project);
 
-	public List<IPath> getTargetPlatformArtifacts();
+	public void removeWatchProject(IProject project);
 
 }
