@@ -152,6 +152,7 @@ public class InitConfigureProjectPage extends Page implements SelectionChangedLi
 		scrolledComposite.setExpandVertical(true);
 		scrolledComposite.setContent(_pageParent);
 
+		
 		_dirLabel = createLabel(
 			_pageParent, "Project sources(Plugins SDK, Maven parent, or existing Liferay Workspace)");
 		_dirField = createTextField(_pageParent, SWT.NONE);
