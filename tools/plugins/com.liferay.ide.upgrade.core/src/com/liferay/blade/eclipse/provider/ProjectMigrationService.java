@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -241,6 +242,65 @@ public class ProjectMigrationService implements Migration {
 			).collect(
 				Collectors.toList()
 			);
+
+			if (ListUtil.isNotEmpty(versions) && (versions.size() > 1)) {
+				Collections.sort(
+					versions,
+					new Comparator<String>() {
+
+						public int compare(String version1, String version2) {
+							double v1 = 0;
+
+							try {
+								v1 = Double.parseDouble(version1);
+							}
+							catch (NumberFormatException nfe) {
+							}
+
+							double v2 = 0;
+
+							try {
+								v2 = Double.parseDouble(version2);
+							}
+							catch (NumberFormatException nfe) {
+							}
+
+							if (v1 < v2) {
+								return 1;
+							}
+							else {
+								return -1;
+							}
+						}
+
+					});
+
+				String version = versions.get(0);
+
+				Stream<ServiceReference<FileMigrator>> stream = fileMigratorList.stream();
+
+				List<String> inVersionsTitles = stream.filter(
+					predicate -> version.equals(predicate.getProperty("version"))
+				).map(
+					migrator -> (String)migrator.getProperty("problem.title")
+				).collect(
+					Collectors.toList()
+				);
+
+				stream = fileMigratorList.stream();
+
+				List<ServiceReference<FileMigrator>> notInVersionsMigrators = stream.filter(
+					predicate -> !version.equals(predicate.getProperty("version"))
+				).collect(
+					Collectors.toList()
+				);
+
+				for (ServiceReference<FileMigrator> migrator : notInVersionsMigrators) {
+					if (inVersionsTitles.contains(migrator.getProperty("problem.title"))) {
+						fileMigratorList.remove(migrator);
+					}
+				}
+			}
 
 			if (ListUtil.isNotEmpty(fileMigratorList)) {
 				try {
