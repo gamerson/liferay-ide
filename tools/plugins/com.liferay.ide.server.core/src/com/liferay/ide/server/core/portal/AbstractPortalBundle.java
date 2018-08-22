@@ -223,21 +223,24 @@ public abstract class AbstractPortalBundle implements PortalBundle {
 
 		Properties properties = new Properties();
 
-		if (FileUtil.exists(configInfoFile)) {
-			try (InputStream fileInput = Files.newInputStream(configInfoFile.toPath())) {
-				properties.load(fileInput);
-				String configInfo = (String)properties.get(portalDirKey);
-
-				if (!CoreUtil.isNullOrEmpty(configInfo)) {
-					return configInfo;
-				}
-			}
-			catch (IOException ioe) {
-				LiferayServerCore.logError(ioe);
-			}
+		if (FileUtil.notExists(configInfoFile)) {
+			return "";
 		}
 
-		return null;
+		try (InputStream fileInput = Files.newInputStream(configInfoFile.toPath())) {
+			properties.load(fileInput);
+
+			String configInfo = (String)properties.get(portalDirKey);
+
+			if (!CoreUtil.isNullOrEmpty(configInfo)) {
+				return configInfo;
+			}
+		}
+		catch (IOException ioe) {
+			LiferayServerCore.logError(ioe);
+		}
+
+		return "";
 	}
 
 	private String _getConfigInfoFromManifest(String configType, IPath portalDir) {
@@ -268,7 +271,7 @@ public abstract class AbstractPortalBundle implements PortalBundle {
 			return serverInfo.trim();
 		}
 
-		return null;
+		return "";
 	}
 
 	private IPath _getConfigInfoPath(String configType) {
