@@ -2,7 +2,7 @@
 
 <#include "../component.ftl">
 
-<#if ( supperclass == "MVCActionCommand" ) >
+<#if stringUtil.equals(supperclass, "MVCActionCommand")>
 public class ${classname} implements ${supperclass} {
 	@Override
 	public boolean processAction(
@@ -30,7 +30,7 @@ public class ${classname} implements ${supperclass} {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		${classname}.class);
-<#elseif ( supperclass == "FreeMarkerPortlet" ) >
+<#elseif stringUtil.equals(supperclass, "FreeMarkerPortlet")>
 public class ${classname} extends ${supperclass} {
 </#if>
 }

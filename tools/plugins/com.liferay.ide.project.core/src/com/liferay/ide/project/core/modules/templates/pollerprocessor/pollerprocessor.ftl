@@ -3,7 +3,7 @@
 <#include "../component.ftl">
 
 public class ${classname} extends ${supperclass} {
-<#if ( supperclass == "BasePollerProcessor" ) >
+<#if stringUtil.equals(supperclass, "BasePollerProcessor")>
 	@Override
 	protected PollerResponse doReceive(PollerRequest pollerRequest)
 		throws Exception {
