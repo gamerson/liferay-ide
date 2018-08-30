@@ -371,6 +371,6 @@ public class NewLiferayComponentOpTests extends BaseTests
 
         projectValidationStatus = cop.getProjectName().validation();
 
-        assertEquals( "Can't find bnd.bnd file in the project.", projectValidationStatus.message() );
+        assertEquals( "Can't find bnd.bnd file in the project", projectValidationStatus.message() );
     }
 }
