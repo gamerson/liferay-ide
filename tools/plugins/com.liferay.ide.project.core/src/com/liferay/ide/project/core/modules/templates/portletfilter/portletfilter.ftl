@@ -2,7 +2,7 @@
 
 <#include "../component.ftl">
 
-<#if stringUtil.equals(supperclass, "GenericPortlet")>
+<#if ( supperclass == "GenericPortlet" ) >
 public class ${classname} extends ${supperclass} {
 
 	@Override
@@ -15,7 +15,7 @@ public class ${classname} extends ${supperclass} {
 
 		printWriter.print("Custom Attribute = " + customAttr);
 	}
-<#elseif stringUtil.equals(supperclass, "RenderFilter")>
+<#elseif ( supperclass == "RenderFilter" ) >
 public class ${classname} implements ${supperclass} {
 
 	@Override
