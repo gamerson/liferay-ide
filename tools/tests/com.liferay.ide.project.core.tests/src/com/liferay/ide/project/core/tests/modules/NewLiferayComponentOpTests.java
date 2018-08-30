@@ -346,7 +346,7 @@ public class NewLiferayComponentOpTests extends BaseTests
 
         Status projectValidationStatus = cop.getProjectName().validation();
 
-        assertEquals( "No suitable Liferay module project.", projectValidationStatus.message() );
+        assertEquals( "No suitable Liferay module project", projectValidationStatus.message() );
 
         NewLiferayModuleProjectOp pop = NewLiferayModuleProjectOp.TYPE.instantiate();
 
