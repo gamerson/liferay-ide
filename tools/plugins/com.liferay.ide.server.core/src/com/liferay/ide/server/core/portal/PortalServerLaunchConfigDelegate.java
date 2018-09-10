@@ -14,34 +14,32 @@
 
 package com.liferay.ide.server.core.portal;
 
-import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.LiferayServerCore;
+import com.liferay.ide.server.util.SocketUtil;
 
-import java.io.File;
-
-import java.lang.reflect.Method;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.IStreamListener;
+import org.eclipse.debug.core.model.IDebugTarget;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
-import org.eclipse.jdt.launching.ExecutionArguments;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.IVMRunner;
-import org.eclipse.jdt.launching.VMRunnerConfiguration;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IVMConnector;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
@@ -56,20 +54,6 @@ import org.eclipse.wst.server.core.ServerUtil;
 public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
 	public static final String ID = "com.liferay.ide.server.portal.launch";
-
-	public PortalServerLaunchConfigDelegate() {
-		Method allowAdvancedSourcelookupMethod = _getSuperClassMethod("allowAdvancedSourcelookup", new Class<?>[0]);
-
-		if (allowAdvancedSourcelookupMethod != null) {
-			try {
-				allowAdvancedSourcelookupMethod.invoke(this);
-
-				_allowAdvancedSourceLookup = true;
-			}
-			catch (Exception e) {
-			}
-		}
-	}
 
 	@Override
 	public void launch(ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor)
@@ -100,92 +84,129 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 		}
 	}
 
-	private Method _getSuperClassMethod(String methodName, Class<?>... parameterTypes) {
-		Method superClassMethod = null;
+	protected void startDebugLaunch(
+			IServer server, ILaunchConfiguration configuration, ILaunch launch, IProgressMonitor monitor)
+		throws CoreException {
+
+		if (monitor == null) {
+			monitor = new NullProgressMonitor();
+		}
+
+		// setup the run launch so we get console monitor
+
+		String connectorId = getVMConnectorId(configuration);
+
+		IVMConnector connector = null;
+
+		if (connectorId == null) {
+			connector = JavaRuntime.getDefaultVMConnector();
+		}
+		else {
+			connector = JavaRuntime.getVMConnector(connectorId);
+		}
+
+		if (connector == null) {
+			abort(
+				"Debugging connector not specified.", null,
+				IJavaLaunchConfigurationConstants.ERR_CONNECTOR_NOT_AVAILABLE);
+		}
+
+		Map<String, String> connectMap = configuration.getAttribute(
+			IJavaLaunchConfigurationConstants.ATTR_CONNECT_MAP, new HashMap<String, String>());
+
+		String host = configuration.getAttribute("hostname", server.getHost());
+		String port = configuration.getAttribute("port", "");
+
+		connectMap.put("hostname", host);
+		connectMap.put("port", configuration.getAttribute("port", ""));
+
+		// check for cancellation
+
+		if (monitor.isCanceled()) {
+			return;
+		}
+
+		if (!launch.isTerminated()) {
+			IStatus canConnect = SocketUtil.canConnect(host, port);
+
+			if (canConnect.isOK()) {
+				connector.connect(connectMap, monitor, launch);
+			}
+		}
+
+		// check for cancellation
+
+		if (monitor.isCanceled() || launch.isTerminated()) {
+			IDebugTarget[] debugTargets = launch.getDebugTargets();
+
+			for (IDebugTarget target : debugTargets) {
+				if (target.canDisconnect()) {
+					target.disconnect();
+				}
+			}
+
+			return;
+		}
+
+		monitor.done();
+	}
+
+	private IProcess _createTerminateableStreamsProxyProcess(
+		IServer server, PortalServer portalServer, final PortalServerBehavior poratlServerBehaviour, ILaunch launch,
+		boolean debug, ILaunchConfiguration config, IProgressMonitor monitor) {
 
 		try {
-			Class<?> superclass = getClass().getSuperclass();
+			if ((server == null) || (portalServer == null) || (poratlServerBehaviour == null) || (launch == null)) {
+				return null;
+			}
 
-			superClassMethod = superclass.getDeclaredMethod(methodName, parameterTypes);
+			IBladeServerStartStreamsProxy streamsProxy = new BladeServerLogFileStreamsProxy(
+				portalServer, poratlServerBehaviour, launch);
+
+			IProcess retvalProcess = poratlServerBehaviour.getProcess();
+
+			if (retvalProcess == null) {
+				retvalProcess = new BladeServerMonitorProcess(
+					server, poratlServerBehaviour, launch, debug, streamsProxy, config, monitor);
+
+				launch.addProcess(retvalProcess);
+			}
+			else {
+				launch.addProcess(retvalProcess);
+			}
+
+			if (debug) {
+				IStreamMonitor outputStreamMonitor = streamsProxy.getOutputStreamMonitor();
+
+				outputStreamMonitor.addListener(new StartDebugStreamMonitor(server, config, launch, monitor));
+			}
+
+			return retvalProcess;
 		}
 		catch (Exception e) {
 		}
 
-		return superClassMethod;
+		return null;
 	}
 
 	private void _launchServer(
 			IServer server, ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor)
 		throws CoreException {
 
-		IVMInstall vm = verifyVMInstall(config);
+		PortalServer portalServer = (PortalServer)server.loadAdapter(PortalServer.class, monitor);
 
-		IVMRunner runner;
-
-		if (vm.getVMRunner(mode) != null) {
-			runner = vm.getVMRunner(mode);
-		}
-		else {
-			runner = vm.getVMRunner(ILaunchManager.RUN_MODE);
-		}
-
-		File workingDir = verifyWorkingDirectory(config);
-
-		String workingDirPath = workingDir != null ? workingDir.getAbsolutePath() : null;
-
-		String progArgs = getProgramArguments(config);
-		String vmArgs = getVMArguments(config);
-		String[] envp = getEnvironment(config);
-
-		ExecutionArguments execArgs = new ExecutionArguments(vmArgs, progArgs);
-
-		Map<String, Object> vmAttributesMap = getVMSpecificAttributesMap(config);
-
-		PortalServerBehavior portalServer = (PortalServerBehavior)server.loadAdapter(
+		PortalServerBehavior portalServerBehavior = (PortalServerBehavior)server.loadAdapter(
 			PortalServerBehavior.class, monitor);
 
-		String classToLaunch = portalServer.getClassToLaunch();
+		IProcess streamProxyProcess = _createTerminateableStreamsProxyProcess(
+			server, portalServer, portalServerBehavior, launch, ILaunchManager.DEBUG_MODE.equals(mode), config,
+			monitor);
 
-		String[] classpath = getClasspath(config);
-
-		VMRunnerConfiguration runConfig = new VMRunnerConfiguration(classToLaunch, classpath);
-
-		runConfig.setProgramArguments(execArgs.getProgramArgumentsArray());
-
-		if (_allowAdvancedSourceLookup) {
-			try {
-				Method getVMArgumentsMethod = _getSuperClassMethod(
-					"getVMArguments", new Class<?>[] {ILaunchConfiguration.class, String.class});
-
-				if (getVMArgumentsMethod != null) {
-					List<String> vmArguments = new ArrayList<>();
-					String vmArgumentResult = (String)getVMArgumentsMethod.invoke(this, new Object[] {config, mode});
-
-					Collections.addAll(vmArguments, DebugPlugin.parseArguments(vmArgumentResult));
-
-					Collections.addAll(vmArguments, execArgs.getVMArgumentsArray());
-
-					runConfig.setVMArguments(vmArguments.toArray(new String[vmArguments.size()]));
-				}
-			}
-			catch (Exception e) {
-			}
-		}
-		else {
-			runConfig.setVMArguments(execArgs.getVMArgumentsArray());
+		if (portalServerBehavior.getProcess() == null) {
+			portalServerBehavior.setProcess(streamProxyProcess);
 		}
 
-		runConfig.setWorkingDirectory(workingDirPath);
-		runConfig.setEnvironment(envp);
-		runConfig.setVMSpecificAttributesMap(vmAttributesMap);
-
-		String[] bootpath = getBootpath(config);
-
-		if (ListUtil.isNotEmpty(bootpath)) {
-			runConfig.setBootClassPath(bootpath);
-		}
-
-		portalServer.launchServer(launch, mode, monitor);
+		portalServerBehavior.launchServer(launch, mode, monitor);
 
 		server.addServerListener(
 			new IServerListener() {
@@ -234,14 +255,43 @@ public class PortalServerLaunchConfigDelegate extends AbstractJavaLaunchConfigur
 			});
 
 		try {
-			runner.run(runConfig, launch, monitor);
-			portalServer.addProcessListener(launch.getProcesses()[0]);
+			portalServerBehavior.addProcessListener(launch.getProcesses()[0]);
 		}
 		catch (Exception e) {
-			portalServer.cleanup();
+			portalServerBehavior.cleanup();
 		}
 	}
 
-	private boolean _allowAdvancedSourceLookup = false;
+	private class StartDebugStreamMonitor implements IStreamListener {
+
+		public StartDebugStreamMonitor(
+			IServer server, ILaunchConfiguration config, ILaunch launch, IProgressMonitor monitor) {
+
+			_server = server;
+			_config = config;
+			_launch = launch;
+			_prccessMonitor = monitor;
+		}
+
+		@Override
+		public void streamAppended(String text, IStreamMonitor monitor) {
+			if (CoreUtil.isNotNullOrEmpty(text)) {
+				try {
+					startDebugLaunch(_server, _config, _launch, _prccessMonitor);
+				}
+				catch (CoreException ce) {
+					LiferayServerCore.logError(ce);
+				}
+
+				monitor.removeListener(this);
+			}
+		}
+
+		private ILaunchConfiguration _config;
+		private ILaunch _launch;
+		private IProgressMonitor _prccessMonitor;
+		private IServer _server;
+
+	}
 
 }

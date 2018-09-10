@@ -23,7 +23,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +58,15 @@ public class PortalJBossBundle extends AbstractPortalBundle {
 
 	public PortalJBossBundle(Map<String, String> appServerProperties) {
 		super(appServerProperties);
+	}
+
+	@Override
+	public IPath getApperServerLog() {
+		IPath standalonePath = getAppServerDir().append("standalone");
+
+		IPath logFilePath = standalonePath.append("log");
+
+		return logFilePath.append("server.log");
 	}
 
 	@Override
@@ -107,6 +119,18 @@ public class PortalJBossBundle extends AbstractPortalBundle {
 	@Override
 	public String getMainClass() {
 		return "org.jboss.modules.Main";
+	}
+
+	@Override
+	public IPath getPortalBundleLog() {
+		IPath liferayHome = getLiferayHome();
+		SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+		String logDateString = logDateFormat.format(new Date());
+
+		IPath lodFilePath = liferayHome.append("logs");
+
+		return lodFilePath.append("liferay." + logDateString + ".log");
 	}
 
 	@Override
