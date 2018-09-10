@@ -63,7 +63,7 @@ import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
-
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -571,6 +571,7 @@ public class MavenModuleProjectTests extends AbstractMavenProjectTestCase {
 		MavenTestUtil.createAndBuild(op);
 	}
 
+	@Ignore("ignore as IDE-4188")
 	@Test
 	public void testProjectTemplateTheme() throws Exception {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -582,6 +583,7 @@ public class MavenModuleProjectTests extends AbstractMavenProjectTestCase {
 		MavenTestUtil.createAndBuild(op);
 	}
 
+	@Ignore("ignore as IDE-4188")
 	@Test
 	public void testThemeProjectComponentConfiguration() throws Exception {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
@@ -601,6 +603,7 @@ public class MavenModuleProjectTests extends AbstractMavenProjectTestCase {
 		assertNotNull(bundleProject);
 	}
 
+	@Ignore("ignore as IDE-4188")
 	@Test
 	public void testThemeProjectPluginDetection() throws Exception {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
