@@ -12,28 +12,33 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+package com.liferay.ide.installer.tests.model;
 
 /**
  * @author Terry Jia
  */
-public class DevStudioDXPTest {
+public abstract class BaseInstaller implements Installer {
 
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
+	public BaseInstaller(String type) {
+		_type = type;
 	}
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
+	public String getType() {
+		return _type;
 	}
+
+	public boolean isLinux() {
+		return _type.equals(LINUX_X64);
+	}
+
+	public boolean isMacos() {
+		return _type.equals(OSX);
+	}
+
+	public boolean isWindow() {
+		return _type.equals(WINDOWS);
+	}
+
+	private String _type;
 
 }

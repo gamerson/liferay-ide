@@ -20,36 +20,25 @@ import com.liferay.ide.installer.tests.util.InstallerUtil;
  * @author Terry Jia
  * @author Ashley Yuan
  */
-public class DevStudioCE extends Installer {
+public class DevStudioCE extends BaseInstaller {
 
 	public DevStudioCE(String type) {
 		super(type);
 	}
 
 	@Override
-	public String command() {
-		String command = "";
-
+	public String getFullName() {
 		if (isWindow()) {
-			command = InstallerUtil.getDevStudioCEFullNameWin();
+			return InstallerUtil.getDevStudioCEFullNameWin();
 		}
 		else if (isLinux()) {
-			command = InstallerUtil.getDevStudioCEFullNameMacos();
+			return InstallerUtil.getDevStudioCEFullNameLinux();
 		}
 		else if (isMacos()) {
-			// need more research to how to run installer on command line of Macos
+			return InstallerUtil.getDevStudioCEFullNameMacos();
 		}
 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(command);
-		sb.append(" --mode unattended");
-
-		// Need to add something for proxy config
-
-		sb.append(" --proxyhttps nothing");
-
-		return sb.toString();
+		return null;
 	}
 
 }

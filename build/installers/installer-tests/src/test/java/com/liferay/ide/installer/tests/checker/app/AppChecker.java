@@ -12,28 +12,17 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
+package com.liferay.ide.installer.tests.checker.app;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+import java.io.IOException;
 
 /**
  * @author Terry Jia
  */
-public class DevStudioDXPTest {
+public interface AppChecker {
 
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
-	}
+	public boolean filesExist();
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
-	}
+	public boolean installed() throws IOException;
 
 }

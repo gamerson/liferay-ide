@@ -12,28 +12,24 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+package com.liferay.ide.installer.tests.checker.process;
 
 /**
+ * @author Ashley Yuan
  * @author Terry Jia
  */
-public class DevStudioDXPTest {
+public class ProcessFactory {
 
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
+	public static ProcessChecker processCheckerLinux(String processName) {
+		return new LinuxProcessChecker(processName);
 	}
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
+	public static ProcessChecker processCheckerMacox(String processName) {
+		return new MacosProcessChecker(processName);
+	}
+
+	public static ProcessChecker processCheckerWin(String processName) {
+		return new WindowsProcessChecker(processName);
 	}
 
 }

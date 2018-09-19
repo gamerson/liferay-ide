@@ -19,28 +19,25 @@ import com.liferay.ide.installer.tests.util.InstallerUtil;
 /**
  * @author Terry Jia
  */
-public class LiferayProjectSdk extends Installer {
+public class LiferayProjectSdk extends BaseInstaller {
 
 	public LiferayProjectSdk(String type) {
 		super(type);
 	}
 
 	@Override
-	public String command() {
-		String command = "";
-
+	public String getFullName() {
 		if (isWindow()) {
-			command = InstallerUtil.getProjectSdkFullNameWin();
+			return InstallerUtil.getProjectSdkFullNameWin();
 		}
 		else if (isLinux()) {
-			command = InstallerUtil.getProjectSdkFullNameLinux();
+			return InstallerUtil.getProjectSdkFullNameLinux();
 		}
 		else if (isMacos()) {
-			// need more research to how to run installer on command line of Macos
+			return InstallerUtil.getProjectSdkFullNameMacos();
 		}
 
-		command = command + " --mode unattended";
-
-		return command;
+		return null;
 	}
+
 }

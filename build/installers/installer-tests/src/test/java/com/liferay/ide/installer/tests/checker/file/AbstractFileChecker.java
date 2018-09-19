@@ -12,28 +12,28 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
+package com.liferay.ide.installer.tests.checker.file;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+import java.io.File;
 
 /**
  * @author Terry Jia
  */
-public class DevStudioDXPTest {
+public class AbstractFileChecker implements FileChecker {
 
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
+	public AbstractFileChecker(File parent, String fileName) {
+		_parent = parent;
+		_fileName = fileName;
 	}
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
+	@Override
+	public boolean exists() {
+		File file = new File(_parent, _fileName);
+
+		return file.exists();
 	}
+
+	private String _fileName;
+	private File _parent;
 
 }
