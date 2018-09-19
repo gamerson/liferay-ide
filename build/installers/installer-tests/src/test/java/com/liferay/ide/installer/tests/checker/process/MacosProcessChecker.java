@@ -12,28 +12,23 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+package com.liferay.ide.installer.tests.checker.process;
 
 /**
  * @author Terry Jia
  */
-public class DevStudioDXPTest {
+public class MacosProcessChecker extends AbstractProcessChecker {
 
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
+	public MacosProcessChecker(String processName) {
+		super(processName);
 	}
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
+	@Override
+	public boolean checkProcess() throws Exception {
+
+		// TODO need to do this for macos
+
+		return false;
 	}
 
 }

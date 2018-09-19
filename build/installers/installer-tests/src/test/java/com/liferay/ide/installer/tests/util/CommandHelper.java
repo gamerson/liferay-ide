@@ -11,6 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
+
 package com.liferay.ide.installer.tests.util;
 
 import java.io.File;
@@ -24,6 +25,39 @@ import java.io.Reader;
  * @author Terry Jia
  */
 public class CommandHelper {
+
+	public static Process exec(File dir, String cmd) throws IOException {
+		String fullCmd = dir.getPath() + "/" + cmd;
+
+		Runtime runtime = Runtime.getRuntime();
+
+		return runtime.exec(fullCmd);
+	}
+
+	public static Process exec(String fullCmd) throws IOException {
+		Runtime runtime = Runtime.getRuntime();
+
+		return runtime.exec(fullCmd);
+	}
+
+	public static String execWithResult(String cmd) throws IOException {
+		return execWithResult(cmd, false);
+	}
+
+	public static String execWithResult(String cmd, boolean error) throws IOException {
+		Process process = exec(cmd);
+
+		InputStream in = null;
+
+		if (error) {
+			in = process.getErrorStream();
+		}
+		else {
+			in = process.getInputStream();
+		}
+
+		return _readStreamToString(in);
+	}
 
 	private static String _readStreamToString(InputStream contents) throws IOException {
 		if (contents == null) {
@@ -49,38 +83,6 @@ public class CommandHelper {
 		contents.close();
 
 		return out.toString();
-	}
-
-	public static String execWithResult(String cmd) throws IOException {
-		return execWithResult(cmd, false);
-	}
-
-	public static Process exec(File dir, String cmd) throws IOException {
-		String fullCmd = dir.getPath() + "/" + cmd;
-
-		Runtime runtime = Runtime.getRuntime();
-
-		return runtime.exec(fullCmd);
-	}
-
-	public static Process exec(String fullCmd) throws IOException {
-		Runtime runtime = Runtime.getRuntime();
-
-		return runtime.exec(fullCmd);
-	}
-
-	public static String execWithResult(String cmd, boolean error) throws IOException {
-		Process process = exec(cmd);
-
-		InputStream in = null;
-
-		if (error) {
-			in = process.getErrorStream();
-		} else {
-			in = process.getInputStream();
-		}
-
-		return _readStreamToString(in);
 	}
 
 }

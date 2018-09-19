@@ -19,25 +19,8 @@ import com.liferay.ide.installer.tests.util.Constants;
 /**
  * @author Terry Jia
  */
-public abstract class Installer implements Constants {
+public interface Installer extends Constants {
 
-	public Installer(String type) {
-		_type = type;
-	}
-
-	public boolean isWindow() {
-		return _type.equals(WINDOWS);
-	}
-
-	public boolean isLinux() {
-		return _type.equals(LINUX_X64);
-	}
-
-	public boolean isMacos() {
-		return _type.equals(OSX);
-	}
-
-	private String _type;
-	public abstract String command();
+	public abstract String getFullName();
 
 }

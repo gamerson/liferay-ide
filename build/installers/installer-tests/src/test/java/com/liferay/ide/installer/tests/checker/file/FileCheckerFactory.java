@@ -12,28 +12,19 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+package com.liferay.ide.installer.tests.checker.file;
 
 /**
  * @author Terry Jia
  */
-public class DevStudioDXPTest {
+public class FileCheckerFactory {
 
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
+	public static FileChecker bundleChecker() {
+		return new BundleChecker();
 	}
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
+	public static FileChecker tokenChecker() {
+		return new TokenChecker();
 	}
 
 }

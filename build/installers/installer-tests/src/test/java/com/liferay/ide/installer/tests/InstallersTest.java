@@ -14,24 +14,15 @@
 
 package com.liferay.ide.installer.tests;
 
+import com.liferay.ide.installer.tests.util.InstallerUtil;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import com.liferay.ide.installer.tests.util.InstallerUtil;
 
 /**
  * @author Terry Jia
  */
 public class InstallersTest {
-
-	@Test
-	public void checkProjectSDKInstallerFiles() {
-		Assertions.assertTrue(InstallerUtil.getProjectSdkWinFile().exists());
-
-		Assertions.assertTrue(InstallerUtil.getProjectSdkLinuxFile().exists());
-
-		Assertions.assertTrue(InstallerUtil.getProjectSdkMacosFile().exists());
-	}
 
 	@Test
 	public void checkDevStudioCEInstallerFiles() {
@@ -49,6 +40,15 @@ public class InstallersTest {
 		Assertions.assertTrue(InstallerUtil.getDevStudioDXPLinuxFile().exists());
 
 		Assertions.assertTrue(InstallerUtil.getDevStudioDXPMacosFile().exists());
+	}
+
+	@Test
+	public void checkProjectSDKInstallerFiles() {
+		Assertions.assertTrue(InstallerUtil.getProjectSdkWinFile().exists());
+
+		Assertions.assertTrue(InstallerUtil.getProjectSdkLinuxFile().exists());
+
+		Assertions.assertTrue(InstallerUtil.getProjectSdkMacosFile().exists());
 	}
 
 }

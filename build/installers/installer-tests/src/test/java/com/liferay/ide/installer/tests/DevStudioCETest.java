@@ -14,18 +14,20 @@
 
 package com.liferay.ide.installer.tests;
 
+import com.liferay.ide.installer.tests.checker.app.AppChecker;
+import com.liferay.ide.installer.tests.checker.app.AppCheckerFactory;
+import com.liferay.ide.installer.tests.checker.file.FileChecker;
+import com.liferay.ide.installer.tests.checker.file.FileCheckerFactory;
+import com.liferay.ide.installer.tests.checker.process.ProcessChecker;
+import com.liferay.ide.installer.tests.checker.process.ProcessFactory;
+import com.liferay.ide.installer.tests.model.Command;
+import com.liferay.ide.installer.tests.model.DevStudioCE;
+import com.liferay.ide.installer.tests.model.Installer;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
-
-import com.liferay.ide.installer.tests.model.DevStudioCE;
-import com.liferay.ide.installer.tests.model.Installer;
-import com.liferay.ide.installer.tests.util.AppChecker;
-import com.liferay.ide.installer.tests.util.CommandHelper;
-import com.liferay.ide.installer.tests.util.FileChecker;
-import com.liferay.ide.installer.tests.util.InstallerUtil;
-import com.liferay.ide.installer.tests.util.ProcessHelper;
 
 /**
  * @author Terry Jia
@@ -33,31 +35,49 @@ import com.liferay.ide.installer.tests.util.ProcessHelper;
  */
 public class DevStudioCETest {
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() throws Exception{
-		DevStudioCE installer = new DevStudioCE(Installer.WINDOWS);
-
-		String processName = InstallerUtil.getDevStudioCEFullNameWin();
-
-		CommandHelper.exec(InstallerUtil.getOutputDir(), installer.command());
-
-		Assertions.assertTrue(ProcessHelper.checkProcessWin(processName));
-
-		Assertions.assertTrue(ProcessHelper.waitProcessWin(processName));
-
-		Assertions.assertFalse(FileChecker.tokenExistsWin());
-
-		Assertions.assertTrue(AppChecker.jpmInstalled());	
-		Assertions.assertTrue(AppChecker.bladeInstalled());
-		Assertions.assertTrue(AppChecker.bndInstalled());
-		Assertions.assertTrue(AppChecker.gwInstalled());
-	}
-
 	@EnabledOnOs(OS.LINUX)
 	@Test
-	public void quickInstallOnLinux() {
+	public void quickInstallOnLinux() throws Exception {
 		Assertions.assertTrue(true);
+	}
+
+	@EnabledOnOs(OS.WINDOWS)
+	@Test
+	public void quickInstallOnWindows() throws Exception {
+		Installer installer = new DevStudioCE(Installer.WINDOWS);
+
+		String[] args = new String[0];
+
+		Command command = new Command(installer, args);
+
+		command.run();
+
+		String processName = installer.getFullName();
+
+		ProcessChecker processChecker = ProcessFactory.processCheckerWin(processName);
+
+		Assertions.assertTrue(processChecker.checkProcess());
+		Assertions.assertTrue(processChecker.waitProcess());
+
+		FileChecker tokenChecker = FileCheckerFactory.tokenChecker();
+
+		Assertions.assertFalse(tokenChecker.exists());
+
+		AppChecker bladeChecker = AppCheckerFactory.bladeChecker();
+
+		Assertions.assertTrue(bladeChecker.installed());
+
+		AppChecker bndChecker = AppCheckerFactory.bndChecker();
+
+		Assertions.assertTrue(bndChecker.installed());
+
+		AppChecker gwChecker = AppCheckerFactory.gwChecker();
+
+		Assertions.assertTrue(gwChecker.installed());
+
+		AppChecker jpmChecker = AppCheckerFactory.jpmChecker();
+
+		Assertions.assertTrue(jpmChecker.installed());
 	}
 
 }
