@@ -12,28 +12,17 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
+package com.liferay.ide.installer.tests.checker.app;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+import com.liferay.ide.installer.tests.util.InstallerUtil;
 
 /**
  * @author Terry Jia
  */
-public class DevStudioDXPTest {
+public class JpmChecker extends AbstractAppChecker {
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
-	}
-
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
+	public JpmChecker() {
+		super("blade version", InstallerUtil.getBladeVersion());
 	}
 
 }

@@ -12,28 +12,15 @@
  * details.
  */
 
-package com.liferay.ide.installer.tests;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
+package com.liferay.ide.installer.tests.checker.process;
 
 /**
  * @author Terry Jia
  */
-public class LiferayProjectSdkTest {
+public interface ProcessChecker {
 
-	@EnabledOnOs(OS.WINDOWS)
-	@Test
-	public void quickInstallOnWindows() {
-		Assertions.assertTrue(true);
-	}
+	public boolean checkProcess() throws Exception;
 
-	@EnabledOnOs(OS.LINUX)
-	@Test
-	public void quickInstallOnLinux() {
-		Assertions.assertTrue(true);
-	}
+	public boolean waitProcess() throws Exception;
 
 }
