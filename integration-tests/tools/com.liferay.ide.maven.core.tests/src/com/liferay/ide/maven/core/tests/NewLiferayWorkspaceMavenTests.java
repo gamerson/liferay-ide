@@ -35,7 +35,7 @@ public class NewLiferayWorkspaceMavenTests extends ProjectOpBase<NewLiferayWorks
 		op.setProjectProvider(provider());
 
 		createOrImportAndBuild(
-			op, workspace.getName(), "Maven Liferay Workspace would not support Target Platform", true);
+			op, workspace.getName(), "Maven Liferay Workspace would not support Target Platform.", true);
 
 		deleteProject(workspace.getName());
 	}
