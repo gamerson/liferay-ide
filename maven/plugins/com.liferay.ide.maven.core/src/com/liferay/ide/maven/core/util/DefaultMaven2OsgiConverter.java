@@ -199,7 +199,7 @@ public class DefaultMaven2OsgiConverter {
 			String s4 = m.group(4);
 
 			Matcher qualifierMatcher = _onlyNumbers.matcher(s3);
-			/*
+			/**
 			 * if last portion before dot is only numbers then it's not in the middle of the
 			 * qualifier
 			 */
@@ -208,7 +208,7 @@ public class DefaultMaven2OsgiConverter {
 			}
 		}
 
-		/*
+		/**
 		 * convert 1.string -> 1.0.0.string 1.2.string -> 1.2.0.string 1 -> 1.0.0 1.1 ->
 		 * 1.1.0
 		 */
@@ -308,7 +308,7 @@ public class DefaultMaven2OsgiConverter {
 				}
 				else {
 					//if (packageNameSections.length < groupIdSections.length)
-					/*
+					/**
 					 * find the common portion of current package and previous selected groupId
 					 */
 					int i;

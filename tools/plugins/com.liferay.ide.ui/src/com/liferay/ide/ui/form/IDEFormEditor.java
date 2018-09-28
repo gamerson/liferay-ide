@@ -498,7 +498,7 @@ public abstract class IDEFormEditor extends FormEditor implements IInputContextL
 			}
 		}
 
-		/*
+		/**
 		 * @see
 		 * ISelectionChangedListener#selectionChanged(
 		 * SelectionChangedEvent)

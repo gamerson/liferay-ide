@@ -98,7 +98,7 @@ public class QNamespaceValueBinding extends XmlValueBindingImpl {
 
 		XmlElement parent = xml(true);
 
-		/*
+		/**
 		 * In some cases the parent node and the child nodes will be same, we need to
 		 * ensure that we dont create them accidentally again
 		 */
@@ -116,7 +116,7 @@ public class QNamespaceValueBinding extends XmlValueBindingImpl {
 
 			Element qnameDef = qNameElement.getDomNode();
 
-			/*
+			/**
 			 * Check to ensure that the attribute is not added multiple times, check if the
 			 * attribute already exist if yes remove it add add it afresh
 			 */

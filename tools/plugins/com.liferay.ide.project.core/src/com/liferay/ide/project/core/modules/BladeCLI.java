@@ -53,6 +53,7 @@ import org.osgi.service.prefs.Preferences;
  * @author Gregory Amerson
  * @author Andy Wu
  */
+@SuppressWarnings("serial")
 public class BladeCLI {
 
 	public static final String BLADE_CLI_REPO_URL = "BLADE_CLI_REPO_URL";
@@ -62,7 +63,7 @@ public class BladeCLI {
 	public static final File settingsDir = LiferayCore.GLOBAL_SETTINGS_PATH.toFile();
 
 	public static synchronized void addToLocalInstance(File latestBladeJar) {
-		FileUtil.copyFile(latestBladeJar, _bladeJarInstancePath.toFile());
+		FileUtil.copyFile(latestBladeJar, _getBladeJarInstancePath().toFile());
 	}
 
 	public static String[] execute(String args) throws BladeCLIException {
@@ -169,14 +170,14 @@ public class BladeCLI {
 	 * @throws BladeCLIException
 	 */
 	public static synchronized IPath getBladeCLIPath() throws BladeCLIException {
-		File bladeJarInstanceFile = _bladeJarInstancePath.toFile();
+		File bladeJarInstanceFile = _getBladeJarInstancePath().toFile();
 
 		if (FileUtil.exists(bladeJarInstanceFile)) {
 			try {
 				Domain jar = Domain.domain(bladeJarInstanceFile);
 
 				if (_supportedVersion(jar.getBundleVersion())) {
-					return _bladeJarInstancePath;
+					return _getBladeJarInstancePath();
 				}
 			}
 			catch (IOException ioe) {
@@ -217,7 +218,7 @@ public class BladeCLI {
 	}
 
 	public static synchronized void restoreOriginal() {
-		File file = _bladeJarInstancePath.toFile();
+		File file = _getBladeJarInstancePath().toFile();
 
 		file.delete();
 	}
@@ -233,12 +234,27 @@ public class BladeCLI {
 		return new Path(bladeJarBundleFile.getCanonicalPath());
 	}
 
+	private static IPath _getBladeJarInstancePath() {
+		ProjectCore projectCore = ProjectCore.getDefault();
+
+		IPath stateLocation = projectCore.getStateLocation();
+
+		IPath bladeJarInstanceArea = stateLocation.append("blade-jar");
+
+		File file = bladeJarInstanceArea.toFile();
+
+		file.mkdirs();
+
+		IPath bladeJarInstancePath = bladeJarInstanceArea.append(BLADE_JAR_FILE_NAME);
+
+		return bladeJarInstancePath;
+	}
+
 	private static String _getRepoURL() {
 		IPreferencesService preferencesService = Platform.getPreferencesService();
 
-		String repoURL = preferencesService.get(BLADE_CLI_REPO_URL, null, new Preferences[] {
-			_instancePrefs, _defaultPrefs
-		});
+		String repoURL = preferencesService.get(
+			BLADE_CLI_REPO_URL, null, new Preferences[] {_instancePrefs, _defaultPrefs});
 
 		if (!repoURL.endsWith("/")) {
 			repoURL = repoURL + "/";
@@ -260,16 +276,13 @@ public class BladeCLI {
 	}
 
 	private static File _bladeJarCacheFile = null;
-	private static final IPath _bladeJarInstanceArea = ProjectCore.getDefault().getStateLocation().append("blade-jar");
-	private static final IPath _bladeJarInstancePath = _bladeJarInstanceArea.append(BLADE_JAR_FILE_NAME);
 	private static final IEclipsePreferences _defaultPrefs = DefaultScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
 	private static final IEclipsePreferences _instancePrefs = InstanceScope.INSTANCE.getNode(ProjectCore.PLUGIN_ID);
-	private static final File _repoCache = new File(settingsDir, "repoCache");
-
-	static {
-		settingsDir.mkdirs();
-		_repoCache.mkdirs();
-		_bladeJarInstanceArea.toFile().mkdirs();
-	}
+	private static final File _repoCache = new File(settingsDir, "repoCache") {
+		{
+			settingsDir.mkdirs();
+			_repoCache.mkdirs();
+		}
+	};
 
 }

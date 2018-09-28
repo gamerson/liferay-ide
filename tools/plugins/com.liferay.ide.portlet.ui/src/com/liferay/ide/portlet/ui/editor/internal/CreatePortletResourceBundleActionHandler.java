@@ -124,7 +124,7 @@ public class CreatePortletResourceBundleActionHandler extends AbstractResourceBu
 
 			if (ListUtil.isNotEmpty(portlet.getSupportedLocales())) {
 				for (SupportedLocales sl : portlet.getSupportedLocales()) {
-					/*
+					/**
 					 * By now, the error means the locale is not unique or not among possible values
 					 * or empty, that makes the button "Create Locale Bundles" disabled. The warning
 					 * means "No resource bundle defined", in this case the button should be

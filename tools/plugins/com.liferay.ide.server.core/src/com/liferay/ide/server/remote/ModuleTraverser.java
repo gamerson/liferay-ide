@@ -278,7 +278,7 @@ public class ModuleTraverser {
 			IClasspathAttribute resolvedAttrib = _checkForComponentDependencyAttribute(
 				resolvedEntry, _DEPENDECYATTRIBUTETYPE_DEPENDENCY_OR_NONDEPENDENCY);
 
-			/*
+			/**
 			 * attribute for the resolved entry must either be unspecified or it must be the
 			 * dependency attribute for it to be included
 			 */
@@ -544,7 +544,7 @@ public class ModuleTraverser {
 
 		// Currently the JST Server portion of WTP may not depend on the JST Enterprise portion of WTP
 
-		/*
+		/**
 		 * EARArtifactEdit earEdit = EARArtifactEdit
 		 * .getEARArtifactEditForRead(component); if (earEdit != null) {
 		 * IVirtualReference[] j2eeComponents =
