@@ -94,8 +94,7 @@ public class LiferayGradleWorkspaceProjectProvider
 				FileUtil.getFile(workspaceLocation.append("gradle.properties")));
 
 			config.setProperty(
-				WorkspaceConstants.TARGET_PLATFORM_VERSION_PROPERTY,
-				SapphireUtil.getContent(op.getTargetPlatform()));
+				WorkspaceConstants.TARGET_PLATFORM_VERSION_PROPERTY, SapphireUtil.getContent(op.getTargetPlatform()));
 
 			config.save();
 		}
