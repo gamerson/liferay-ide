@@ -647,7 +647,7 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 		}
 
 		if (retval == null) {
-			/*
+			/**
 			 * if no explicit warSourceDirectory set we assume the default warSource
 			 * directory ${basedir}/src/main/webapp refer to
 			 * http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html for more

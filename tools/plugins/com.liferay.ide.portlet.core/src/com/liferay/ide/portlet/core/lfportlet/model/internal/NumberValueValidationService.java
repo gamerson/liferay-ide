@@ -49,27 +49,27 @@ public class NumberValueValidationService extends ValidationService {
 			_value = Integer.valueOf(triggerValue);
 		}
 		catch (NumberFormatException nfe) {
-			return Status.createErrorStatus(
-				Resources.bind(StringEscapeUtils.unescapeJava(Resources.nonIntegerInvalid), new Object[] {
-					triggerValue, ""
-				}));
+			String message = Resources.bind(
+				StringEscapeUtils.unescapeJava(Resources.nonIntegerInvalid), new Object[] {triggerValue, ""});
+
+			return Status.createErrorStatus(message);
 		}
 
 		if (CoreUtil.isNotNullOrEmpty(_min)) {
 			if (_value < Integer.valueOf(_min)) {
-				return Status.createErrorStatus(
-					Resources.bind(StringEscapeUtils.unescapeJava(Resources.minNumberValueInvalid), new Object[] {
-						_value, _min
-					}));
+				String message = Resources.bind(
+					StringEscapeUtils.unescapeJava(Resources.minNumberValueInvalid), new Object[] {_value, _min});
+
+				return Status.createErrorStatus(message);
 			}
 		}
 
 		if (CoreUtil.isNotNullOrEmpty(_max)) {
 			if (_value > Integer.valueOf(_max)) {
-				return Status.createErrorStatus(
-					Resources.bind(StringEscapeUtils.unescapeJava(Resources.maxNumberValueInvalid), new Object[] {
-						_value, _max
-					}));
+				String message = Resources.bind(
+					StringEscapeUtils.unescapeJava(Resources.maxNumberValueInvalid), new Object[] {_value, _max});
+
+				return Status.createErrorStatus(message);
 			}
 		}
 

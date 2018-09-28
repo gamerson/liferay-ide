@@ -309,7 +309,7 @@ public class LiferayTomcatServer
 	@Override
 	public void modifyModules(IModule[] add, IModule[] remove, IProgressMonitor monitor) throws CoreException {
 
-		/*
+		/**
 		 * check if we are adding ext plugin then we need to turn off auto publishing if we are removing ext plugin
 		 * then we can re-enable publishing if it was previously set
 		 */

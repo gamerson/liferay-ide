@@ -249,7 +249,7 @@ public class ProjectNameValidationService extends ValidationService {
 
 	private boolean _isValidMavenProjectName(String currentProjectName) {
 
-		/*
+		/**
 		 *  IDE-1349, use the same logic as maven uses to validate artifactId to validate maven project name.
 		 *  See org.apache.maven.model.validation.DefaultModelValidator.validateId();
 		 */
