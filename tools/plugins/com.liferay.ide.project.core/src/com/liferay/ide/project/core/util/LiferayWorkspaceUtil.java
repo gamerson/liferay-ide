@@ -177,6 +177,18 @@ public class LiferayWorkspaceUtil {
 		return retVal;
 	}
 
+	public static IWorkspaceProject getGradleWorkspaceProject() {
+		IProject[] projects = CoreUtil.getAllProjects();
+
+		for (IProject project : projects) {
+			if (isValidGradleWorkspaceLocation(project.getLocation())) {
+				return LiferayCore.create(IWorkspaceProject.class, project);
+			}
+		}
+
+		return null;
+	}
+
 	public static String getHomeDir(String location) {
 		String result = getGradleProperty(location, WorkspaceConstants.HOME_DIR_PROPERTY, "bundles");
 
@@ -220,6 +232,26 @@ public class LiferayWorkspaceUtil {
 			String val = getGradleProperty(workspaceLocation, WorkspaceConstants.WARS_DIR_PROPERTY, "wars");
 
 			retval = val.split(",");
+		}
+
+		return retval;
+	}
+
+	public static String getModuleExtDir(IProject project) {
+		String retval = null;
+
+		if (project != null) {
+			IPath projectLocation = project.getLocation();
+
+			if (projectLocation != null) {
+				retval = getGradleProperty(
+					projectLocation.toPortableString(), WorkspaceConstants.EXT_DIR_PROPERTY,
+					WorkspaceConstants.DEFAULT_EXT_DIR);
+			}
+		}
+
+		if (CoreUtil.empty(retval)) {
+			return WorkspaceConstants.DEFAULT_EXT_DIR;
 		}
 
 		return retval;

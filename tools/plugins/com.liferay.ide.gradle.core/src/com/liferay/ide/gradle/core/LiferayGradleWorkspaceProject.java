@@ -14,14 +14,17 @@
 
 package com.liferay.ide.gradle.core;
 
+import com.liferay.ide.core.Artifact;
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
+import com.liferay.ide.core.util.WorkspaceConstants;
 import com.liferay.ide.project.core.IProjectBuilder;
 import com.liferay.ide.project.core.IWorkspaceProjectBuilder;
 import com.liferay.ide.project.core.LiferayWorkspaceProject;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.portal.PortalServerBehavior;
 
@@ -49,12 +52,22 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.wst.server.core.ServerCore;
 
+import org.gradle.tooling.GradleConnectionException;
+import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.ProjectConnection;
+import org.gradle.tooling.model.DomainObjectSet;
+import org.gradle.tooling.model.GradleModuleVersion;
+import org.gradle.tooling.model.eclipse.EclipseExternalDependency;
+import org.gradle.tooling.model.eclipse.EclipseProject;
+
 /**
  * @author Andy Wu
  * @author Simon Jiang
  * @author Terry Jia
  */
 public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
+
+	public static List<Artifact> targetPlatformArtifacts = Collections.emptyList();
 
 	public LiferayGradleWorkspaceProject(IProject project) {
 		super(project);
@@ -90,6 +103,53 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 		}
 
 		return retVal;
+	}
+
+	@Override
+	public List<Artifact> getTargetPlatformArtifacts(boolean reload) {
+		if ((getTargetPlatformVersion() != null) && reload) {
+			GradleConnector connector = GradleConnector.newConnector();
+
+			connector.forProjectDirectory(FileUtil.getFile(getProject()));
+
+			ProjectConnection connection = connector.connect();
+
+			try {
+				EclipseProject project = connection.getModel(EclipseProject.class);
+
+				DomainObjectSet<? extends EclipseExternalDependency> dependencies = project.getClasspath();
+
+				targetPlatformArtifacts = new ArrayList<>(dependencies.size());
+
+				for (EclipseExternalDependency dependency : dependencies) {
+					GradleModuleVersion moduleVersion = dependency.getGradleModuleVersion();
+
+					if (moduleVersion != null) {
+						targetPlatformArtifacts.add(
+							new Artifact(
+								moduleVersion.getGroup(), moduleVersion.getName(), moduleVersion.getVersion(),
+								dependency.getSource()));
+					}
+				}
+			}
+			catch (GradleConnectionException gce) {
+			}
+			finally {
+				connection.close();
+			}
+		}
+
+		return targetPlatformArtifacts;
+	}
+
+	@Override
+	public String getTargetPlatformVersion() {
+		IProject project = getProject();
+
+		IPath location = project.getLocation();
+
+		return LiferayWorkspaceUtil.getGradleProperty(
+			location.toString(), WorkspaceConstants.TARGET_PLATFORM_VERSION_PROPERTY, null);
 	}
 
 	@Override
