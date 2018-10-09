@@ -38,7 +38,7 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		String[] moduleNames = {project.getName(), "modules"};
 
@@ -67,7 +67,7 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.closeAndDelete(project.getName());
 	}
@@ -88,7 +88,7 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.closeAndDelete(project.getName());
 	}
@@ -103,7 +103,9 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		jobAction.waitForNoRunningProjectBuildingJobs();
 
-		viewAction.project.openFile(project.getName(), "gradle.properties");
+		viewAction.project.refreshGradleProject(project.getName());
+
+		jobAction.waitForNoRunningJobs();
 
 		StringBuffer sb = new StringBuffer();
 
@@ -112,6 +114,8 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		sb.append("liferay.workspace.modules.dir");
 		sb.append("=");
 		sb.append(newModulesFolderName);
+
+		viewAction.project.openFile(project.getName(), "gradle.properties");
 
 		editorAction.setText(sb.toString());
 
@@ -127,9 +131,11 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		viewAction.project.refreshGradleProject(project.getName());
-
 		jobAction.waitForNoRunningProjectBuildingJobs();
+
+		wizardAction.newModule.prepareGradle(projectName, MVC_PORTLET);
+
+		jobAction.waitForNoRunningJobs();
 
 		String[] projectNames = {project.getName(), newModulesFolderName, projectName};
 
@@ -153,6 +159,10 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		wizardAction.finish();
 
 		jobAction.waitForNoRunningProjectBuildingJobs();
+
+		viewAction.project.refreshGradleProject(project.getName());
+
+		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.openFile(project.getName(), "gradle.properties");
 
@@ -178,9 +188,11 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
+		jobAction.waitForNoRunningProjectBuildingJobs();
+
 		viewAction.project.refreshGradleProject(project.getName());
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		String[] projectNames = {project.getName(), newWarsFolderName, projectName};
 
@@ -240,7 +252,7 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.closeAndDelete(project.getName());
 

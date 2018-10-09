@@ -120,6 +120,14 @@ public class ImportLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		String projectName = project.getName();
 
+		viewAction.project.openUpdateMavenProjectDialog(projectName);
+
+		dialogAction.updateMavenProject.selectAll();
+
+		dialogAction.confirm();
+
+		jobAction.waitForUpdateMavenProject();
+
 		viewAction.project.openFile(projectName, "pom.xml");
 
 		editorAction.pomXml.switchTabPomXml();

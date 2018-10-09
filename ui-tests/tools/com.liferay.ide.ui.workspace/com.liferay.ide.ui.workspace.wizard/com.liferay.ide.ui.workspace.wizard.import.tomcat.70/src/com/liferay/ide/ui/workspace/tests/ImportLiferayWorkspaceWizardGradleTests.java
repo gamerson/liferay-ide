@@ -45,7 +45,7 @@ public class ImportLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		ide.sleepLinux(10000);
 
@@ -77,7 +77,7 @@ public class ImportLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		ide.sleepLinux(10000);
 
@@ -101,6 +101,10 @@ public class ImportLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 		wizardAction.finish();
 
 		jobAction.waitForNoRunningProjectBuildingJobs();
+
+		viewAction.project.refreshGradleProject(project.getName());
+
+		jobAction.waitForNoRunningJobs();
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectName, "configs"));
 		Assert.assertTrue(viewAction.project.visibleFileTry(projectName, "gradle"));
@@ -134,7 +138,7 @@ public class ImportLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		Assert.assertTrue(viewAction.project.visibleFileTry(project.getName(), "plugins-sdk"));
 		Assert.assertTrue(viewAction.project.visibleFileTry(project.getName(), "configs"));
@@ -180,7 +184,7 @@ public class ImportLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		wizardAction.finish();
 
-		jobAction.waitForNoRunningProjectBuildingJobs();
+		jobAction.waitForNoRunningJobs();
 
 		ide.sleepLinux(10000);
 

@@ -135,6 +135,14 @@ public class NewLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		jobAction.waitForNoRunningJobs();
 
+		viewAction.project.openUpdateMavenProjectDialog(projects.getName(0));
+
+		dialogAction.updateMavenProject.selectAll();
+
+		dialogAction.confirm();
+
+		jobAction.waitForUpdateMavenProject();
+
 		viewAction.project.openFile(projects.getName(0), projects.getName(0) + "-modules (in modules)", "pom.xml");
 
 		editorAction.pomXml.switchTabPomXml();
@@ -178,6 +186,14 @@ public class NewLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 		wizardAction.finish();
 
 		jobAction.waitForNoRunningJobs();
+
+		viewAction.project.openUpdateMavenProjectDialog(projects.getName(0));
+
+		dialogAction.updateMavenProject.selectAll();
+
+		dialogAction.confirm();
+
+		jobAction.waitForUpdateMavenProject();
 
 		viewAction.project.openFile(projects.getName(0), projects.getName(0) + "-modules (in modules)", "pom.xml");
 
@@ -224,6 +240,14 @@ public class NewLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 
 		jobAction.waitForNoRunningJobs();
 
+		viewAction.project.openUpdateMavenProjectDialog(projects.getName(0));
+
+		dialogAction.updateMavenProject.selectAll();
+
+		dialogAction.confirm();
+
+		jobAction.waitForUpdateMavenProject();
+
 		viewAction.project.openFile(projects.getName(0), projects.getName(0) + "-wars (in wars)", "pom.xml");
 
 		editorAction.pomXml.switchTabPomXml();
@@ -266,6 +290,14 @@ public class NewLiferayWorkspaceWizardMavenTests extends SwtbotBase {
 		wizardAction.finish();
 
 		jobAction.waitForNoRunningJobs();
+
+		viewAction.project.openUpdateMavenProjectDialog(projects.getName(0));
+
+		dialogAction.updateMavenProject.selectAll();
+
+		dialogAction.confirm();
+
+		jobAction.waitForUpdateMavenProject();
 
 		viewAction.project.openFile(projects.getName(0), projects.getName(0) + "-wars (in wars)", "pom.xml");
 
