@@ -98,6 +98,8 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 
 			stream.map(
 				IProject::getLocation
+			).filter(
+				location -> location != null
 			).map(
 				location -> _convertToModuleTaskPath(location)
 			).forEach(
