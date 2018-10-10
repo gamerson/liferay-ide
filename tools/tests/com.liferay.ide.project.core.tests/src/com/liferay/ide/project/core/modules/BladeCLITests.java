@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 
 import aQute.bnd.osgi.Domain;
 
+import com.liferay.ide.core.BladeCLI;
 import com.liferay.ide.project.core.ProjectCore;
 
 import java.io.File;

@@ -25,6 +25,8 @@ import org.eclipse.core.runtime.IPath;
  */
 public interface PortalBundle extends ILiferayPortal {
 
+	public IPath getApperServerLog();
+
 	public IPath getAppServerDeployDir();
 
 	public IPath getAppServerDir();
@@ -48,6 +50,8 @@ public interface PortalBundle extends ILiferayPortal {
 	public IPath getModulesPath();
 
 	public IPath getOSGiBundlesDir();
+
+	public IPath getPortalBundleLog();
 
 	public IPath[] getRuntimeClasspath();
 

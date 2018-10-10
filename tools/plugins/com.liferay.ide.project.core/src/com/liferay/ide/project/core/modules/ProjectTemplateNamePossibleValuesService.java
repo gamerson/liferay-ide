@@ -14,6 +14,9 @@
 
 package com.liferay.ide.project.core.modules;
 
+import com.liferay.ide.core.BladeCLI;
+import com.liferay.ide.core.BladeCLIException;
+
 import java.util.Set;
 
 import org.eclipse.sapphire.PossibleValuesService;

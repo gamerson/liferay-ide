@@ -28,7 +28,10 @@ Require-Bundle: org.eclipse.wst.server.core;visibility:=reexport,
  org.apache.commons.lang,
  org.apache.commons.io,
  org.eclipse.core.commands,
- org.eclipse.wst.validation
+ org.eclipse.wst.validation,
+ org.eclipse.jface,
+ org.eclipse.debug.ui,
+ org.eclipse.core.jobs
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.server.core,
@@ -37,4 +40,5 @@ Export-Package: com.liferay.ide.server.core,
  com.liferay.ide.server.core.proxy,
  com.liferay.ide.server.remote,
  com.liferay.ide.server.util
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/blade.jar

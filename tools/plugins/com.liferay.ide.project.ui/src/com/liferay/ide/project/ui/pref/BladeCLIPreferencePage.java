@@ -16,10 +16,10 @@ package com.liferay.ide.project.ui.pref;
 
 import aQute.bnd.osgi.Domain;
 
+import com.liferay.ide.core.BladeCLI;
+import com.liferay.ide.core.BladeCLIException;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.modules.BladeCLI;
-import com.liferay.ide.project.core.modules.BladeCLIException;
 import com.liferay.ide.ui.util.SWTUtil;
 import com.liferay.ide.ui.util.UIUtil;
 

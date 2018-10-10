@@ -14,32 +14,21 @@
 
 package com.liferay.ide.server.core.portal;
 
+import com.liferay.blade.cli.BladeCLI;
+import com.liferay.blade.cli.command.BaseArgs;
+import com.liferay.blade.cli.command.ServerStopArgs;
+import com.liferay.blade.cli.command.ServerStopCommand;
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.LiferayRuntimeClasspathEntry;
-import com.liferay.ide.core.properties.PortalPropertiesConfiguration;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.server.core.ILiferayServerBehavior;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
-import com.liferay.ide.server.util.PingThread;
 import com.liferay.ide.server.util.ServerUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.nio.file.Files;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.io.FileUtils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -48,26 +37,20 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.IVMInstallType;
-import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.SocketUtil;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.IServer.IOperationListener;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 
 /**
@@ -75,7 +58,6 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
  * @author Simon Jiang
  * @author Terry Jia
  */
-@SuppressWarnings({"restriction", "rawtypes"})
 public class PortalServerBehavior
 	extends ServerBehaviourDelegate implements ILiferayServerBehavior, IJavaLaunchConfigurationConstants {
 
@@ -145,11 +127,25 @@ public class PortalServerBehavior
 	}
 
 	public void cleanup() {
-		if (_ping != null) {
-			_ping.stop();
+		if (startedThread != null) {
+			startedThread.stop();
 
-			_ping = null;
+			startedThread = null;
 		}
+
+		if (stopedThread != null) {
+			stopedThread.stop();
+
+			stopedThread = null;
+		}
+
+		if ((restartThread != null) && (isServerRestarting() == false)) {
+			restartThread.stop();
+
+			restartThread = null;
+		}
+
+		setProcess(null);
 
 		if (_processListener != null) {
 			DebugPlugin debugPlugin = DebugPlugin.getDefault();
@@ -165,11 +161,18 @@ public class PortalServerBehavior
 	}
 
 	public GogoBundleDeployer createBundleDeployer() throws Exception {
-		return ServerUtil.createBundleDeployer(_getPortalRuntime(), getServer());
+		return ServerUtil.createBundleDeployer(getPortalRuntime(), getServer());
+	}
+
+	@Override
+	public void dispose() {
+		if (_process != null) {
+			setProcess(null);
+		}
 	}
 
 	public String getClassToLaunch() {
-		PortalBundle portalBundle = _getPortalRuntime().getPortalBundle();
+		PortalBundle portalBundle = getPortalRuntime().getPortalBundle();
 
 		return portalBundle.getMainClass();
 	}
@@ -183,8 +186,42 @@ public class PortalServerBehavior
 		return _info;
 	}
 
+	public PortalRuntime getPortalRuntime() {
+		PortalRuntime retval = null;
+
+		IServer s = getServer();
+
+		IRuntime runtime = s.getRuntime();
+
+		if (runtime != null) {
+			retval = (PortalRuntime)runtime.loadAdapter(PortalRuntime.class, null);
+		}
+
+		return retval;
+	}
+
+	public PortalServer getPortalServer() {
+		PortalServer retval = null;
+
+		IServer s = getServer();
+
+		if (s != null) {
+			retval = (PortalServer)s.loadAdapter(PortalServer.class, null);
+		}
+
+		return retval;
+	}
+
+	public IProcess getProcess() {
+		return _process;
+	}
+
 	public Set<IProject> getWatchProjects() {
 		return _watchProjects;
+	}
+
+	public boolean isServerRestarting() {
+		return serverRestarting;
 	}
 
 	public void launchServer(ILaunch launch, String mode, IProgressMonitor monitor) throws CoreException {
@@ -194,7 +231,7 @@ public class PortalServerBehavior
 			return;
 		}
 
-		IStatus status = _getPortalRuntime().validate();
+		IStatus status = getPortalRuntime().validate();
 
 		if ((status != null) && (status.getSeverity() == IStatus.ERROR)) {
 			throw new CoreException(status);
@@ -205,16 +242,7 @@ public class PortalServerBehavior
 		setMode(mode);
 
 		try {
-			String url = "http://" + getServer().getHost();
-			PortalBundle portalBundle = _getPortalRuntime().getPortalBundle();
-
-			int port = Integer.parseInt(portalBundle.getHttpPort());
-
-			if (port != 80) {
-				url += ":" + port;
-			}
-
-			_ping = new PingThread(getServer(), url, -1, this);
+			startedThread = new BladeServerStateStartThread(getServer(), this);
 		}
 		catch (Exception e) {
 			LiferayServerCore.logError("Can not ping for portal startup.");
@@ -241,7 +269,7 @@ public class PortalServerBehavior
 		IAdaptable info = new IAdaptable() {
 
 			@Override
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({"unchecked", "rawtypes"})
 			public Object getAdapter(Class adapter) {
 				if (String.class.equals(adapter)) {
 					return "user";
@@ -275,6 +303,27 @@ public class PortalServerBehavior
 		}
 	}
 
+	@Override
+	public void restart(final String launchMode) throws CoreException {
+		setServerRestarting(true);
+		getServer().stop(
+			false,
+			new IOperationListener() {
+
+				@Override
+				public void done(IStatus result) {
+					try {
+						restartThread = new BladeServeStateRestartThread(
+							getServer(), PortalServerBehavior.this, launchMode);
+					}
+					catch (Exception e) {
+						LiferayServerCore.logError("Can not restart Blade Server.");
+					}
+				}
+
+			});
+	}
+
 	public void setModulePublishState2(IModule[] module, int state) {
 		super.setModulePublishState(module, state);
 	}
@@ -283,127 +332,28 @@ public class PortalServerBehavior
 		super.setModuleState(modules, state);
 	}
 
+	public void setServerRestarting(boolean serverRestarting) {
+		this.serverRestarting = serverRestarting;
+	}
+
 	public void setServerStarted() {
 		setServerState(IServer.STATE_STARTED);
 	}
 
+	public void setServerStoped() {
+		setServerState(IServer.STATE_STOPPED);
+	}
+
 	@Override
-	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launch, IProgressMonitor monitor)
+	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor)
 		throws CoreException {
 
-		String existingProgArgs = launch.getAttribute(ATTR_PROGRAM_ARGUMENTS, (String)null);
+		super.setupLaunchConfiguration(workingCopy, monitor);
 
-		launch.setAttribute(
-			ATTR_PROGRAM_ARGUMENTS, _mergeArguments(existingProgArgs, _getRuntimeStartProgArgs(), null));
+		int port = SocketUtil.findFreePort();
 
-		String existingVMArgs = launch.getAttribute(ATTR_VM_ARGUMENTS, (String)null);
-
-		String[] configVMArgs = _getRuntimeStartVMArguments();
-
-		launch.setAttribute(ATTR_VM_ARGUMENTS, _mergeArguments(existingVMArgs, configVMArgs, null));
-
-		PortalRuntime portalRuntime = _getPortalRuntime();
-
-		IVMInstall vmInstall = portalRuntime.getVMInstall();
-
-		if (vmInstall != null) {
-			IPath jreContainerPath = JavaRuntime.newJREContainerPath(vmInstall);
-
-			launch.setAttribute(ATTR_JRE_CONTAINER_PATH, jreContainerPath.toPortableString());
-		}
-
-		IRuntimeClasspathEntry[] orgClasspath = JavaRuntime.computeUnresolvedRuntimeClasspath(launch);
-
-		int orgClasspathSize = orgClasspath.length;
-
-		List<IRuntimeClasspathEntry> oldCp = new ArrayList<>(orgClasspathSize);
-
-		Collections.addAll(oldCp, orgClasspath);
-
-		List<IRuntimeClasspathEntry> runCpEntries = portalRuntime.getRuntimeClasspathEntries();
-
-		for (IRuntimeClasspathEntry cpEntry : runCpEntries) {
-			_mergeClasspath(oldCp, cpEntry);
-		}
-
-		if (vmInstall != null) {
-			try {
-				IVMInstallType vmInstallType = vmInstall.getVMInstallType();
-
-				String typeId = vmInstallType.getId();
-
-				IPath typeIdPath = new Path(JavaRuntime.JRE_CONTAINER).append(typeId);
-
-				IRuntimeClasspathEntry newJRECp = JavaRuntime.newRuntimeContainerClasspathEntry(
-					typeIdPath.append(vmInstall.getName()), IRuntimeClasspathEntry.BOOTSTRAP_CLASSES);
-
-				_replaceJREConatiner(oldCp, newJRECp);
-			}
-			catch (Exception e) {
-
-				// ignore
-
-			}
-
-			File vmInstallLocation = vmInstall.getInstallLocation();
-
-			IPath jrePath = new Path(vmInstallLocation.getAbsolutePath());
-
-			if (jrePath != null) {
-				IPath toolsPath = jrePath.append("lib/tools.jar");
-
-				if (FileUtil.exists(toolsPath)) {
-					IRuntimeClasspathEntry toolsJar = JavaRuntime.newArchiveRuntimeClasspathEntry(toolsPath);
-
-					// Search for index to any existing tools.jar entry
-
-					int toolsIndex;
-
-					for (toolsIndex = 0; toolsIndex < oldCp.size(); toolsIndex++) {
-						IRuntimeClasspathEntry entry = oldCp.get(toolsIndex);
-
-						IPath entryPath = entry.getPath();
-
-						String entryPathLastSegment = entryPath.lastSegment();
-
-						if ((entry.getType() == IRuntimeClasspathEntry.ARCHIVE) &&
-							entryPathLastSegment.equals("tools.jar")) {
-
-							break;
-						}
-					}
-
-					// If existing tools.jar found, replace in case it's different. Otherwise add.
-
-					if (toolsIndex < oldCp.size()) {
-						oldCp.set(toolsIndex, toolsJar);
-					}
-					else {
-						_mergeClasspath(oldCp, toolsJar);
-					}
-				}
-			}
-		}
-
-		List<String> cp = new ArrayList<>();
-
-		for (IRuntimeClasspathEntry entry : oldCp) {
-			try {
-				IClasspathEntry classpathEntry = entry.getClasspathEntry();
-
-				if (classpathEntry.getEntryKind() != IClasspathEntry.CPE_CONTAINER) {
-					entry = new LiferayRuntimeClasspathEntry(classpathEntry);
-				}
-
-				cp.add(entry.getMemento());
-			}
-			catch (Exception e) {
-				LiferayServerCore.logError("Could not resolve cp entry " + entry, e);
-			}
-		}
-
-		launch.setAttribute(ATTR_CLASSPATH, cp);
-		launch.setAttribute(ATTR_DEFAULT_CLASSPATH, Boolean.FALSE);
+		workingCopy.setAttribute("hostname", getServer().getHost());
+		workingCopy.setAttribute("port", String.valueOf(port));
 	}
 
 	@Override
@@ -414,7 +364,18 @@ public class PortalServerBehavior
 	@Override
 	public void stop(boolean force) {
 		if (force) {
-			terminate();
+			try {
+				_executStopCommand();
+
+				if (stopedThread == null) {
+					stopedThread = new BladeServerStateStopThread(getServer(), this);
+				}
+
+				terminate();
+				setServerState(IServer.STATE_STOPPED);
+			}
+			catch (Exception e) {
+			}
 
 			return;
 		}
@@ -427,7 +388,18 @@ public class PortalServerBehavior
 			return;
 		}
 		else if (state == IServer.STATE_STARTING) {
-			terminate();
+			try {
+				_executStopCommand();
+
+				if (stopedThread == null) {
+					stopedThread = new BladeServerStateStopThread(getServer(), this);
+				}
+
+				terminate();
+				setServerState(IServer.STATE_STOPPED);
+			}
+			catch (Exception e) {
+			}
 
 			return;
 		}
@@ -437,41 +409,38 @@ public class PortalServerBehavior
 				setServerState(IServer.STATE_STOPPING);
 			}
 
-			ILaunchConfiguration launchConfig = ((Server)getServer()).getLaunchConfiguration(false, null);
-
-			ILaunchConfigurationWorkingCopy wc = launchConfig.getWorkingCopy();
-
-			String args = renderCommandLine(_getRuntimeStopProgArgs(), " ");
-
-			// Remove JMX arguments if present
-
-			String existingVMArgs = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String)null);
-
-			if (existingVMArgs.indexOf(_JMX_EXCLUDE_ARGS[0]) >= 0) {
-				wc.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-					_mergeArguments(existingVMArgs, _getRuntimeStopVMArguments(), _JMX_EXCLUDE_ARGS));
-			}
-			else {
-				wc.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-					_mergeArguments(existingVMArgs, _getRuntimeStopVMArguments(), null));
+			if (stopedThread == null) {
+				stopedThread = new BladeServerStateStopThread(getServer(), this);
 			}
 
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-			wc.setAttribute("org.eclipse.debug.ui.private", Boolean.TRUE);
-			wc.setAttribute(ATTR_STOP, "true");
+			final ILaunch launch = getServer().getLaunch();
 
-			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
+			if (launch == null) {
+				terminate();
+
+				return;
+			}
+
+			_executStopCommand();
+
+			setServerState(IServer.STATE_STOPPED);
 		}
 		catch (Exception e) {
-			LiferayServerCore.logError("Error stopping portal", e);
+			LiferayServerCore.logError("Can not ping for portal startup.");
 		}
 	}
 
 	@Override
 	public void stopModule(IModule[] modules, IProgressMonitor monitor) throws CoreException {
 		_startOrStopModules(modules, "stop");
+	}
+
+	public void triggerCleanupEvent(Object eventSource) {
+		DebugEvent event = new DebugEvent(eventSource, DebugEvent.TERMINATE);
+
+		DebugPlugin debugPlugin = DebugPlugin.getDefault();
+
+		debugPlugin.fireDebugEventSet(new DebugEvent[] {event});
 	}
 
 	protected static String renderCommandLine(String[] commandLine, String separator) {
@@ -503,6 +472,19 @@ public class PortalServerBehavior
 		setServerPublishState(IServer.PUBLISH_STATE_UNKNOWN);
 	}
 
+	protected void setProcess(IProcess newProcess) {
+		if ((_process != null) && !_process.isTerminated()) {
+			try {
+				_process.terminate();
+			}
+			catch (Exception e) {
+				LiferayServerCore.logError(e);
+			}
+		}
+
+		_process = newProcess;
+	}
+
 	protected void terminate() {
 		if (getServer().getServerState() == IServer.STATE_STOPPED) {
 			return;
@@ -515,7 +497,9 @@ public class PortalServerBehavior
 
 			if (launch != null) {
 				launch.terminate();
-				cleanup();
+
+				// cleanup();
+
 			}
 		}
 		catch (Exception e) {
@@ -523,344 +507,29 @@ public class PortalServerBehavior
 		}
 	}
 
-	private int _getNextToken(String s, int start) {
-		int i = start;
-		int length = s.length();
-		char lookFor = ' ';
+	protected transient BladeServeStateRestartThread restartThread = null;
+	protected boolean serverRestarting = false;
+	protected transient BladeServerStateStartThread startedThread = null;
+	protected transient BladeServerStateStopThread stopedThread = null;
 
-		while (i < length) {
-			char c = s.charAt(i);
+	private void _executStopCommand() throws Exception {
+		PortalRuntime portalRuntime = getPortalRuntime();
 
-			if (lookFor == c) {
-				if (lookFor == '"') {
-					return i + 1;
-				}
+		IPath location = portalRuntime.getLiferayHome();
 
-				return i;
-			}
+		ServerStopArgs args = new ServerStopArgs();
+		ServerStopCommand stopCommand = new ServerStopCommand();
 
-			if (c == '"') {
-				lookFor = '"';
-			}
+		BladeCLI bladeCLI = stopCommand.getBladeCLI();
 
-			i++;
-		}
+		stopCommand.setBlade(bladeCLI);
+		BaseArgs bladeArgs = bladeCLI.getBladeArgs();
 
-		return -1;
-	}
+		bladeArgs.setBase(location.toFile());
 
-	private PortalRuntime _getPortalRuntime() {
-		PortalRuntime retval = null;
+		stopCommand.setArgs(args);
 
-		IServer s = getServer();
-
-		IRuntime runtime = s.getRuntime();
-
-		if (runtime != null) {
-			retval = (PortalRuntime)runtime.loadAdapter(PortalRuntime.class, null);
-		}
-
-		return retval;
-	}
-
-	private PortalServer _getPortalServer() {
-		PortalServer retval = null;
-
-		IServer s = getServer();
-
-		if (s != null) {
-			retval = (PortalServer)s.loadAdapter(PortalServer.class, null);
-		}
-
-		return retval;
-	}
-
-	private String[] _getRuntimeStartProgArgs() {
-		PortalBundle portalBundle = _getPortalRuntime().getPortalBundle();
-
-		return portalBundle.getRuntimeStartProgArgs();
-	}
-
-	private String[] _getRuntimeStartVMArguments() {
-		boolean launchSetting = _getPortalServer().getLaunchSettings();
-		IPath liferayHome = _getPortalRuntime().getLiferayHome();
-
-		IPath portalExtPath = liferayHome.append("portal-ext.properties");
-
-		if (!launchSetting) {
-			File portalext = portalExtPath.toFile();
-
-			if (_getPortalServer().getDeveloperMode()) {
-				try {
-					if (FileUtil.notExists(portalext)) {
-						portalext.createNewFile();
-					}
-
-					PortalPropertiesConfiguration config = new PortalPropertiesConfiguration();
-
-					try (InputStream in = Files.newInputStream(portalext.toPath())) {
-						config.load(in);
-					}
-
-					String[] p = config.getStringArray("include-and-override");
-
-					boolean existing = false;
-
-					for (String prop : p) {
-						if (prop.equals("portal-developer.properties")) {
-							existing = true;
-
-							break;
-						}
-					}
-
-					if (!existing) {
-						config.addProperty("include-and-override", "portal-developer.properties");
-					}
-
-					config.save(portalext);
-				}
-				catch (Exception e) {
-					LiferayServerCore.logError(e);
-				}
-			}
-			else if (FileUtil.exists(portalext)) {
-				String contents = FileUtil.readContents(portalext, true);
-
-				contents = contents.replace("include-and-override=portal-developer.properties", "");
-
-				try {
-					FileUtils.write(portalext, contents);
-				}
-				catch (IOException ioe) {
-					LiferayServerCore.logError(ioe);
-				}
-			}
-		}
-
-		List<String> retval = new ArrayList<>();
-
-		Collections.addAll(retval, _getPortalServer().getMemoryArgs());
-
-		PortalBundle portalBundle = _getPortalRuntime().getPortalBundle();
-
-		Collections.addAll(retval, portalBundle.getRuntimeStartVMArgs());
-
-		return retval.toArray(new String[0]);
-	}
-
-	private String[] _getRuntimeStopProgArgs() {
-		PortalBundle portalBundle = _getPortalRuntime().getPortalBundle();
-
-		return portalBundle.getRuntimeStopProgArgs();
-	}
-
-	private String[] _getRuntimeStopVMArguments() {
-		List<String> retval = new ArrayList<>();
-
-		String[] memoryArgs = _getPortalServer().getMemoryArgs();
-
-		if (memoryArgs != null) {
-			Collections.addAll(retval, memoryArgs);
-		}
-
-		PortalBundle portalBundle = _getPortalRuntime().getPortalBundle();
-
-		Collections.addAll(retval, portalBundle.getRuntimeStopVMArgs());
-
-		return retval.toArray(new String[0]);
-	}
-
-	private String _mergeArguments(String orgArgsString, String[] newArgs, String[] excludeArgs) {
-		String retval = null;
-
-		if (ListUtil.isEmpty(newArgs) && ListUtil.isEmpty(excludeArgs)) {
-			retval = orgArgsString;
-		}
-		else {
-			retval = orgArgsString == null ? "" : orgArgsString;
-
-			String xbootClasspath = "";
-
-			// replace and null out all newArgs that already exist
-
-			int size = newArgs.length;
-
-			for (int i = 0; i < size; i++) {
-				if (newArgs[i].startsWith("-Xbootclasspath")) {
-					xbootClasspath = xbootClasspath + newArgs[i] + " ";
-
-					newArgs[i] = null;
-
-					continue;
-				}
-
-				int ind = newArgs[i].indexOf(" ");
-				int ind2 = newArgs[i].indexOf("=");
-
-				if ((ind >= 0) && ((ind2 == -1) || (ind < ind2))) {
-
-					// -a bc style
-
-					int index = retval.indexOf(newArgs[i].substring(0, ind + 1));
-
-					if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
-						newArgs[i] = null;
-					}
-				}
-				else if (ind2 >= 0) {
-
-					// a =b style
-
-					int index = retval.indexOf(newArgs[i].substring(0, ind2 + 1));
-
-					if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
-						newArgs[i] = null;
-					}
-				}
-				else {
-
-					// abc style
-
-					int index = retval.indexOf(newArgs[i]);
-
-					if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
-						newArgs[i] = null;
-					}
-				}
-			}
-
-			// remove excluded arguments
-
-			if (ListUtil.isNotEmpty(excludeArgs)) {
-				for (String excludeArg : excludeArgs) {
-					int ind = excludeArg.indexOf(" ");
-					int ind2 = excludeArg.indexOf("=");
-
-					if ((ind >= 0) && ((ind2 == -1) || (ind < ind2))) {
-
-						// -a bc style
-
-						int index = retval.indexOf(excludeArg.substring(0, ind + 1));
-
-						if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
-
-							// remove
-
-							String s = retval.substring(0, index);
-							int index2 = _getNextToken(retval, index + ind + 1);
-
-							if (index2 >= 0) {
-
-								// If remainder will become the first argument, remove leading blanks
-
-								while ((index2 < retval.length()) &&
-									   Character.isWhitespace(retval.charAt(index2)))index2 += 1;
-								retval = s + retval.substring(index2);
-							}
-							else retval = s;
-						}
-					}
-					else if (ind2 >= 0) {
-
-						// a =b style
-
-						int index = retval.indexOf(excludeArg.substring(0, ind2 + 1));
-
-						if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
-
-							// remove
-
-							String s = retval.substring(0, index);
-							int index2 = _getNextToken(retval, index);
-
-							if (index2 >= 0) {
-
-								// If remainder will become the first argument, remove leading blanks
-
-								while ((index2 < retval.length()) &&
-									   Character.isWhitespace(retval.charAt(index2)))index2 += 1;
-								retval = s + retval.substring(index2);
-							}
-							else retval = s;
-						}
-					}
-					else {
-
-						// abc style
-
-						int index = retval.indexOf(excludeArg);
-
-						if ((index == 0) || ((index > 0) && Character.isWhitespace(retval.charAt(index - 1)))) {
-
-							// remove
-
-							String s = retval.substring(0, index);
-							int index2 = _getNextToken(retval, index);
-
-							if (index2 >= 0) {
-
-								// Remove leading blanks
-
-								while ((index2 < retval.length()) &&
-									   Character.isWhitespace(retval.charAt(index2)))index2 += 1;
-								retval = s + retval.substring(index2);
-							}
-							else {
-								retval = s;
-							}
-						}
-					}
-				}
-			}
-
-			// add remaining vmargs to the end
-
-			for (int i = 0; i < size; i++) {
-				if (newArgs[i] != null) {
-					if ((retval.length() > 0) && !retval.endsWith(" ")) {
-						retval += " ";
-					}
-
-					retval += newArgs[i];
-				}
-			}
-
-			if (!CoreUtil.isNullOrEmpty(xbootClasspath)) {
-
-				// delete xbootclasspath
-
-				int xbootIndex = retval.lastIndexOf("-Xbootclasspath");
-
-				while (xbootIndex != -1) {
-					String head = retval.substring(0, xbootIndex);
-
-					int tailIndex = _getNextToken(retval, xbootIndex);
-
-					String tail = retval.substring(tailIndex == retval.length() ? retval.length() : tailIndex + 1);
-
-					retval = head + tail;
-
-					xbootIndex = retval.lastIndexOf("-Xbootclasspath");
-				}
-
-				retval = retval + " " + xbootClasspath;
-			}
-		}
-
-		return retval;
-	}
-
-	private void _mergeClasspath(List<IRuntimeClasspathEntry> oldCpEntries, IRuntimeClasspathEntry cpEntry) {
-		for (IRuntimeClasspathEntry oldCpEntry : oldCpEntries) {
-			IPath oldCpEntryPath = oldCpEntry.getPath();
-
-			if (oldCpEntryPath.equals(cpEntry.getPath())) {
-				return;
-			}
-		}
-
-		oldCpEntries.add(cpEntry);
+		stopCommand.execute();
 	}
 
 	private void _refreshSourceLookup() throws CoreException {
@@ -881,26 +550,6 @@ public class PortalServerBehavior
 				abstractSourceLookupDirector.initializeDefaults(launchConfiguration);
 			}
 		}
-	}
-
-	private void _replaceJREConatiner(List<IRuntimeClasspathEntry> oldCp, IRuntimeClasspathEntry newJRECp) {
-		int size = oldCp.size();
-
-		for (int i = 0; i < size; i++) {
-			IRuntimeClasspathEntry entry2 = oldCp.get(i);
-
-			IPath entry2Path = entry2.getPath();
-
-			IPath entry2PathSeg2 = entry2Path.uptoSegment(2);
-
-			if (entry2PathSeg2.isPrefixOf(newJRECp.getPath())) {
-				oldCp.set(i, newJRECp);
-
-				return;
-			}
-		}
-
-		oldCp.add(0, newJRECp);
 	}
 
 	private void _startOrStopModules(IModule[] modules, String action) {
@@ -951,13 +600,8 @@ public class PortalServerBehavior
 		}
 	}
 
-	private static final String[] _JMX_EXCLUDE_ARGS = {
-		"-Dcom.sun.management.jmxremote", "-Dcom.sun.management.jmxremote.port=", "-Dcom.sun.management.jmxremote.ssl=",
-		"-Dcom.sun.management.jmxremote.authenticate="
-	};
-
 	private IAdaptable _info;
-	private transient PingThread _ping = null;
+	private transient IProcess _process;
 	private transient IDebugEventSetListener _processListener;
 	private Set<IProject> _watchProjects;
 

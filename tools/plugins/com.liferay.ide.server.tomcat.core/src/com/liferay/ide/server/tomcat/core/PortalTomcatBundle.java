@@ -22,8 +22,9 @@ import com.liferay.ide.server.core.portal.AbstractPortalBundle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -335,5 +336,16 @@ public class PortalTomcatBundle extends AbstractPortalBundle {
 
 	private Matcher _matcher;
 	private Pattern _pattern;
+
+
+	@Override
+	public IPath getApperServerLog() {
+		return getAppServerDir().append("logs").append("catalina.out");
+	}
+
+	@Override
+	public IPath getPortalBundleLog() {
+		return null;
+	}
 
 }

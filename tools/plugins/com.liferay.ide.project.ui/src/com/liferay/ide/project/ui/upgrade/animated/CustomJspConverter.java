@@ -14,13 +14,13 @@
 
 package com.liferay.ide.project.ui.upgrade.animated;
 
+import com.liferay.ide.core.BladeCLI;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.core.util.ZipUtil;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.ImportLiferayModuleProjectOp;
 import com.liferay.ide.project.core.modules.ImportLiferayModuleProjectOpMethods;
 import com.liferay.ide.project.core.util.ProjectUtil;

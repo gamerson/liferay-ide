@@ -17,12 +17,12 @@ package com.liferay.ide.project.core.tests.modules;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.liferay.ide.core.BladeCLI;
 import com.liferay.ide.core.tests.BaseTests;
 import com.liferay.ide.core.tests.TestUtil;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.NewLiferayComponentOp;
 import com.liferay.ide.project.core.modules.NewLiferayComponentOpMethods;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
