@@ -1193,6 +1193,15 @@ public class ProjectUtil {
 				}
 			}
 			else {
+				IProject workspaceProject = LiferayWorkspaceUtil.getWorkspaceProject();
+
+				// use watch way instead of old deployment
+
+				if (LiferayWorkspaceUtil.isValidGradleWorkspaceProject(workspaceProject) &&
+					LiferayWorkspaceUtil.inLiferayWorkspace(project)) {
+
+					return false;
+				}
 
 				// not sdk project
 
