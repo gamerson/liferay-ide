@@ -21,6 +21,7 @@ import com.liferay.ide.project.core.IProjectBuilder;
 import com.liferay.ide.project.core.IWorkspaceProjectBuilder;
 import com.liferay.ide.project.core.LiferayWorkspaceProject;
 import com.liferay.ide.server.core.ILiferayServer;
+import com.liferay.ide.server.core.portal.PortalServerBehavior;
 
 import java.io.File;
 
@@ -36,9 +37,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.wst.server.core.ServerCore;
 
 /**
  * @author Andy Wu
@@ -146,6 +151,25 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 			}
 
 		};
+
+		job.addJobChangeListener(
+			new JobChangeAdapter() {
+
+				@Override
+				public void scheduled(IJobChangeEvent event) {
+					Stream.of(
+						ServerCore.getServers()
+					).map(
+						server -> (PortalServerBehavior)server.loadAdapter(
+							PortalServerBehavior.class, new NullProgressMonitor())
+					).filter(
+						serverBehavior -> serverBehavior != null
+					).forEach(
+						serverBehavior -> serverBehavior.refreshSourceLookup()
+					);
+				}
+
+			});
 
 		job.setProperty(ILiferayServer.LIFERAY_SERVER_JOB, this);
 		job.setSystem(true);

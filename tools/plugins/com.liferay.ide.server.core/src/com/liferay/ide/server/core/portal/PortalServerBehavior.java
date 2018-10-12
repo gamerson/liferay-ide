@@ -116,12 +116,7 @@ public class PortalServerBehavior
 		if (IServer.STATE_STARTED == getServer().getServerState()) {
 			_watchProjects.add(project);
 
-			try {
-				_refreshSourceLookup();
-			}
-			catch (CoreException ce) {
-				LiferayServerCore.logError("Could not reinitialize source lookup director", ce);
-			}
+			refreshSourceLookup();
 		}
 	}
 
@@ -266,12 +261,7 @@ public class PortalServerBehavior
 		if (IServer.STATE_STARTED == getServer().getServerState()) {
 			_watchProjects.remove(project);
 
-			try {
-				_refreshSourceLookup();
-			}
-			catch (CoreException ce) {
-				LiferayServerCore.logError("Could not reinitialize source lookup director", ce);
-			}
+			refreshSourceLookup();
 		}
 	}
 
@@ -863,23 +853,33 @@ public class PortalServerBehavior
 		oldCpEntries.add(cpEntry);
 	}
 
-	private void _refreshSourceLookup() throws CoreException {
-		ILaunch launch = getServer().getLaunch();
-		ILaunchConfiguration launchConfiguration = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
+	public void refreshSourceLookup() {
+		try {
+			ILaunch launch = getServer().getLaunch();
 
-		if (launchConfiguration != null) {
-			AbstractSourceLookupDirector abstractSourceLookupDirector =
-				(AbstractSourceLookupDirector)launch.getSourceLocator();
-
-			String memento = launchConfiguration.getAttribute(
-				ILaunchConfiguration.ATTR_SOURCE_LOCATOR_MEMENTO, (String)null);
-
-			if (memento != null) {
-				abstractSourceLookupDirector.initializeFromMemento(memento);
+			if ( launch == null ) {
+				return;
 			}
-			else {
-				abstractSourceLookupDirector.initializeDefaults(launchConfiguration);
+
+			ILaunchConfiguration launchConfiguration = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
+
+			if (launchConfiguration != null) {
+				AbstractSourceLookupDirector abstractSourceLookupDirector =
+					(AbstractSourceLookupDirector)launch.getSourceLocator();
+	
+				String memento = launchConfiguration.getAttribute(
+					ILaunchConfiguration.ATTR_SOURCE_LOCATOR_MEMENTO, (String)null);
+	
+				if (memento != null) {
+					abstractSourceLookupDirector.initializeFromMemento(memento);
+				}
+				else {
+					abstractSourceLookupDirector.initializeDefaults(launchConfiguration);
+				}
 			}
+		}
+		catch(Exception e) {
+			LiferayServerCore.logError("Could not reinitialize source lookup director", e);
 		}
 	}
 
