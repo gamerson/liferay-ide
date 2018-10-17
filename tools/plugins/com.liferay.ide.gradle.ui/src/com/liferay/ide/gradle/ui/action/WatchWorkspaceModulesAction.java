@@ -64,7 +64,7 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 
 			if (server.getServerState() == IServer.STATE_STOPPED) {
 				MessageDialog dialog = new MessageDialog(
-					UIUtil.getActiveShell(), "Watching projects need a started server.", null,
+					UIUtil.getActiveShell(), "Watch Task.", null,
 					"Do you want to start the selected server?", MessageDialog.QUESTION_WITH_CANCEL,
 					new String[] {"debug", "start", "No"}, 0);
 
