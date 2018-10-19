@@ -52,6 +52,7 @@ import org.eclipse.wst.server.core.ServerCore;
 /**
  * @author Andy Wu
  * @author Simon Jiang
+ * @author Terry Jia
  */
 public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 
@@ -101,7 +102,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 	}
 
 	@Override
-	public void watch(Set<IProject> childProjects) {
+	public void watch(Set<IProject> childProjects, IPath liferayHome) {
 		boolean runOnRoot = false;
 		Set<IProject> runOnProjects = childProjects;
 
@@ -125,7 +126,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 			}
 		}
 
-		_executeTask(runOnRoot, runOnProjects);
+		_executeTask(runOnRoot, runOnProjects, liferayHome);
 	}
 
 	@Override
@@ -155,7 +156,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 		return taskPath;
 	}
 
-	private void _executeTask(boolean runOnRoot, Set<IProject> childProjects) {
+	private void _executeTask(boolean runOnRoot, Set<IProject> childProjects, IPath liferayHome) {
 		final List<String> tasks = new ArrayList<>();
 
 		if (runOnRoot) {
@@ -167,7 +168,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 
 				IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
 
-				if ((bundleProject != null) && "war".equals(bundleProject.getBundleShape())) {
+				if (!isWatchable() || ((bundleProject != null) && "war".equals(bundleProject.getBundleShape()))) {
 					taskName = "deploy";
 				}
 
@@ -216,7 +217,9 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 						serverBehavior -> serverBehavior.refreshSourceLookup()
 					);
 
-					String[] args = {"--continuous", "--continue"};
+					String liferayHomeProperty = "-Papp.server.parent.dir=\"" + liferayHome.toPortableString() + "\"";
+
+					String[] args = {"--continuous", "--continue", liferayHomeProperty};
 
 					GradleUtil.runGradleTask(getProject(), tasks.toArray(new String[0]), args, monitor);
 				}

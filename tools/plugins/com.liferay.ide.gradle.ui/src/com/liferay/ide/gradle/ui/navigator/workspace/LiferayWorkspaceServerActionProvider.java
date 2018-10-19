@@ -18,17 +18,23 @@ import com.liferay.ide.gradle.ui.action.RefreshWorkspaceModulesAction;
 import com.liferay.ide.gradle.ui.action.RemoveWorkspaceModulesAction;
 import com.liferay.ide.gradle.ui.action.StopWorkspaceModulesAction;
 import com.liferay.ide.gradle.ui.action.WatchWorkspaceModulesAction;
+import com.liferay.ide.server.core.portal.PortalRuntime;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
 import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
 
 /**
  * @author Terry Jia
@@ -85,8 +91,21 @@ public class LiferayWorkspaceServerActionProvider extends CommonActionProvider {
 	}
 
 	private void _makeActions(ISelectionProvider provider) {
-		_watchAction = new WatchWorkspaceModulesAction(provider);
-		_stopAction = new StopWorkspaceModulesAction(provider);
+		TreeSelection selection = (TreeSelection)provider.getSelection();
+
+		TreePath[] treePaths = selection.getPaths();
+
+		IServer server = (IServer)treePaths[0].getFirstSegment();
+
+		IRuntime runtime = server.getRuntime();
+
+		PortalRuntime portalRuntime = (PortalRuntime)runtime.loadAdapter(PortalRuntime.class, null);
+
+		IPath liferayHome = portalRuntime.getLiferayHome();
+
+		_watchAction = new WatchWorkspaceModulesAction(provider, liferayHome);
+		_stopAction = new StopWorkspaceModulesAction(provider, liferayHome);
+
 		_refreshAction = new RefreshWorkspaceModulesAction(provider);
 		_removeAction = new RemoveWorkspaceModulesAction(provider);
 	}

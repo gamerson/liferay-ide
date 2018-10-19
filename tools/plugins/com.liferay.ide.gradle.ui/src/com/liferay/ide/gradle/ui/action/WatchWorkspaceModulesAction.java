@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -41,14 +42,15 @@ import org.eclipse.wst.server.core.IServer;
  */
 public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 
-	public WatchWorkspaceModulesAction(ISelectionProvider provider) {
-		this(provider, "Start watching project", "watch");
+	public WatchWorkspaceModulesAction(ISelectionProvider provider, IPath liferayHome) {
+		this(provider, "Start watching project", "watch", liferayHome);
 	}
 
-	public WatchWorkspaceModulesAction(ISelectionProvider provider, String text, String action) {
+	public WatchWorkspaceModulesAction(ISelectionProvider provider, String text, String action, IPath liferayHome) {
 		super(provider, text);
 
 		_action = action;
+		_liferayHome = liferayHome;
 	}
 
 	@Override
@@ -113,7 +115,7 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 			}
 		}
 
-		workspaceProject.watch(projectsToWatch);
+		workspaceProject.watch(projectsToWatch, _liferayHome);
 
 		IDecoratorManager decoratorManager = UIUtil.getDecoratorManager();
 
@@ -121,5 +123,6 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 	}
 
 	private String _action;
+	private IPath _liferayHome;
 
 }

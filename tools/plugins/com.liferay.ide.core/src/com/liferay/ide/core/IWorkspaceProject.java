@@ -32,7 +32,7 @@ public interface IWorkspaceProject extends ILiferayProject {
 
 	public boolean isWatchable();
 
-	public void watch(Set<IProject> childProjects);
+	public void watch(Set<IProject> childProjects, IPath liferayHome);
 
 	public Set<IProject> watching();
 

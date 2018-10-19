@@ -111,7 +111,7 @@ public abstract class LiferayWorkspaceProject extends BaseLiferayProject impleme
 	}
 
 	@Override
-	public void watch(Set<IProject> childProjects) {
+	public void watch(Set<IProject> childProjects, IPath liferayHome) {
 	}
 
 	@Override
