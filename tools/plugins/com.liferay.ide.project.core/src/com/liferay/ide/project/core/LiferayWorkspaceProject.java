@@ -19,6 +19,7 @@ import com.liferay.ide.core.ILiferayPortal;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.IWorkspaceProject;
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.adapter.NoopLiferayProject;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
@@ -83,6 +84,8 @@ public abstract class LiferayWorkspaceProject extends BaseLiferayProject impleme
 			project -> !project.equals(getProject())
 		).filter(
 			project -> LiferayCore.create(ILiferayProject.class, project) != null
+		).filter(
+			project -> !(LiferayCore.create(ILiferayProject.class, project) instanceof NoopLiferayProject)
 		).filter(
 			project -> location.isPrefixOf(project.getLocation())
 		).collect(
