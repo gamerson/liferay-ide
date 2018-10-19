@@ -14,6 +14,7 @@
 
 package com.liferay.ide.gradle.ui.action;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ISelectionProvider;
 
 /**
@@ -21,8 +22,8 @@ import org.eclipse.jface.viewers.ISelectionProvider;
  */
 public class StopWorkspaceModulesAction extends WatchWorkspaceModulesAction {
 
-	public StopWorkspaceModulesAction(ISelectionProvider provider) {
-		super(provider, "Stop watching project", "stop");
+	public StopWorkspaceModulesAction(ISelectionProvider provider, IPath liferayHome) {
+		super(provider, "Stop watching project", "stop", liferayHome);
 	}
 
 }
