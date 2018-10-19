@@ -62,18 +62,18 @@ public abstract class LiferayWorkspaceProject extends BaseLiferayProject impleme
 	}
 
 	@Override
-	public List<IProject> getChildProjects() {
+	public Set<IProject> getChildProjects() {
 		if (FileUtil.notExists(getProject())) {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
 
 		if (!getProject().isOpen()) {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
 
 		IPath location = getProject().getLocation();
 
-		List<IProject> childProjects = Stream.of(
+		Set<IProject> childProjects = Stream.of(
 			CoreUtil.getAllProjects()
 		).filter(
 			project -> FileUtil.exists(project)
@@ -86,7 +86,7 @@ public abstract class LiferayWorkspaceProject extends BaseLiferayProject impleme
 		).filter(
 			project -> location.isPrefixOf(project.getLocation())
 		).collect(
-			Collectors.toList()
+			Collectors.toSet()
 		);
 
 		return childProjects;
