@@ -14,8 +14,6 @@
 
 package com.liferay.ide.gradle.core;
 
-import com.liferay.ide.core.IBundleProject;
-import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
@@ -31,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -102,48 +99,12 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 
 	@Override
 	public void watch(Set<IProject> childProjects) {
-		Set<IProject> jarProjects = new HashSet<>();
-		Set<IProject> warProjects = new HashSet<>();
-
-		Stream<IProject> stream = childProjects.stream();
-
-		stream.map(
-			project -> LiferayCore.create(IBundleProject.class, project)
-		).filter(
-			Objects::nonNull
-		).forEach(
-			bundleProject -> {
-				if ("jar".equals(bundleProject.getBundleShape())) {
-					jarProjects.add(bundleProject.getProject());
-				}
-				else if ("war".equals(bundleProject.getBundleShape())) {
-					warProjects.add(bundleProject.getProject());
-				}
-			}
-		);
-
 		if (childProjects.contains(getProject())) {
 			_executeTask(true, Collections.singleton(getProject()), "watch");
-
-			stream = getChildProjects().stream();
-
-			stream.map(
-				project -> LiferayCore.create(IBundleProject.class, project)
-			).filter(
-				Objects::nonNull
-			).filter(
-				bundleProject -> "war".equals(bundleProject.getBundleShape())
-			).map(
-				IBundleProject::getProject
-			).forEach(
-				warProjects::add
-			);
 		}
 		else {
-			_executeTask(false, jarProjects, "watch");
+			_executeTask(false, childProjects, "watch");
 		}
-
-		_executeTask(false, warProjects, "deploy");
 	}
 
 	@Override
@@ -253,7 +214,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 
 				@Override
 				public void done(IJobChangeEvent event) {
-					_watchingProjects.removeAll(childProjects);
+					_watchingProjects.clear();
 				}
 
 			});
@@ -261,7 +222,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 		job.setProperty(ILiferayServer.LIFERAY_SERVER_JOB, this);
 		job.setSystem(true);
 
-		_watchingProjects.removeAll(childProjects);
+		_watchingProjects.clear();
 		_watchingProjects.addAll(childProjects);
 
 		if (ListUtil.isNotEmpty(childProjects)) {

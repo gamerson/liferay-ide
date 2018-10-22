@@ -1199,10 +1199,12 @@ public class ProjectUtil {
 				IWorkspaceProject liferayWorkspaceProject = LiferayCore.create(
 					IWorkspaceProject.class, workspaceProject);
 
-				// use watch way instead of old deployment
+				// use watch way instead of old deployment only for jar projects in liferay workspace
+
+				IBundleProject bundleProject = (IBundleProject)liferayProject;
 
 				if ((liferayWorkspaceProject != null) && liferayWorkspaceProject.isWatchable() &&
-					LiferayWorkspaceUtil.inLiferayWorkspace(project)) {
+					LiferayWorkspaceUtil.inLiferayWorkspace(project) && "jar".equals(bundleProject.getBundleShape())) {
 
 					return false;
 				}

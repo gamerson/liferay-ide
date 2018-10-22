@@ -14,9 +14,8 @@
 
 package com.liferay.ide.gradle.ui.navigator.workspace;
 
-import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.adapter.NoopLiferayProject;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.gradle.core.GradleUtil;
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
@@ -44,9 +43,9 @@ public class LiferayWorkspaceServerContentProvider extends AbstractNavigatorCont
 			List<IProject> projects = new ArrayList<>();
 
 			for (IProject project : CoreUtil.getAllProjects()) {
-				ILiferayProject liferayProject = LiferayCore.create(ILiferayProject.class, project);
+				IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
 
-				if (!(liferayProject instanceof NoopLiferayProject)) {
+				if ((bundleProject != null) && "jar".equals(bundleProject.getBundleShape())) {
 					IPath fullPath = project.getLocation();
 
 					IPath parentLocation = parentProject.getLocation();
