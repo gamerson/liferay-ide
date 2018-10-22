@@ -217,9 +217,12 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject {
 						serverBehavior -> serverBehavior.refreshSourceLookup()
 					);
 
-					String liferayHomeProperty = "-Papp.server.parent.dir=\"" + liferayHome.toPortableString() + "\"";
+					StringBuffer sb = new StringBuffer();
 
-					String[] args = {"--continuous", "--continue", liferayHomeProperty};
+					sb.append("-Pliferay.workspace.home.dir=");
+					sb.append(liferayHome.toPortableString());
+
+					String[] args = {"--continuous", "--continue", sb.toString()};
 
 					GradleUtil.runGradleTask(getProject(), tasks.toArray(new String[0]), args, monitor);
 				}
