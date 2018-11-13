@@ -21,7 +21,7 @@ import java.util.UUID;
 /**
  * @author Gregory Amerson
  */
-public class Problem {
+public class Problem implements Summary {
 
 	public static final long DEFAULT_MARKER_ID = -1;
 
@@ -68,6 +68,11 @@ public class Problem {
 		this.status = status;
 		this.markerId = markerId;
 		this.markerType = markerType;
+	}
+
+	@Override
+	public String doSummary() {
+		return html;
 	}
 
 	@Override

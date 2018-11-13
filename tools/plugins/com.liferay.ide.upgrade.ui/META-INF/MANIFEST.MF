@@ -3,7 +3,30 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Liferay IDE Upgrade UI
 Bundle-SymbolicName: com.liferay.ide.upgrade.ui;singleton:=true
 Bundle-Version: 3.4.0.qualifier
+Bundle-Activator: com.liferay.ide.upgrade.ui.UpgradeUI
 Bundle-Vendor: Liferay, Inc.
-Require-Bundle: org.eclipse.core.resources
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.forms,
+ org.eclipse.ui.navigator,
+ org.eclipse.sapphire.ui,
+ org.eclipse.sapphire.modeling,
+ com.liferay.ide.core,
+ com.liferay.ide.project.core,
+ org.eclipse.jdt.ui,
+ com.liferay.ide.ui,
+ com.liferay.ide.upgrade.core,
+ org.eclipse.ui.navigator.resources,
+ com.liferay.ide.project.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/com.liferay.ide.upgrade.ui.task.FindUpgradeProblemsTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.MigrateLiferayCDNLinkTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.UpgradeWorkspacePluginTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.MigrateTargetPlatformTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.UpgradeWorkspaceDependenciesTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.MigratePluginsSDKDependenciesTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.CleanLegaceyProjectsOrFilesTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.InitBundleGradleTask.xml,
+ OSGI-INF/com.liferay.ide.upgrade.ui.task.InitBundleMavenTask.xml

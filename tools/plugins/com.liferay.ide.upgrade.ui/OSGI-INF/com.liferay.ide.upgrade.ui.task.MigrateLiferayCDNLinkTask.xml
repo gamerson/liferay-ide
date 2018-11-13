@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component name="com.liferay.ide.upgrade.ui.task.MigrateLiferayCDNLinkTask" xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0">
+	<property name="task.priority" value="5" />
+	<property name="task.title" value="Migrate Liferay CDN Link" />
+	<property name="task.description" value="Migrate Liferay CDN Link Description" />
+	<service>
+		<provide interface="com.liferay.ide.upgrade.ui.task.UpgradeTask" />
+	</service>
+	<implementation class="com.liferay.ide.upgrade.ui.task.MigrateLiferayCDNLinkTask" />
+</scr:component>

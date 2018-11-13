@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component name="com.liferay.ide.upgrade.ui.task.MigrateTargetPlatformTask" xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0">
+	<property name="task.priority" value="10" />
+	<property name="task.title" value="Migrate To Liferay Target Platform" />
+	<property name="task.description" value="Migrate To Liferay Target Platform Description" />
+	<service>
+		<provide interface="com.liferay.ide.upgrade.ui.task.UpgradeTask" />
+	</service>
+	<implementation class="com.liferay.ide.upgrade.ui.task.MigrateTargetPlatformTask" />
+</scr:component>
