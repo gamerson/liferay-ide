@@ -21,7 +21,7 @@ import java.util.UUID;
 /**
  * @author Gregory Amerson
  */
-public class Problem {
+public class Problem implements Summary {
 
 	public static final long DEFAULT_MARKER_ID = -1;
 
@@ -68,6 +68,26 @@ public class Problem {
 		this.status = status;
 		this.markerId = markerId;
 		this.markerType = markerType;
+	}
+
+	@Override
+	public String doDetail() {
+		return html;
+	}
+
+	@Override
+	public String doLabel() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("[");
+		sb.append(version);
+		sb.append("]");
+		sb.append("[");
+		sb.append(lineNumber);
+		sb.append("]");
+		sb.append(title);
+
+		return sb.toString();
 	}
 
 	@Override
