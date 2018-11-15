@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.liferay.blade.upgrade.liferay70.checker.Descriptors">
+   <property name="file.extensions" value="xml"/>
+   <property name="problem.title" value="DTD versions"/>
+   <property name="problem.summary" value="This step upgrades descriptor XML DTD versions from 6.2 to 7.0 or 7.1 and deletes the wap-template-path \ntag from liferay-layout-template.xml files."/>
+   <property name="problem.section" value="#descriptor-XML-DTD-version"/>
+   <property name="implName" value="Descriptors"/>
+   <property name="version" value="7.0"/>
+   <service>
+      <provide interface="com.liferay.blade.api.FileMigrator"/>
+   </service>
+   <implementation class="com.liferay.blade.upgrade.liferay70.checker.Descriptors"/>
+</scr:component>
