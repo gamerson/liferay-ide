@@ -12,17 +12,25 @@
  * details.
  */
 
-package com.liferay.blade.api;
+package com.liferay.blade.test.apichanges;
 
-import java.util.Collection;
+import java.io.File;
 
 /**
- * @author Gregory Amerson
+ * @author Seiphon Wang
  */
-public interface XMLFile extends SourceFile {
+public class DescriptorsTest extends APITestBase {
 
-	public Collection<SearchResult> findElement(String elementName, String elementValue);
+	@Override
+	public String getImplClassName() {
 
-	public Collection<SearchResult> getDocumentTypeDeclaration(String targetVersion);
+		return "Descriptors";
+	}
+
+	@Override
+	public File getTestFile() {
+
+		return new File("projects/legacy-apis-ant-portlet/docroot/WEB-INF/liferay-portlet.xml");
+	}
 
 }
