@@ -96,7 +96,7 @@ public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 	}
 
 	@Override
-	public Collection<SearchResult> getDocumentTypeDeclaration(String targetVersion) {
+	public Collection<SearchResult> getDocumentTypeDeclaration(String targetVersion, String dtdName) {
 		List<SearchResult> results = new ArrayList<>();
 
 		IFile xmlFile = getIFile(file);
@@ -113,7 +113,7 @@ public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 
 			String documentType = docType.toString();
 
-			if ((documentType != null) && !documentType.contains(targetVersion)) {
+			if ((documentType != null) && documentType.contains(targetVersion) && documentType.contains(dtdName)) {
 				FileReader fileReader = new FileReader(file);
 
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
