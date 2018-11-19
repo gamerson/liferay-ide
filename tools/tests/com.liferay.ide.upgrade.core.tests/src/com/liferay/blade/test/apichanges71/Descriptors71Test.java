@@ -12,17 +12,24 @@
  * details.
  */
 
-package com.liferay.blade.api;
+package com.liferay.blade.test.apichanges71;
 
-import java.util.Collection;
+import java.io.File;
+
+import com.liferay.blade.test.apichanges.APITestBase;
 
 /**
- * @author Gregory Amerson
+ * @author Seiphon Wang
  */
-public interface XMLFile extends SourceFile {
+public class Descriptors71Test extends APITestBase {
 
-	public Collection<SearchResult> findElement(String elementName, String elementValue);
+	@Override
+	public String getImplClassName() {
+		return "Descriptors71";
+	}
 
-	public Collection<SearchResult> getDocumentTypeDeclaration(String targetVersion, String dtdName);
-
+	@Override
+	public File getTestFile() {
+		return new File("projects/legacy-apis-ant-portlet/docroot/WEB-INF/liferay-portlet.xml");
+	}
 }
