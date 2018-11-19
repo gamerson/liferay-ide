@@ -23,14 +23,11 @@ public class DescriptorsTest extends APITestBase {
 
 	@Override
 	public String getImplClassName() {
-
-		return "Descriptors";
+		return "Descriptors70";
 	}
 
 	@Override
 	public File getTestFile() {
-
 		return new File("projects/legacy-apis-ant-portlet/docroot/WEB-INF/liferay-portlet.xml");
 	}
-
 }
