@@ -41,8 +41,8 @@ public class Descriptors71 extends XMLFileMigrator {
 	protected List<SearchResult> searchFile(File file, XMLFile xmlFileChecker) {
 		List<SearchResult> results = new ArrayList<>();
 
-		results.addAll(xmlFileChecker.getDocumentTypeDeclaration("6.2", "liferay"));
-		results.addAll(xmlFileChecker.getDocumentTypeDeclaration("7.0", "liferay"));
+		results.add(xmlFileChecker.getDocumentTypeDeclaration("6.2", "liferay"));
+		results.add(xmlFileChecker.getDocumentTypeDeclaration("7.0", "liferay"));
 
 		return results;
 	}
