@@ -21,8 +21,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.sse.core.StructuredModelManager;
@@ -34,7 +34,6 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 
 import org.osgi.service.component.annotations.Component;
 
-import org.w3c.dom.DocumentType;
 import org.w3c.dom.NodeList;
 
 /**
@@ -96,45 +95,36 @@ public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 	}
 
 	@Override
-	public Collection<SearchResult> getDocumentTypeDeclaration(String targetVersion, String dtdName) {
-		List<SearchResult> results = new ArrayList<>();
+	public SearchResult getDocumentTypeDeclaration(String version, String filter) {
+		SearchResult result = null;
 
 		IFile xmlFile = getIFile(file);
 		IDOMModel domModel = null;
 
-		try {
+		try (FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
 			IModelManager modelManager = StructuredModelManager.getModelManager();
 
 			domModel = (IDOMModel)modelManager.getModelForRead(xmlFile);
 
 			IDOMDocument document = domModel.getDocument();
 
-			DocumentType docType = document.getDoctype();
+			String documentType = Objects.toString(document.getDoctype(), "");
 
-			String documentType = docType.toString();
-
-			if ((documentType != null) && documentType.contains(targetVersion) && documentType.contains(dtdName)) {
-				FileReader fileReader = new FileReader(file);
-
-				BufferedReader bufferedReader = new BufferedReader(fileReader);
-
+			if (documentType.contains(version) && documentType.contains(filter)) {
 				String firstLine = bufferedReader.readLine();
-				String secondLIne = bufferedReader.readLine();
+				String secondLine = bufferedReader.readLine();
 
 				int startOffset = firstLine.length();
 
-				int endOffset = startOffset + secondLIne.length();
+				int endOffset = startOffset + secondLine.length();
 
 				int startLine = 2;
 				int endLine = 2;
 
-				bufferedReader.close();
-				fileReader.close();
-
-				SearchResult result = new SearchResult(
+				result = new SearchResult(
 					file, "startOffset:" + startOffset, startOffset, endOffset, startLine, endLine, true);
-
-				results.add(result);
 			}
 		}
 		catch (Exception e) {
@@ -145,7 +135,7 @@ public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 			}
 		}
 
-		return results;
+		return result;
 	}
 
 }

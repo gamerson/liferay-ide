@@ -23,6 +23,6 @@ public interface XMLFile extends SourceFile {
 
 	public Collection<SearchResult> findElement(String elementName, String elementValue);
 
-	public Collection<SearchResult> getDocumentTypeDeclaration(String targetVersion, String dtdName);
+	public SearchResult getDocumentTypeDeclaration(String version, String filter);
 
 }
