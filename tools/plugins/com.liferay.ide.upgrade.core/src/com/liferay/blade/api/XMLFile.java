@@ -21,8 +21,8 @@ import java.util.Collection;
  */
 public interface XMLFile extends SourceFile {
 
-	public Collection<SearchResult> findElement(String elementName, String elementValue);
+	public SearchResult findDocumentTypeDeclaration(String name, String idPattern);
 
-	public SearchResult getDocumentTypeDeclaration(String version, String filter);
+	public Collection<SearchResult> findElement(String elementName, String elementValue);
 
 }

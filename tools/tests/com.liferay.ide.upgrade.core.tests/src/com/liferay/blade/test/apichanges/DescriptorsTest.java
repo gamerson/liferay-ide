@@ -23,7 +23,7 @@ public class DescriptorsTest extends APITestBase {
 
 	@Override
 	public String getImplClassName() {
-		return "Descriptors70";
+		return "LiferayDescriptorVersion70";
 	}
 
 	@Override

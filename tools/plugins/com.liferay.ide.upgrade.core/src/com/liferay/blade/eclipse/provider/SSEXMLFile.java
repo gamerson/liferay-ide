@@ -17,18 +17,15 @@ package com.liferay.blade.eclipse.provider;
 import com.liferay.blade.api.SearchResult;
 import com.liferay.blade.api.XMLFile;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocumentType;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 
@@ -42,6 +39,50 @@ import org.w3c.dom.NodeList;
 @Component(property = "file.extension=xml")
 @SuppressWarnings("restriction")
 public class SSEXMLFile extends WorkspaceFile implements XMLFile {
+
+	@Override
+	public SearchResult findDocumentTypeDeclaration(String name, String idPattern) {
+		SearchResult result = null;
+
+		IFile xmlFile = getIFile(file);
+		IDOMModel domModel = null;
+
+		try {
+			IModelManager modelManager = StructuredModelManager.getModelManager();
+
+			domModel = (IDOMModel)modelManager.getModelForRead(xmlFile);
+
+			IDOMDocument document = domModel.getDocument();
+
+			IDOMDocumentType docType = (IDOMDocumentType)document.getDoctype();
+
+			if (docType != null) {
+				String docTypeName = docType.getName();
+				String docTypePublicId = docType.getPublicId();
+
+				if (docTypeName.equals(name) && !docTypePublicId.matches(idPattern)) {
+					IStructuredDocument structuredDocument = document.getStructuredDocument();
+
+					int startOffset = docType.getStartOffset();
+					int endOffset = docType.getEndOffset();
+					int startLine = structuredDocument.getLineOfOffset(startOffset) + 1;
+					int endLine = structuredDocument.getLineOfOffset(endOffset) + 1;
+
+					result = new SearchResult(
+						file, "startOffset:" + startOffset, startOffset, endOffset, startLine, endLine, true);
+				}
+			}
+		}
+		catch (Exception e) {
+		}
+		finally {
+			if (domModel != null) {
+				domModel.releaseFromRead();
+			}
+		}
+
+		return result;
+	}
 
 	@Override
 	public List<SearchResult> findElement(String tagName, String value) {
@@ -92,50 +133,6 @@ public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 		}
 
 		return results;
-	}
-
-	@Override
-	public SearchResult getDocumentTypeDeclaration(String version, String filter) {
-		SearchResult result = null;
-
-		IFile xmlFile = getIFile(file);
-		IDOMModel domModel = null;
-
-		try (FileReader fileReader = new FileReader(file);
-			BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-
-			IModelManager modelManager = StructuredModelManager.getModelManager();
-
-			domModel = (IDOMModel)modelManager.getModelForRead(xmlFile);
-
-			IDOMDocument document = domModel.getDocument();
-
-			String documentType = Objects.toString(document.getDoctype(), "");
-
-			if (documentType.contains(version) && documentType.contains(filter)) {
-				String firstLine = bufferedReader.readLine();
-				String secondLine = bufferedReader.readLine();
-
-				int startOffset = firstLine.length();
-
-				int endOffset = startOffset + secondLine.length();
-
-				int startLine = 2;
-				int endLine = 2;
-
-				result = new SearchResult(
-					file, "startOffset:" + startOffset, startOffset, endOffset, startLine, endLine, true);
-			}
-		}
-		catch (Exception e) {
-		}
-		finally {
-			if (domModel != null) {
-				domModel.releaseFromRead();
-			}
-		}
-
-		return result;
 	}
 
 }

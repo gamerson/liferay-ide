@@ -12,9 +12,12 @@
  * details.
  */
 
-package com.liferay.blade.upgrade.liferay71.checkers;
+package com.liferay.blade.upgrade.liferay71.descriptors;
 
+import com.liferay.blade.api.AutoMigrateException;
+import com.liferay.blade.api.AutoMigrator;
 import com.liferay.blade.api.FileMigrator;
+import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.SearchResult;
 import com.liferay.blade.api.XMLFile;
 import com.liferay.blade.upgrade.XMLFileMigrator;
@@ -32,19 +35,29 @@ import org.osgi.service.component.annotations.Component;
 @Component(property = {
 	"file.extensions=xml", "problem.title=Descriptor XML DTD Versions Changes",
 	"problem.summary=The descriptor XML DTD versions should be matched with version 7.1.",
-	"problem.section=#descriptor-XML-DTD-version", "implName=Descriptors71", "version=7.1"
+	"problem.section=#descriptor-XML-DTD-version", "implName=LiferayDescriptorVersion71", "version=7.1"
 },
 	service = FileMigrator.class)
-public class Descriptors71 extends XMLFileMigrator {
+public class LiferayDescriptorVersion71 extends XMLFileMigrator implements AutoMigrator {
+
+	@Override
+	public int correctProblems(File file, List<Problem> problems) throws AutoMigrateException {
+		return 0;
+	}
 
 	@Override
 	protected List<SearchResult> searchFile(File file, XMLFile xmlFileChecker) {
 		List<SearchResult> results = new ArrayList<>();
 
-		results.add(xmlFileChecker.getDocumentTypeDeclaration("6.2", "liferay"));
-		results.add(xmlFileChecker.getDocumentTypeDeclaration("7.0", "liferay"));
+		for (String liferayDtdName : _liferayDtdNames) {
+			results.add(xmlFileChecker.findDocumentTypeDeclaration(liferayDtdName, _publicIDRegex));
+		}
 
 		return results;
 	}
+
+	private String[] _liferayDtdNames =
+		{"liferay-portlet-app", "display", "service-builder", "hook", "layout-templates", "look-and-feel"};
+	private String _publicIDRegex = "-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(7\\.1\\.0)\\//(?:[A-z]+)";
 
 }
