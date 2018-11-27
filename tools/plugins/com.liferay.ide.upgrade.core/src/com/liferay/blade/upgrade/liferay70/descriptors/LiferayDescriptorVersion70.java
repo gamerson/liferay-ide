@@ -14,13 +14,11 @@
 
 package com.liferay.blade.upgrade.liferay70.descriptors;
 
-import com.liferay.blade.api.AutoMigrateException;
 import com.liferay.blade.api.AutoMigrator;
 import com.liferay.blade.api.FileMigrator;
-import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.SearchResult;
 import com.liferay.blade.api.XMLFile;
-import com.liferay.blade.upgrade.XMLFileMigrator;
+import com.liferay.blade.upgrade.liferay70.apichanges.BaseLiferayDescriptorVersion;
 
 import java.io.File;
 
@@ -35,29 +33,27 @@ import org.osgi.service.component.annotations.Component;
 @Component(property = {
 	"file.extensions=xml", "problem.title=Descriptor XML DTD Versions Changes",
 	"problem.summary=The descriptor XML DTD versions should be matched with version 7.0.",
-	"problem.section=#descriptor-XML-DTD-version", "implName=LiferayDescriptorVersion70", "version=7.0"
+	"problem.section=#descriptor-XML-DTD-version", "auto.correct=descriptor", "implName=LiferayDescriptorVersion",
+	"version=7.0"
 },
-	service = FileMigrator.class)
-public class LiferayDescriptorVersion70 extends XMLFileMigrator implements AutoMigrator {
-
-	@Override
-	public int correctProblems(File file, List<Problem> problems) throws AutoMigrateException {
-		return 0;
-	}
+	service = {AutoMigrator.class, FileMigrator.class})
+public class LiferayDescriptorVersion70 extends BaseLiferayDescriptorVersion {
 
 	@Override
 	protected List<SearchResult> searchFile(File file, XMLFile xmlFileChecker) {
 		List<SearchResult> results = new ArrayList<>();
 
 		for (String liferayDtdName : _liferayDtdNames) {
-			results.add(xmlFileChecker.findDocumentTypeDeclaration(liferayDtdName, _publicIDRegex));
+			results.add(xmlFileChecker.findDocumentTypeDeclaration(liferayDtdName, _PUBLICID_REGREX70));
 		}
 
 		return results;
 	}
 
+	private static final String _PUBLICID_REGREX70 =
+		"-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(7\\.[0-9]\\.[0-9])\\//(?:[A-z]+)";
+
 	private String[] _liferayDtdNames =
 		{"liferay-portlet-app", "display", "service-builder", "hook", "layout-templates", "look-and-feel"};
-	private String _publicIDRegex = "-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(7\\.0\\.0)\\//(?:[A-z]+)";
 
 }

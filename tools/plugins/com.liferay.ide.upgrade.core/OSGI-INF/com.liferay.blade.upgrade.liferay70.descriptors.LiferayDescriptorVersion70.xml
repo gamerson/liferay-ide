@@ -4,9 +4,11 @@
    <property name="problem.title" value="Descriptor XML DTD Versions Changes"/>
    <property name="problem.summary" value="The descriptor XML DTD versions should be matched with version 7.0."/>
    <property name="problem.section" value="#descriptor-XML-DTD-version"/>
-   <property name="implName" value="LiferayDescriptorVersion70"/>
+   <property name="auto.correct" value="descriptor"/>
+   <property name="implName" value="LiferayDescriptorVersion"/>
    <property name="version" value="7.0"/>
    <service>
+      <provide interface="com.liferay.blade.api.AutoMigrator"/>
       <provide interface="com.liferay.blade.api.FileMigrator"/>
    </service>
    <implementation class="com.liferay.blade.upgrade.liferay70.descriptors.LiferayDescriptorVersion70"/>

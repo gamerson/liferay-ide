@@ -70,6 +70,8 @@ public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 
 					result = new SearchResult(
 						file, "startOffset:" + startOffset, startOffset, endOffset, startLine, endLine, true);
+
+					result.autoCorrectContext = "descriptor:dtd-version";
 				}
 			}
 		}
