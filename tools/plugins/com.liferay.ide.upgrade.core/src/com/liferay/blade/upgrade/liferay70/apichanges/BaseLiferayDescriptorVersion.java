@@ -17,12 +17,14 @@ package com.liferay.blade.upgrade.liferay70.apichanges;
 import com.liferay.blade.api.AutoMigrateException;
 import com.liferay.blade.api.AutoMigrator;
 import com.liferay.blade.api.Problem;
+import com.liferay.blade.api.SearchResult;
+import com.liferay.blade.api.XMLFile;
 import com.liferay.blade.upgrade.XMLFileMigrator;
-import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.StringUtil;
 
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,14 +36,15 @@ import org.eclipse.wst.xml.core.internal.document.DocumentTypeImpl;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 /**
  * @author Seiphon Wang
  */
 @SuppressWarnings("restriction")
 public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator implements AutoMigrator {
+
+	public BaseLiferayDescriptorVersion(String publicIDPattern) {
+		_publicIDPattern = publicIDPattern;
+	}
 
 	@Override
 	public int correctProblems(File file, List<Problem> problems) throws AutoMigrateException {
@@ -77,7 +80,6 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 					problemsFixed++;
 				}
 
-				_removeLayoutWapNode(xmlFile, document);
 				domModel.save();
 			}
 
@@ -98,6 +100,17 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 		}
 	}
 
+	@Override
+	protected List<SearchResult> searchFile(File file, XMLFile xmlFileChecker) {
+		List<SearchResult> results = new ArrayList<>();
+
+		for (String liferayDtdName : _liferayDtdNames) {
+			results.add(xmlFileChecker.findDocumentTypeDeclaration(liferayDtdName, _publicIDPattern));
+		}
+
+		return results;
+	}
+
 	private String _getNewDoctTypeSetting(String doctypeSetting, String newValue, String regrex) {
 		String newDoctTypeSetting = null;
 
@@ -114,24 +127,14 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 		return newDoctTypeSetting;
 	}
 
-	private void _removeLayoutWapNode(IFile srcFile, IDOMDocument document) {
-		if (FileUtil.nameEquals(srcFile, "liferay-layout-templates.xml")) {
-			NodeList nodeList = document.getElementsByTagName("wap-template-path");
-
-			for (int i = 0; i < nodeList.getLength(); i++) {
-				Node node = nodeList.item(i);
-
-				Node parentNode = node.getParentNode();
-
-				parentNode.removeChild(node);
-			}
-		}
-	}
-
 	private static final String _PUBLICID_REGREX =
 		"-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(\\d\\.\\d\\.\\d)\\//(?:[A-z]+)";
 
 	private static final String _SYSTEMID_REGREX =
 		"^http://www.liferay.com/dtd/[-A-Za-z0-9+&@#/%?=~_()]*(\\d_\\d_\\d).dtd";
+
+	private String[] _liferayDtdNames =
+		{"liferay-portlet-app", "display", "service-builder", "hook", "layout-templates", "look-and-feel"};
+	private String _publicIDPattern;
 
 }

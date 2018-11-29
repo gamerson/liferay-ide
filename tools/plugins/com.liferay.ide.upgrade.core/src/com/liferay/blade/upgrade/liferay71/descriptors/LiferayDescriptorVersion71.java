@@ -16,14 +16,7 @@ package com.liferay.blade.upgrade.liferay71.descriptors;
 
 import com.liferay.blade.api.AutoMigrator;
 import com.liferay.blade.api.FileMigrator;
-import com.liferay.blade.api.SearchResult;
-import com.liferay.blade.api.XMLFile;
 import com.liferay.blade.upgrade.liferay70.apichanges.BaseLiferayDescriptorVersion;
-
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -39,21 +32,11 @@ import org.osgi.service.component.annotations.Component;
 	service = {AutoMigrator.class, FileMigrator.class})
 public class LiferayDescriptorVersion71 extends BaseLiferayDescriptorVersion {
 
-	@Override
-	protected List<SearchResult> searchFile(File file, XMLFile xmlFileChecker) {
-		List<SearchResult> results = new ArrayList<>();
-
-		for (String liferayDtdName : _liferayDtdNames) {
-			results.add(xmlFileChecker.findDocumentTypeDeclaration(liferayDtdName, _PUBLICID_REGREX71));
-		}
-
-		return results;
+	public LiferayDescriptorVersion71() {
+		super(_PUBLICID_REGREX71);
 	}
 
 	private static final String _PUBLICID_REGREX71 =
 		"-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(7\\.[1-9]\\.[0-9])\\//(?:[A-z]+)";
-
-	private String[] _liferayDtdNames =
-		{"liferay-portlet-app", "display", "service-builder", "hook", "layout-templates", "look-and-feel"};
 
 }
