@@ -12,35 +12,43 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.task.ext.steps;
+package com.liferay.ide.upgrade.plan.base;
 
-import com.liferay.ide.upgrade.plan.api.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.base.FileUpgradeTaskStep;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.ui.util.UIUtil;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-
-import org.osgi.service.component.annotations.Component;
+import org.eclipse.swt.widgets.FileDialog;
 
 /**
  * @author Terry Jia
  */
-@Component(properties = "OSGI-INF/MigratePortalExtPropertiesStep.properties", service = UpgradeTaskStep.class)
-public class MigratePortalExtPropertiesStep extends FileUpgradeTaskStep {
+public abstract class FileUpgradeTaskStep extends AbstractUpgradeTaskStep {
 
-	@Override
-	public IStatus execute(File file, IProgressMonitor progressMonitor) {
+	public abstract IStatus execute(File file, IProgressMonitor progressMonitor);
 
-		// TODO
+	public IStatus execute(IProgressMonitor progressMonitor) {
+		FileDialog dialog = new FileDialog(UIUtil.getActiveShell());
 
-		return Status.OK_STATUS;
+		dialog.setFilterExtensions(getExtensions());
+
+		String result = dialog.open();
+
+		File file = new File(result);
+
+		if (FileUtil.exists(file)) {
+			execute(file, progressMonitor);
+		}
+
+		return Status.CANCEL_STATUS;
 	}
 
 	protected String[] getExtensions() {
-		return new String[] {"*.properties"};
+		return new String[] {"*"};
 	}
 
 }
