@@ -14,6 +14,7 @@
 
 package com.liferay.ide.project.core.jobs;
 
+import com.liferay.ide.core.ILiferayProjectProvider;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.project.core.IWorkspaceProjectBuilder;
 import com.liferay.ide.project.core.ProjectCore;
@@ -39,13 +40,10 @@ public class InitBundleJob extends Job {
 		_project = project;
 		_bundleUrl = bundleUrl;
 
-		addJobChangeListener(
-			new JobChangeAdapter() {
+		this.setProperty(ILiferayProjectProvider.LIFERAY_PROJECT_JOB, new Object());
 
-				@Override
-				public void aboutToRun(IJobChangeEvent event) {
-					JobUtil.waitForLiferayProjectJob();
-				}
+		this.addJobChangeListener(
+			new JobChangeAdapter() {
 
 				@Override
 				public void done(IJobChangeEvent event) {
@@ -53,11 +51,8 @@ public class InitBundleJob extends Job {
 				}
 
 			});
-	}
 
-	@Override
-	public boolean belongsTo(Object family) {
-		return family.equals(LiferayCore.LIFERAY_JOB_FAMILY);
+		JobUtil.waitForLiferayProjectJob();
 	}
 
 	@Override

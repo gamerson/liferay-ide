@@ -78,15 +78,15 @@ public class GradleProjectBuilder extends AbstractProjectBuilder implements IWor
 			catch (ConfigurationException ce) {
 				GradleCore.logError(ce);
 			}
-		}
 
-		_runGradleTask("initBundle", monitor);
+			_runGradleTask("initBundle", monitor);
 
-		try {
-			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		}
-		catch (CoreException ce) {
-			GradleCore.logError(ce);
+			try {
+				project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			}
+			catch (CoreException ce) {
+				GradleCore.logError(ce);
+			}
 		}
 
 		return Status.OK_STATUS;

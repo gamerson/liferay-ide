@@ -99,7 +99,7 @@ public class MavenTestUtil {
 		JobHelpers.waitForJobs(job -> {
 			Object property = job.getProperty(ILiferayProjectProvider.LIFERAY_PROJECT_JOB);
 
-			if (property != null || job.belongsTo(LiferayCore.LIFERAY_JOB_FAMILY)) {
+			if (property != null) {
 				return true;
 			}
 
