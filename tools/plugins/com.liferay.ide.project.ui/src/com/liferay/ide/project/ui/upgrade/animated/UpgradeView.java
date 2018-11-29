@@ -550,7 +550,7 @@ public class UpgradeView extends ViewPart implements SelectionChangedListener {
 
 	private static List<Page> _currentPageList = new ArrayList<>();
 	private static LiferayUpgradeDataModel _dataModel;
-	private static Page[] _pages = null;
+	private static Page[] _pages = new Page[0];
 	private static Composite _pagesSwitchControler = null;
 	private static List<Page> _staticPageList = new ArrayList<>();
 

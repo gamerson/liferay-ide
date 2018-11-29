@@ -15,6 +15,7 @@
 package com.liferay.ide.project.core.upgrade;
 
 import com.liferay.blade.api.Problem;
+import com.liferay.blade.api.Summary;
 
 import java.io.File;
 
@@ -24,10 +25,36 @@ import java.util.List;
 /**
  * @author Terry Jia
  */
-public class FileProblems {
+public class FileProblems implements Summary {
 
 	public void addProblem(Problem problem) {
 		problems.add(problem);
+	}
+
+	@Override
+	public String doDetail() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(file);
+		sb.append("<br />");
+		sb.append("It has " + problems.size() + " issue(s) need to be solved.");
+		sb.append("<br />");
+
+		for (Problem problem : problems) {
+			sb.append(problem.title);
+			sb.append("<br />");
+		}
+
+		return sb.toString();
+	}
+
+	@Override
+	public String doLabel() {
+		String fileName = file.getName();
+
+		String path = file.getParent();
+
+		return fileName + " [" + path + "]";
 	}
 
 	public File getFile() {

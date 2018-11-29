@@ -123,14 +123,33 @@ public class SDK {
 
 			String bundleType = appServerPropertiesMap.get("app.server.type");
 
-			p.put("app.server.type", bundleType);
+			if (CoreUtil.isNotNullOrEmpty(bundleType)) {
+				p.put("app.server.type", bundleType);
+			}
 
-			p.put("app.server." + bundleType + ".dir", appServerPropertiesMap.get("app.server.dir"));
-			p.put("app.server." + bundleType + ".deploy.dir", appServerPropertiesMap.get("app.server.deploy.dir"));
-			p.put(
-				"app.server." + bundleType + ".lib.global.dir",
-				appServerPropertiesMap.get("app.server.lib.global.dir"));
-			p.put("app.server." + bundleType + ".portal.dir", appServerPropertiesMap.get("app.server.portal.dir"));
+			String appServerDir = appServerPropertiesMap.get("app.server.dir");
+
+			if (CoreUtil.isNotNullOrEmpty(bundleType) && CoreUtil.isNotNullOrEmpty(appServerDir)) {
+				p.put("app.server." + bundleType + ".dir", appServerDir);
+			}
+
+			String appServerDeployDir = appServerPropertiesMap.get("app.server.deploy.dir");
+
+			if (CoreUtil.isNotNullOrEmpty(bundleType) && CoreUtil.isNotNullOrEmpty(appServerDeployDir)) {
+				p.put("app.server." + bundleType + ".deploy.dir", appServerDeployDir);
+			}
+
+			String appServerLibGlobalDir = appServerPropertiesMap.get("app.server.lib.global.dir");
+
+			if (CoreUtil.isNotNullOrEmpty(bundleType) && CoreUtil.isNotNullOrEmpty(appServerLibGlobalDir)) {
+				p.put("app.server." + bundleType + ".lib.global.dir", appServerLibGlobalDir);
+			}
+
+			String appServerProtalDir = appServerPropertiesMap.get("app.server.portal.dir");
+
+			if (CoreUtil.isNotNullOrEmpty(bundleType) && CoreUtil.isNotNullOrEmpty(appServerProtalDir)) {
+				p.put("app.server." + bundleType + ".portal.dir", appServerProtalDir);
+			}
 
 			p.store(out, "");
 		}
