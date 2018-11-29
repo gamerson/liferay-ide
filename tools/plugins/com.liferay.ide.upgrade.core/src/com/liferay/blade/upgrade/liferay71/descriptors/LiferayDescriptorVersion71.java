@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 public class LiferayDescriptorVersion71 extends BaseLiferayDescriptorVersion {
 
 	public LiferayDescriptorVersion71() {
-		super(_PUBLICID_REGREX71);
+		super(_PUBLICID_REGREX71, "7.1.0");
 	}
 
 	private static final String _PUBLICID_REGREX71 =

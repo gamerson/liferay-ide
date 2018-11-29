@@ -20,7 +20,6 @@ import com.liferay.blade.api.Problem;
 import com.liferay.blade.api.SearchResult;
 import com.liferay.blade.api.XMLFile;
 import com.liferay.blade.upgrade.XMLFileMigrator;
-import com.liferay.ide.core.util.StringUtil;
 
 import java.io.File;
 
@@ -42,8 +41,9 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 @SuppressWarnings("restriction")
 public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator implements AutoMigrator {
 
-	public BaseLiferayDescriptorVersion(String publicIDPattern) {
+	public BaseLiferayDescriptorVersion(String publicIDPattern, String version) {
 		_publicIDPattern = publicIDPattern;
+		_version = version;
 	}
 
 	@Override
@@ -61,19 +61,18 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 
 			int problemsFixed = 0;
 
-			for (Problem problem : problems) {
+			for (int i = 0; i < problems.size(); i++) {
 				if (docType != null) {
-					final String publicId = docType.getPublicId();
+					String publicId = docType.getPublicId();
 
-					final String newPublicId = _getNewDoctTypeSetting(
-						publicId, getUpgradeVersion(problem.getVersion()), _PUBLICID_REGREX);
+					String newPublicId = _getNewDoctTypeSetting(publicId, _version, _PUBLICID_REGREX);
 
 					docType.setPublicId(newPublicId);
 
-					final String systemId = docType.getSystemId();
+					String systemId = docType.getSystemId();
 
-					final String newSystemId = _getNewDoctTypeSetting(
-						systemId, getUpgradeVersion(problem.getVersion()).replaceAll("\\.", "_"), _SYSTEMID_REGREX);
+					String newSystemId = _getNewDoctTypeSetting(
+						systemId, _version.replaceAll("\\.", "_"), _SYSTEMID_REGREX);
 
 					docType.setSystemId(newSystemId);
 
@@ -89,15 +88,6 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 		}
 
 		return 0;
-	}
-
-	protected String getUpgradeVersion(String upgradeVersion) {
-		if (StringUtil.contains(upgradeVersion, "7.1")) {
-			return "7.1.0";
-		}
-		else {
-			return "7.0.0";
-		}
 	}
 
 	@Override
@@ -136,5 +126,6 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 	private String[] _liferayDtdNames =
 		{"liferay-portlet-app", "display", "service-builder", "hook", "layout-templates", "look-and-feel"};
 	private String _publicIDPattern;
+	private String _version;
 
 }
