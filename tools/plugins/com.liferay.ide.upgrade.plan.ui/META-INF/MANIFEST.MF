@@ -10,16 +10,13 @@ Bundle-ClassPath: lib/flexmark-0.34.48.jar,
  lib/flexmark-util-0.34.48.jar,
  .
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.ui.workbench,
- org.eclipse.jface,
- org.eclipse.osgi,
- org.eclipse.equinox.registry,
- org.eclipse.core.runtime,
- com.liferay.ide.project.core,
- org.eclipse.ui.forms,
+Require-Bundle: com.liferay.ide.project.core,
  com.liferay.ide.ui,
- org.eclipse.ui.navigator,
  com.liferay.ide.upgrade.plan.api,
- org.eclipse.ui.navigator.resources,
- org.eclipse.sapphire.ui
+ org.eclipse.jface,
+ org.eclipse.sapphire.ui,
+ org.eclipse.ui.forms,
+ org.eclipse.ui.workbench,
+ org.eclipse.ui.navigator,
+ org.eclipse.ui.navigator.resources
 Export-Package: com.liferay.ide.upgrade.plan.ui
