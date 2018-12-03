@@ -19,7 +19,6 @@ import com.liferay.ide.upgrade.task.problem.api.FileMigrator;
 import com.liferay.ide.upgrade.task.problem.api.Migration;
 import com.liferay.ide.upgrade.task.problem.api.MigrationListener;
 import com.liferay.ide.upgrade.task.problem.api.Problem;
-import com.liferay.ide.upgrade.task.problem.api.ProgressMonitor;
 import com.liferay.ide.upgrade.task.problem.api.Reporter;
 
 import java.io.File;
@@ -43,6 +42,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -74,7 +75,12 @@ public class ProjectMigrationService implements Migration {
 	}
 
 	@Override
-	public List<Problem> findProblems(File projectDir, List<String> versions, ProgressMonitor monitor) {
+	public List<Problem> findProblems(File projectDir, IProgressMonitor monitor) {
+		return findProblems(projectDir, Collections.emptyList(), monitor);
+	}
+
+	@Override
+	public List<Problem> findProblems(File projectDir, List<String> versions, IProgressMonitor monitor) {
 		monitor.beginTask("Searching for migration problems in " + projectDir, -1);
 
 		List<Problem> problems = Collections.synchronizedList(new ArrayList<Problem>());
@@ -96,12 +102,12 @@ public class ProjectMigrationService implements Migration {
 	}
 
 	@Override
-	public List<Problem> findProblems(File projectDir, ProgressMonitor monitor) {
-		return findProblems(projectDir, Collections.emptyList(), monitor);
+	public List<Problem> findProblems(Set<File> files, IProgressMonitor monitor) {
+		return findProblems(files, Collections.emptyList(), monitor);
 	}
 
 	@Override
-	public List<Problem> findProblems(Set<File> files, List<String> versions, ProgressMonitor monitor) {
+	public List<Problem> findProblems(Set<File> files, List<String> versions, IProgressMonitor monitor) {
 		List<Problem> problems = Collections.synchronizedList(new ArrayList<Problem>());
 
 		monitor.beginTask("Analyzing files", -1);
@@ -126,11 +132,6 @@ public class ProjectMigrationService implements Migration {
 		_total = 0;
 
 		return problems;
-	}
-
-	@Override
-	public List<Problem> findProblems(Set<File> files, ProgressMonitor monitor) {
-		return findProblems(files, Collections.emptyList(), monitor);
 	}
 
 	@Override
@@ -202,7 +203,7 @@ public class ProjectMigrationService implements Migration {
 	}
 
 	protected FileVisitResult analyzeFile(
-		File file, List<Problem> problems, List<String> versions, ProgressMonitor monitor) {
+		File file, List<Problem> problems, List<String> versions, IProgressMonitor monitor) {
 
 		Path path = file.toPath();
 
@@ -375,7 +376,7 @@ public class ProjectMigrationService implements Migration {
 		}
 	}
 
-	private void _walkFiles(File startDir, List<Problem> problems, List<String> versions, ProgressMonitor monitor) {
+	private void _walkFiles(File startDir, List<Problem> problems, List<String> versions, IProgressMonitor monitor) {
 		FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
 
 			@Override

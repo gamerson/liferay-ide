@@ -17,6 +17,7 @@ package com.liferay.ide.upgrade.task.problem.ui.navigator;
 import com.liferay.ide.ui.navigator.AbstractLabelProvider;
 import com.liferay.ide.upgrade.plan.api.Summary;
 import com.liferay.ide.upgrade.task.problem.api.FileProblems;
+import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
 import com.liferay.ide.upgrade.task.problem.api.Problem;
 import com.liferay.ide.upgrade.task.problem.api.ProjectUpgradeProblems;
 import com.liferay.ide.upgrade.task.problem.ui.UpgradeProblemUI;
@@ -34,6 +35,9 @@ public class UpgradeProblemsLabelProvider extends AbstractLabelProvider {
 	public Image getImage(Object element) {
 		if (element instanceof ProjectUpgradeProblems) {
 			return getImageRegistry().get("ProjectMigrationProblems");
+		}
+		else if (element instanceof MigrationProblemsContainer) {
+			return getImageRegistry().get("MigrationProblemsContainer");
 		}
 		else if (element instanceof FileProblems) {
 			return getImageRegistry().get("FileProblems");
@@ -59,8 +63,11 @@ public class UpgradeProblemsLabelProvider extends AbstractLabelProvider {
 	@Override
 	protected void initalizeImageRegistry(ImageRegistry imageRegistry) {
 		imageRegistry.put(
-			"ProjectMigrationProblems",
+			"MigrationProblemsContainer",
 			UpgradeProblemUI.imageDescriptorFromPlugin(UpgradeProblemUI.PLUGIN_ID, "icons/liferay_logo_16.png"));
+		imageRegistry.put(
+			"ProjectMigrationProblems",
+			UpgradeProblemUI.imageDescriptorFromPlugin(UpgradeProblemUI.PLUGIN_ID, ISharedImages.IMG_OBJ_FOLDER));
 		imageRegistry.put(
 			"FileProblems",
 			UpgradeProblemUI.imageDescriptorFromPlugin(UpgradeProblemUI.PLUGIN_ID, ISharedImages.IMG_OBJ_FILE));

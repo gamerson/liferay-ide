@@ -47,7 +47,7 @@ public class ProjectUpgradeProblems implements Summary {
 
 	@Override
 	public String doLabel() {
-		return "Liferay Migration Problems";
+		return _project.getName();
 	}
 
 	public FileProblems[] getFileProjects() {

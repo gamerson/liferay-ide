@@ -19,19 +19,21 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /**
  * @author Gregory Amerson
  * @author Terry Jia
  */
 public interface Migration {
 
-	public List<Problem> findProblems(File projectDir, List<String> versions, ProgressMonitor monitor);
+	public List<Problem> findProblems(File projectDir, IProgressMonitor monitor);
 
-	public List<Problem> findProblems(File projectDir, ProgressMonitor monitor);
+	public List<Problem> findProblems(File projectDir, List<String> versions, IProgressMonitor monitor);
 
-	public List<Problem> findProblems(Set<File> files, List<String> versions, ProgressMonitor monitor);
+	public List<Problem> findProblems(Set<File> files, IProgressMonitor monitor);
 
-	public List<Problem> findProblems(Set<File> files, ProgressMonitor monitor);
+	public List<Problem> findProblems(Set<File> files, List<String> versions, IProgressMonitor monitor);
 
 	public void reportProblems(List<Problem> problems, int detail, String format, Object... args);
 

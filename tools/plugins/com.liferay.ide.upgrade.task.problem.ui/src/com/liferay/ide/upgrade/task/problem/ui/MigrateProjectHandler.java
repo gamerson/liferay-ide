@@ -14,7 +14,6 @@
 
 package com.liferay.ide.upgrade.task.problem.ui;
 
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.MarkerUtil;
@@ -24,7 +23,6 @@ import com.liferay.ide.upgrade.task.problem.api.MigrationConstants;
 import com.liferay.ide.upgrade.task.problem.api.MigrationProblems;
 import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
 import com.liferay.ide.upgrade.task.problem.api.Problem;
-import com.liferay.ide.upgrade.task.problem.api.ProgressMonitor;
 import com.liferay.ide.upgrade.task.problem.api.UpgradeProblems;
 import com.liferay.ide.upgrade.task.problem.ui.util.FileProblemsUtil;
 import com.liferay.ide.upgrade.task.problem.ui.util.MigrationUtil;
@@ -38,17 +36,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
@@ -76,41 +68,12 @@ public class MigrateProjectHandler {
 		Job job = new WorkspaceJob("Finding migration problems...") {
 
 			@Override
-			public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 				IStatus retval = Status.OK_STATUS;
 
 				Bundle bundle = FrameworkUtil.getBundle(getClass());
 
 				BundleContext context = bundle.getBundleContext();
-
-				ProgressMonitor override = new ProgressMonitor() {
-
-					@Override
-					public void beginTask(String taskName, int totalWork) {
-						monitor.beginTask(taskName, totalWork);
-					}
-
-					@Override
-					public void done() {
-						monitor.done();
-					}
-
-					@Override
-					public boolean isCanceled() {
-						return monitor.isCanceled();
-					}
-
-					@Override
-					public void setTaskName(String taskName) {
-						monitor.setTaskName(taskName);
-					}
-
-					@Override
-					public void worked(int work) {
-						monitor.worked(work);
-					}
-
-				};
 
 				try {
 					ServiceReference<Migration> sr = context.getServiceReference(Migration.class);
@@ -146,7 +109,7 @@ public class MigrateProjectHandler {
 
 						File searchFile = locations[i].toFile();
 
-						if (!override.isCanceled()) {
+						if (!monitor.isCanceled()) {
 							List<Problem> problems = null;
 
 							List<String> versions = new ArrayList<>();
@@ -158,16 +121,16 @@ public class MigrateProjectHandler {
 							}
 
 							if (singleFile) {
-								_clearFileMarkers(searchFile);
+								MarkerUtil.clearMarkers(searchFile, MigrationConstants.MARKER_TYPE);
 
 								Set<File> files = new HashSet<>();
 
 								files.add(searchFile);
 
-								problems = m.findProblems(files, versions, override);
+								problems = m.findProblems(files, versions, monitor);
 							}
 							else {
-								problems = m.findProblems(searchFile, versions, override);
+								problems = m.findProblems(searchFile, versions, monitor);
 							}
 
 							for (Problem problem : problems) {
@@ -176,7 +139,7 @@ public class MigrateProjectHandler {
 						}
 
 						if (ListUtil.isNotEmpty(allProblems)) {
-							_addMarkers(allProblems);
+							MigrationUtil.addMarkers(allProblems);
 
 							MigrationProblems migrationProblems = new MigrationProblems();
 
@@ -277,108 +240,6 @@ public class MigrateProjectHandler {
 		};
 
 		job.schedule();
-	}
-
-	private static void _addMarkers(List<Problem> problems) {
-		IWorkspaceRoot ws = CoreUtil.getWorkspaceRoot();
-
-		for (Problem problem : problems) {
-			IResource workspaceResource = null;
-
-			File problemFile = problem.file;
-
-			IResource[] containers = ws.findContainersForLocationURI(problemFile.toURI());
-
-			if (ListUtil.isNotEmpty(containers)) {
-
-				// prefer project containers
-
-				for (IResource container : containers) {
-					if (FileUtil.exists(container)) {
-						if (container.getType() == IResource.PROJECT) {
-							workspaceResource = container;
-
-							break;
-						}
-						else {
-							IProject project = container.getProject();
-
-							if (CoreUtil.isLiferayProject(project)) {
-								workspaceResource = container;
-
-								break;
-							}
-						}
-					}
-				}
-
-				if (workspaceResource == null) {
-					final IFile[] files = ws.findFilesForLocationURI(problemFile.toURI());
-
-					for (IFile file : files) {
-						if (file.exists()) {
-							if (workspaceResource == null) {
-								if (CoreUtil.isLiferayProject(file.getProject())) {
-									workspaceResource = file;
-								}
-							}
-							else {
-
-								// prefer the path that is shortest (to avoid a nested version)
-
-								if (FileUtil.getSegmentCount(file.getFullPath()) <
-										FileUtil.getSegmentCount(workspaceResource.getFullPath())) {
-
-									workspaceResource = file;
-								}
-							}
-						}
-					}
-				}
-
-				if (workspaceResource == null) {
-					for (IResource container : containers) {
-						if (workspaceResource == null) {
-							workspaceResource = container;
-						}
-						else {
-
-							// prefer the path that is shortest (to avoid a nested version)
-
-							if (FileUtil.getSegmentCount(container.getLocation()) <
-									FileUtil.getSegmentCount(workspaceResource.getLocation())) {
-
-								workspaceResource = container;
-							}
-						}
-					}
-				}
-			}
-
-			if (FileUtil.exists(workspaceResource)) {
-				try {
-					IMarker marker = workspaceResource.createMarker(MigrationConstants.MARKER_TYPE);
-
-					problem.setMarkerId(marker.getId());
-
-					MigrationUtil.problemToMarker(problem, marker);
-				}
-				catch (CoreException ce) {
-				}
-			}
-		}
-	}
-
-	private static void _clearFileMarkers(File file) {
-		IPath location = Path.fromOSString(file.getAbsolutePath());
-
-		IWorkspaceRoot root = CoreUtil.getWorkspaceRoot();
-
-		IFile projectFile = root.getFileForLocation(location);
-
-		if (FileUtil.exists(projectFile)) {
-			MarkerUtil.clearMarkers(projectFile, MigrationConstants.MARKER_TYPE, null);
-		}
 	}
 
 	private static int _isAlreadyExist(

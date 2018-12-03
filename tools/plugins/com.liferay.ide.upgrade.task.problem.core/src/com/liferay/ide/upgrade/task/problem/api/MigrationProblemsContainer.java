@@ -14,10 +14,22 @@
 
 package com.liferay.ide.upgrade.task.problem.api;
 
+import com.liferay.ide.upgrade.plan.api.Summary;
+
 /**
  * @author Terry Jia
  */
-public class MigrationProblemsContainer implements ProblemsContainer {
+public class MigrationProblemsContainer implements ProblemsContainer, Summary {
+
+	@Override
+	public String doDetail() {
+		return null;
+	}
+
+	@Override
+	public String doLabel() {
+		return "Liferay Upgrade";
+	}
 
 	@Override
 	public MigrationProblems[] getProblemsArray() {

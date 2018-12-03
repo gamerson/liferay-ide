@@ -14,6 +14,7 @@
 
 package com.liferay.ide.upgrade.task.problem.ui.navigator;
 
+import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.ui.navigator.AbstractNavigatorContentProvider;
 import com.liferay.ide.upgrade.task.problem.api.FileProblems;
 import com.liferay.ide.upgrade.task.problem.api.MigrationProblems;
@@ -23,7 +24,7 @@ import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeAssistantSettingsUtil
 
 import java.io.IOException;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -34,31 +35,25 @@ import org.eclipse.core.resources.IProject;
 public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProvider {
 
 	public Object[] getChildren(Object element) {
-		if (element instanceof IProject) {
-			IProject project = (IProject)element;
+		if (element instanceof MigrationProblemsContainer) {
+			MigrationProblemsContainer container = (MigrationProblemsContainer)element;
 
-			try {
-				MigrationProblemsContainer container = UpgradeAssistantSettingsUtil.getObjectFromStore(
-					MigrationProblemsContainer.class);
+			Set<ProjectUpgradeProblems> set = new HashSet<>();
 
-				if (container == null) {
-					return null;
-				}
+			for (MigrationProblems migrationProblems : container.getProblemsArray()) {
+				String projectName = migrationProblems.getSuffix();
 
-				for (MigrationProblems migrationProblems : container.getProblemsArray()) {
-					String suffix = migrationProblems.getSuffix();
+				IProject project = CoreUtil.getProject(projectName);
 
-					if (suffix.equals(project.getName())) {
-						Set<ProjectUpgradeProblems> set = Collections.singleton(
-							new ProjectUpgradeProblems(project, migrationProblems.getProblems()));
+				if (project.isOpen()) {
+					ProjectUpgradeProblems projectUpgradeProblems = new ProjectUpgradeProblems(
+						project, migrationProblems.getProblems());
 
-						return set.toArray();
-					}
+					set.add(projectUpgradeProblems);
 				}
 			}
-			catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
+
+			return set.toArray();
 		}
 		else if (element instanceof ProjectUpgradeProblems) {
 			ProjectUpgradeProblems projectMigrationProblems = (ProjectUpgradeProblems)element;
@@ -74,8 +69,23 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 		return null;
 	}
 
+	public Object[] getElements(Object inputElement) {
+		try {
+			MigrationProblemsContainer container = UpgradeAssistantSettingsUtil.getObjectFromStore(
+				MigrationProblemsContainer.class);
+
+			if (container != null) {
+				return new Object[] {container};
+			}
+		}
+		catch (IOException ioe) {
+		}
+
+		return null;
+	}
+
 	public boolean hasChildren(Object element) {
-		if (element instanceof IProject) {
+		if (element instanceof MigrationProblemsContainer) {
 			return true;
 		}
 		else if (element instanceof ProjectUpgradeProblems) {

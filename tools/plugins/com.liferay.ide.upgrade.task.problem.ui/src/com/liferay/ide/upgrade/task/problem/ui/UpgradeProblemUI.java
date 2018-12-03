@@ -17,7 +17,7 @@ package com.liferay.ide.upgrade.task.problem.ui;
 import com.liferay.ide.ui.util.UIUtil;
 import com.liferay.ide.upgrade.task.problem.api.FileProblems;
 import com.liferay.ide.upgrade.task.problem.api.Problem;
-import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeUtil;
+import com.liferay.ide.upgrade.task.problem.ui.util.MigrationUtil;
 
 import java.net.URL;
 
@@ -54,6 +54,14 @@ public class UpgradeProblemUI extends AbstractUIPlugin {
 
 	public static final String T_OBJ = "obj16/";
 
+	public static IStatus createErrorStatus(String msg) {
+		return createErrorStatus(msg, null);
+	}
+
+	public static IStatus createErrorStatus(String msg, Exception e) {
+		return new Status(IStatus.ERROR, PLUGIN_ID, msg, e);
+	}
+
 	public static ImageDescriptor createImageDescriptor(Bundle bundle, IPath path) {
 		URL url = FileLocator.find(bundle, path, null);
 
@@ -70,6 +78,18 @@ public class UpgradeProblemUI extends AbstractUIPlugin {
 
 	public static Bundle getDefaultBundle() {
 		return _plugin.getBundle();
+	}
+
+	public static void logError(Exception e) {
+		ILog log = _plugin.getLog();
+
+		log.log(createErrorStatus(e.getMessage(), e));
+	}
+
+	public static void logError(String msg, Exception e) {
+		ILog log = _plugin.getLog();
+
+		log.log(createErrorStatus(msg, e));
 	}
 
 	public Image getImage(String key) {
@@ -103,10 +123,10 @@ public class UpgradeProblemUI extends AbstractUIPlugin {
 						Object element = treeSelection.getFirstElement();
 
 						if (element instanceof Problem) {
-							UpgradeUtil.openEditor((Problem)element);
+							MigrationUtil.openEditor((Problem)element);
 						}
 						else if (element instanceof FileProblems) {
-							UpgradeUtil.openEditor((FileProblems)element);
+							MigrationUtil.openEditor((FileProblems)element);
 						}
 					}
 				}
@@ -115,26 +135,6 @@ public class UpgradeProblemUI extends AbstractUIPlugin {
 
 			commonViewer.addDoubleClickListener(_doubleClickListener);
 		}
-	}
-
-	public static void logError(Exception e) {
-		ILog log = _plugin.getLog();
-
-		log.log(createErrorStatus(e.getMessage(), e));
-	}
-
-	public static IStatus createErrorStatus(String msg) {
-		return createErrorStatus(msg, null);
-	}
-
-	public static IStatus createErrorStatus(String msg, Exception e) {
-		return new Status(IStatus.ERROR, PLUGIN_ID, msg, e);
-	}
-
-	public static void logError(String msg, Exception e) {
-		ILog log = _plugin.getLog();
-
-		log.log(createErrorStatus(msg, e));
 	}
 
 	@Override
