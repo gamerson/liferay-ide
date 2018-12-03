@@ -14,14 +14,6 @@
 
 package com.liferay.ide.upgrade.task.problem.ui.steps;
 
-import com.liferay.ide.ui.util.UIUtil;
-import com.liferay.ide.upgrade.plan.api.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.base.AbstractUpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.ui.UpgradePlanUI;
-import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
-import com.liferay.ide.upgrade.task.problem.ui.util.BreakingChangeSelectedProject;
-import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeAssistantSettingsUtil;
-
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,8 +23,15 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-
 import org.osgi.service.component.annotations.Component;
+
+import com.liferay.ide.ui.util.UIUtil;
+import com.liferay.ide.upgrade.plan.api.UpgradeTaskStep;
+import com.liferay.ide.upgrade.plan.base.AbstractUpgradeTaskStep;
+import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
+import com.liferay.ide.upgrade.task.problem.ui.UpgradeProblemUI;
+import com.liferay.ide.upgrade.task.problem.ui.util.BreakingChangeSelectedProject;
+import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeAssistantSettingsUtil;
 
 /**
  * @author Terry Jia
@@ -72,7 +71,7 @@ public class RemovePreviousResultStep extends AbstractUpgradeTaskStep {
 				}
 			}
 			catch (IOException ioe) {
-				UpgradePlanUI.logError(ioe);
+				UpgradeProblemUI.logError(ioe);
 			}
 		}
 

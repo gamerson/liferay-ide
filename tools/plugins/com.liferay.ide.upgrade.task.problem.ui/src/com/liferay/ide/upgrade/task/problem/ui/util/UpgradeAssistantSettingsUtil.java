@@ -15,7 +15,7 @@
 package com.liferay.ide.upgrade.task.problem.ui.util;
 
 import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.upgrade.plan.ui.UpgradePlanUI;
+import com.liferay.ide.upgrade.task.problem.ui.UpgradeProblemUI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,6 +51,6 @@ public class UpgradeAssistantSettingsUtil {
 		mapper.writeValue(storageFile, object);
 	}
 
-	private static final IPath _storageLocation = UpgradePlanUI.getDefault().getStateLocation();
+	private static final IPath _storageLocation = UpgradeProblemUI.getDefault().getStateLocation();
 
 }

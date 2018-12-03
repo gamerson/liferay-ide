@@ -22,8 +22,11 @@ import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeUtil;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -112,6 +115,26 @@ public class UpgradeProblemUI extends AbstractUIPlugin {
 
 			commonViewer.addDoubleClickListener(_doubleClickListener);
 		}
+	}
+
+	public static void logError(Exception e) {
+		ILog log = _plugin.getLog();
+
+		log.log(createErrorStatus(e.getMessage(), e));
+	}
+
+	public static IStatus createErrorStatus(String msg) {
+		return createErrorStatus(msg, null);
+	}
+
+	public static IStatus createErrorStatus(String msg, Exception e) {
+		return new Status(IStatus.ERROR, PLUGIN_ID, msg, e);
+	}
+
+	public static void logError(String msg, Exception e) {
+		ILog log = _plugin.getLog();
+
+		log.log(createErrorStatus(msg, e));
 	}
 
 	@Override
