@@ -77,7 +77,6 @@
 		<module>com.liferay.ide.upgrade.task.sdk</module>
 		<module>com.liferay.ide.upgrade.task.problem.core</module>
 		<module>com.liferay.ide.upgrade.task.problem.ui</module>
-		<module>com.liferay.ide.upgrade.task.sdk</module>
 		<module>com.liferay.ide.xml.search.ui</module>
 	</modules>
 </project>
