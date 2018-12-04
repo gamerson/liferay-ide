@@ -28,9 +28,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.navigator.CommonNavigator;
-import org.eclipse.ui.navigator.CommonViewer;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -61,15 +58,7 @@ public class RemovePreviousResultStep extends AbstractUpgradeTaskStep {
 					UpgradeAssistantSettingsUtil.setObjectToStore(BreakingChangeSelectedProject.class, null);
 				}
 
-				IViewPart projectExplorer = UIUtil.findView("org.eclipse.ui.navigator.ProjectExplorer");
-
-				if (projectExplorer != null) {
-					CommonNavigator navigator = (CommonNavigator)projectExplorer;
-
-					CommonViewer commonViewer = navigator.getCommonViewer();
-
-					commonViewer.refresh();
-				}
+				UIUtil.refreshCommonView("org.eclipse.ui.navigator.ProjectExplorer");
 			}
 			catch (IOException ioe) {
 				UpgradeProblemUI.logError(ioe);

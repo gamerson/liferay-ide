@@ -155,13 +155,15 @@ public class UpgradeInfoPage extends Page implements ISelectionChangedListener, 
 
 				String detail = summary.doDetail();
 
-				if (detail.endsWith("markdown") || detail.endsWith("md")) {
-					ReadMarkdownJob job = new ReadMarkdownJob(detail);
+				if (detail != null) {
+					if (detail.endsWith("markdown") || detail.endsWith("md")) {
+						ReadMarkdownJob job = new ReadMarkdownJob(detail);
 
-					job.schedule();
-				}
-				else {
-					_browser.setText(detail);
+						job.schedule();
+					}
+					else {
+						_browser.setText(detail);
+					}
 				}
 			}
 			else {

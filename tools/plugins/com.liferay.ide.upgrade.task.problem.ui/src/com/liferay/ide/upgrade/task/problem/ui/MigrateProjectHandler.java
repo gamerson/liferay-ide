@@ -17,6 +17,7 @@ package com.liferay.ide.upgrade.task.problem.ui;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.MarkerUtil;
+import com.liferay.ide.ui.util.UIUtil;
 import com.liferay.ide.upgrade.task.problem.api.FileProblems;
 import com.liferay.ide.upgrade.task.problem.api.Migration;
 import com.liferay.ide.upgrade.task.problem.api.MigrationConstants;
@@ -233,6 +234,8 @@ public class MigrateProjectHandler {
 				}
 				catch (Exception e) {
 				}
+
+				UIUtil.refreshCommonView("org.eclipse.ui.navigator.ProjectExplorer");
 
 				return retval;
 			}
