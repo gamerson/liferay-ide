@@ -48,6 +48,8 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 
 	@Override
 	public int correctProblems(File file, List<Problem> problems) throws AutoMigrateException {
+		int problemsCorrected = 0;
+
 		try {
 			IFile xmlFile = getXmlFile(file);
 
@@ -55,11 +57,9 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 
 			IDOMModel domModel = (IDOMModel)modelManager.getModelForRead(xmlFile);
 
-			IDOMDocument document = domModel.getDocument();
+			IDOMDocument domDocument = domModel.getDocument();
 
-			IDOMDocumentType domDocumentType = (IDOMDocumentType)document.getDoctype();
-
-			int problemsFixed = 0;
+			IDOMDocumentType domDocumentType = (IDOMDocumentType)domDocument.getDoctype();
 
 			for (int i = 0; i < problems.size(); i++) {
 				if (domDocumentType != null) {
@@ -76,18 +76,16 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 
 					domDocumentType.setSystemId(newSystemId);
 
-					problemsFixed++;
+					problemsCorrected++;
 				}
 
 				domModel.save();
 			}
-
-			return problemsFixed;
 		}
 		catch (Exception e) {
 		}
 
-		return 0;
+		return problemsCorrected;
 	}
 
 	@Override
