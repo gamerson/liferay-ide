@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IModelManager;
-import org.eclipse.wst.xml.core.internal.document.DocumentTypeImpl;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocumentType;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 
 /**
@@ -57,24 +57,24 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 
 			IDOMDocument document = domModel.getDocument();
 
-			DocumentTypeImpl docType = (DocumentTypeImpl)document.getDoctype();
+			IDOMDocumentType domDocumentType = (IDOMDocumentType)document.getDoctype();
 
 			int problemsFixed = 0;
 
 			for (int i = 0; i < problems.size(); i++) {
-				if (docType != null) {
-					String publicId = docType.getPublicId();
+				if (domDocumentType != null) {
+					String publicId = domDocumentType.getPublicId();
 
 					String newPublicId = _getNewDoctTypeSetting(publicId, _version, _PUBLICID_REGREX);
 
-					docType.setPublicId(newPublicId);
+					domDocumentType.setPublicId(newPublicId);
 
-					String systemId = docType.getSystemId();
+					String systemId = domDocumentType.getSystemId();
 
 					String newSystemId = _getNewDoctTypeSetting(
 						systemId, _version.replaceAll("\\.", "_"), _SYSTEMID_REGREX);
 
-					docType.setSystemId(newSystemId);
+					domDocumentType.setSystemId(newSystemId);
 
 					problemsFixed++;
 				}
