@@ -14,11 +14,23 @@
 
 package com.liferay.ide.upgrade.task.problem.ui.steps;
 
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.ui.util.UIUtil;
 import com.liferay.ide.upgrade.plan.api.UpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.base.JavaProjectsUpgradeTaskStep;
-import com.liferay.ide.upgrade.task.problem.ui.MigrateProjectHandler;
+import com.liferay.ide.upgrade.task.problem.api.FileProblems;
+import com.liferay.ide.upgrade.task.problem.api.Migration;
+import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
+import com.liferay.ide.upgrade.task.problem.api.Problem;
+import com.liferay.ide.upgrade.task.problem.api.ProjectUpgradeProblems;
+import com.liferay.ide.upgrade.task.problem.ui.util.FileProblemsUtil;
+import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeAssistantSettingsUtil;
 
-import java.util.stream.Collectors;
+import java.io.File;
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
@@ -26,7 +38,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -39,27 +56,69 @@ public class FindUpgradeProblemsStep extends JavaProjectsUpgradeTaskStep {
 
 		// TODO need to run finding upgrade changes by Upgrade Plan
 
-		IPath[] paths = Stream.of(
-			projects
-		).map(
-			project -> project.getLocation()
-		).collect(
-			Collectors.toList()
-		).toArray(
-			new IPath[0]
-		);
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
 
-		String[] projectNames = Stream.of(
-			projects
-		).map(
-			project -> project.getName()
-		).collect(
-			Collectors.toList()
-		).toArray(
-			new String[0]
-		);
+		BundleContext context = bundle.getBundleContext();
 
-		MigrateProjectHandler.findMigrationProblems(paths, projectNames, "7.1");
+		List<ProjectUpgradeProblems> migrationProblemsList = new ArrayList<>();
+
+		Job job = new Job("Finding migration problems...") {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				Stream.of(
+					projects
+				).forEach(
+					project -> {
+						IPath location = project.getLocation();
+
+						File searchFile = location.toFile();
+
+						List<String> versions = new ArrayList<>();
+
+						versions.add("7.0");
+						versions.add("7.1");
+
+						ServiceReference<Migration> serviceReference = context.getServiceReference(Migration.class);
+
+						Migration migration = context.getService(serviceReference);
+
+						List<Problem> problems = migration.findProblems(searchFile, versions, monitor);
+
+						if (ListUtil.isNotEmpty(problems)) {
+							FileProblems[] fileProblems = FileProblemsUtil.newFileProblemsListFrom(
+								problems.toArray(new Problem[0]));
+
+							ProjectUpgradeProblems migrationProblems = new ProjectUpgradeProblems();
+
+							migrationProblems.setProjectName(project.getName());
+							migrationProblems.setFileProblems(fileProblems);
+
+							migrationProblemsList.add(migrationProblems);
+
+							MigrationProblemsContainer container = new MigrationProblemsContainer();
+
+							container.setProblemsArray(migrationProblemsList.toArray(new ProjectUpgradeProblems[0]));
+
+							try {
+								UpgradeAssistantSettingsUtil.setObjectToStore(
+									MigrationProblemsContainer.class, container);
+							}
+							catch (IOException ioe) {
+								ioe.printStackTrace();
+							}
+
+							UIUtil.refreshCommonView("org.eclipse.ui.navigator.ProjectExplorer");
+						}
+					}
+				);
+
+				return Status.OK_STATUS;
+			}
+
+		};
+
+		job.schedule();
 
 		return Status.OK_STATUS;
 	}

@@ -14,20 +14,13 @@
 
 package com.liferay.ide.upgrade.task.problem.ui.navigator;
 
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.ui.navigator.AbstractNavigatorContentProvider;
 import com.liferay.ide.upgrade.task.problem.api.FileProblems;
-import com.liferay.ide.upgrade.task.problem.api.MigrationProblems;
 import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
 import com.liferay.ide.upgrade.task.problem.api.ProjectUpgradeProblems;
 import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeAssistantSettingsUtil;
 
 import java.io.IOException;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.eclipse.core.resources.IProject;
 
 /**
  * @author Terry Jia
@@ -38,27 +31,12 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 		if (element instanceof MigrationProblemsContainer) {
 			MigrationProblemsContainer container = (MigrationProblemsContainer)element;
 
-			Set<ProjectUpgradeProblems> set = new HashSet<>();
-
-			for (MigrationProblems migrationProblems : container.getProblemsArray()) {
-				String projectName = migrationProblems.getSuffix();
-
-				IProject project = CoreUtil.getProject(projectName);
-
-				if (project.isOpen()) {
-					ProjectUpgradeProblems projectUpgradeProblems = new ProjectUpgradeProblems(
-						project, migrationProblems.getProblems());
-
-					set.add(projectUpgradeProblems);
-				}
-			}
-
-			return set.toArray();
+			return container.getProblemsArray();
 		}
 		else if (element instanceof ProjectUpgradeProblems) {
 			ProjectUpgradeProblems projectMigrationProblems = (ProjectUpgradeProblems)element;
 
-			return projectMigrationProblems.getFileProjects();
+			return projectMigrationProblems.getFileProblems();
 		}
 		else if (element instanceof FileProblems) {
 			FileProblems fileProblems = (FileProblems)element;
@@ -79,6 +57,7 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 			}
 		}
 		catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 
 		return null;

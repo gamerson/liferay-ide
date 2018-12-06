@@ -16,23 +16,16 @@ package com.liferay.ide.upgrade.task.problem.api;
 
 import com.liferay.ide.upgrade.plan.api.Summary;
 
-import org.eclipse.core.resources.IProject;
-
 /**
  * @author Terry Jia
  */
 public class ProjectUpgradeProblems implements Summary {
 
-	public ProjectUpgradeProblems(IProject project, FileProblems[] fileProblems) {
-		_project = project;
-		_fileProblems = fileProblems;
-	}
-
 	@Override
 	public String doDetail() {
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(_project);
+		sb.append(_projectName);
 		sb.append("<br />");
 		sb.append("It has " + _fileProblems.length + " file(s) need to be solved.");
 		sb.append("<br />");
@@ -47,18 +40,26 @@ public class ProjectUpgradeProblems implements Summary {
 
 	@Override
 	public String doLabel() {
-		return _project.getName();
+		return _projectName;
 	}
 
-	public FileProblems[] getFileProjects() {
+	public FileProblems[] getFileProblems() {
 		return _fileProblems;
 	}
 
-	public IProject getProject() {
-		return _project;
+	public String getProjectName() {
+		return _projectName;
+	}
+
+	public void setFileProblems(FileProblems[] fileProblems) {
+		_fileProblems = fileProblems;
+	}
+
+	public void setProjectName(String projectName) {
+		_projectName = projectName;
 	}
 
 	private FileProblems[] _fileProblems;
-	private IProject _project;
+	private String _projectName;
 
 }

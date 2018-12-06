@@ -21,6 +21,7 @@ import com.liferay.ide.upgrade.plan.ui.UpgradePlanUI;
 
 import java.net.URL;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -139,7 +140,7 @@ public class ViewItem {
 
 				@Override
 				public void linkActivated(HyperlinkEvent e) {
-					_step.execute(null);
+					_step.execute(new NullProgressMonitor());
 				}
 
 			});

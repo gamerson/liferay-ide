@@ -19,7 +19,7 @@ import com.liferay.ide.upgrade.plan.api.Summary;
 /**
  * @author Terry Jia
  */
-public class MigrationProblemsContainer implements ProblemsContainer, Summary {
+public class MigrationProblemsContainer implements Summary {
 
 	@Override
 	public String doDetail() {
@@ -31,22 +31,14 @@ public class MigrationProblemsContainer implements ProblemsContainer, Summary {
 		return "Liferay Upgrade";
 	}
 
-	@Override
-	public MigrationProblems[] getProblemsArray() {
+	public ProjectUpgradeProblems[] getProblemsArray() {
 		return problemsArray;
 	}
 
-	@Override
-	public String getType() {
-		return type;
-	}
-
-	public void setProblemsArray(MigrationProblems[] problemsArray) {
+	public void setProblemsArray(ProjectUpgradeProblems[] problemsArray) {
 		this.problemsArray = problemsArray;
-		type = problemsArray[0].getType();
 	}
 
-	public MigrationProblems[] problemsArray;
-	public String type;
+	public ProjectUpgradeProblems[] problemsArray;
 
 }
