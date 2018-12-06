@@ -29,3 +29,4 @@ Export-Package: com.liferay.ide.ui.liferay,
  com.liferay.ide.ui.liferay.support.workspace,
  com.liferay.ide.ui.liferay.support.sdk,
  com.liferay.ide.ui.liferay.util
+Import-Package: org.apache.tools.tar

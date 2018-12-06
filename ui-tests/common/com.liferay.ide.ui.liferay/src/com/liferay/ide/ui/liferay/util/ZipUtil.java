@@ -17,6 +17,7 @@ package com.liferay.ide.ui.liferay.util;
 import com.liferay.ide.ui.swtbot.util.StringPool;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -26,9 +27,13 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 
 import java.util.Enumeration;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.tools.tar.TarEntry;
+import org.apache.tools.tar.TarInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -83,6 +88,50 @@ public class ZipUtil {
 			exception.initCause(fnfe);
 
 			throw fnfe;
+		}
+	}
+
+	public static void unTarGz(File file, File destdir) throws IOException {
+		InputStream tarFile = new FileInputStream(file);
+
+		TarInputStream tarIns = new TarInputStream(new GZIPInputStream(tarFile));
+
+		try {
+			TarEntry entry = null;
+
+			while ((entry = tarIns.getNextEntry()) != null) {
+				if (entry.isDirectory()) {
+					continue;
+				}
+				else {
+					File f = new File(destdir, entry.getName());
+
+					File dir = f.getParentFile();
+
+					if (!dir.exists() && !dir.mkdirs()) {
+						String msg = "Could not create dir: " + dir.getPath();
+
+						throw new IOException(msg);
+					}
+
+					try (OutputStream out = Files.newOutputStream(f.toPath());)
+					{
+						int length = 0;
+						byte[] b = new byte[2048];
+
+						while ((length = tarIns.read(b)) != -1) {
+							out.write(b, 0, length);
+						}
+					}
+				}
+			}
+		}
+		finally {
+			try {
+				tarIns.close();
+			}
+			catch (IOException ioe) {
+			}
 		}
 	}
 

@@ -3,6 +3,7 @@ temp
 eclipse
 com.liferay.portal.plugins.sdk-*.zip
 liferay-ce-portal-*.zip
+liferay*portal*.tar.gz
 liferay-dxp-digital-enterprise-*.zip
 liferay-dxp-tomcat-*.zip
 liferay-portal-tomcat-6.2-ce-*.zip
