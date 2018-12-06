@@ -89,12 +89,8 @@ public class TaskStepsViewer implements ISelectionChangedListener {
 		}
 	}
 
-	private void _redraw() {
-		for (ViewItem stepItem : _stepItems) {
-			stepItem.dispose();
-		}
-
-		IViewPart upgradeInfoView = UIUtil.findView("com.liferay.ide.upgrade.ui.upgradeInfoView");
+	private void _addListener() {
+		IViewPart upgradeInfoView = UIUtil.findView("com.liferay.ide.upgrade.plan.ui.upgradeInfoView");
 
 		IExpansionListener expansionListener = null;
 
@@ -106,27 +102,33 @@ public class TaskStepsViewer implements ISelectionChangedListener {
 			}
 		}
 
+		if (expansionListener != null) {
+			for (ViewItem item : _stepItems) {
+				item.addExpansionListener(expansionListener);
+			}
+		}
+	}
+
+	private void _redraw() {
+		for (ViewItem stepItem : _stepItems) {
+			stepItem.dispose();
+		}
+
 		_stepItems.clear();
 
 		_form.setText((String)_upgradeTask.getProperty("task.title"));
 
 		ViewItem introItem = new ViewItem(this, new IntroStep(_upgradeTask));
 
-		if (expansionListener != null) {
-			introItem.addExpansionListener(expansionListener);
-		}
-
 		_stepItems.add(introItem);
 
 		for (UpgradeTaskStep step : _upgradeTask.getSteps()) {
 			ViewItem stepItem = new ViewItem(this, step);
 
-			if (expansionListener != null) {
-				stepItem.addExpansionListener(expansionListener);
-			}
-
 			_stepItems.add(stepItem);
 		}
+
+		_addListener();
 
 		_form.reflow(true);
 	}

@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class ProjectsSelectionDialog extends ProjectSelectionDialog {
 
-	public ProjectsSelectionDialog(Shell parentShell, ViewerFilter filter) {
-		super(parentShell, filter);
+	public ProjectsSelectionDialog(Shell parentShell, ViewerFilter filter, boolean selectAllDefault) {
+		super(parentShell, filter, selectAllDefault);
 	}
 
 }

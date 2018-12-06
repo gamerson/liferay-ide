@@ -43,4 +43,9 @@ public abstract class WorkspaceUpgradeTaskStep extends ProjectUpgradeTaskStep {
 		};
 	}
 
+	@Override
+	protected boolean selectAllDefault() {
+		return true;
+	}
+
 }

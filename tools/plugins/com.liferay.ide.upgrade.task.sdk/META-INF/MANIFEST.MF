@@ -10,7 +10,8 @@ Require-Bundle: com.liferay.ide.project.ui,
  com.liferay.ide.upgrade.plan.base,
  org.eclipse.core.runtime,
  org.eclipse.osgi.services,
- org.eclipse.sapphire.ui;bundle-version="[9,10)"
+ org.eclipse.sapphire.ui;bundle-version="[9,10)",
+ com.liferay.ide.gradle.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
@@ -19,4 +20,5 @@ Service-Component: OSGI-INF/com.liferay.ide.upgrade.task.sdk.steps.ConfigureBuil
  OSGI-INF/com.liferay.ide.upgrade.task.sdk.steps.RemoveLegacyProjectsStep.xml,
  OSGI-INF/com.liferay.ide.upgrade.task.sdk.steps.ConvertPluginsToWarsStep.xml,
  OSGI-INF/com.liferay.ide.upgrade.task.sdk.steps.ImportProjectsFromSDKStep.xml,
- OSGI-INF/com.liferay.ide.upgrade.task.sdk.steps.RemoveClosedProjectsStep.xml
+ OSGI-INF/com.liferay.ide.upgrade.task.sdk.steps.RemoveClosedProjectsStep.xml,
+ OSGI-INF/com.liferay.ide.upgrade.task.sdk.steps.RefreshWorkspaceToImportStep.xml

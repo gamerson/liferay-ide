@@ -33,8 +33,6 @@ import org.eclipse.ui.part.PageBookView;
  */
 public class UpgradeInfoView extends PageBookView implements ISelectionProvider, ISelectionChangedListener {
 
-	public static final String ID = "com.liferay.ide.upgrade.ui.upgradeInfoView";
-
 	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		getSelectionProvider().addSelectionChangedListener(listener);

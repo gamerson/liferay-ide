@@ -42,10 +42,11 @@ import org.eclipse.ui.dialogs.SelectionStatusDialog;
  */
 public class ProjectSelectionDialog extends SelectionStatusDialog {
 
-	public ProjectSelectionDialog(Shell parentShell, ViewerFilter filter) {
+	public ProjectSelectionDialog(Shell parentShell, ViewerFilter filter, boolean selectAllDefault) {
 		super(parentShell);
 
 		_filter = filter;
+		_selectAllDefault = selectAllDefault;
 
 		setTitle("Project Selection");
 		setMessage("Select project");
@@ -116,6 +117,10 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 
 		tableViewer.setInput(CoreUtil.getWorkspaceRoot());
 
+		if (_selectAllDefault && ListUtil.isNotEmpty(table.getItems())) {
+			tableViewer.setAllChecked(true);
+		}
+
 		updateStatus(new Status(IStatus.OK, LiferayUIPlugin.PLUGIN_ID, StringPool.EMPTY));
 
 		setSelectionResult(new Object[0]);
@@ -128,5 +133,6 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 	protected CheckboxTableViewer tableViewer;
 
 	private ViewerFilter _filter;
+	private boolean _selectAllDefault;
 
 }

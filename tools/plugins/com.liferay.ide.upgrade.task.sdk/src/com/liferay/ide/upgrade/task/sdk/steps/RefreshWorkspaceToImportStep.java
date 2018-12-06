@@ -14,54 +14,28 @@
 
 package com.liferay.ide.upgrade.task.sdk.steps;
 
+import com.liferay.ide.gradle.core.GradleUtil;
 import com.liferay.ide.upgrade.plan.api.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.base.ProjectsUpgradeTaskStep;
+import com.liferay.ide.upgrade.plan.base.WorkspaceUpgradeTaskStep;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Terry Jia
  */
-@Component(properties = "OSGI-INF/RemoveClosedProjectsStep.properties", service = UpgradeTaskStep.class)
-public class RemoveClosedProjectsStep extends ProjectsUpgradeTaskStep {
+@Component(properties = "OSGI-INF/RefreshWorkspaceToImportStep.properties", service = UpgradeTaskStep.class)
+public class RefreshWorkspaceToImportStep extends WorkspaceUpgradeTaskStep {
 
 	@Override
-	protected IStatus execute(IProject[] projects, IProgressMonitor progressMonitor) {
-		for (IProject project : projects) {
-			try {
-				project.delete(true, progressMonitor);
-			}
-			catch (CoreException ce) {
-			}
-		}
+	protected IStatus execute(IProject project, IProgressMonitor progressMonitor) {
+		GradleUtil.refreshProject(project);
 
 		return Status.OK_STATUS;
-	}
-
-	protected ViewerFilter getFilter() {
-		return new ViewerFilter() {
-
-			@Override
-			public boolean select(Viewer viewer, Object parentElement, Object element) {
-				IProject project = (IProject)element;
-
-				return !project.isOpen();
-			}
-
-		};
-	}
-
-	@Override
-	protected boolean selectAllDefault() {
-		return true;
 	}
 
 }

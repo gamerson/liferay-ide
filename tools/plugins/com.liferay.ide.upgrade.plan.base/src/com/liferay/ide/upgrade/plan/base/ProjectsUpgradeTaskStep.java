@@ -32,7 +32,8 @@ import org.eclipse.jface.window.Window;
 public abstract class ProjectsUpgradeTaskStep extends AbstractUpgradeTaskStep {
 
 	public IStatus execute(IProgressMonitor progressMonitor) {
-		ProjectsSelectionDialog dialog = new ProjectsSelectionDialog(UIUtil.getActiveShell(), getFilter());
+		ProjectsSelectionDialog dialog = new ProjectsSelectionDialog(
+			UIUtil.getActiveShell(), getFilter(), selectAllDefault());
 
 		if (dialog.open() == Window.OK) {
 			IProject[] projects = Stream.of(
@@ -51,6 +52,10 @@ public abstract class ProjectsUpgradeTaskStep extends AbstractUpgradeTaskStep {
 
 	protected ViewerFilter getFilter() {
 		return null;
+	}
+
+	protected boolean selectAllDefault() {
+		return false;
 	}
 
 }

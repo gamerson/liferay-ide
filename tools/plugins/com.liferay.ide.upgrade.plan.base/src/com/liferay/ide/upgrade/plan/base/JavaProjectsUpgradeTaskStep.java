@@ -43,4 +43,9 @@ public abstract class JavaProjectsUpgradeTaskStep extends ProjectsUpgradeTaskSte
 		};
 	}
 
+	@Override
+	protected boolean selectAllDefault() {
+		return true;
+	}
+
 }
