@@ -31,14 +31,14 @@ public class MigrationProblemsContainer implements Summary {
 		return "Liferay Upgrade";
 	}
 
-	public ProjectUpgradeProblems[] getProblemsArray() {
+	public ProjectProblems[] getProblemsArray() {
 		return problemsArray;
 	}
 
-	public void setProblemsArray(ProjectUpgradeProblems[] problemsArray) {
+	public void setProblemsArray(ProjectProblems[] problemsArray) {
 		this.problemsArray = problemsArray;
 	}
 
-	public ProjectUpgradeProblems[] problemsArray;
+	public ProjectProblems[] problemsArray;
 
 }

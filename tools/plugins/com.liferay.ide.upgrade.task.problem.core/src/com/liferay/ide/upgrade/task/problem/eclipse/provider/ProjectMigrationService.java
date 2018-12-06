@@ -17,13 +17,10 @@ package com.liferay.ide.upgrade.task.problem.eclipse.provider;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.upgrade.task.problem.api.FileMigrator;
 import com.liferay.ide.upgrade.task.problem.api.Migration;
-import com.liferay.ide.upgrade.task.problem.api.MigrationListener;
 import com.liferay.ide.upgrade.task.problem.api.Problem;
-import com.liferay.ide.upgrade.task.problem.api.Reporter;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -34,10 +31,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,7 +41,6 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.component.annotations.Activate;
@@ -64,10 +58,6 @@ public class ProjectMigrationService implements Migration {
 	@Activate
 	public void activate(BundleContext context) {
 		_context = context;
-
-		_migrationListenerTracker = new ServiceTracker<>(context, MigrationListener.class, null);
-
-		_migrationListenerTracker.open();
 
 		_fileMigratorTracker = new ServiceTracker<>(context, FileMigrator.class, null);
 
@@ -90,8 +80,6 @@ public class ProjectMigrationService implements Migration {
 		_countTotal(projectDir);
 
 		_walkFiles(projectDir, problems, versions, monitor);
-
-		_updateListeners(problems);
 
 		monitor.done();
 
@@ -124,82 +112,12 @@ public class ProjectMigrationService implements Migration {
 			analyzeFile(file, problems, versions, monitor);
 		}
 
-		_updateListeners(problems);
-
 		monitor.done();
 
 		_count = 0;
 		_total = 0;
 
 		return problems;
-	}
-
-	@Override
-	public void reportProblems(List<Problem> problems, int detail, String format, Object... args) {
-		Reporter reporter = null;
-
-		try {
-			Collection<ServiceReference<Reporter>> references = _context.getServiceReferences(
-				Reporter.class, "(format=" + format + ")");
-
-			if (ListUtil.isNotEmpty(references)) {
-				Iterator<ServiceReference<Reporter>> iterator = references.iterator();
-
-				reporter = _context.getService(iterator.next());
-			}
-			else {
-				ServiceReference<Reporter> sr = _context.getServiceReference(Reporter.class);
-
-				reporter = _context.getService(sr);
-			}
-		}
-		catch (InvalidSyntaxException ise) {
-			ise.printStackTrace();
-		}
-
-		OutputStream fos = null;
-
-		try {
-			if (ListUtil.isNotEmpty(args)) {
-				if (args[0] instanceof File) {
-					File outputFile = (File)args[0];
-
-					File parentFile = outputFile.getParentFile();
-
-					parentFile.mkdirs();
-
-					outputFile.createNewFile();
-
-					fos = Files.newOutputStream(outputFile.toPath());
-				}
-				else if (args[0] instanceof OutputStream) {
-					fos = (OutputStream)args[0];
-				}
-			}
-
-			if (ListUtil.isNotEmpty(problems)) {
-				reporter.beginReporting(detail, fos);
-
-				for (Problem problem : problems) {
-					reporter.report(problem);
-				}
-
-				reporter.endReporting();
-			}
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		finally {
-			try {
-				if (fos != null) {
-					fos.close();
-				}
-			}
-			catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-		}
 	}
 
 	protected FileVisitResult analyzeFile(
@@ -359,23 +277,6 @@ public class ProjectMigrationService implements Migration {
 		}
 	}
 
-	private void _updateListeners(List<Problem> problems) {
-		if (ListUtil.isNotEmpty(problems)) {
-			MigrationListener[] listeners = _migrationListenerTracker.getServices(new MigrationListener[0]);
-
-			for (MigrationListener listener : listeners) {
-				try {
-					listener.problemsFound(problems);
-				}
-				catch (Exception e) {
-
-					// ignore
-
-				}
-			}
-		}
-	}
-
 	private void _walkFiles(File startDir, List<Problem> problems, List<String> versions, IProgressMonitor monitor) {
 		FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
 
@@ -442,6 +343,5 @@ public class ProjectMigrationService implements Migration {
 
 	private BundleContext _context;
 	private ServiceTracker<FileMigrator, FileMigrator> _fileMigratorTracker;
-	private ServiceTracker<MigrationListener, MigrationListener> _migrationListenerTracker;
 
 }

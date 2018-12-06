@@ -19,7 +19,7 @@ import com.liferay.ide.upgrade.plan.api.Summary;
 import com.liferay.ide.upgrade.task.problem.api.FileProblems;
 import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
 import com.liferay.ide.upgrade.task.problem.api.Problem;
-import com.liferay.ide.upgrade.task.problem.api.ProjectUpgradeProblems;
+import com.liferay.ide.upgrade.task.problem.api.ProjectProblems;
 import com.liferay.ide.upgrade.task.problem.ui.UpgradeProblemUI;
 
 import org.eclipse.jface.resource.ImageRegistry;
@@ -33,7 +33,7 @@ public class UpgradeProblemsLabelProvider extends AbstractLabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		if (element instanceof ProjectUpgradeProblems) {
+		if (element instanceof ProjectProblems) {
 			return getImageRegistry().get("ProjectMigrationProblems");
 		}
 		else if (element instanceof MigrationProblemsContainer) {

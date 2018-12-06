@@ -19,7 +19,7 @@ import com.liferay.ide.upgrade.plan.api.Summary;
 /**
  * @author Terry Jia
  */
-public class ProjectUpgradeProblems implements Summary {
+public class ProjectProblems implements Summary {
 
 	@Override
 	public String doDetail() {

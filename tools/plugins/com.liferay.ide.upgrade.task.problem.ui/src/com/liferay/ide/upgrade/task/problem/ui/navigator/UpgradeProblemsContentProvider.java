@@ -17,7 +17,7 @@ package com.liferay.ide.upgrade.task.problem.ui.navigator;
 import com.liferay.ide.ui.navigator.AbstractNavigatorContentProvider;
 import com.liferay.ide.upgrade.task.problem.api.FileProblems;
 import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
-import com.liferay.ide.upgrade.task.problem.api.ProjectUpgradeProblems;
+import com.liferay.ide.upgrade.task.problem.api.ProjectProblems;
 import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeAssistantSettingsUtil;
 
 import java.io.IOException;
@@ -33,8 +33,8 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 
 			return container.getProblemsArray();
 		}
-		else if (element instanceof ProjectUpgradeProblems) {
-			ProjectUpgradeProblems projectMigrationProblems = (ProjectUpgradeProblems)element;
+		else if (element instanceof ProjectProblems) {
+			ProjectProblems projectMigrationProblems = (ProjectProblems)element;
 
 			return projectMigrationProblems.getFileProblems();
 		}
@@ -67,7 +67,7 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 		if (element instanceof MigrationProblemsContainer) {
 			return true;
 		}
-		else if (element instanceof ProjectUpgradeProblems) {
+		else if (element instanceof ProjectProblems) {
 			return true;
 		}
 		else if (element instanceof FileProblems) {

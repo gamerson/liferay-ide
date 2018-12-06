@@ -35,8 +35,6 @@ public interface Migration {
 
 	public List<Problem> findProblems(Set<File> files, List<String> versions, IProgressMonitor monitor);
 
-	public void reportProblems(List<Problem> problems, int detail, String format, Object... args);
-
 	public int DETAIL_LONG = 1 << 2;
 
 	public int DETAIL_SHORT = 1 << 1;

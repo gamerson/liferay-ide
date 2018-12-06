@@ -22,7 +22,7 @@ import com.liferay.ide.upgrade.task.problem.api.FileProblems;
 import com.liferay.ide.upgrade.task.problem.api.Migration;
 import com.liferay.ide.upgrade.task.problem.api.MigrationProblemsContainer;
 import com.liferay.ide.upgrade.task.problem.api.Problem;
-import com.liferay.ide.upgrade.task.problem.api.ProjectUpgradeProblems;
+import com.liferay.ide.upgrade.task.problem.api.ProjectProblems;
 import com.liferay.ide.upgrade.task.problem.ui.util.FileProblemsUtil;
 import com.liferay.ide.upgrade.task.problem.ui.util.UpgradeAssistantSettingsUtil;
 
@@ -60,7 +60,7 @@ public class FindUpgradeProblemsStep extends JavaProjectsUpgradeTaskStep {
 
 		BundleContext context = bundle.getBundleContext();
 
-		List<ProjectUpgradeProblems> migrationProblemsList = new ArrayList<>();
+		List<ProjectProblems> probjectProblemsList = new ArrayList<>();
 
 		Job job = new Job("Finding migration problems...") {
 
@@ -89,16 +89,16 @@ public class FindUpgradeProblemsStep extends JavaProjectsUpgradeTaskStep {
 							FileProblems[] fileProblems = FileProblemsUtil.newFileProblemsListFrom(
 								problems.toArray(new Problem[0]));
 
-							ProjectUpgradeProblems migrationProblems = new ProjectUpgradeProblems();
+							ProjectProblems projectProblems = new ProjectProblems();
 
-							migrationProblems.setProjectName(project.getName());
-							migrationProblems.setFileProblems(fileProblems);
+							projectProblems.setProjectName(project.getName());
+							projectProblems.setFileProblems(fileProblems);
 
-							migrationProblemsList.add(migrationProblems);
+							probjectProblemsList.add(projectProblems);
 
 							MigrationProblemsContainer container = new MigrationProblemsContainer();
 
-							container.setProblemsArray(migrationProblemsList.toArray(new ProjectUpgradeProblems[0]));
+							container.setProblemsArray(probjectProblemsList.toArray(new ProjectProblems[0]));
 
 							try {
 								UpgradeAssistantSettingsUtil.setObjectToStore(
