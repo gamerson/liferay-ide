@@ -65,7 +65,9 @@ public class ConvertPluginsToWarsStep extends ProjectsUpgradeTaskStep {
 
 				IWorkspaceProject workspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
 
-				workspaceProject.getProject().refreshLocal(IResource.DEPTH_ZERO, progressMonitor);
+				IProject workspaceProject2 = workspaceProject.getProject();
+
+				workspaceProject2.refreshLocal(IResource.DEPTH_ZERO, progressMonitor);
 
 				project.refreshLocal(IResource.DEPTH_ZERO, progressMonitor);
 
