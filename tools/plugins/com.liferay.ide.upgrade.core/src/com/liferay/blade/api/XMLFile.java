@@ -15,13 +15,14 @@
 package com.liferay.blade.api;
 
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 /**
  * @author Gregory Amerson
  */
 public interface XMLFile extends SourceFile {
 
-	public SearchResult findDocumentTypeDeclaration(String name, String idPattern);
+	public SearchResult findDocumentTypeDeclaration(String name, Pattern idPattern);
 
 	public Collection<SearchResult> findElement(String elementName, String elementValue);
 

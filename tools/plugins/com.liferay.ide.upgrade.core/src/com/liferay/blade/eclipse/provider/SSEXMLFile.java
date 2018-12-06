@@ -19,6 +19,8 @@ import com.liferay.blade.api.XMLFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.sse.core.StructuredModelManager;
@@ -41,7 +43,7 @@ import org.w3c.dom.NodeList;
 public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 
 	@Override
-	public SearchResult findDocumentTypeDeclaration(String name, String idPattern) {
+	public SearchResult findDocumentTypeDeclaration(String name, Pattern idPattern) {
 		SearchResult result = null;
 
 		IFile xmlFile = getIFile(file);
@@ -58,9 +60,12 @@ public class SSEXMLFile extends WorkspaceFile implements XMLFile {
 
 			if (docType != null) {
 				String docTypeName = docType.getName();
+
 				String docTypePublicId = docType.getPublicId();
 
-				if (docTypeName.equals(name) && !docTypePublicId.matches(idPattern)) {
+				Matcher m = idPattern.matcher(docTypePublicId);
+
+				if (docTypeName.equals(name) && !m.matches()) {
 					IStructuredDocument structuredDocument = document.getStructuredDocument();
 
 					int startOffset = docType.getStartOffset();

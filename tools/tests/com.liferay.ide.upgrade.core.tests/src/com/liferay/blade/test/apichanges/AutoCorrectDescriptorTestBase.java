@@ -62,11 +62,11 @@ public abstract class AutoCorrectDescriptorTestBase {
 			}
 		}
 
-		Assert.assertEquals("", getExpectedNumber(), problems.size());
+		Assert.assertEquals("", 1, problems.size());
 
 		int problemsFixed = ((AutoMigrator)migrator).correctProblems(testFile, problems);
 
-		Assert.assertEquals("", getExpectedFixedNumber(), problemsFixed);
+		Assert.assertEquals("", 1, problemsFixed);
 
 		problems = migrator.analyze(testFile);
 
@@ -82,11 +82,4 @@ public abstract class AutoCorrectDescriptorTestBase {
 
 	protected BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 
-	public int getExpectedFixedNumber() {
-		return 1;
-	}
-
-	public int getExpectedNumber() {
-		return 1;
-	}
 }
