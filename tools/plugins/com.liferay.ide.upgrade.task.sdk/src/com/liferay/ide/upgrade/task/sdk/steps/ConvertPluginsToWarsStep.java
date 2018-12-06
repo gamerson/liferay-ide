@@ -14,9 +14,15 @@
 
 package com.liferay.ide.upgrade.task.sdk.steps;
 
+import com.liferay.ide.core.IWorkspaceProject;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.modules.BladeCLI;
+import com.liferay.ide.project.core.modules.BladeCLIException;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.upgrade.plan.api.UpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.base.ProjectsUpgradeTaskStep;
+
+import java.io.File;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -24,6 +30,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -47,10 +55,17 @@ public class ConvertPluginsToWarsStep extends ProjectsUpgradeTaskStep {
 			sb.append(workspaceLocation.toOSString());
 			sb.append("\" ");
 			sb.append("convert ");
-			sb.append(project.getName());
+
+			File file = FileUtil.getFile(project);
+
+			sb.append(file.getName());
 
 			try {
 				BladeCLI.execute(sb.toString());
+
+				IWorkspaceProject workspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
+
+				workspaceProject.getProject().refreshLocal(IResource.DEPTH_ZERO, progressMonitor);
 
 				project.refreshLocal(IResource.DEPTH_ZERO, progressMonitor);
 
@@ -62,6 +77,50 @@ public class ConvertPluginsToWarsStep extends ProjectsUpgradeTaskStep {
 		}
 
 		return Status.OK_STATUS;
+	}
+
+	protected ViewerFilter getFilter() {
+		return new ViewerFilter() {
+
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				IProject project = (IProject)element;
+
+				StringBuffer sb = new StringBuffer();
+
+				IWorkspaceProject workspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
+
+				String location = FileUtil.getLocationOSString(workspaceProject.getProject());
+
+				sb.append("--base ");
+				sb.append("\"");
+				sb.append(location);
+				sb.append("\" ");
+				sb.append("convert -l");
+
+				try {
+					String[] lines = BladeCLI.execute(sb.toString());
+
+					for (String line : lines) {
+						line = line.trim();
+
+						File file = FileUtil.getFile(project);
+
+						String fileName = file.getName();
+
+						if (line.equals(fileName)) {
+							return true;
+						}
+					}
+				}
+				catch (BladeCLIException bclie) {
+					bclie.printStackTrace();
+				}
+
+				return false;
+			}
+
+		};
 	}
 
 }

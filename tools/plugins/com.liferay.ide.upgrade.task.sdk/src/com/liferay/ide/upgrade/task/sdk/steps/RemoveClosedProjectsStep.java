@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -42,6 +44,19 @@ public class RemoveClosedProjectsStep extends ProjectsUpgradeTaskStep {
 		}
 
 		return Status.OK_STATUS;
+	}
+
+	protected ViewerFilter getFilter() {
+		return new ViewerFilter() {
+
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				IProject project = (IProject)element;
+
+				return !project.isOpen();
+			}
+
+		};
 	}
 
 }
