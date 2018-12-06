@@ -18,6 +18,8 @@ import com.liferay.blade.api.AutoMigrator;
 import com.liferay.blade.api.FileMigrator;
 import com.liferay.blade.upgrade.liferay70.apichanges.BaseLiferayDescriptorVersion;
 
+import java.util.regex.Pattern;
+
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -33,10 +35,11 @@ import org.osgi.service.component.annotations.Component;
 public class LiferayDescriptorVersion70 extends BaseLiferayDescriptorVersion {
 
 	public LiferayDescriptorVersion70() {
-		super(_PUBLICID_REGREX70, "7.0.0");
+		super(_publicIDPattern, "7.0.0");
 	}
 
-	private static final String _PUBLICID_REGREX70 =
-		"-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(7\\.[0-9]\\.[0-9])\\//(?:[A-z]+)";
+	private static final Pattern _publicIDPattern = Pattern.compile(
+		"-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(7\\.[0-9]\\.[0-9])\\//(?:[A-z]+)",
+		Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 }

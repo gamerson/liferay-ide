@@ -41,8 +41,8 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 @SuppressWarnings("restriction")
 public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator implements AutoMigrator {
 
-	public BaseLiferayDescriptorVersion(String publicIDPattern, String version) {
-		_publicIDPattern = publicIDPattern;
+	public BaseLiferayDescriptorVersion(Pattern publicIDPattern, String version) {
+		_idPattern = publicIDPattern;
 		_version = version;
 	}
 
@@ -55,32 +55,29 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 
 			IModelManager modelManager = StructuredModelManager.getModelManager();
 
-			IDOMModel domModel = (IDOMModel)modelManager.getModelForRead(xmlFile);
+			IDOMModel domModel = (IDOMModel)modelManager.getModelForEdit(xmlFile);
 
 			IDOMDocument domDocument = domModel.getDocument();
 
 			IDOMDocumentType domDocumentType = (IDOMDocumentType)domDocument.getDoctype();
 
-			for (int i = 0; i < problems.size(); i++) {
-				if (domDocumentType != null) {
-					String publicId = domDocumentType.getPublicId();
+			if (domDocumentType != null) {
+				String publicId = domDocumentType.getPublicId();
 
-					String newPublicId = _getNewDoctTypeSetting(publicId, _version, _PUBLICID_REGREX);
+				String newPublicId = _getNewDoctTypeSetting(publicId, _version, _publicPattern);
 
-					domDocumentType.setPublicId(newPublicId);
+				domDocumentType.setPublicId(newPublicId);
 
-					String systemId = domDocumentType.getSystemId();
+				String systemId = domDocumentType.getSystemId();
 
-					String newSystemId = _getNewDoctTypeSetting(
-						systemId, _version.replaceAll("\\.", "_"), _SYSTEMID_REGREX);
+				String newSystemId = _getNewDoctTypeSetting(systemId, _version.replaceAll("\\.", "_"), _systemPattern);
 
-					domDocumentType.setSystemId(newSystemId);
+				domDocumentType.setSystemId(newSystemId);
 
-					problemsCorrected++;
-				}
-
-				domModel.save();
+				problemsCorrected++;
 			}
+
+			domModel.save();
 		}
 		catch (Exception e) {
 		}
@@ -93,18 +90,16 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 		List<SearchResult> results = new ArrayList<>();
 
 		for (String liferayDtdName : _liferayDtdNames) {
-			results.add(xmlFileChecker.findDocumentTypeDeclaration(liferayDtdName, _publicIDPattern));
+			results.add(xmlFileChecker.findDocumentTypeDeclaration(liferayDtdName, _idPattern));
 		}
 
 		return results;
 	}
 
-	private String _getNewDoctTypeSetting(String doctypeSetting, String newValue, String regrex) {
+	private String _getNewDoctTypeSetting(String doctypeSetting, String newValue, Pattern pattern) {
 		String newDoctTypeSetting = null;
 
-		Pattern p = Pattern.compile(regrex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
-		Matcher m = p.matcher(doctypeSetting);
+		Matcher m = pattern.matcher(doctypeSetting);
 
 		if (m.find()) {
 			String oldVersionString = m.group(m.groupCount());
@@ -115,15 +110,16 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 		return newDoctTypeSetting;
 	}
 
-	private static final String _PUBLICID_REGREX =
-		"-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(\\d\\.\\d\\.\\d)\\//(?:[A-z]+)";
+	private static final Pattern _publicPattern = Pattern.compile(
+		"-\\//(?:[A-z]+)\\//(?:[A-z]+)[\\s+(?:[A-z0-9_]*)]*\\s+(\\d\\.\\d\\.\\d)\\//(?:[A-z]+)",
+		Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private static final Pattern _systemPattern = Pattern.compile(
+		"^http://www.liferay.com/dtd/[-A-Za-z0-9+&@#/%?=~_()]*(\\d_\\d_\\d).dtd",
+		Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-	private static final String _SYSTEMID_REGREX =
-		"^http://www.liferay.com/dtd/[-A-Za-z0-9+&@#/%?=~_()]*(\\d_\\d_\\d).dtd";
-
+	private Pattern _idPattern;
 	private String[] _liferayDtdNames =
 		{"liferay-portlet-app", "display", "service-builder", "hook", "layout-templates", "look-and-feel"};
-	private String _publicIDPattern;
 	private String _version;
 
 }
