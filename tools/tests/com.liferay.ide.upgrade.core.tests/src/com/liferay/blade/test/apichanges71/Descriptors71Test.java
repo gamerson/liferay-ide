@@ -29,6 +29,11 @@ public class Descriptors71Test extends APITestBase {
 	}
 
 	@Override
+	public String getVersion() {
+		return "7.1";
+	}
+
+	@Override
 	public File getTestFile() {
 		return new File("projects/legacy-apis-ant-portlet/docroot/WEB-INF/liferay-portlet.xml");
 	}

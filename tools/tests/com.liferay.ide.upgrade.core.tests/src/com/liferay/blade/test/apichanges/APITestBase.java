@@ -39,7 +39,7 @@ public abstract class APITestBase {
 
 	@Before
 	public void beforeTest() throws Exception {
-		Filter filter = context.createFilter("(implName=" + getImplClassName() + ")");
+		Filter filter = context.createFilter("(&(implName=" + getImplClassName() + ")(version=" + getVersion() + "))");
 
 		ServiceTracker<FileMigrator, FileMigrator> fileMigratorTracker = new ServiceTracker<>(context, filter, null);
 
@@ -57,6 +57,10 @@ public abstract class APITestBase {
 	}
 
 	public abstract String getImplClassName();
+
+	public String getVersion() {
+		return "7.0";
+	}
 
 	public abstract File getTestFile();
 
