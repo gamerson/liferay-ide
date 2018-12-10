@@ -12,29 +12,20 @@
  * details.
  */
 
-package com.liferay.blade.test.apichanges71;
+package com.liferay.blade.test.apichanges;
 
-import java.io.File;
-
-import com.liferay.blade.test.apichanges.APIVersionSupportTestBase;
+import org.osgi.framework.Filter;
 
 /**
  * @author Seiphon Wang
  */
-public class Descriptors71Test extends APIVersionSupportTestBase {
+public abstract class APIVersionSupportTestBase extends APITestBase {
 
 	@Override
-	public String getImplClassName() {
-		return "LiferayDescriptorVersion";
+	protected Filter getFilter() throws Exception {
+		return context.createFilter("(&(implName=" + getImplClassName() + ")(version=" + getVersion() + "))");
 	}
 
-	@Override
-	public File getTestFile() {
-		return new File("projects/legacy-apis-ant-portlet/docroot/WEB-INF/liferay-portlet.xml");
-	}
+	public abstract String getVersion();
 
-	@Override
-	public String getVersion() {
-		return "7.1";
-	}
 }

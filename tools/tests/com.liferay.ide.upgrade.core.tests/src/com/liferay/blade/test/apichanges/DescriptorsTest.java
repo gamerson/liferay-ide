@@ -19,7 +19,7 @@ import java.io.File;
 /**
  * @author Seiphon Wang
  */
-public class DescriptorsTest extends APITestBase {
+public class DescriptorsTest extends APIVersionSupportTestBase {
 
 	@Override
 	public String getImplClassName() {
@@ -29,5 +29,10 @@ public class DescriptorsTest extends APITestBase {
 	@Override
 	public File getTestFile() {
 		return new File("projects/legacy-apis-ant-portlet/docroot/WEB-INF/liferay-portlet.xml");
+	}
+
+	@Override
+	public String getVersion() {
+		return "7.0";
 	}
 }
