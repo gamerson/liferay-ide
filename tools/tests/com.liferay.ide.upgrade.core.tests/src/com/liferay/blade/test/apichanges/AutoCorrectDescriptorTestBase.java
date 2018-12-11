@@ -64,14 +64,17 @@ public abstract class AutoCorrectDescriptorTestBase {
 
 		Assert.assertEquals("", 1, problems.size());
 
-		int problemsFixed = ((AutoMigrator)migrator).correctProblems(testFile, problems);
+		File dest = new File(tempFolder, "Updated.xml");
+
+		Files.copy(testFile.toPath(), dest.toPath());
+
+		int problemsFixed = ((AutoMigrator)migrator).correctProblems(dest, problems);
 
 		Assert.assertEquals("", 1, problemsFixed);
 
-		problems = migrator.analyze(testFile);
+		problems = migrator.analyze(dest);
 
 		Assert.assertEquals("", 0, problems.size());
-
 	}
 
 	public abstract String getImplClassName();
