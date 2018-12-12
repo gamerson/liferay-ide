@@ -4497,4 +4497,5 @@ behaviors; one used in Liferay Portal and the other one in Social Office. To
 sync both components, and simplify its internal logic, activity sets are always
 enabled by default, with no option to disable them.
 
+
 ---------------------------------------
