@@ -108,41 +108,8 @@ public class LiferayMavenWorkspaceProjectProvider
 
 	@Override
 	public String getInitBundleUrl(String workspaceLocation) {
-		File pomFile = new File(workspaceLocation, "pom.xml");
-
-		MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-
-		try (FileReader reader = new FileReader(pomFile)) {
-			Model model = mavenReader.read(reader);
-
-			if (model != null) {
-				Build build = model.getBuild();
-
-				Map<String, Plugin> plugins = build.getPluginsAsMap();
-
-				Plugin plugin = plugins.get("com.liferay:com.liferay.portal.tools.bundle.support");
-
-				if (plugin != null) {
-					Xpp3Dom config = (Xpp3Dom)plugin.getConfiguration();
-
-					if (config != null) {
-						Xpp3Dom url = config.getChild("url");
-
-						if (url != null) {
-							String urlValue = url.getValue();
-
-							if (!urlValue.isEmpty()) {
-								return urlValue;
-							}
-						}
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-		}
-
-		return WorkspaceConstants.BUNDLE_URL_CE_7_0;
+		return LiferayWorkspaceUtil.getMavenProperty(
+				workspaceLocation, WorkspaceConstants.BUNDLE_URL_PROPERTY, WorkspaceConstants.BUNDLE_URL_CE_7_0);
 	}
 
 	@Override
