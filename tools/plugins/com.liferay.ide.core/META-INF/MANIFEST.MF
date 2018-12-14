@@ -30,6 +30,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.core,
  com.liferay.ide.core.adapter,
  com.liferay.ide.core.describer,
+ com.liferay.ide.core.event,
  com.liferay.ide.core.model,
  com.liferay.ide.core.model.internal,
  com.liferay.ide.core.properties,

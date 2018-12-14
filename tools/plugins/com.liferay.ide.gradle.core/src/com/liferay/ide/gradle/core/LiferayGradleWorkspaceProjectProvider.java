@@ -144,6 +144,16 @@ public class LiferayGradleWorkspaceProjectProvider
 
 			try {
 				if (GradleUtil.isGradleProject(project) && LiferayWorkspaceUtil.isValidWorkspace(project)) {
+					LiferayCore liferayCore = LiferayCore.getDefault();
+
+					for (ILiferayProject liferayProject : liferayCore.getCachedProjects()) {
+						if (liferayProject instanceof LiferayGradleWorkspaceProject && !liferayProject.isStale() &&
+							project.equals(liferayProject.getProject())) {
+
+							return liferayProject;
+						}
+					}
+
 					return new LiferayGradleWorkspaceProject(project);
 				}
 			}

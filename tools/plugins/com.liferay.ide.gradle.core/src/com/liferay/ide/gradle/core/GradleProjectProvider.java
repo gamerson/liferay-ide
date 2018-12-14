@@ -16,6 +16,7 @@ package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.AbstractLiferayProjectProvider;
 import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.SapphireUtil;
@@ -191,6 +192,16 @@ public class GradleProjectProvider
 			try {
 				if (!LiferayWorkspaceUtil.isValidWorkspace(project) && LiferayNature.hasNature(project) &&
 					GradleProjectNature.isPresentOn(project)) {
+
+					LiferayCore liferayCore = LiferayCore.getDefault();
+
+					for (ILiferayProject liferayProject : liferayCore.getCachedProjects()) {
+						if (liferayProject instanceof LiferayGradleProject && !liferayProject.isStale() &&
+							project.equals(liferayProject.getProject())) {
+
+							return liferayProject;
+						}
+					}
 
 					if (ProjectUtil.isFacetedGradleBundleProject(project)) {
 						return new FacetedGradleBundleProject(project);

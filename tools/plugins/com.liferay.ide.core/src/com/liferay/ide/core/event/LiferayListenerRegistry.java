@@ -12,28 +12,17 @@
  * details.
  */
 
-package com.liferay.ide.core;
-
-import com.liferay.ide.core.event.EventListener;
-
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
+package com.liferay.ide.core.event;
 
 /**
- * @author Gregory Amerson
+ * @author Charles Wu
  */
-public interface ILiferayProject extends EventListener {
+public interface LiferayListenerRegistry {
 
-	public <T> T adapt(Class<T> adapterType);
+	public void addEventListener(EventListener listener);
 
-	public IProject getProject();
+	public void dispatch(ProjectsChangeEvent event);
 
-	public String getProperty(String key, String defaultValue);
-
-	public IFolder getSourceFolder(String classification);
-
-	public IFolder[] getSourceFolders();
-
-	public boolean isStale();
+	public void removeEventListener(EventListener listener);
 
 }

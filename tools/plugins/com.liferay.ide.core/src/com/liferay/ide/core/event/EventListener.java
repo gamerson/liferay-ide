@@ -12,13 +12,13 @@
  * details.
  */
 
-package com.liferay.ide.core;
+package com.liferay.ide.core.event;
 
 /**
- * @author Gregory Amerson
+ * @author Charles Wu
  */
-public interface ILiferayProjectCacheEntry {
+public interface EventListener {
 
-	public boolean isStale();
+	public void onEvent(ProjectsChangeEvent event);
 
 }

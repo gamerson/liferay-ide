@@ -14,6 +14,7 @@
 
 package com.liferay.ide.core;
 
+import com.liferay.ide.core.event.ProjectsChangeEvent;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
@@ -97,6 +98,14 @@ public abstract class BaseLiferayProject implements ILiferayProject {
 		}
 
 		return null;
+	}
+
+	public boolean isStale() {
+		return false;
+	}
+
+	@Override
+	public void onEvent(ProjectsChangeEvent event) {
 	}
 
 	protected boolean filterResource(IPath resourcePath, String[] ignorePaths) {
