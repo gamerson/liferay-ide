@@ -66,6 +66,7 @@
 		<module>com.liferay.ide.upgrade.plan.api</module>
 		<module>com.liferay.ide.upgrade.plan.base</module>
 		<module>com.liferay.ide.upgrade.plan.ui</module>
+		<module>com.liferay.ide.upgrade.planner.api</module>
 		<module>com.liferay.ide.upgrade.task.dependencies</module>
 		<module>com.liferay.ide.upgrade.task.hook</module>
 		<module>com.liferay.ide.upgrade.task.maven</module>
