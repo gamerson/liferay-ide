@@ -12,22 +12,21 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.ui.tasks;
-
-import org.eclipse.jface.viewers.LabelProvider;
-
-import com.liferay.ide.upgrade.planner.api.UpgradeTask;
+package com.liferay.ide.upgrade.planner.core;
 
 /**
- * @author Terry Jia
+ * @author Gregory Amerson
  */
-public class TaskLabelProvider extends LabelProvider {
+public class UpgradePlanStartedEvent implements UpgradeEvent {
 
-	@Override
-	public String getText(Object element) {
-		UpgradeTask upgradeTask = (UpgradeTask)element;
-
-		return (String)upgradeTask.getProperty("task.title");
+	public UpgradePlanStartedEvent(UpgradePlan upgradePlan) {
+		_upgradePlan = upgradePlan;
 	}
+
+	public UpgradePlan getUpgradePlan() {
+		return _upgradePlan;
+	}
+
+	private final UpgradePlan _upgradePlan;
 
 }

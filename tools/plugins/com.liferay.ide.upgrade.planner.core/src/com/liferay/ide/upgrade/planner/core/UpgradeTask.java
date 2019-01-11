@@ -12,15 +12,17 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.api;
+package com.liferay.ide.upgrade.planner.core;
+
+import java.util.List;
 
 /**
- * @author Gregory Amerson
+ * @author Terry Jia
  */
-public enum WorkStatus {
+public interface UpgradeTask {
 
-	COMPLETED,
-	INCOMPLETE,
-	SKIPPED
+	public Object getProperty(String key);
+
+	public List<UpgradeTaskStep> getSteps();
 
 }

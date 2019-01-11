@@ -20,27 +20,25 @@ import org.eclipse.swt.widgets.Composite;
 
 /**
  * @author Terry Jia
+ * @author Gregory Amerson
  */
-public class TasksViewer {
+public class UpgradeTasksViewer {
 
-	public TasksViewer(Composite parent) {
+	public UpgradeTasksViewer(Composite parent) {
 		_taskList = new ListViewer(parent);
 
-		_taskList.setContentProvider(new TasksContentProvider());
-		_taskList.setLabelProvider(new TaskLabelProvider());
+		_taskList.setContentProvider(new UpgradeTasksContentProvider());
+		_taskList.setLabelProvider(new UpgradeTaskLabelProvider());
 
-		_taskList.setInput(_getInitialInput());
+		_taskList.setInput(new Object());
 	}
 
 	public void addSelectionChangedListener(ISelectionChangedListener selectionChangedListener) {
 		_taskList.addSelectionChangedListener(selectionChangedListener);
 	}
 
-	private Object _getInitialInput() {
-
-		// TODO need to get initial input basing on Upgrade Plan
-
-		return new Object();
+	public Object getInput() {
+		return _taskList.getInput();
 	}
 
 	private ListViewer _taskList;

@@ -12,17 +12,13 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.api;
-
-import java.util.List;
+package com.liferay.ide.upgrade.planner.core;
 
 /**
  * @author Gregory Amerson
  */
-public interface UpgradePlan {
+public interface UpgradeListener {
 
-	public List<UpgradeTask> getTasks();
-
-	public String getName();
+	public void onUpgradeEvent(UpgradeEvent upgradeEvent);
 
 }

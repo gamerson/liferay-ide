@@ -35,15 +35,15 @@ public class UpgradePlannerPerspectiveFactory implements IPerspectiveFactory {
 
 		topLeftFolderLayout.addView("org.eclipse.ui.navigator.ProjectExplorer");
 
-		IFolderLayout bottomTopLeftFolderLayout =
-			pageLayout.createFolder("bottomTopLeft", IPageLayout.BOTTOM, 0.7F, "topLeft");
+		IFolderLayout bottomTopLeftFolderLayout = pageLayout.createFolder(
+			"bottomTopLeft", IPageLayout.BOTTOM, 0.7F, "topLeft");
 
 		bottomTopLeftFolderLayout.addView(UpgradePlannerView.ID);
 
 		IFolderLayout bottomFolderLayout = pageLayout.createFolder("bottom", IPageLayout.BOTTOM, 0.7F, editorArea);
 
 		bottomFolderLayout.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
-		bottomFolderLayout.addView(UpgradeInfoView.ID);
+		//bottomFolderLayout.addView(UpgradeInfoView.ID);
 		bottomFolderLayout.addView("org.eclipse.ui.views.AllMarkersView");
 		bottomFolderLayout.addView("org.eclipse.ui.console.ConsoleView");
 	}

@@ -12,17 +12,20 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.api;
+package com.liferay.ide.upgrade.planner.core;
 
-import java.util.List;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 
 /**
  * @author Terry Jia
  */
-public interface UpgradeTask {
+public interface UpgradeTaskStep {
+
+	public IStatus execute(IProgressMonitor progressMonitor);
 
 	public Object getProperty(String key);
 
-	public List<UpgradeTaskStep> getSteps();
+	public WorkStatus getStatus();
 
 }

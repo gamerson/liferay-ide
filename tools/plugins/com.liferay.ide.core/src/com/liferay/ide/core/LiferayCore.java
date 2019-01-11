@@ -291,7 +291,7 @@ public class LiferayCore extends Plugin {
 	}
 
 	private <T> ServiceTracker<T, T> _createServiceTracker(BundleContext context, Class<T> clazz) {
-		ServiceTracker<T, T> serviceTracker = new ServiceTracker<>(context, clazz.getName(), null);
+		ServiceTracker<T, T> serviceTracker = new ServiceTracker<>(context, clazz, null);
 
 		serviceTracker.open();
 

@@ -14,22 +14,21 @@
 
 package com.liferay.ide.upgrade.planner.ui;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.SWT;
+import com.liferay.ide.upgrade.planner.core.UpgradePlan;
+import com.liferay.ide.upgrade.planner.core.UpgradePlanner;
+import com.liferay.ide.upgrade.planner.ui.tasks.UpgradeTasksViewer;
+
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.part.PageBook;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 import org.osgi.framework.Bundle;
-
-import com.liferay.ide.upgrade.planner.ui.tasks.TasksViewer;
-import com.liferay.ide.upgrade.planner.ui.tasks.TaskStepsViewer;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Terry Jia
@@ -38,70 +37,72 @@ import com.liferay.ide.upgrade.planner.ui.tasks.TaskStepsViewer;
 public class UpgradePlannerView extends ViewPart {
 
 	public static final String ID = "com.liferay.ide.upgrade.planner.view";
-	private PageBook _pageBook;
+
+	public UpgradePlannerView() {
+		_serviceTracker = _getServiceTracker();
+	}
 
 	@Override
 	public void createPartControl(Composite parentComposite) {
-		_createActionBars();
-
 		_createPartControl(parentComposite);
 	}
 
-	private void _createPartControl(Composite parentComposite) {
-		parentComposite.setLayout(new FillLayout());
-
-		_pageBook = new PageBook(parentComposite, SWT.NONE);
-
-		_tasksViewer = new TasksViewer(parentComposite);
-
-		_taskStepsViewer = new TaskStepsViewer(this, parentComposite);
-
-		_tasksViewer.addSelectionChangedListener(_taskStepsViewer);
+	public UpgradeTasksViewer getTasksViewer() {
+		return _upgradeTasksViewer;
 	}
 
-	public void dispose() {
-		super.dispose();
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
 
-		if (_taskStepsViewer != null) {
-			_taskStepsViewer.dispose();
+		String upgradePlanName = memento.getString("upgradePlanName");
+
+		if (upgradePlanName != null) {
+			UpgradePlanner upgradePlanner = _serviceTracker.getService();
+
+			upgradePlanner.startUpgradePlan(upgradePlanName);
 		}
 	}
 
-	public TasksViewer getTasksViewer() {
-		return _tasksViewer;
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+
+		Object upgradeTaskViewerInput = _upgradeTasksViewer.getInput();
+
+		if (upgradeTaskViewerInput instanceof UpgradePlan) {
+			UpgradePlan upgradePlan = (UpgradePlan)upgradeTaskViewerInput;
+
+			memento.putString("upgradePlanName", upgradePlan.getName());
+		}
 	}
 
 	@Override
 	public void setFocus() {
 	}
 
-	private void _createActionBars() {
-		IViewSite viewSite = getViewSite();
+	private static ServiceTracker<UpgradePlanner, UpgradePlanner> _getServiceTracker() {
+		if (_serviceTracker == null) {
+			Bundle bundle = FrameworkUtil.getBundle(UpgradePlannerView.class);
 
-		IActionBars actionBars = viewSite.getActionBars();
+			BundleContext bundleContext = bundle.getBundleContext();
 
-		IToolBarManager toolBarManager = actionBars.getToolBarManager();
+			_serviceTracker = new ServiceTracker<>(bundleContext, UpgradePlanner.class, null);
 
-		Bundle upgradeUI = UpgradePlannerUIPlugin.getDefaultBundle();
+			_serviceTracker.open();
+		}
 
-		ImageDescriptor openNewPlanImageDescriptor = ImageDescriptor.createFromURL(
-			upgradeUI.getEntry("icons/liferay_logo_16.png"));
-
-		IAction openNewUpgradePlan = new Action("Open new Liferay upgrade plan", openNewPlanImageDescriptor) {
-
-			@Override
-			public void run() {
-				NewUpgradePlanDialog newUpgradePlanDialog = new NewUpgradePlanDialog(viewSite.getShell());
-
-				newUpgradePlanDialog.open();
-			}
-
-		};
-
-		toolBarManager.add(openNewUpgradePlan);
+		return _serviceTracker;
 	}
 
-	private TaskStepsViewer _taskStepsViewer;
-	private TasksViewer _tasksViewer;
+	private void _createPartControl(Composite parentComposite) {
+		parentComposite.setLayout(new FillLayout());
+
+		_upgradeTasksViewer = new UpgradeTasksViewer(parentComposite);
+	}
+
+	private static ServiceTracker<UpgradePlanner, UpgradePlanner> _serviceTracker;
+
+	private UpgradeTasksViewer _upgradeTasksViewer;
 
 }

@@ -12,38 +12,32 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.core;
+package com.liferay.ide.upgrade.planner.core.internal;
+
+import com.liferay.ide.upgrade.planner.core.UpgradePlan;
+import com.liferay.ide.upgrade.planner.core.UpgradeTask;
 
 import java.util.List;
-
-import com.liferay.ide.upgrade.planner.api.UpgradePlan;
-import com.liferay.ide.upgrade.planner.api.UpgradeTask;
 
 /**
  * @author Gregory Amerson
  */
 public class StandardUpgradePlan implements UpgradePlan {
 
-	private final String _name;
-
 	public StandardUpgradePlan(String name) {
 		_name = name;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.liferay.ide.upgrade.planner.api.UpgradePlan#getTasks()
-	 */
+	@Override
+	public String getName() {
+		return _name;
+	}
+
 	@Override
 	public List<UpgradeTask> getTasks() {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.liferay.ide.upgrade.planner.api.UpgradePlan#getName()
-	 */
-	@Override
-	public String getName() {
-		return _name;
-	}
+	private final String _name;
 
 }

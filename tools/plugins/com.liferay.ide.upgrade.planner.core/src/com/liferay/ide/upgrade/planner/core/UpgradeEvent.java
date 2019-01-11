@@ -12,16 +12,10 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.api;
+package com.liferay.ide.upgrade.planner.core;
 
 /**
  * @author Gregory Amerson
  */
-public interface UpgradePlanner {
-
-	public UpgradePlan createNewUpgradePlan(String name);
-
-	public void startUpgradePlan(UpgradePlan upgradePlan);
-
-	public void stopUpgradePlan(UpgradePlan upgradePlan);
+public interface UpgradeEvent {
 }

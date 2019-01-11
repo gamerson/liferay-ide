@@ -14,22 +14,23 @@
 
 package com.liferay.ide.upgrade.planner.ui.tasks;
 
+import com.liferay.ide.upgrade.planner.core.UpgradeTask;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-import com.liferay.ide.upgrade.planner.api.UpgradeTask;
-
 /**
  * @author Terry Jia
  */
-public class TasksContentProvider implements IStructuredContentProvider {
+public class UpgradeTasksContentProvider implements IStructuredContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {

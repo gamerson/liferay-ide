@@ -24,6 +24,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -33,13 +34,7 @@ import org.osgi.framework.BundleContext;
  */
 public class UpgradePlannerUIPlugin extends AbstractUIPlugin {
 
-	private static final IPath _ICONS_PATH = new Path("icons/");
-
 	public static final String PLUGIN_ID = "com.liferay.ide.upgrade.planner.ui";
-
-	private static final String T_ELCL = "elcl16/";
-
-	private static final String T_OBJ = "obj16/";
 
 	public static IStatus createErrorStatus(String msg) {
 		return createErrorStatus(msg, null);
@@ -49,16 +44,12 @@ public class UpgradePlannerUIPlugin extends AbstractUIPlugin {
 		return new Status(IStatus.ERROR, PLUGIN_ID, msg, e);
 	}
 
-	private static ImageDescriptor _createImageDescriptor(Bundle bundle, IPath path) {
-		return ImageDescriptor.createFromURL(FileLocator.find(bundle, path, null));
+	public static Bundle getDefaultBundle() {
+		return _plugin.getBundle();
 	}
 
 	public static UpgradePlannerUIPlugin getInstance() {
 		return _plugin;
-	}
-
-	public static Bundle getDefaultBundle() {
-		return _plugin.getBundle();
 	}
 
 	public static void logError(Exception e) {
@@ -95,28 +86,30 @@ public class UpgradePlannerUIPlugin extends AbstractUIPlugin {
 
 	@Override
 	protected void initializeImageRegistry(ImageRegistry imageRegistry) {
-		IPath objPath = _ICONS_PATH.append(T_OBJ);
-
-		IPath path = objPath.append("complete_status.gif");
+		IPath path = _ICONS_PATH.append("complete_status.gif");
 
 		ImageDescriptor imageDescriptor = _createImageDescriptor(getDefaultBundle(), path);
 
 		imageRegistry.put("ITEM_COMPLETE", imageDescriptor);
 
-		path = objPath.append("skip_status.gif");
+		path = _ICONS_PATH.append("skip_status.gif");
 
 		imageDescriptor = _createImageDescriptor(getDefaultBundle(), path);
 
 		imageRegistry.put("ITEM_SKIP", imageDescriptor);
 
-		IPath elclFolder = _ICONS_PATH.append(T_ELCL);
-
-		path = elclFolder.append("start_ccs_task.gif");
+		path = _ICONS_PATH.append("start_ccs_task.gif");
 
 		imageDescriptor = _createImageDescriptor(getDefaultBundle(), path);
 
 		imageRegistry.put("COMPOSITE_TASK_START", imageDescriptor);
 	}
+
+	private static ImageDescriptor _createImageDescriptor(Bundle bundle, IPath path) {
+		return ImageDescriptor.createFromURL(FileLocator.find(bundle, path, null));
+	}
+
+	private static final IPath _ICONS_PATH = new Path("icons/");
 
 	private static UpgradePlannerUIPlugin _plugin;
 
