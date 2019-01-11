@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Liferay IDE Upgrade Planner Core
+Bundle-SymbolicName: com.liferay.ide.upgrade.planner.core;singleton:=true
+Bundle-Version: 3.5.0.qualifier
+Bundle-Vendor: Liferay, Inc.
+Require-Bundle: com.liferay.ide.upgrade.planner.api 
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/com.liferay.ide.upgrade.planner.core.UpgradePlannerService.xml
