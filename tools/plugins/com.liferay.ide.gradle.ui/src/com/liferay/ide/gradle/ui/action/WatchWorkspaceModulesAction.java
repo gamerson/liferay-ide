@@ -55,7 +55,6 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 	public WatchWorkspaceModulesAction(ISelectionProvider provider, String text, String action) {
 		super(provider, text);
 
-		_gogoBundleDeployer = new GogoBundleDeployer();
 		_action = action;
 	}
 
@@ -91,7 +90,7 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 					}
 				}
 				catch (CoreException ce) {
-					LiferayGradleCore.logError(ce);
+					LiferayGradleUI.logError(ce);
 				}
 			}
 		}
@@ -153,7 +152,9 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 		}
 
 		try {
-			_gogoBundleDeployer.uninstall(bundleProject);
+			GogoBundleDeployer gogoBundleDeployer = new GogoBundleDeployer();
+
+			gogoBundleDeployer.uninstall(bundleProject);
 
 			IFolder folder = FileUtil.getFolder(bundleProject.getProject(), "build");
 
@@ -164,11 +165,10 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 			}
 		}
 		catch (Exception e) {
-			LiferayGradleCore.logError(e);
+			LiferayGradleUI.logError(e);
 		}
 	}
 
 	private String _action;
-	private GogoBundleDeployer _gogoBundleDeployer;
 
 }
