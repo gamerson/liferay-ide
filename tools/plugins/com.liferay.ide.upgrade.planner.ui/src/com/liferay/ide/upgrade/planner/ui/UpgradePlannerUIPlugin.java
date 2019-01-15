@@ -34,6 +34,14 @@ import org.osgi.framework.BundleContext;
  */
 public class UpgradePlannerUIPlugin extends AbstractUIPlugin {
 
+	public static final String CATEGORY_CODE_IMAGE = "CATEGORY_CODE";
+
+	public static final String CATEGORY_CONFIG_IMAGE = "CATEGORY_CONFIG";
+
+	public static final String CATEGORY_DATABASE_IMAGE = "CATEGORY_DATABASE";
+
+	public static final String NO_TASKS_IMAGE = "NO_TASKS";
+
 	public static final String PLUGIN_ID = "com.liferay.ide.upgrade.planner.ui";
 
 	public static IStatus createErrorStatus(String msg) {
@@ -44,8 +52,12 @@ public class UpgradePlannerUIPlugin extends AbstractUIPlugin {
 		return new Status(IStatus.ERROR, PLUGIN_ID, msg, e);
 	}
 
-	public static Bundle getDefaultBundle() {
-		return _plugin.getBundle();
+	public static Image getImage(String key) {
+		UpgradePlannerUIPlugin upgradePlannerUIPlugin = getInstance();
+
+		ImageRegistry imageRegistry = upgradePlannerUIPlugin.getImageRegistry();
+
+		return imageRegistry.get(key);
 	}
 
 	public static UpgradePlannerUIPlugin getInstance() {
@@ -64,12 +76,6 @@ public class UpgradePlannerUIPlugin extends AbstractUIPlugin {
 		log.log(createErrorStatus(msg, e));
 	}
 
-	public Image getImage(String key) {
-		Image image = getImageRegistry().get(key);
-
-		return image;
-	}
-
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -86,23 +92,49 @@ public class UpgradePlannerUIPlugin extends AbstractUIPlugin {
 
 	@Override
 	protected void initializeImageRegistry(ImageRegistry imageRegistry) {
+		Bundle bundle = _plugin.getBundle();
+
 		IPath path = _ICONS_PATH.append("complete_status.gif");
 
-		ImageDescriptor imageDescriptor = _createImageDescriptor(getDefaultBundle(), path);
+		ImageDescriptor imageDescriptor = _createImageDescriptor(bundle, path);
 
 		imageRegistry.put("ITEM_COMPLETE", imageDescriptor);
 
 		path = _ICONS_PATH.append("skip_status.gif");
 
-		imageDescriptor = _createImageDescriptor(getDefaultBundle(), path);
+		imageDescriptor = _createImageDescriptor(bundle, path);
 
 		imageRegistry.put("ITEM_SKIP", imageDescriptor);
 
 		path = _ICONS_PATH.append("start_ccs_task.gif");
 
-		imageDescriptor = _createImageDescriptor(getDefaultBundle(), path);
+		imageDescriptor = _createImageDescriptor(bundle, path);
 
 		imageRegistry.put("COMPOSITE_TASK_START", imageDescriptor);
+
+		path = _ICONS_PATH.append("information.gif");
+
+		imageDescriptor = _createImageDescriptor(bundle, path);
+
+		imageRegistry.put(NO_TASKS_IMAGE, imageDescriptor);
+
+		path = _ICONS_PATH.append("category_code.png");
+
+		imageDescriptor = _createImageDescriptor(bundle, path);
+
+		imageRegistry.put(CATEGORY_CODE_IMAGE, imageDescriptor);
+
+		path = _ICONS_PATH.append("category_config.png");
+
+		imageDescriptor = _createImageDescriptor(bundle, path);
+
+		imageRegistry.put(CATEGORY_CONFIG_IMAGE, imageDescriptor);
+
+		path = _ICONS_PATH.append("category_database.png");
+
+		imageDescriptor = _createImageDescriptor(bundle, path);
+
+		imageRegistry.put(CATEGORY_DATABASE_IMAGE, imageDescriptor);
 	}
 
 	private static ImageDescriptor _createImageDescriptor(Bundle bundle, IPath path) {

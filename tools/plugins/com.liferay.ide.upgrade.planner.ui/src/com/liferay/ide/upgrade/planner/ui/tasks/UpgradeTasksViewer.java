@@ -14,33 +14,44 @@
 
 package com.liferay.ide.upgrade.planner.ui.tasks;
 
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ListViewer;
+import com.liferay.ide.upgrade.planner.core.UpgradeEvent;
+import com.liferay.ide.upgrade.planner.core.UpgradeListener;
+import com.liferay.ide.upgrade.planner.core.UpgradePlan;
+import com.liferay.ide.upgrade.planner.core.UpgradePlanStartedEvent;
+
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 
 /**
  * @author Terry Jia
  * @author Gregory Amerson
  */
-public class UpgradeTasksViewer {
+public class UpgradeTasksViewer implements UpgradeListener {
 
 	public UpgradeTasksViewer(Composite parent) {
-		_taskList = new ListViewer(parent);
+		_tableViewer = new TableViewer(parent);
 
-		_taskList.setContentProvider(new UpgradeTasksContentProvider());
-		_taskList.setLabelProvider(new UpgradeTaskLabelProvider());
+		_tableViewer.setContentProvider(new UpgradeTasksContentProvider());
+		_tableViewer.setLabelProvider(new UpgradeTasksLabelProvider());
 
-		_taskList.setInput(new Object());
-	}
-
-	public void addSelectionChangedListener(ISelectionChangedListener selectionChangedListener) {
-		_taskList.addSelectionChangedListener(selectionChangedListener);
+		_tableViewer.setInput(UpgradeTasksContentProvider.NO_UPGRADE_PLAN_ACTIVE);
 	}
 
 	public Object getInput() {
-		return _taskList.getInput();
+		return _tableViewer.getInput();
 	}
 
-	private ListViewer _taskList;
+	@Override
+	public void onUpgradeEvent(UpgradeEvent upgradeEvent) {
+		if (upgradeEvent instanceof UpgradePlanStartedEvent) {
+			UpgradePlanStartedEvent upgradePlanStartedEvent = (UpgradePlanStartedEvent)upgradeEvent;
+
+			UpgradePlan upgradePlan = upgradePlanStartedEvent.getUpgradePlan();
+
+			_tableViewer.setInput(upgradePlan);
+		}
+	}
+
+	private TableViewer _tableViewer;
 
 }

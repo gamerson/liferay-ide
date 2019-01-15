@@ -99,6 +99,10 @@ public class UpgradePlannerView extends ViewPart {
 		parentComposite.setLayout(new FillLayout());
 
 		_upgradeTasksViewer = new UpgradeTasksViewer(parentComposite);
+
+		UpgradePlanner upgradePlanner = _serviceTracker.getService();
+
+		upgradePlanner.addListener(_upgradeTasksViewer);
 	}
 
 	private static ServiceTracker<UpgradePlanner, UpgradePlanner> _serviceTracker;

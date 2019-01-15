@@ -15,19 +15,55 @@
 package com.liferay.ide.upgrade.planner.ui.tasks;
 
 import com.liferay.ide.upgrade.planner.core.UpgradeTask;
+import com.liferay.ide.upgrade.planner.ui.UpgradePlannerUIPlugin;
 
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * @author Terry Jia
+ * @author Gregory Amerson
  */
-public class UpgradeTaskLabelProvider extends LabelProvider {
+public class UpgradeTasksLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 	@Override
-	public String getText(Object element) {
-		UpgradeTask upgradeTask = (UpgradeTask)element;
+	public Image getColumnImage(Object element, int columnIndex) {
+		if (UpgradeTasksContentProvider.NO_TASKS.equals(element)) {
+			return UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.NO_TASKS_IMAGE);
+		}
+		else if (element instanceof UpgradeTask) {
+			UpgradeTask upgradeTask = (UpgradeTask)element;
 
-		return (String)upgradeTask.getProperty("task.title");
+			String categoryId = upgradeTask.getCategoryId();
+
+			if ("database".equals(categoryId)) {
+				return UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.CATEGORY_DATABASE_IMAGE);
+			}
+			else if ("config".equals(categoryId)) {
+				return UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.CATEGORY_CONFIG_IMAGE);
+			}
+			else if ("code".equals(categoryId)) {
+				return UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.CATEGORY_CODE_IMAGE);
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public String getColumnText(Object element, int columnIndex) {
+		if (UpgradeTasksContentProvider.NO_TASKS.equals(element)) {
+			return "No upgrade tasks.";
+		}
+
+		if (element instanceof UpgradeTask) {
+			UpgradeTask upgradeTask = (UpgradeTask)element;
+
+			return upgradeTask.getTitle();
+		}
+
+		return null;
 	}
 
 }

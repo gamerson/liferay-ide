@@ -14,73 +14,37 @@
 
 package com.liferay.ide.upgrade.planner.ui.tasks;
 
+import com.liferay.ide.upgrade.planner.core.UpgradePlan;
 import com.liferay.ide.upgrade.planner.core.UpgradeTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 
 /**
  * @author Terry Jia
  */
 public class UpgradeTasksContentProvider implements IStructuredContentProvider {
 
+	public static final Object NO_TASKS = new Object();
+
+	public static final Object NO_UPGRADE_PLAN_ACTIVE = new Object();
+
 	@Override
-	public Object[] getElements(Object inputElement) {
-
-		// TODO need to get task list basing on one Upgrade Plan
-
-		Bundle bundle = FrameworkUtil.getBundle(getClass());
-
-		BundleContext context = bundle.getBundleContext();
-
-		return _getUpgradeTasks(context).toArray();
-	}
-
-	private List<UpgradeTask> _getUpgradeTasks(BundleContext context) {
-		List<UpgradeTask> upgradeTasks = new ArrayList<>();
-
-		try {
-			List<ServiceReference<UpgradeTask>> references = new ArrayList<>();
-
-			references.addAll(context.getServiceReferences(UpgradeTask.class, null));
-
-			for (ServiceReference<UpgradeTask> reference : references) {
-				upgradeTasks.add(context.getService(reference));
-			}
-
-			upgradeTasks.sort(
-				(task1, task2) -> {
-					int priority1 = 0;
-
-					try {
-						priority1 = Integer.parseInt((String)task1.getProperty("task.priority"));
-					}
-					catch (NumberFormatException nfe) {
-					}
-
-					int priority2 = 0;
-
-					try {
-						priority2 = Integer.parseInt((String)task2.getProperty("task.priority"));
-					}
-					catch (NumberFormatException nfe) {
-					}
-
-					return priority2 - priority1;
-				});
+	public Object[] getElements(Object element) {
+		if (NO_UPGRADE_PLAN_ACTIVE.equals(element)) {
+			return new Object[] {NO_TASKS};
 		}
-		catch (InvalidSyntaxException ise) {
-		}
+		else if (element instanceof UpgradePlan) {
+			UpgradePlan upgradePlan = (UpgradePlan)element;
 
-		return upgradeTasks;
+			List<UpgradeTask> upgradeTasks = upgradePlan.getTasks();
+
+			return upgradeTasks.toArray(new UpgradeTask[0]);
+		}
+		else {
+			return null;
+		}
 	}
 
 }

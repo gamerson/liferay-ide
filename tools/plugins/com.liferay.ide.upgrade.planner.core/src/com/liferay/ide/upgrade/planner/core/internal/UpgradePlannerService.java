@@ -38,6 +38,10 @@ public class UpgradePlannerService implements UpgradePlanner {
 	@Override
 	public void addListener(UpgradeListener upgradeListener) {
 		synchronized (this) {
+			if (_upgradeListeners.contains(upgradeListener)) {
+				return;
+			}
+
 			_upgradeListeners.add(upgradeListener);
 
 			for (UpgradeEvent upgradeEvent : _upgradeEvents) {
@@ -56,6 +60,8 @@ public class UpgradePlannerService implements UpgradePlanner {
 
 		synchronized (this) {
 			upgradeListeners = Collections.unmodifiableCollection(_upgradeListeners);
+
+			_upgradeEvents.add(upgradeEvent);
 		}
 
 		for (UpgradeListener upgradeListener : upgradeListeners) {

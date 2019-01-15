@@ -18,11 +18,14 @@ import java.util.List;
 
 /**
  * @author Terry Jia
+ * @author Gregory Amerson
  */
 public interface UpgradeTask {
 
-	public Object getProperty(String key);
+	public String getCategoryId();
 
 	public List<UpgradeTaskStep> getSteps();
+
+	public String getTitle();
 
 }

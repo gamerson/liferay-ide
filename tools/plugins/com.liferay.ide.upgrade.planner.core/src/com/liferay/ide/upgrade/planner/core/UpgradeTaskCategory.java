@@ -12,25 +12,15 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.ui.plan;
-
-import com.liferay.ide.upgrade.planner.core.NewUpgradePlanOp;
-
-import org.eclipse.sapphire.ui.def.DefinitionLoader;
-import org.eclipse.sapphire.ui.forms.swt.SapphireDialog;
-import org.eclipse.swt.widgets.Shell;
+package com.liferay.ide.upgrade.planner.core;
 
 /**
- * @author Terry Jia
+ * @author Gregory Amerson
  */
-public class NewUpgradePlanDialog extends SapphireDialog {
+public interface UpgradeTaskCategory {
 
-	public NewUpgradePlanDialog(Shell shell) {
-		super(shell, _op(), DefinitionLoader.sdef(NewUpgradePlanDialog.class).dialog());
-	}
+	public String getId();
 
-	private static NewUpgradePlanOp _op() {
-		return NewUpgradePlanOp.TYPE.instantiate();
-	}
+	public String getTitle();
 
 }
