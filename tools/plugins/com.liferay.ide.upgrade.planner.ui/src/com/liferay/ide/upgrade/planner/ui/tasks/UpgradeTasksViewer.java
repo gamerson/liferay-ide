@@ -19,6 +19,7 @@ import com.liferay.ide.upgrade.planner.core.UpgradeListener;
 import com.liferay.ide.upgrade.planner.core.UpgradePlan;
 import com.liferay.ide.upgrade.planner.core.UpgradePlanStartedEvent;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 
@@ -28,8 +29,8 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class UpgradeTasksViewer implements UpgradeListener {
 
-	public UpgradeTasksViewer(Composite parent) {
-		_tableViewer = new TableViewer(parent);
+	public UpgradeTasksViewer(Composite parentComposite) {
+		_tableViewer = new TableViewer(parentComposite);
 
 		_tableViewer.setContentProvider(new UpgradeTasksContentProvider());
 		_tableViewer.setLabelProvider(new UpgradeTasksLabelProvider());
@@ -39,6 +40,14 @@ public class UpgradeTasksViewer implements UpgradeListener {
 
 	public Object getInput() {
 		return _tableViewer.getInput();
+	}
+
+	public ISelection getSelection() {
+		if (_tableViewer != null) {
+			return _tableViewer.getSelection();
+		}
+
+		return null;
 	}
 
 	@Override

@@ -16,6 +16,7 @@ package com.liferay.ide.upgrade.planner.ui;
 
 import com.liferay.ide.upgrade.planner.core.UpgradePlan;
 import com.liferay.ide.upgrade.planner.core.UpgradePlanner;
+import com.liferay.ide.upgrade.planner.ui.tasks.UpgradeTaskStepsViewer;
 import com.liferay.ide.upgrade.planner.ui.tasks.UpgradeTasksViewer;
 
 import org.eclipse.swt.layout.FillLayout;
@@ -45,6 +46,15 @@ public class UpgradePlannerView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parentComposite) {
 		_createPartControl(parentComposite);
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+
+		if (_upgradeTaskStepsViewer != null) {
+			_upgradeTaskStepsViewer.dispose();
+		}
 	}
 
 	public UpgradeTasksViewer getTasksViewer() {
@@ -103,10 +113,13 @@ public class UpgradePlannerView extends ViewPart {
 		UpgradePlanner upgradePlanner = _serviceTracker.getService();
 
 		upgradePlanner.addListener(_upgradeTasksViewer);
+
+		_upgradeTaskStepsViewer = new UpgradeTaskStepsViewer(parentComposite, _upgradeTasksViewer);
 	}
 
 	private static ServiceTracker<UpgradePlanner, UpgradePlanner> _serviceTracker;
 
+	private UpgradeTaskStepsViewer _upgradeTaskStepsViewer;
 	private UpgradeTasksViewer _upgradeTasksViewer;
 
 }

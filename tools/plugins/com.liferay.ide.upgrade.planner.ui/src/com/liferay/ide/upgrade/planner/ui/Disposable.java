@@ -12,22 +12,14 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.core;
-
-import java.util.List;
+package com.liferay.ide.upgrade.planner.ui;
 
 /**
- * @author Terry Jia
  * @author Gregory Amerson
  */
-public interface UpgradeTask {
+@FunctionalInterface
+public interface Disposable {
 
-	public String getCategoryId();
-
-	public String getDescription();
-
-	public List<UpgradeTaskStep> getSteps();
-
-	public String getTitle();
+	public void dispose();
 
 }

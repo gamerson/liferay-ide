@@ -19,13 +19,20 @@ import org.eclipse.core.runtime.IStatus;
 
 /**
  * @author Terry Jia
+ * @author Gregory Amerson
  */
 public interface UpgradeTaskStep {
 
 	public IStatus execute(IProgressMonitor progressMonitor);
 
-	public Object getProperty(String key);
+	public String getDescription();
 
-	public WorkStatus getStatus();
+	public UpgradeTaskStepRequirement getRequirement();
+
+	public UpgradeTaskStepStatus getStatus();
+
+	public String getTitle();
+
+	public String getUrl();
 
 }
