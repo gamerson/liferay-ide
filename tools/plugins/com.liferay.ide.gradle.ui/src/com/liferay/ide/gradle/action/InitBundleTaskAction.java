@@ -44,7 +44,7 @@ public class InitBundleTaskAction extends GradleTaskAction {
 
 	@Override
 	protected String getGradleTask() {
-		return "initBundle";
+		return getProjectPath() + ":initBundle";
 	}
 
 }

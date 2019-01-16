@@ -36,6 +36,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
+import org.gradle.tooling.model.GradleProject;
+
 /**
  * @author Lovett Li
  * @author Terry Jia
@@ -125,6 +127,18 @@ public abstract class GradleTaskAction extends AbstractObjectAction {
 	}
 
 	protected abstract String getGradleTask();
+
+	protected String getProjectPath() {
+		GradleProject workspaceGradleModel = GradleUtil.getWorkspaceGradleModel(project);
+
+		GradleProject projectModel = GradleUtil.getNestedGradleModel(workspaceGradleModel, project.getName());
+
+		if (projectModel == null) {
+			return null;
+		}
+
+		return projectModel.getPath();
+	}
 
 	protected IFile gradleBuildFile = null;
 	protected IProject project = null;

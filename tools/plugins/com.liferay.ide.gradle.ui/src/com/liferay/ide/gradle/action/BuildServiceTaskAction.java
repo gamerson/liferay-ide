@@ -69,7 +69,7 @@ public class BuildServiceTaskAction extends GradleTaskAction {
 
 	@Override
 	protected String getGradleTask() {
-		return "buildService";
+		return getProjectPath() + ":buildService";
 	}
 
 }

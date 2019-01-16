@@ -22,20 +22,17 @@ import com.liferay.ide.gradle.ui.LiferayGradleUI;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.gogo.GogoTelnetClient;
 import com.liferay.ide.server.core.portal.PortalServerBehavior;
-import com.liferay.ide.ui.action.AbstractObjectAction;
 import com.liferay.ide.ui.util.UIUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +49,6 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -62,25 +58,11 @@ import org.eclipse.wst.server.core.ServerCore;
  * @author Terry Jia
  * @author Simon Jiang
  */
-public class WatchTaskAction extends AbstractObjectAction {
+public class WatchTaskAction extends GradleTaskAction {
 
 	@Override
 	public void run(IAction action) {
-		if (fSelection instanceof IStructuredSelection) {
-			Object[] elements = ((IStructuredSelection)fSelection).toArray();
-
-			if (ListUtil.isEmpty(elements)) {
-				return;
-			}
-
-			Object element = elements[0];
-
-			if (!(element instanceof IProject)) {
-				return;
-			}
-
-			IProject project = (IProject)element;
-
+		if (project != null) {
 			String jobName =
 				project.getName() + ":" + LiferayGradleCore.LIFERAY_WATCH + ":" +
 					LiferayGradleUI.LIFERAY_STANDALONE_WATCH_JOB_SUFFIX;
@@ -94,7 +76,7 @@ public class WatchTaskAction extends AbstractObjectAction {
 			}
 
 			Job job = new WatchJob(
-				project, Arrays.asList("watch"), LiferayGradleUI.LIFERAY_STANDALONE_WATCH_JOB_SUFFIX);
+				project, Arrays.asList(getGradleTask()), LiferayGradleUI.LIFERAY_STANDALONE_WATCH_JOB_SUFFIX);
 
 			job.addJobChangeListener(
 				new JobChangeAdapter() {
@@ -166,6 +148,11 @@ public class WatchTaskAction extends AbstractObjectAction {
 			job.setSystem(false);
 			job.schedule();
 		}
+	}
+
+	@Override
+	protected String getGradleTask() {
+		return "watch";
 	}
 
 	private List<Path> _getBndPaths(IProject project) {

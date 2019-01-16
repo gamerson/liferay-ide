@@ -21,7 +21,7 @@ public class BuildCssTaskAction extends GradleTaskAction {
 
 	@Override
 	protected String getGradleTask() {
-		return "buildCSS";
+		return getProjectPath() + ":buildCSS";
 	}
 
 }
