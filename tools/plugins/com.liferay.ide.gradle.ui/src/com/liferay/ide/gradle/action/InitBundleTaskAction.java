@@ -16,22 +16,12 @@ package com.liferay.ide.gradle.action;
 
 import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
-
 /**
  * @author Terry Jia
  * @author Charles Wu
  * @author Simon Jiang
  */
 public class InitBundleTaskAction extends GradleTaskAction {
-
-	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
-		super.selectionChanged(action, selection);
-
-		action.setEnabled(LiferayWorkspaceUtil.isValidWorkspace(project));
-	}
 
 	protected void afterAction() {
 		LiferayWorkspaceUtil.addPortalRuntime();
@@ -43,7 +33,7 @@ public class InitBundleTaskAction extends GradleTaskAction {
 	}
 
 	@Override
-	protected String getGradleTask() {
+	protected String getGradleTaskName() {
 		return "initBundle";
 	}
 
