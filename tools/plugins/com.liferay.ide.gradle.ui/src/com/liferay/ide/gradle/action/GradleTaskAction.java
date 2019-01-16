@@ -15,11 +15,16 @@
 package com.liferay.ide.gradle.action;
 
 import com.liferay.ide.core.ILiferayProjectProvider;
-import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.gradle.core.GradleUtil;
 import com.liferay.ide.gradle.ui.LiferayGradleUI;
 import com.liferay.ide.ui.action.AbstractObjectAction;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -36,6 +41,10 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
+import org.gradle.tooling.model.DomainObjectSet;
+import org.gradle.tooling.model.GradleProject;
+import org.gradle.tooling.model.GradleTask;
+
 /**
  * @author Lovett Li
  * @author Terry Jia
@@ -49,27 +58,29 @@ public abstract class GradleTaskAction extends AbstractObjectAction {
 
 	public void run(IAction action) {
 		if (fSelection instanceof IStructuredSelection) {
-			if (FileUtil.notExists(gradleBuildFile)) {
+			final List<String> gradleTasks = getGradleTasks();
+
+			if (ListUtil.isEmpty(gradleTasks)) {
 				return;
 			}
 
 			beforeAction();
 
-			Job job = new Job(project.getName() + " - " + getGradleTask()) {
+			Job job = new Job(project.getName() + " - " + getGradleTaskName()) {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
-						monitor.beginTask(getGradleTask(), 100);
+						monitor.beginTask(getGradleTaskName(), 100);
 
 						monitor.worked(20);
 
-						GradleUtil.runGradleTask(project, getGradleTask(), monitor);
+						GradleUtil.runGradleTask(project, gradleTasks.toArray(new String[gradleTasks.size()]), monitor);
 
 						monitor.worked(80);
 					}
 					catch (Exception e) {
-						return LiferayGradleUI.createErrorStatus("Error running Gradle goal " + getGradleTask(), e);
+						return LiferayGradleUI.createErrorStatus("Error running Gradle goal " + getGradleTaskName(), e);
 					}
 
 					return Status.OK_STATUS;
@@ -121,12 +132,82 @@ public abstract class GradleTaskAction extends AbstractObjectAction {
 					gradleBuildFile = project.getFile("build.gradle");
 				}
 			}
+
+			action.setEnabled(ListUtil.isNotEmpty(getGradleTasks()));
 		}
 	}
 
-	protected abstract String getGradleTask();
+	protected abstract String getGradleTaskName();
+
+	protected List<String> getGradleTasks() {
+		GradleProject gradleProject = _getGradleProject();
+
+		if (gradleProject == null) {
+			return Collections.emptyList();
+		}
+
+		List<GradleTask> tasks = new ArrayList<>();
+
+		_filterTask(gradleProject, getGradleTaskName(), tasks);
+
+		Stream<GradleTask> taskStream = tasks.stream();
+
+		List<String> taskString = taskStream.map(
+			task -> task.getPath()
+		).collect(
+			Collectors.toList()
+		);
+
+		return taskString;
+	}
 
 	protected IFile gradleBuildFile = null;
 	protected IProject project = null;
+
+	private void _filterTask(GradleProject projectModel, String taskName, List<GradleTask> tasks) {
+		boolean parentHasTask = false;
+
+		if (projectModel == null) {
+			return;
+		}
+
+		DomainObjectSet<? extends GradleTask> gradleTasks = projectModel.getTasks();
+
+		for (GradleTask task : gradleTasks) {
+			if (taskName.equals(task.getName())) {
+				tasks.add(task);
+				parentHasTask = true;
+
+				break;
+			}
+		}
+
+		if (parentHasTask) {
+			return;
+		}
+		else {
+			DomainObjectSet<? extends GradleProject> childrenProjects = projectModel.getChildren();
+
+			for (GradleProject gradleProject : childrenProjects) {
+				 _filterTask(gradleProject, taskName, tasks);
+			}
+		}
+
+		return;
+	}
+
+	private GradleProject _getGradleProject() {
+		if (project == null) {
+			return null;
+		}
+
+		GradleProject workspaceGradleModel = GradleUtil.getWorkspaceGradleModel(project);
+
+		if (workspaceGradleModel == null) {
+			return null;
+		}
+
+		return GradleUtil.getNestedGradleModel(workspaceGradleModel, project.getName());
+	}
 
 }
