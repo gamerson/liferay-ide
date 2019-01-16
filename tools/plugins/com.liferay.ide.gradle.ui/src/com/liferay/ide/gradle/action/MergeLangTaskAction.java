@@ -21,7 +21,7 @@ public class MergeLangTaskAction extends GradleTaskAction {
 
 	@Override
 	protected String getGradleTask() {
-		return "mergeLang";
+		return getProjectPath() + ":mergeLang";
 	}
 
 }

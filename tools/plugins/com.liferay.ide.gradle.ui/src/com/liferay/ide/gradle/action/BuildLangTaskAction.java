@@ -21,7 +21,7 @@ public class BuildLangTaskAction extends GradleTaskAction {
 
 	@Override
 	protected String getGradleTask() {
-		return "buildLang";
+		return getProjectPath() + ":buildLang";
 	}
 
 }

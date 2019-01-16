@@ -39,11 +39,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import org.gradle.tooling.CancellationTokenSource;
 import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.model.DomainObjectSet;
+import org.gradle.tooling.model.GradleProject;
 
 import org.osgi.framework.Version;
 
@@ -54,6 +57,67 @@ import org.osgi.framework.Version;
  * @author Simon Jiang
  */
 public class GradleUtil {
+
+	public static GradleProject getNestedGradleModel(GradleProject gradleProject, String projectName) {
+		GradleProject retVal = null;
+
+		try {
+			if (gradleProject == null) {
+				return retVal;
+			}
+
+			String targetName = gradleProject.getName();
+
+			if (targetName.equals(projectName)) {
+				return gradleProject;
+			}
+
+			DomainObjectSet<? extends GradleProject> childrenGradleProjects = gradleProject.getChildren();
+
+			if (!childrenGradleProjects.isEmpty()) {
+				for (GradleProject childProject : childrenGradleProjects) {
+					String name = childProject.getName();
+
+					if (name.equals(projectName)) {
+						return childProject;
+					}
+
+					retVal = getNestedGradleModel(childProject, projectName);
+
+					if (retVal != null) {
+						return retVal;
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			LiferayGradleCore.logError("Fetch gradle model error ", e);
+		}
+
+		return retVal;
+	}
+
+	public static GradleProject getWorkspaceGradleModel(IProject project) {
+		try {
+			GradleWorkspace gradleWorkspace = GradleCore.getWorkspace();
+
+			Optional<GradleBuild> buildOptional = gradleWorkspace.getBuild(project);
+
+			GradleBuild gradleBuild = buildOptional.get();
+
+			return gradleBuild.withConnection(
+				connection -> {
+					return connection.model(
+						GradleProject.class
+					).get();
+				},
+				new NullProgressMonitor());
+		}
+		catch (Exception e) {
+		}
+
+		return null;
+	}
 
 	public static boolean isBuildFile(IFile buildFile) {
 		if (FileUtil.exists(buildFile) && "build.gradle".equals(buildFile.getName()) &&
