@@ -12,13 +12,16 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.core;
+package com.liferay.ide.upgrade.planner.core.internal;
+
+import com.liferay.ide.upgrade.planner.core.BaseUpgradeTaskCategory;
+import com.liferay.ide.upgrade.planner.core.UpgradeTaskCategory;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Gregory Amerson
  */
-public enum UpgradeTaskStepRequirement {
-
-	OPTIONAL, RECOMMENDED, REQUIRED
-
+@Component(property = {"id=database", "title=Database Upgrade"}, service = UpgradeTaskCategory.class)
+public class DatabaseUpgradeTaskCategory extends BaseUpgradeTaskCategory {
 }

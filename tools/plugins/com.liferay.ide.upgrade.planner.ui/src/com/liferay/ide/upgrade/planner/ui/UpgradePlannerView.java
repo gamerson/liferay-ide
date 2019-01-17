@@ -57,10 +57,6 @@ public class UpgradePlannerView extends ViewPart {
 		}
 	}
 
-	public UpgradeTasksViewer getTasksViewer() {
-		return _upgradeTasksViewer;
-	}
-
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
@@ -115,6 +111,8 @@ public class UpgradePlannerView extends ViewPart {
 		upgradePlanner.addListener(_upgradeTasksViewer);
 
 		_upgradeTaskStepsViewer = new UpgradeTaskStepsViewer(parentComposite, _upgradeTasksViewer);
+
+		_upgradeTasksViewer.addPostSelectionChangedListener(_upgradeTaskStepsViewer);
 	}
 
 	private static ServiceTracker<UpgradePlanner, UpgradePlanner> _serviceTracker;

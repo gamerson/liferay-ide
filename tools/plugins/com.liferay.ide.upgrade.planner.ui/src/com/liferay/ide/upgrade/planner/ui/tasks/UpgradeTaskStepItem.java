@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -51,16 +52,24 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
  */
 public class UpgradeTaskStepItem implements Disposable {
 
-	public UpgradeTaskStepItem(Composite parentComposite, UpgradeTaskStep upgradeTaskStep) {
-		_parentComposite = parentComposite;
+	public UpgradeTaskStepItem(ScrolledForm scrolledForm, UpgradeTaskStep upgradeTaskStep) {
+		_scrolledForm = scrolledForm;
 		_upgradeTaskStep = upgradeTaskStep;
 
-		_formToolkit = new FormToolkit(_parentComposite.getDisplay());
+		Display display = _scrolledForm.getDisplay();
 
-		_checkDoneLabel = _formToolkit.createLabel(_parentComposite, " ");
+		Composite parentComposite = _scrolledForm.getBody();
+
+		_formToolkit = new FormToolkit(display);
+
+		_checkDoneLabel = _formToolkit.createLabel(parentComposite, " ");
+
+		_disposables.add(() -> _checkDoneLabel.dispose());
 
 		_mainItemComposite = _formToolkit.createExpandableComposite(
-			_parentComposite, ExpandableComposite.TWISTIE | ExpandableComposite.COMPACT);
+			parentComposite, ExpandableComposite.COMPACT | ExpandableComposite.TWISTIE);
+
+		_mainItemComposite.setData("upgradeTaskStep", _upgradeTaskStep);
 
 		String title = _upgradeTaskStep.getTitle();
 
@@ -72,36 +81,108 @@ public class UpgradeTaskStepItem implements Disposable {
 
 		_mainItemComposite.setText(title);
 
-		_mainItemComposite.setData("step", _upgradeTaskStep);
+		_disposables.add(() -> _mainItemComposite.dispose());
 
 		_titleComposite = _formToolkit.createComposite(_mainItemComposite);
 
-		int number = 1;
+		GridLayout gridLayout = new GridLayout(1, false);
 
-		GridLayout layout = new GridLayout(number, false);
+		GridData gridData = new GridData(GridData.FILL_BOTH);
 
-		GridData data = new GridData(GridData.FILL_BOTH);
+		_titleComposite.setLayout(gridLayout);
+		_titleComposite.setLayoutData(gridData);
 
-		_titleComposite.setLayout(layout);
-		_titleComposite.setLayoutData(data);
+		gridLayout.marginHeight = 0;
+		gridLayout.marginWidth = 0;
+		gridLayout.verticalSpacing = 0;
 
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-		layout.verticalSpacing = 0;
+		_disposables.add(() -> _titleComposite.dispose());
 
-		bodyWrapperComposite = _formToolkit.createComposite(_mainItemComposite);
+		Composite bodyComposite = _formToolkit.createComposite(_mainItemComposite);
 
-		_mainItemComposite.setClient(bodyWrapperComposite);
+		_mainItemComposite.setClient(bodyComposite);
 
-		bodyWrapperComposite.setLayout(new TableWrapLayout());
+		bodyComposite.setLayout(new TableWrapLayout());
 
-		bodyWrapperComposite.setLayoutData(new TableWrapData(TableWrapData.FILL));
+		bodyComposite.setLayoutData(new TableWrapData(TableWrapData.FILL));
+
+		_disposables.add(() -> bodyComposite.dispose());
 
 		String description = _upgradeTaskStep.getDescription();
 
-		_bodyText = _formToolkit.createLabel(bodyWrapperComposite, description);
+		Label label = _formToolkit.createLabel(bodyComposite, description);
 
-		handleButtons();
+		_disposables.add(() -> label.dispose());
+
+		if (_upgradeTaskStep == null) {
+			return;
+		}
+
+		_buttonComposite = _formToolkit.createComposite(bodyComposite);
+
+		GridLayout buttonGridLayout = new GridLayout(4, false);
+
+		buttonGridLayout.marginHeight = 2;
+		buttonGridLayout.marginWidth = 2;
+		buttonGridLayout.verticalSpacing = 2;
+
+		_buttonComposite.setLayout(buttonGridLayout);
+
+		_buttonComposite.setLayoutData(new TableWrapData(TableWrapData.FILL));
+
+		_disposables.add(() -> _buttonComposite.dispose());
+
+		Label fillLabel = _formToolkit.createLabel(_buttonComposite, null);
+
+		gridData = new GridData();
+
+		gridData.widthHint = 16;
+
+		fillLabel.setLayoutData(gridData);
+
+		_disposables.add(() -> fillLabel.dispose());
+
+		Image taskStartImage = UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.COMPOSITE_TASK_START_IMAGE);
+
+		ImageHyperlink performImageHyperlink = _createImageHyperlink(_buttonComposite, taskStartImage, this, "Perform");
+
+		performImageHyperlink.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+		performImageHyperlink.addHyperlinkListener(
+			new HyperlinkAdapter() {
+
+				@Override
+				public void linkActivated(HyperlinkEvent e) {
+					_upgradeTaskStep.execute(new NullProgressMonitor());
+				}
+
+			});
+
+		_disposables.add(() -> performImageHyperlink.dispose());
+
+		String url = _upgradeTaskStep.getUrl();
+
+		if (CoreUtil.isNotNullOrEmpty(url)) {
+			ImageHyperlink openDocumentImageHyperlink = _createImageHyperlink(
+				_buttonComposite, taskStartImage, this, "Open document");
+
+			openDocumentImageHyperlink.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+			openDocumentImageHyperlink.addHyperlinkListener(
+				new HyperlinkAdapter() {
+
+					@Override
+					public void linkActivated(HyperlinkEvent e) {
+						try {
+							UIUtil.openURL(new URL(url));
+						}
+						catch (Exception ex) {
+							UpgradePlannerUIPlugin.logError("Could not open external browser.", ex);
+						}
+					}
+
+				});
+		}
 
 		_boldFont = _mainItemComposite.getFont();
 
@@ -111,7 +192,7 @@ public class UpgradeTaskStepItem implements Disposable {
 			fontData.setStyle(fontData.getStyle() ^ SWT.BOLD);
 		}
 
-		_regularFont = new Font(_mainItemComposite.getDisplay(), fontDatas);
+		_regularFont = new Font(display, fontDatas);
 
 		setBold(false);
 	}
@@ -131,75 +212,6 @@ public class UpgradeTaskStepItem implements Disposable {
 			catch (Throwable t) {
 			}
 		}
-	}
-
-	public void handleButtons() {
-		if (_upgradeTaskStep == null) {
-			return;
-		}
-
-		buttonComposite = _formToolkit.createComposite(bodyWrapperComposite);
-
-		GridLayout buttonlayout = new GridLayout(4, false);
-
-		buttonlayout.marginHeight = 2;
-		buttonlayout.marginWidth = 2;
-		buttonlayout.verticalSpacing = 2;
-
-		TableWrapData buttonData = new TableWrapData(TableWrapData.FILL);
-
-		buttonComposite.setLayout(buttonlayout);
-		buttonComposite.setLayoutData(buttonData);
-
-		Label filllabel = _formToolkit.createLabel(buttonComposite, null);
-
-		GridData filldata = new GridData();
-
-		filldata.widthHint = 16;
-		filllabel.setLayoutData(filldata);
-
-		Image taskStartImage = UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.COMPOSITE_TASK_START_IMAGE);
-
-		_performButton = createButtonWithText(buttonComposite, taskStartImage, this, "Perform");
-
-		_performButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-		_performButton.addHyperlinkListener(
-			new HyperlinkAdapter() {
-
-				@Override
-				public void linkActivated(HyperlinkEvent e) {
-					_upgradeTaskStep.execute(new NullProgressMonitor());
-				}
-
-			});
-
-		String url = _upgradeTaskStep.getUrl();
-
-		if (CoreUtil.isNotNullOrEmpty(url)) {
-			_openDowcumentButton = createButtonWithText(buttonComposite, taskStartImage, this, "Open document");
-
-			_openDowcumentButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-			_openDowcumentButton.addHyperlinkListener(
-				new HyperlinkAdapter() {
-
-					@Override
-					public void linkActivated(HyperlinkEvent e) {
-						try {
-							UIUtil.openURL(new URL(url));
-						}
-						catch (Exception ex) {
-							UpgradePlannerUIPlugin.logError("Could not open external browser.", ex);
-						}
-					}
-
-				});
-		}
-	}
-
-	public boolean hasCompletionMessage() {
-		return false;
 	}
 
 	public void initialized() {
@@ -223,10 +235,7 @@ public class UpgradeTaskStepItem implements Disposable {
 	}
 
 	public void redraw() {
-		_mainItemComposite.redraw();
-		_titleComposite.redraw();
-		bodyWrapperComposite.redraw();
-		_parentComposite.redraw();
+		_scrolledForm.redraw();
 	}
 
 	public void setAsCurrentActiveItem() {
@@ -256,8 +265,8 @@ public class UpgradeTaskStepItem implements Disposable {
 	}
 
 	public void setButtonsVisible(boolean visible) {
-		if ((_buttonExpanded != visible) && (buttonComposite != null)) {
-			buttonComposite.setVisible(visible);
+		if ((_buttonExpanded != visible) && (_buttonComposite != null)) {
+			_buttonComposite.setVisible(visible);
 		}
 
 		if (visible && _initialized) {
@@ -272,7 +281,7 @@ public class UpgradeTaskStepItem implements Disposable {
 			_mainItemComposite.setExpanded(false);
 
 			if (_initialized) {
-				_getForm().reflow(true);
+				_scrolledForm.reflow(true);
 
 				FormToolkit.ensureVisible(_mainItemComposite);
 			}
@@ -295,7 +304,7 @@ public class UpgradeTaskStepItem implements Disposable {
 			_mainItemComposite.setExpanded(true);
 
 			if (_initialized) {
-				_getForm().reflow(true);
+				_scrolledForm.reflow(true);
 
 				FormToolkit.ensureVisible(_mainItemComposite);
 			}
@@ -318,26 +327,13 @@ public class UpgradeTaskStepItem implements Disposable {
 		}
 	}
 
-	protected ImageHyperlink createButtonWithText(
-		Composite parent, Image image, UpgradeTaskStepItem item, String linkText) {
-
-		ImageHyperlink button = _formToolkit.createImageHyperlink(parent, SWT.NULL);
-
-		button.setImage(image);
-		button.setData(item);
-		button.setText(linkText);
-		button.setToolTipText(linkText);
-
-		return button;
-	}
-
 	protected void setCompletionMessageCollapsed() {
-		if ((completionComposite != null) && _completionMessageExpanded) {
-			completionComposite.dispose();
+		if ((_completionComposite != null) && _completionMessageExpanded) {
+			_completionComposite.dispose();
 
-			completionComposite = null;
+			_completionComposite = null;
 
-			_getForm().reflow(true);
+			_scrolledForm.reflow(true);
 		}
 
 		_completionMessageExpanded = false;
@@ -349,37 +345,39 @@ public class UpgradeTaskStepItem implements Disposable {
 		FormToolkit.ensureVisible(_mainItemComposite);
 	}
 
-	protected FormToolkit _formToolkit;
-	protected Composite bodyWrapperComposite;
-	protected Composite buttonComposite;
-	protected Composite completionComposite;
+	private ImageHyperlink _createImageHyperlink(Composite parentComposite, Image image, Object data, String linkText) {
+		ImageHyperlink imageHyperlink = _formToolkit.createImageHyperlink(parentComposite, SWT.NULL);
+
+		imageHyperlink.setData(data);
+		imageHyperlink.setImage(image);
+		imageHyperlink.setText(linkText);
+		imageHyperlink.setToolTipText(linkText);
+
+		return imageHyperlink;
+	}
 
 	private Image _getCompleteImage() {
 		return UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.ITEM_COMPLETE_IMAGE);
-	}
-
-	private ScrolledForm _getForm() {
-		return _viewer.getForm();
 	}
 
 	private Image _getSkipImage() {
 		return UpgradePlannerUIPlugin.getImage(UpgradePlannerUIPlugin.ITEM_SKIP_IMAGE);
 	}
 
-	private Label _bodyText;
 	private boolean _bold = true;
 	private Font _boldFont;
+	private Composite _buttonComposite;
 	private boolean _buttonExpanded = true;
 	private Label _checkDoneLabel;
 	private boolean _completed;
+	private Composite _completionComposite;
 	private boolean _completionMessageExpanded = false;
 	private List<Disposable> _disposables = new ArrayList<>();
+	private FormToolkit _formToolkit;
 	private boolean _initialized;
 	private ExpandableComposite _mainItemComposite;
-	private ImageHyperlink _openDowcumentButton;
-	private final Composite _parentComposite;
-	private ImageHyperlink _performButton;
 	private Font _regularFont;
+	private ScrolledForm _scrolledForm;
 	private boolean _skipped;
 	private Composite _titleComposite;
 	private final UpgradeTaskStep _upgradeTaskStep;

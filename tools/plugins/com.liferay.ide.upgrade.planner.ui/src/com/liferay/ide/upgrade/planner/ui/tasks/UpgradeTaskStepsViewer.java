@@ -107,13 +107,13 @@ public class UpgradeTaskStepsViewer implements ISelectionChangedListener {
 		_scrolledForm.setText(upgradeTask.getTitle());
 
 		UpgradeTaskStepItem introUpgradeTaskStepItem = new UpgradeTaskStepItem(
-			_scrolledForm.getBody(), new IntroUpgradeTaskStep(upgradeTask));
+			_scrolledForm, new IntroUpgradeTaskStep(upgradeTask));
 
 		_disposables.add(introUpgradeTaskStepItem);
 		_upgradeTaskStepItems.add(introUpgradeTaskStepItem);
 
 		for (UpgradeTaskStep upgradeTaskStep : upgradeTask.getSteps()) {
-			UpgradeTaskStepItem upgradeTaskStepItem = new UpgradeTaskStepItem(_scrolledForm.getBody(), upgradeTaskStep);
+			UpgradeTaskStepItem upgradeTaskStepItem = new UpgradeTaskStepItem(_scrolledForm, upgradeTaskStep);
 
 			_disposables.add(upgradeTaskStepItem);
 			_upgradeTaskStepItems.add(upgradeTaskStepItem);

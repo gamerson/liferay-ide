@@ -10,5 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/com.liferay.ide.upgrade.planner.core.internal.UpgradePlannerService.xml
+Service-Component: OSGI-INF/com.liferay.ide.upgrade.planner.core.internal.UpgradePlannerService.xml,
+ OSGI-INF/com.liferay.ide.upgrade.planner.core.internal.CodeUpgradeTaskCategory.xml,
+ OSGI-INF/com.liferay.ide.upgrade.planner.core.internal.ConfigUpgradeTaskCategory.xml,
+ OSGI-INF/com.liferay.ide.upgrade.planner.core.internal.DatabaseUpgradeTaskCategory.xml
 Export-Package: com.liferay.ide.upgrade.planner.core
