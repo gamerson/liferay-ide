@@ -17,12 +17,15 @@ package com.liferay.ide.upgrade.planner.ui.tasks;
 import com.liferay.ide.upgrade.planner.core.UpgradeTask;
 import com.liferay.ide.upgrade.planner.core.UpgradeTaskStep;
 import com.liferay.ide.upgrade.planner.ui.Disposable;
+import com.liferay.ide.upgrade.planner.ui.UpgradePlannerUIPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
@@ -34,7 +37,7 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
  * @author Terry Jia
  * @author Gregory Amerson
  */
-public class UpgradeTaskStepsViewer implements ISelectionChangedListener {
+public class UpgradeTaskStepsViewer implements ISelectionProvider {
 
 	public UpgradeTaskStepsViewer(Composite compositeParent, UpgradeTasksViewer upgradeTasksViewer) {
 		_formToolkit = new FormToolkit(compositeParent.getDisplay());
@@ -51,13 +54,19 @@ public class UpgradeTaskStepsViewer implements ISelectionChangedListener {
 		_disposables.add(() -> _formToolkit.dispose());
 		_disposables.add(() -> _scrolledForm.dispose());
 
-		ISelection selection = upgradeTasksViewer.getSelection();
+		_updateFromSelection(upgradeTasksViewer.getSelection());
 
-		UpgradeTask selectedUpgradeTask = _getSelectedUpgradeTask(selection);
+		upgradeTasksViewer.addPostSelectionChangedListener(
+			selectionChangedEvent -> {
+				ISelection selection = selectionChangedEvent.getSelection();
 
-		if (selectedUpgradeTask != null) {
-			_updateTaskStepItems(selectedUpgradeTask);
-		}
+				_updateFromSelection(selection);
+			});
+	}
+
+	@Override
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		_listeners.add(listener);
 	}
 
 	public void dispose() {
@@ -71,14 +80,29 @@ public class UpgradeTaskStepsViewer implements ISelectionChangedListener {
 	}
 
 	@Override
-	public void selectionChanged(SelectionChangedEvent event) {
-		ISelection selection = event.getSelection();
+	public ISelection getSelection() {
+		return null;
+	}
 
-		UpgradeTask upgradeTask = _getSelectedUpgradeTask(selection);
+	@Override
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		_listeners.remove(listener);
+	}
 
-		if (upgradeTask != null) {
-			_updateTaskStepItems(upgradeTask);
-		}
+	@Override
+	public void setSelection(ISelection selection) {
+	}
+
+	private void _fireSelectionChanged(SelectionChangedEvent selectionChangedEvent) {
+		_listeners.forEach(
+			selectionChangedListener -> {
+				try {
+					selectionChangedListener.selectionChanged(selectionChangedEvent);
+				}
+				catch (Exception e) {
+					UpgradePlannerUIPlugin.logError("Error in selection changed listener.", e);
+				}
+			});
 	}
 
 	private UpgradeTask _getSelectedUpgradeTask(ISelection selection) {
@@ -95,6 +119,14 @@ public class UpgradeTaskStepsViewer implements ISelectionChangedListener {
 		return null;
 	}
 
+	private void _updateFromSelection(ISelection selection) {
+		UpgradeTask upgradeTask = _getSelectedUpgradeTask(selection);
+
+		if (upgradeTask != null) {
+			_updateTaskStepItems(upgradeTask);
+		}
+	}
+
 	private void _updateTaskStepItems(UpgradeTask upgradeTask) {
 		for (UpgradeTaskStepItem upgradeTaskStepItem : _upgradeTaskStepItems) {
 			upgradeTaskStepItem.dispose();
@@ -106,17 +138,13 @@ public class UpgradeTaskStepsViewer implements ISelectionChangedListener {
 
 		_scrolledForm.setText(upgradeTask.getTitle());
 
-		UpgradeTaskStepItem introUpgradeTaskStepItem = new UpgradeTaskStepItem(
-			_scrolledForm, new IntroUpgradeTaskStep(upgradeTask));
-
-		_disposables.add(introUpgradeTaskStepItem);
-		_upgradeTaskStepItems.add(introUpgradeTaskStepItem);
-
 		for (UpgradeTaskStep upgradeTaskStep : upgradeTask.getSteps()) {
 			UpgradeTaskStepItem upgradeTaskStepItem = new UpgradeTaskStepItem(_scrolledForm, upgradeTaskStep);
 
 			_disposables.add(upgradeTaskStepItem);
 			_upgradeTaskStepItems.add(upgradeTaskStepItem);
+
+			upgradeTaskStepItem.addSelectionChangedListener(this::_fireSelectionChanged);
 		}
 
 		_scrolledForm.reflow(true);
@@ -124,6 +152,7 @@ public class UpgradeTaskStepsViewer implements ISelectionChangedListener {
 
 	private List<Disposable> _disposables = new ArrayList<>();
 	private FormToolkit _formToolkit;
+	private ListenerList<ISelectionChangedListener> _listeners = new ListenerList<>();
 	private ScrolledForm _scrolledForm;
 	private List<UpgradeTaskStepItem> _upgradeTaskStepItems = new ArrayList<>();
 

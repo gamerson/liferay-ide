@@ -67,6 +67,7 @@
 		<module>com.liferay.ide.upgrade.plan.base</module>
 		<module>com.liferay.ide.upgrade.plan.ui</module>
 		<module>com.liferay.ide.upgrade.planner.core</module>
+		<module>com.liferay.ide.upgrade.planner.tasks</module>
 		<module>com.liferay.ide.upgrade.planner.ui</module>
 		<module>com.liferay.ide.upgrade.task.dependencies</module>
 		<module>com.liferay.ide.upgrade.task.hook</module>

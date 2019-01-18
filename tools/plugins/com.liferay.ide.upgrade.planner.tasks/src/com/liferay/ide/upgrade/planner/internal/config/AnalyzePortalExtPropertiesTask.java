@@ -12,16 +12,22 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.core.internal;
+package com.liferay.ide.upgrade.planner.internal.config;
 
-import com.liferay.ide.upgrade.planner.core.BaseUpgradeTaskCategory;
-import com.liferay.ide.upgrade.planner.core.UpgradeTaskCategory;
+import com.liferay.ide.upgrade.planner.core.BaseUpgradeTask;
+import com.liferay.ide.upgrade.planner.core.UpgradeTask;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Gregory Amerson
  */
-@Component(property = {"id=code", "service.ranking=300", "title=Code Upgrade"}, service = UpgradeTaskCategory.class)
-public class CodeUpgradeTaskCategory extends BaseUpgradeTaskCategory {
+@Component(
+	property = {
+		"categoryId=config", "id=analyze_portal_ext_properties", "service.ranking=100",
+		"title=Analyze Portal Ext Properties"
+	},
+	service = UpgradeTask.class
+)
+public class AnalyzePortalExtPropertiesTask extends BaseUpgradeTask {
 }

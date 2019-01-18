@@ -14,11 +14,17 @@
 
 package com.liferay.ide.upgrade.planner.core;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 
@@ -50,8 +56,13 @@ public abstract class BaseUpgradeTask implements UpgradeTask {
 	}
 
 	@Override
+	public String getId() {
+		return _id;
+	}
+
+	@Override
 	public List<UpgradeTaskStep> getSteps() {
-		return null;
+		return Collections.unmodifiableList(_upgradeTaskSteps);
 	}
 
 	@Override
@@ -73,7 +84,18 @@ public abstract class BaseUpgradeTask implements UpgradeTask {
 		BundleContext bundleContext = componentContext.getBundleContext();
 
 		try {
-			bundleContext.getServiceReferences(UpgradeTaskStep.class, "(taskId=" + _id + ")");
+			Collection<ServiceReference<UpgradeTaskStep>> upgradeTaskStepServiceReferences =
+				bundleContext.getServiceReferences(UpgradeTaskStep.class, "(taskId=" + _id + ")");
+
+			Stream<ServiceReference<UpgradeTaskStep>> stream = upgradeTaskStepServiceReferences.stream();
+
+			_upgradeTaskSteps = stream.map(
+					bundleContext::getService
+				).filter(
+					Objects::nonNull
+				).collect(
+					Collectors.toList()
+				);
 		}
 		catch (InvalidSyntaxException ise) {
 		}
@@ -83,5 +105,6 @@ public abstract class BaseUpgradeTask implements UpgradeTask {
 	private String _description;
 	private String _id;
 	private String _title;
+	private List<UpgradeTaskStep> _upgradeTaskSteps;
 
 }

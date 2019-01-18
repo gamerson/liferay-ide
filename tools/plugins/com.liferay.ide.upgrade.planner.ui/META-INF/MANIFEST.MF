@@ -1,7 +1,9 @@
 Manifest-Version: 1.0
 Bundle-Activator: com.liferay.ide.upgrade.planner.ui.UpgradePlannerUIPlugin
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/flexmark-0.34.48.jar,
+ lib/flexmark-util-0.34.48.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Liferay IDE Upgrade Planner UI
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

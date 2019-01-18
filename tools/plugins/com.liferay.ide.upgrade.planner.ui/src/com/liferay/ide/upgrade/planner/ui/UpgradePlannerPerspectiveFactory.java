@@ -14,6 +14,8 @@
 
 package com.liferay.ide.upgrade.planner.ui;
 
+import com.liferay.ide.upgrade.planner.ui.plan.UpgradePlannInfoView;
+
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -31,19 +33,19 @@ public class UpgradePlannerPerspectiveFactory implements IPerspectiveFactory {
 	public void createInitialLayout(IPageLayout pageLayout) {
 		String editorArea = pageLayout.getEditorArea();
 
-		IFolderLayout topLeftFolderLayout = pageLayout.createFolder("topLeft", IPageLayout.LEFT, 0.4F, editorArea);
+		IFolderLayout topLeftFolderLayout = pageLayout.createFolder("topLeft", IPageLayout.LEFT, 0.5F, editorArea);
 
 		topLeftFolderLayout.addView("org.eclipse.ui.navigator.ProjectExplorer");
 
 		IFolderLayout bottomTopLeftFolderLayout = pageLayout.createFolder(
-			"bottomTopLeft", IPageLayout.BOTTOM, 0.7F, "topLeft");
+			"bottomTopLeft", IPageLayout.BOTTOM, 0.5F, "topLeft");
 
 		bottomTopLeftFolderLayout.addView(UpgradePlannerView.ID);
 
 		IFolderLayout bottomFolderLayout = pageLayout.createFolder("bottom", IPageLayout.BOTTOM, 0.7F, editorArea);
 
 		bottomFolderLayout.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
-		//bottomFolderLayout.addView(UpgradeInfoView.ID);
+		bottomFolderLayout.addView(UpgradePlannInfoView.ID);
 		bottomFolderLayout.addView("org.eclipse.ui.views.AllMarkersView");
 		bottomFolderLayout.addView("org.eclipse.ui.console.ConsoleView");
 	}

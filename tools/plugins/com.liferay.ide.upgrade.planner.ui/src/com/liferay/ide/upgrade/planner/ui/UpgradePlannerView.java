@@ -19,6 +19,11 @@ import com.liferay.ide.upgrade.planner.core.UpgradePlanner;
 import com.liferay.ide.upgrade.planner.ui.tasks.UpgradeTaskStepsViewer;
 import com.liferay.ide.upgrade.planner.ui.tasks.UpgradeTasksViewer;
 
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IMemento;
@@ -35,7 +40,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author Terry Jia
  * @author Gregory Amerson
  */
-public class UpgradePlannerView extends ViewPart {
+public class UpgradePlannerView extends ViewPart implements ISelectionProvider {
 
 	public static final String ID = "com.liferay.ide.upgrade.planner.view";
 
@@ -44,8 +49,17 @@ public class UpgradePlannerView extends ViewPart {
 	}
 
 	@Override
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		_listeners.add(listener);
+	}
+
+	@Override
 	public void createPartControl(Composite parentComposite) {
 		_createPartControl(parentComposite);
+
+		IViewSite viewSite = getViewSite();
+
+		viewSite.setSelectionProvider(this);
 	}
 
 	@Override
@@ -55,6 +69,11 @@ public class UpgradePlannerView extends ViewPart {
 		if (_upgradeTaskStepsViewer != null) {
 			_upgradeTaskStepsViewer.dispose();
 		}
+	}
+
+	@Override
+	public ISelection getSelection() {
+		return _upgradeTaskStepsViewer.getSelection();
 	}
 
 	@Override
@@ -68,6 +87,11 @@ public class UpgradePlannerView extends ViewPart {
 
 			upgradePlanner.startUpgradePlan(upgradePlanName);
 		}
+	}
+
+	@Override
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		_listeners.remove(listener);
 	}
 
 	@Override
@@ -85,6 +109,11 @@ public class UpgradePlannerView extends ViewPart {
 
 	@Override
 	public void setFocus() {
+	}
+
+	@Override
+	public void setSelection(ISelection selection) {
+		_upgradeTaskStepsViewer.setSelection(selection);
 	}
 
 	private static ServiceTracker<UpgradePlanner, UpgradePlanner> _getServiceTracker() {
@@ -112,11 +141,24 @@ public class UpgradePlannerView extends ViewPart {
 
 		_upgradeTaskStepsViewer = new UpgradeTaskStepsViewer(parentComposite, _upgradeTasksViewer);
 
-		_upgradeTasksViewer.addPostSelectionChangedListener(_upgradeTaskStepsViewer);
+		_upgradeTaskStepsViewer.addSelectionChangedListener(this::_fireSelectionChanged);
+	}
+
+	private void _fireSelectionChanged(SelectionChangedEvent selectionChangedEvent) {
+		_listeners.forEach(
+			selectionChangedListener -> {
+				try {
+					selectionChangedListener.selectionChanged(selectionChangedEvent);
+				}
+				catch (Exception e) {
+					UpgradePlannerUIPlugin.logError("Error in selection changed listener.", e);
+				}
+			});
 	}
 
 	private static ServiceTracker<UpgradePlanner, UpgradePlanner> _serviceTracker;
 
+	private ListenerList<ISelectionChangedListener> _listeners = new ListenerList<>();
 	private UpgradeTaskStepsViewer _upgradeTaskStepsViewer;
 	private UpgradeTasksViewer _upgradeTasksViewer;
 

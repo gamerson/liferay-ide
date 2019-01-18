@@ -26,6 +26,8 @@ public interface UpgradeTask {
 
 	public String getDescription();
 
+	public String getId();
+
 	public List<UpgradeTaskStep> getSteps();
 
 	public String getTitle();

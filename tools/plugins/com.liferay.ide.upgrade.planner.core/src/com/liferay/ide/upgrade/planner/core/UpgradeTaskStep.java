@@ -27,6 +27,8 @@ public interface UpgradeTaskStep {
 
 	public String getDescription();
 
+	public String getId();
+
 	public UpgradeTaskStepRequirement getRequirement();
 
 	public UpgradeTaskStepStatus getStatus();

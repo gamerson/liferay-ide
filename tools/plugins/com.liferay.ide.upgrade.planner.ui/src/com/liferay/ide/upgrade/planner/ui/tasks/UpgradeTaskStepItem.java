@@ -26,7 +26,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -36,6 +42,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
@@ -50,7 +57,7 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
  * @author Terry Jia
  * @author Gregory Amerson
  */
-public class UpgradeTaskStepItem implements Disposable {
+public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExpansionListener {
 
 	public UpgradeTaskStepItem(ScrolledForm scrolledForm, UpgradeTaskStep upgradeTaskStep) {
 		_scrolledForm = scrolledForm;
@@ -71,12 +78,16 @@ public class UpgradeTaskStepItem implements Disposable {
 
 		_mainItemComposite.setData("upgradeTaskStep", _upgradeTaskStep);
 
+		_mainItemComposite.addExpansionListener(this);
+
 		String title = _upgradeTaskStep.getTitle();
 
 		UpgradeTaskStepRequirement upgradeStepRequirement = _upgradeTaskStep.getRequirement();
 
 		if (upgradeStepRequirement != null) {
-			title = title + " (" + upgradeStepRequirement + ")";
+			String requirement = upgradeStepRequirement.toString();
+
+			title = title + " (" + requirement.toLowerCase() + ")";
 		}
 
 		_mainItemComposite.setText(title);
@@ -197,11 +208,9 @@ public class UpgradeTaskStepItem implements Disposable {
 		setBold(false);
 	}
 
-	public void addExpansionListener(IExpansionListener listener) {
-		_mainItemComposite.addExpansionListener(listener);
-	}
-
-	public void createCompletionComposite(boolean finalItem) {
+	@Override
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		_listeners.add(listener);
 	}
 
 	public void dispose() {
@@ -212,6 +221,27 @@ public class UpgradeTaskStepItem implements Disposable {
 			catch (Throwable t) {
 			}
 		}
+	}
+
+	@Override
+	public void expansionStateChanged(ExpansionEvent expansionEvent) {
+		ISelection selection = new StructuredSelection(_upgradeTaskStep.getId());
+
+		SelectionChangedEvent selectionChangedEvent = new SelectionChangedEvent(this, selection);
+
+		_listeners.forEach(
+			selectionChangedListener -> {
+				selectionChangedListener.selectionChanged(selectionChangedEvent);
+			});
+	}
+
+	@Override
+	public void expansionStateChanging(ExpansionEvent expansionEvent) {
+	}
+
+	@Override
+	public ISelection getSelection() {
+		return null;
 	}
 
 	public void initialized() {
@@ -236,6 +266,11 @@ public class UpgradeTaskStepItem implements Disposable {
 
 	public void redraw() {
 		_scrolledForm.redraw();
+	}
+
+	@Override
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		_listeners.remove(listener);
 	}
 
 	public void setAsCurrentActiveItem() {
@@ -316,6 +351,10 @@ public class UpgradeTaskStepItem implements Disposable {
 		_completed = false;
 	}
 
+	@Override
+	public void setSelection(ISelection selection) {
+	}
+
 	public void setSkipped() {
 		_skipped = true;
 		_checkDoneLabel.setImage(_getSkipImage());
@@ -375,6 +414,7 @@ public class UpgradeTaskStepItem implements Disposable {
 	private List<Disposable> _disposables = new ArrayList<>();
 	private FormToolkit _formToolkit;
 	private boolean _initialized;
+	private ListenerList<ISelectionChangedListener> _listeners = new ListenerList<>();
 	private ExpandableComposite _mainItemComposite;
 	private Font _regularFont;
 	private ScrolledForm _scrolledForm;

@@ -12,57 +12,37 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.planner.ui.tasks;
+package com.liferay.ide.upgrade.planner.internal.database;
 
-import com.liferay.ide.upgrade.planner.core.UpgradeTask;
+import com.liferay.ide.upgrade.planner.core.BaseUpgradeTaskStep;
 import com.liferay.ide.upgrade.planner.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.planner.core.UpgradeTaskStepRequirement;
 import com.liferay.ide.upgrade.planner.core.UpgradeTaskStepStatus;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Terry Jia
  * @author Gregory Amerson
  */
-public class IntroUpgradeTaskStep implements UpgradeTaskStep {
-
-	public IntroUpgradeTaskStep(UpgradeTask upgradeTask) {
-		_upgradeTask = upgradeTask;
-	}
+@Component(
+	property = {
+		"id=ensure_proper_indexes", "requirement=recommended", "service.ranking=200", "taskId=prepare_database",
+		"title=Ensure Proper Indexes"
+	},
+	service = UpgradeTaskStep.class
+)
+public class EnsureProperIndexesTaskStep extends BaseUpgradeTaskStep {
 
 	@Override
 	public IStatus execute(IProgressMonitor progressMonitor) {
-		return Status.OK_STATUS;
-	}
-
-	@Override
-	public String getDescription() {
-		return _upgradeTask.getDescription();
-	}
-
-	@Override
-	public UpgradeTaskStepRequirement getRequirement() {
 		return null;
 	}
 
 	@Override
 	public UpgradeTaskStepStatus getStatus() {
-		return null;
+		return UpgradeTaskStepStatus.INCOMPLETE;
 	}
-
-	@Override
-	public String getTitle() {
-		return "Introduction";
-	}
-
-	@Override
-	public String getUrl() {
-		return null;
-	}
-
-	private UpgradeTask _upgradeTask;
 
 }

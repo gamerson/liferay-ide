@@ -29,6 +29,7 @@ public abstract class BaseUpgradeTaskStep implements UpgradeTaskStep {
 		Dictionary<String, Object> properties = componentContext.getProperties();
 
 		_description = _getProperty(properties, "description");
+		_id = _getProperty(properties, "id");
 		_requirement = _getProperty(properties, "requirement");
 		_title = _getProperty(properties, "title");
 		_url = _getProperty(properties, "url");
@@ -40,8 +41,13 @@ public abstract class BaseUpgradeTaskStep implements UpgradeTaskStep {
 	}
 
 	@Override
+	public String getId() {
+		return _id;
+	}
+
+	@Override
 	public UpgradeTaskStepRequirement getRequirement() {
-		return UpgradeTaskStepRequirement.valueOf(_requirement);
+		return UpgradeTaskStepRequirement.valueOf(UpgradeTaskStepRequirement.class, _requirement.toUpperCase());
 	}
 
 	@Override
@@ -65,6 +71,7 @@ public abstract class BaseUpgradeTaskStep implements UpgradeTaskStep {
 	}
 
 	private String _description;
+	private String _id;
 	private String _requirement;
 	private String _title;
 	private String _url;
