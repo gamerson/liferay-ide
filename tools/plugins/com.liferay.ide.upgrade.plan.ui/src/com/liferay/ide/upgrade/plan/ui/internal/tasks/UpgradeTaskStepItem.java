@@ -14,25 +14,36 @@
 
 package com.liferay.ide.upgrade.plan.ui.internal.tasks;
 
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.LiferayWorkspaceProject;
 import com.liferay.ide.ui.util.UIUtil;
+import com.liferay.ide.upgrade.plan.core.ProjectUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepRequirement;
+import com.liferay.ide.upgrade.plan.core.WorkspaceUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.ui.Disposable;
 import com.liferay.ide.upgrade.plan.ui.UpgradePlanUIPlugin;
+import com.liferay.ide.upgrade.plan.ui.dialogs.ProjectSelectionDialog;
 
 import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -164,7 +175,7 @@ public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExp
 
 				@Override
 				public void linkActivated(HyperlinkEvent e) {
-					_upgradeTaskStep.execute(new NullProgressMonitor());
+					_execute();
 				}
 
 			});
@@ -393,6 +404,49 @@ public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExp
 		imageHyperlink.setToolTipText(linkText);
 
 		return imageHyperlink;
+	}
+
+	private IStatus _execute() {
+		if (_upgradeTaskStep instanceof ProjectUpgradeTaskStep) {
+			ProjectUpgradeTaskStep projectUpgradeTaskStep = (ProjectUpgradeTaskStep)_upgradeTaskStep;
+
+			ViewerFilter viewerFilter = null;
+			boolean selectAllDefault = false;
+
+			if (_upgradeTaskStep instanceof WorkspaceUpgradeTaskStep) {
+				selectAllDefault = true;
+
+				viewerFilter = new ViewerFilter() {
+
+					@Override
+					public boolean select(Viewer viewer, Object parentElement, Object element) {
+						IProject project = (IProject)element;
+
+						if (LiferayCore.create(LiferayWorkspaceProject.class, project) != null) {
+							return true;
+						}
+
+						return false;
+					}
+
+				};
+			}
+
+			ProjectSelectionDialog dialog = new ProjectSelectionDialog(
+				UIUtil.getActiveShell(), viewerFilter, selectAllDefault);
+
+			if (dialog.open() == Window.OK) {
+				Object[] projects = dialog.getResult();
+
+				return projectUpgradeTaskStep.execute((IProject)projects[0], new NullProgressMonitor());
+			}
+			else {
+				return Status.CANCEL_STATUS;
+			}
+		}
+		else {
+			return _upgradeTaskStep.execute(new NullProgressMonitor());
+		}
 	}
 
 	private Image _getCompleteImage() {
