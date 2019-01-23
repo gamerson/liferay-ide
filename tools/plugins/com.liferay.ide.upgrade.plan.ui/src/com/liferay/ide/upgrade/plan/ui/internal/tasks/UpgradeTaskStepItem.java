@@ -16,8 +16,10 @@ package com.liferay.ide.upgrade.plan.ui.internal.tasks;
 
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.LiferayWorkspaceProject;
 import com.liferay.ide.ui.util.UIUtil;
+import com.liferay.ide.upgrade.plan.core.FolderUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.ProjectUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepRequirement;
@@ -25,6 +27,8 @@ import com.liferay.ide.upgrade.plan.core.WorkspaceUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.ui.Disposable;
 import com.liferay.ide.upgrade.plan.ui.UpgradePlanUIPlugin;
 import com.liferay.ide.upgrade.plan.ui.dialogs.ProjectSelectionDialog;
+
+import java.io.File;
 
 import java.net.URL;
 
@@ -51,6 +55,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.events.ExpansionEvent;
@@ -443,6 +448,21 @@ public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExp
 			else {
 				return Status.CANCEL_STATUS;
 			}
+		}
+		else if (_upgradeTaskStep instanceof FolderUpgradeTaskStep) {
+			FolderUpgradeTaskStep fileUpgradeTaskStep = (FolderUpgradeTaskStep)_upgradeTaskStep;
+
+			DirectoryDialog dialog = new DirectoryDialog(UIUtil.getActiveShell());
+
+			String result = dialog.open();
+
+			File folder = new File(result);
+
+			if (FileUtil.exists(folder)) {
+				fileUpgradeTaskStep.execute(folder, new NullProgressMonitor());
+			}
+
+			return Status.CANCEL_STATUS;
 		}
 		else {
 			return _upgradeTaskStep.execute(new NullProgressMonitor());
