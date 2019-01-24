@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component name="com.liferay.ide.upgrade.plan.tasks.core.internal.workspace.ImportWorkspaceTaskStep" xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0">
 	<property name="id" value="import_liferay_workspace" />
-	<property name="requirement" value="recommended" />
-	<property name="service.ranking" value="0" />
+	<property name="requirement" value="required" />
+	<property name="order" value="0" />
 	<property name="taskId" value="migrate_workspace" />
 	<property name="title" value="Import Liferay Workspace" />
 	<service>

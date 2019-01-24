@@ -32,8 +32,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"id=init_bundle", "requirement=recommended", "service.ranking=100", "taskId=migrate_workspace",
-		"title=Init Bundle"
+		"id=init_bundle", "requirement=recommended", "order=100", "taskId=migrate_workspace", "title=Init Bundle"
 	},
 	service = UpgradeTaskStep.class
 )

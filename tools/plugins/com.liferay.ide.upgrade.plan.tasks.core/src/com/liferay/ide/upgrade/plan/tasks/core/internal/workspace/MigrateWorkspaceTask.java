@@ -23,9 +23,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Terry Jia
  */
 @Component(
-	property = {
-		"categoryId=code", "id=migrate_workspace", "service.ranking=300", "title=Migrate Liferay Workspace to latest"
-	},
+	property = {"categoryId=code", "id=migrate_workspace", "order=300", "title=Migrate Liferay Workspace"},
 	service = UpgradeTask.class
 )
 public class MigrateWorkspaceTask extends BaseUpgradeTask {

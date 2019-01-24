@@ -48,7 +48,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"id=import_liferay_workspace", "requirement=recommended", "service.ranking=0", "taskId=migrate_workspace",
+		"id=import_liferay_workspace", "requirement=required", "order=0", "taskId=migrate_workspace",
 		"title=Import Liferay Workspace"
 	},
 	service = UpgradeTaskStep.class
