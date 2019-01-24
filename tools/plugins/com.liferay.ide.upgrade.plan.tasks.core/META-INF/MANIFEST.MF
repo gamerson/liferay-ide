@@ -23,4 +23,6 @@ Service-Component: OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.dat
  OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.config.ScanPortalExtPropertiesTaskStep.xml,
  OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.workspace.MigrateWorkspaceTask.xml,
  OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.workspace.InitBundleTaskStep.xml,
- OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.workspace.ImportWorkspaceTaskStep.xml
+ OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.workspace.ImportWorkspaceTaskStep.xml,
+ OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.workspace.ConfigureTargetPlatformTaskStep.xml,
+ OSGI-INF/com.liferay.ide.upgrade.plan.tasks.core.internal.workspace.UpgradeWorkspacePluginTaskStep.xml
