@@ -18,6 +18,7 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.ui.util.UIUtil;
 import com.liferay.ide.upgrade.plan.core.FolderSelectionTaskStep;
+import com.liferay.ide.upgrade.plan.core.MessageDialogTaskStep;
 import com.liferay.ide.upgrade.plan.core.ProjectSelectionTaskStep;
 import com.liferay.ide.upgrade.plan.core.ProjectsSelectionTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
@@ -39,6 +40,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -411,6 +413,8 @@ public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExp
 	}
 
 	private IStatus _execute() {
+		IStatus status = Status.CANCEL_STATUS;
+
 		if (_upgradeTaskStep instanceof ProjectSelectionTaskStep) {
 			ProjectSelectionTaskStep projectSelectionTaskStep = (ProjectSelectionTaskStep)_upgradeTaskStep;
 
@@ -431,14 +435,10 @@ public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExp
 			if (dialog.open() == Window.OK) {
 				Object[] projects = dialog.getResult();
 
-				return projectSelectionTaskStep.execute((IProject)projects[0], new NullProgressMonitor());
-			}
-			else {
-				return Status.CANCEL_STATUS;
+				status = projectSelectionTaskStep.execute((IProject)projects[0], new NullProgressMonitor());
 			}
 		}
-
-		if (_upgradeTaskStep instanceof ProjectsSelectionTaskStep) {
+		else if (_upgradeTaskStep instanceof ProjectsSelectionTaskStep) {
 			ProjectsSelectionTaskStep projectsSelectionTaskStep = (ProjectsSelectionTaskStep)_upgradeTaskStep;
 
 			ViewerFilter viewerFilter = new ViewerFilter() {
@@ -464,10 +464,7 @@ public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExp
 					IProject[]::new
 				);
 
-				return projectsSelectionTaskStep.execute(projects, new NullProgressMonitor());
-			}
-			else {
-				return Status.CANCEL_STATUS;
+				status = projectsSelectionTaskStep.execute(projects, new NullProgressMonitor());
 			}
 		}
 		else if (_upgradeTaskStep instanceof FolderSelectionTaskStep) {
@@ -477,21 +474,31 @@ public class UpgradeTaskStepItem implements Disposable, ISelectionProvider, IExp
 
 			String result = dialog.open();
 
-			if (result == null) {
-				return Status.CANCEL_STATUS;
+			if (result != null) {
+				File folder = new File(result);
+
+				if (FileUtil.exists(folder)) {
+					status = fileUpgradeTaskStep.execute(folder, new NullProgressMonitor());
+				}
 			}
+		}
+		else if (_upgradeTaskStep instanceof MessageDialogTaskStep) {
+			MessageDialogTaskStep messageDialogTaskStep = (MessageDialogTaskStep)_upgradeTaskStep;
 
-			File folder = new File(result);
+			String label = messageDialogTaskStep.getLabel();
+			String message = messageDialogTaskStep.getMessage();
 
-			if (FileUtil.exists(folder)) {
-				fileUpgradeTaskStep.execute(folder, new NullProgressMonitor());
+			boolean open = MessageDialog.openQuestion(UIUtil.getActiveShell(), label, message);
+
+			if (open) {
+				status = messageDialogTaskStep.execute(new NullProgressMonitor());
 			}
-
-			return Status.OK_STATUS;
 		}
 		else {
-			return _upgradeTaskStep.execute(new NullProgressMonitor());
+			status = _upgradeTaskStep.execute(new NullProgressMonitor());
 		}
+
+		return status;
 	}
 
 	private Image _getCompleteImage() {

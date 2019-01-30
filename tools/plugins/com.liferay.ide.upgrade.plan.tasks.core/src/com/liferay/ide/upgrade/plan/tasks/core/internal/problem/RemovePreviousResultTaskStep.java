@@ -14,12 +14,18 @@
 
 package com.liferay.ide.upgrade.plan.tasks.core.internal.problem;
 
-import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
+import com.liferay.ide.upgrade.plan.core.MessageDialogTaskStep;
+import com.liferay.ide.upgrade.plan.core.MigrationProblemsContainer;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
+import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepDoneEvent;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepStatus;
+import com.liferay.ide.upgrade.plan.core.util.UpgradeAssistantSettingsUtil;
+
+import java.io.IOException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -28,16 +34,39 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"id=remove_previous_result", "requirement=recommended", "order=200", "taskId=find_upgrade_problems",
+		"id=remove_previous_result", "requirement=optional", "order=200", "taskId=find_upgrade_problems",
 		"title=Remove Previous Result"
 	},
 	service = UpgradeTaskStep.class
 )
-public class RemovePreviousResultTaskStep extends BaseUpgradeTaskStep {
+public class RemovePreviousResultTaskStep extends MessageDialogTaskStep {
 
 	@Override
 	public IStatus execute(IProgressMonitor progressMonitor) {
-		return null;
+		try {
+			MigrationProblemsContainer container = UpgradeAssistantSettingsUtil.getObjectFromStore(
+				MigrationProblemsContainer.class);
+
+			if (container != null) {
+				UpgradeAssistantSettingsUtil.setObjectToStore(MigrationProblemsContainer.class, null);
+			}
+		}
+		catch (IOException ioe) {
+		}
+
+		getUpgradePlanner().dispatch(new UpgradeTaskStepDoneEvent());
+
+		return Status.OK_STATUS;
+	}
+
+	@Override
+	public String getLabel() {
+		return "Remove Previous Result?";
+	}
+
+	@Override
+	public String getMessage() {
+		return "All previous results will be deleted.";
 	}
 
 	@Override
