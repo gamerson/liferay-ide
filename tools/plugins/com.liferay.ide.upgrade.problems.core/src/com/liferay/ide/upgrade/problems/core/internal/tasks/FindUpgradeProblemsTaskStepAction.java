@@ -91,7 +91,11 @@ public class FindUpgradeProblemsTaskStepAction extends BaseUpgradeTaskStepAction
 					});
 
 				try {
-					IPath storagePath = _storageLocation.append(upgradePlanName + ".xml");
+					UpgradeProblemsCorePlugin upgradeProblemsCorePlugin = UpgradeProblemsCorePlugin.getDefault();
+
+					IPath storageLocation = upgradeProblemsCorePlugin.getStateLocation();
+
+					IPath storagePath = storageLocation.append(upgradePlanName + ".xml");
 
 					FileWriter fileWriter = new FileWriter(storagePath.toFile());
 
@@ -112,7 +116,9 @@ public class FindUpgradeProblemsTaskStepAction extends BaseUpgradeTaskStepAction
 		return Status.OK_STATUS;
 	}
 
-	private void _storeInMemento(XMLMemento xmlMemento, String projectName, List<FileUpgradeProblem> fileUpgradeProblems) {
+	private void _storeInMemento(
+		XMLMemento xmlMemento, String projectName, List<FileUpgradeProblem> fileUpgradeProblems) {
+
 		XMLMemento projectNode = xmlMemento.createChild("project");
 
 		projectNode.putString("projectName", projectName);
@@ -176,8 +182,6 @@ public class FindUpgradeProblemsTaskStepAction extends BaseUpgradeTaskStepAction
 
 	@Reference
 	private ResourceSelection _resourceSelection;
-
-	private final IPath _storageLocation = UpgradeProblemsCorePlugin.getDefault().getStateLocation();
 
 	@Reference
 	private UpgradePlanner _upgradePlanner;
