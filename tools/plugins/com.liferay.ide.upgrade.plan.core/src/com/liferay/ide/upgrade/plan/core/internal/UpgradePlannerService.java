@@ -85,6 +85,11 @@ public class UpgradePlannerService implements UpgradePlanner {
 	}
 
 	@Override
+	public String getCurrentUpgradePlanName() {
+		return _currentUpgradePlan.getName();
+	}
+
+	@Override
 	public UpgradePlan loadUpgradePlan(String name) {
 		return new StandardUpgradePlan(name, null, null, null);
 	}

@@ -44,8 +44,7 @@ public class DeprecatedMethodsMigrator extends JavaFileMigrator {
 		if (_deprecatedMethods == null) {
 			List<JSONArray> deprecatedMethodsList = new ArrayList<>();
 
-			String fqn =
-				"/com/liferay/ide/upgrade/plan/tasks/core/internal/problem/upgrade/liferay70/deprecatedmethods/";
+			String fqn = "/com/liferay/ide/upgrade/problems/core/internal/liferay70/";
 
 			String[] jsonFilePaths = {
 				fqn + "deprecatedMethods62.json", fqn + "deprecatedMethods61.json",
