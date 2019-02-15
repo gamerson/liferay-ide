@@ -95,7 +95,7 @@ public class FindUpgradeProblemsTaskStepAction extends BaseUpgradeTaskStepAction
 
 					IPath storageLocation = upgradeProblemsCorePlugin.getStateLocation();
 
-					IPath storagePath = storageLocation.append(upgradePlanName + ".xml");
+					IPath storagePath = storageLocation.append("upgrade-" + upgradePlanName + ".xml");
 
 					FileWriter fileWriter = new FileWriter(storagePath.toFile());
 
@@ -152,7 +152,7 @@ public class FindUpgradeProblemsTaskStepAction extends BaseUpgradeTaskStepAction
 			List<FileUpgradeProblem> problems = entry.getValue();
 
 			for (FileUpgradeProblem problem : problems) {
-				XMLMemento problemNode = projectNode.createChild("problem");
+				XMLMemento problemNode = fileUpgradeProblemNode.createChild("problem");
 
 				problemNode.putString("autoCorrectContext", problem.getAutoCorrectContext());
 

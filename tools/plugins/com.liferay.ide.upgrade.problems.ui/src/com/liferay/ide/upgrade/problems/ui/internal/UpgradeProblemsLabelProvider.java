@@ -63,9 +63,17 @@ public class UpgradeProblemsLabelProvider extends AbstractLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		UpgradeInfoProvider upgradeInfoProvider = _upgradeInfoProviderServiceTracker.getService();
+		Object[] services = _upgradeInfoProviderServiceTracker.getServices();
 
-		return upgradeInfoProvider.getLabel(element);
+		for (Object service : services) {
+			if (service instanceof UpgradeProblemsInfoProviderService) {
+				UpgradeInfoProvider upgradeInfoProvider = (UpgradeProblemsInfoProviderService)service;
+
+				return upgradeInfoProvider.getLabel(element);
+			}
+		}
+
+		return null;
 	}
 
 	@Override
