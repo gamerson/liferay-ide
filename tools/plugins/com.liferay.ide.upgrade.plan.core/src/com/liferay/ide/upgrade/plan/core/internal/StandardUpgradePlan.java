@@ -55,6 +55,11 @@ public class StandardUpgradePlan implements UpgradePlan {
 	}
 
 	@Override
+	public void clearUpgradeProblems() {
+		_upgradeProblems.clear();
+	}
+
+	@Override
 	public Path getCurrentProjectLocation() {
 		return _currentProjectLocation;
 	}

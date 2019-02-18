@@ -26,6 +26,8 @@ public interface UpgradePlan {
 
 	public void addUpgradeProblems(Collection<UpgradeProblem> upgradeProblems);
 
+	public void clearUpgradeProblems();
+
 	public Path getCurrentProjectLocation();
 
 	public String getCurrentVersion();
