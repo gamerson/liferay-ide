@@ -14,24 +14,10 @@
 
 package com.liferay.ide.upgrade.tasks.core.internal.workspace;
 
+import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.tasks.core.FolderSelectionTaskStep;
-import com.liferay.ide.upgrade.tasks.core.ProjectImporter;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.nio.file.Paths;
-
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
@@ -44,33 +30,5 @@ import org.osgi.service.component.annotations.ServiceScope;
 	},
 	scope = ServiceScope.PROTOTYPE, service = UpgradeTaskStep.class
 )
-public class ImportWorkspaceTaskStep extends FolderSelectionTaskStep {
-
-	@Override
-	public IStatus execute(File folder, IProgressMonitor progressMonitor) {
-		Job importJob = new Job("Importing project") {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					IPath location = new Path(folder.getCanonicalPath());
-
-					_projectImporter.importProjects(Paths.get(location.toOSString()));
-				}
-				catch (IOException ioe) {
-				}
-
-				return Status.OK_STATUS;
-			}
-
-		};
-
-		importJob.schedule();
-
-		return Status.OK_STATUS;
-	}
-
-	@Reference
-	private ProjectImporter _projectImporter;
-
+public class ImportWorkspaceTaskStep extends BaseUpgradeTaskStep {
 }

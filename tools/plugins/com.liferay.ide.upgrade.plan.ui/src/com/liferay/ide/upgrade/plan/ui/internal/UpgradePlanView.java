@@ -242,9 +242,11 @@ public class UpgradePlanView extends ViewPart implements ISelectionProvider {
 				for (UpgradeTaskStepAction action : actions) {
 					IMemento actionMemento = stepMemento.getChild(action.getId());
 
-					String status = actionMemento.getString("status");
+					if (actionMemento != null) {
+						String status = actionMemento.getString("status");
 
-					action.setStatus(UpgradeTaskStepActionStatus.valueOf(status));
+						action.setStatus(UpgradeTaskStepActionStatus.valueOf(status));
+					}
 				}
 			}
 		}

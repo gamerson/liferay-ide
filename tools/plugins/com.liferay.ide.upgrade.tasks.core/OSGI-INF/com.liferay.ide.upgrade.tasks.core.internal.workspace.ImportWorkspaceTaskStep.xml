@@ -8,6 +8,5 @@
    <service scope="prototype">
       <provide interface="com.liferay.ide.upgrade.plan.core.UpgradeTaskStep"/>
    </service>
-   <reference cardinality="1..1" field="_projectImporter" interface="com.liferay.ide.upgrade.tasks.core.ProjectImporter" name="_projectImporter"/>
    <implementation class="com.liferay.ide.upgrade.tasks.core.internal.workspace.ImportWorkspaceTaskStep"/>
 </scr:component>
