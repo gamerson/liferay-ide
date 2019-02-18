@@ -22,7 +22,6 @@ import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepStatus;
 
 import java.io.IOException;
 
@@ -91,11 +90,6 @@ public class ConfigureBuildPropertiesTaskStep extends BaseUpgradeTaskStep {
 		}
 
 		return Status.OK_STATUS;
-	}
-
-	@Override
-	public UpgradeTaskStepStatus getStatus() {
-		return UpgradeTaskStepStatus.INCOMPLETE;
 	}
 
 }

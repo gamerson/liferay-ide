@@ -17,7 +17,6 @@ package com.liferay.ide.upgrade.tasks.core.internal.sdk;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepStatus;
 
 import java.io.File;
 
@@ -58,11 +57,6 @@ public class RemoveLegacyProjectsTaskStep extends BaseUpgradeTaskStep {
 		}
 
 		return Status.OK_STATUS;
-	}
-
-	@Override
-	public UpgradeTaskStepStatus getStatus() {
-		return UpgradeTaskStepStatus.INCOMPLETE;
 	}
 
 	private final String[] _needToDeletePaths = {"shared/portal-http-service", "webs/resources-importer-web"};

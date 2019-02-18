@@ -16,8 +16,9 @@ package com.liferay.ide.upgrade.plan.core;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
-public enum UpgradeTaskStepStatus {
+public enum UpgradeTaskStepActionStatus {
 
 	COMPLETED, INCOMPLETE, SKIPPED
 

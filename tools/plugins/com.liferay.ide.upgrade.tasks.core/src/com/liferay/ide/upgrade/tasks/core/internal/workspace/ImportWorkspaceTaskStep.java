@@ -15,7 +15,6 @@
 package com.liferay.ide.upgrade.tasks.core.internal.workspace;
 
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepStatus;
 import com.liferay.ide.upgrade.tasks.core.FolderSelectionTaskStep;
 import com.liferay.ide.upgrade.tasks.core.ProjectImporter;
 
@@ -69,11 +68,6 @@ public class ImportWorkspaceTaskStep extends FolderSelectionTaskStep {
 		importJob.schedule();
 
 		return Status.OK_STATUS;
-	}
-
-	@Override
-	public UpgradeTaskStepStatus getStatus() {
-		return UpgradeTaskStepStatus.INCOMPLETE;
 	}
 
 	@Reference
