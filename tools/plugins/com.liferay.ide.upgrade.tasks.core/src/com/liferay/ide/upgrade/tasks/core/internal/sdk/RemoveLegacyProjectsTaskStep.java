@@ -14,18 +14,8 @@
 
 package com.liferay.ide.upgrade.tasks.core.internal.sdk;
 
-import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepStatus;
-
-import java.io.File;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -41,30 +31,4 @@ import org.osgi.service.component.annotations.ServiceScope;
 	scope = ServiceScope.PROTOTYPE, service = UpgradeTaskStep.class
 )
 public class RemoveLegacyProjectsTaskStep extends BaseUpgradeTaskStep {
-
-	public IStatus execute(IProject project, IProgressMonitor progressMonitor) {
-		IPath projectLocation = project.getLocation();
-
-		IPath sdkLoaction = projectLocation.append("plugins-sdk");
-
-		for (String path : _needToDeletePaths) {
-			IPath needToDeletePath = sdkLoaction.append(path);
-
-			File file = needToDeletePath.toFile();
-
-			if (file.exists()) {
-				FileUtil.deleteDir(file, true);
-			}
-		}
-
-		return Status.OK_STATUS;
-	}
-
-	@Override
-	public UpgradeTaskStepStatus getStatus() {
-		return UpgradeTaskStepStatus.INCOMPLETE;
-	}
-
-	private final String[] _needToDeletePaths = {"shared/portal-http-service", "webs/resources-importer-web"};
-
 }

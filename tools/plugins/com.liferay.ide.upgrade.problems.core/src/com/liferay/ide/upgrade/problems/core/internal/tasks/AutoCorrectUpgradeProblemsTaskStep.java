@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.tasks.core.internal.sdk;
+package com.liferay.ide.upgrade.problems.core.internal.tasks;
 
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
@@ -25,10 +25,10 @@ import org.osgi.service.component.annotations.ServiceScope;
  */
 @Component(
 	property = {
-		"id=configure_build_properties", "requirement=required", "order=0", "taskId=migrate_plugins_sdk",
-		"title=Configure Build Properties"
+		"id=auto_correct_problems", "imagePath=icons/auto_correct_problems.png", "requirement=recommended", "order=2",
+		"taskId=find_upgrade_problems", "title=Auto Correct Upgrade Problems"
 	},
 	scope = ServiceScope.PROTOTYPE, service = UpgradeTaskStep.class
 )
-public class ConfigureBuildPropertiesTaskStep extends BaseUpgradeTaskStep {
+public class AutoCorrectUpgradeProblemsTaskStep extends BaseUpgradeTaskStep {
 }

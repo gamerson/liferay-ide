@@ -57,5 +57,8 @@ Service-Component: OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.code.Ins
  OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.sdk.PluginsSDKProjectImporter.xml,
  OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.code.InstallPrerequisitesTask.xml,
  OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.code.SetupDevelopmentEnvironmentTask.xml,
- OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.code.CreateLiferayWorkspaceStep.xml
+ OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.code.CreateLiferayWorkspaceStep.xml,
+ OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.sdk.ConfigureBuildPropertiesTaskStepAction.xml,
+ OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.workspace.InitBundleTaskStepAction.xml,
+ OSGI-INF/com.liferay.ide.upgrade.tasks.core.internal.sdk.RemoveLegacyProjectsTaskStepAction.xml
 Export-Package: com.liferay.ide.upgrade.tasks.core

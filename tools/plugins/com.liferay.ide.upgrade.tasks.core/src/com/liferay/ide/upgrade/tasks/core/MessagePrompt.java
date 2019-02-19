@@ -14,18 +14,11 @@
 
 package com.liferay.ide.upgrade.tasks.core;
 
-import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
-
-import java.io.File;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-
 /**
- * @author Terry Jia
+ * @author Gregory Amerson
  */
-public abstract class FolderSelectionTaskStep extends BaseUpgradeTaskStep {
+public interface MessagePrompt {
 
-	public abstract IStatus execute(File folder, IProgressMonitor progressMonitor);
+	public boolean prompt(String title, String message);
 
 }

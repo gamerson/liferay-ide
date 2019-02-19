@@ -51,7 +51,7 @@ public class ImportExistingProjectsStep extends BaseUpgradeTaskStep {
 		IPath path = new org.eclipse.core.runtime.Path(currentProjectLocation.toString());
 
 		if (SDKUtil.isValidSDKLocation(path)) {
-			return false;
+			return true;
 		}
 
 		return super.appliesTo(upgradePlan);

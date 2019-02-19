@@ -12,23 +12,23 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.problems.core.internal.tasks;
+package com.liferay.ide.upgrade.tasks.ui.internal;
 
-import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
+import com.liferay.ide.ui.util.UIUtil;
+import com.liferay.ide.upgrade.tasks.core.MessagePrompt;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * @author Terry Jia
+ * @author Gregory Amerson
  */
-@Component(
-	property = {
-		"id=auto_correct_problems", "imagePath=icons/auto_correct_problems.png", "requirement=recommended", "order=2",
-		"taskId=find_upgrade_problems", "title=Auto Correct Upgrade Problems"
-	},
-	scope = ServiceScope.PROTOTYPE, service = UpgradeTaskStep.class
-)
-public class AutoCorrectUpgradeProblemsStep extends BaseUpgradeTaskStep {
+@Component(service = MessagePrompt.class)
+public class MessagePromptImpl implements MessagePrompt {
+
+	@Override
+	public boolean prompt(String title, String message) {
+		return UIUtil.promptQuestion(title, message);
+	}
+
 }
