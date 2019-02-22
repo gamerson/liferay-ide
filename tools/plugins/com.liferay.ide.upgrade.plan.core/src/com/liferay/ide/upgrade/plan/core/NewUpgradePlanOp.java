@@ -14,7 +14,6 @@
 
 package com.liferay.ide.upgrade.plan.core;
 
-import com.liferay.ide.upgrade.plan.core.internal.HasUpgradeCodeCategoryListener;
 import com.liferay.ide.upgrade.plan.core.internal.NewUpgradePlanOpMethods;
 import com.liferay.ide.upgrade.plan.core.internal.SourceLocationValidationService;
 import com.liferay.ide.upgrade.plan.core.internal.UpgradeCategoryPossibleValuesService;
@@ -36,7 +35,6 @@ import org.eclipse.sapphire.modeling.annotations.DefaultValue;
 import org.eclipse.sapphire.modeling.annotations.DelegateImplementation;
 import org.eclipse.sapphire.modeling.annotations.FileSystemResourceType;
 import org.eclipse.sapphire.modeling.annotations.Label;
-import org.eclipse.sapphire.modeling.annotations.Listeners;
 import org.eclipse.sapphire.modeling.annotations.Required;
 import org.eclipse.sapphire.modeling.annotations.Service;
 import org.eclipse.sapphire.modeling.annotations.ValidFileSystemResourceType;
@@ -80,10 +78,6 @@ public interface NewUpgradePlanOp extends ExecutableElement {
 	@PossibleValues(values = {"6.2", "7.0"})
 	public ValueProperty PROP_CURRENT_VERSION = new ValueProperty(TYPE, "CurrentVersion");
 
-	@DefaultValue(text = "false")
-	@Type(base = Boolean.class)
-	public ValueProperty PROP_HAS_CODE_UPGRADE_CATEGORY = new ValueProperty(TYPE, "HasCodeUpgradeCategory");
-
 	@AbsolutePath
 	@Label(standard = "source code location")
 	@Service(impl = SourceLocationValidationService.class)
@@ -95,7 +89,6 @@ public interface NewUpgradePlanOp extends ExecutableElement {
 	public ValueProperty PROP_NAME = new ValueProperty(TYPE, "Name");
 
 	@Label(standard = "Upgrade Categories")
-	@Listeners(HasUpgradeCodeCategoryListener.class)
 	@Service(impl = UpgradeCategoryPossibleValuesService.class)
 	@Service(impl = UpgradeCategoryValidationService.class)
 	@Type(base = UpgradeCategoryElement.class)
