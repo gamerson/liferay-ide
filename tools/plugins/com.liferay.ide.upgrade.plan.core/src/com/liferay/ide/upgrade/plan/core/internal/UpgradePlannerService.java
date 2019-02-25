@@ -127,15 +127,17 @@ public class UpgradePlannerService implements UpgradePlanner {
 
 				String currentProjectLocation = upgradePlanMemento.getString("currentProjectLocation");
 
-				Path path = Paths.get(currentProjectLocation);
+				if (currentProjectLocation != null) {
+					Path path = Paths.get(currentProjectLocation);
 
-				_currentUpgradePlan = new StandardUpgradePlan(name, currentVersion, targetVersion, path);
+					_currentUpgradePlan = new StandardUpgradePlan(name, currentVersion, targetVersion, path);
 
-				_loadActionStatus(upgradePlanMemento, _currentUpgradePlan);
+					_loadActionStatus(upgradePlanMemento, _currentUpgradePlan);
 
-				_loadUpgradeProblems(upgradePlanMemento, _currentUpgradePlan);
+					_loadUpgradeProblems(upgradePlanMemento, _currentUpgradePlan);
 
-				return _currentUpgradePlan;
+					return _currentUpgradePlan;
+				}
 			}
 		}
 		catch (IOException ioe) {
