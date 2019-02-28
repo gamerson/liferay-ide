@@ -17,6 +17,7 @@ package com.liferay.ide.upgrade.tasks.core;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.adapter.NoopLiferayProject;
+import com.liferay.ide.project.core.LiferayWorkspaceProject;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +33,10 @@ public class SelectableLiferayProjectFilter extends SelectableJavaProjectFilter 
 	@Override
 	public boolean test(IProject project) {
 		if (!super.test(project)) {
+			return false;
+		}
+
+		if (LiferayCore.create(LiferayWorkspaceProject.class, project) != null) {
 			return false;
 		}
 
