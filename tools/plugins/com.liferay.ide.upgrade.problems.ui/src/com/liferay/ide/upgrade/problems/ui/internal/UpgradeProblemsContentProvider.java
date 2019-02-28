@@ -15,6 +15,7 @@
 package com.liferay.ide.upgrade.problems.ui.internal;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.ui.navigator.AbstractNavigatorContentProvider;
 import com.liferay.ide.upgrade.plan.core.UpgradePlan;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
@@ -103,6 +105,17 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 		MigrationProblemsContainer migrationProblemsContainer = new MigrationProblemsContainer();
 
 		for (IProject project : CoreUtil.getAllProjects()) {
+			try {
+				if (!project.hasNature("org.eclipse.jdt.core.javanature") ||
+					LiferayWorkspaceUtil.isValidWorkspace(project)) {
+
+					continue;
+				}
+			}
+			catch (CoreException ce) {
+				continue;
+			}
+
 			ProjectProblemsContainer projectProblemsContainer = new ProjectProblemsContainer();
 
 			projectProblemsContainer.setProjectName(project.getName());
