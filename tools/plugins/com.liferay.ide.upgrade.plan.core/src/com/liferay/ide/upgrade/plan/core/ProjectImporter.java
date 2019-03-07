@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.tasks.core;
+package com.liferay.ide.upgrade.plan.core;
 
 import java.nio.file.Path;
 

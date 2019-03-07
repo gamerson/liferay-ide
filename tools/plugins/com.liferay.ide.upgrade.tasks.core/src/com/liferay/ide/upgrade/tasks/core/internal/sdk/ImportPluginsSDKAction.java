@@ -15,8 +15,8 @@
 package com.liferay.ide.upgrade.tasks.core.internal.sdk;
 
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStepAction;
+import com.liferay.ide.upgrade.plan.core.ProjectImporter;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepAction;
-import com.liferay.ide.upgrade.tasks.core.ProjectImporter;
 import com.liferay.ide.upgrade.tasks.core.ResourceSelection;
 import com.liferay.ide.upgrade.tasks.core.sdk.ImportExistingPluginsSDKStepKeys;
 
@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 @Component(
 	property = {

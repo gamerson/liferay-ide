@@ -15,7 +15,7 @@
 package com.liferay.ide.upgrade.tasks.core.internal.sdk;
 
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.upgrade.tasks.core.ProjectImporter;
+import com.liferay.ide.upgrade.plan.core.ProjectImporter;
 
 import java.io.File;
 

@@ -583,13 +583,15 @@ public class CoreUtil {
 
 		IProject project = getProject(projectName);
 
-		IProjectDescription desc = workspace.newProjectDescription(project.getName());
+		if (!project.exists()) {
+			IProjectDescription desc = workspace.newProjectDescription(project.getName());
 
-		desc.setLocation(dir);
+			desc.setLocation(dir);
 
-		project.create(desc, monitor);
+			project.create(desc, monitor);
 
-		project.open(monitor);
+			project.open(monitor);
+		}
 
 		return project;
 	}

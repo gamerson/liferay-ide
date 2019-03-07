@@ -17,6 +17,7 @@ package com.liferay.ide.upgrade.plan.core.internal;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.upgrade.plan.core.IMemento;
+import com.liferay.ide.upgrade.plan.core.ProjectImporter;
 import com.liferay.ide.upgrade.plan.core.UpgradeEvent;
 import com.liferay.ide.upgrade.plan.core.UpgradeListener;
 import com.liferay.ide.upgrade.plan.core.UpgradePlan;
@@ -50,8 +51,10 @@ import java.util.stream.Stream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Gregory Amerson
@@ -155,6 +158,12 @@ public class UpgradePlannerService implements UpgradePlanner {
 				_currentUpgradePlan = new StandardUpgradePlan(
 					name, currentVersion, targetVersion, projectPath, upgradeTaskCategoryIds);
 
+				String targetProjectLocationValue = upgradePlanMemento.getString("targetProjectLocation");
+
+				if (targetProjectLocationValue != null) {
+					_currentUpgradePlan.setTargetProjectLocation(Paths.get(targetProjectLocationValue));
+				}
+
 				_loadActionStatus(upgradePlanMemento, _currentUpgradePlan);
 
 				_loadUpgradeProblems(upgradePlanMemento, _currentUpgradePlan);
@@ -173,6 +182,10 @@ public class UpgradePlannerService implements UpgradePlanner {
 	public UpgradePlan newUpgradePlan(
 		String name, String currentVersion, String targetVersion, Path sourceCodeLocation,
 		List<String> upgradeTaskCategories) {
+
+		if (sourceCodeLocation != null) {
+			_projectImporter.importProjects(sourceCodeLocation, new NullProgressMonitor());
+		}
 
 		return new StandardUpgradePlan(name, currentVersion, targetVersion, sourceCodeLocation, upgradeTaskCategories);
 	}
@@ -226,6 +239,12 @@ public class UpgradePlannerService implements UpgradePlanner {
 
 			if (currentProjectLocation != null) {
 				upgradePlanMemento.putString("currentProjectLocation", currentProjectLocation.toString());
+			}
+
+			Path targetProjectLocation = upgradePlan.getTargetProjectLocation();
+
+			if (targetProjectLocation != null) {
+				upgradePlanMemento.putString("targetProjectLocation", targetProjectLocation.toString());
 			}
 
 			List<String> upgradeTaskCategories = upgradePlan.getUpgradeTaskCategories();
@@ -447,6 +466,10 @@ public class UpgradePlannerService implements UpgradePlanner {
 	}
 
 	private UpgradePlan _currentUpgradePlan;
+
+	@Reference(target = "(type=plugins_sdk)")
+	private ProjectImporter _projectImporter;
+
 	private final List<UpgradeEvent> _upgradeEvents = new ArrayList<>();
 	private final Set<UpgradeListener> _upgradeListeners = new LinkedHashSet<>();
 
