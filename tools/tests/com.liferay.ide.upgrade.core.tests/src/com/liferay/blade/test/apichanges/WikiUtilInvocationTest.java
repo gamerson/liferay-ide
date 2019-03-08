@@ -23,8 +23,8 @@ import java.io.File;
 public class WikiUtilInvocationTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.WikiUtilInvocation";
+	public String getImplClassName() {
+		return "WikiUtilInvocation";
 	}
 
 	@Override

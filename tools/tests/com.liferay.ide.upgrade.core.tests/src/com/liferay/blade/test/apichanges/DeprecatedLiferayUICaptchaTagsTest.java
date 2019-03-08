@@ -28,8 +28,8 @@ public class DeprecatedLiferayUICaptchaTagsTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.DeprecatedLiferayUICaptchaTags";
+	public String getImplClassName() {
+		return "DeprecatedLiferayUICaptchaTags";
 	}
 
 	@Override

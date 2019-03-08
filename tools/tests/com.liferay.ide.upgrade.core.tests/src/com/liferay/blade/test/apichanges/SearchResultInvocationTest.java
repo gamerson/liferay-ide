@@ -28,8 +28,8 @@ public class SearchResultInvocationTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.SearchResultInvocation";
+	public String getImplClassName() {
+		return "SearchResultInvocation";
 	}
 
 	@Override

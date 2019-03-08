@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 	"file.extensions=java,jsp,jspf", "problem.title=Removed Trash Logic from DLAppHelperLocalService Methods",
 	"problem.section=#removed-trash-logic-from-dlapphelperlocalservice-methods",
 	"problem.summary=Removed Trash Logic from DLAppHelperLocalService Methods", "problem.tickets=LPS-47508",
-	"version=7.0"
+	"implName=DLAppHelperLocalServiceUtilInvocation", "version=7.0"
 },
 	service = FileMigrator.class)
 public class DLAppHelperLocalServiceUtilInvocation extends JavaFileMigrator {

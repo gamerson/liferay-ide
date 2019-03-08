@@ -28,8 +28,8 @@ public class RemovedTheWAPFunctionalityTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.RemoveWapFunctionality";
+	public String getImplClassName() {
+		return "RemoveWapFunctionality";
 	}
 
 	@Override

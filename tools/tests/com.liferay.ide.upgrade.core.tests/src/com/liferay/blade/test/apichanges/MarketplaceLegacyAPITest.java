@@ -37,8 +37,8 @@ public class MarketplaceLegacyAPITest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.MarketplaceLegacyAPI";
+	public String getImplClassName() {
+		return "MarketplaceLegacyAPI";
 	}
 
 	@Override

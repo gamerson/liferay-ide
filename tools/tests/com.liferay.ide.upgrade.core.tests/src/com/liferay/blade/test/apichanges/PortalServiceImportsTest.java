@@ -28,8 +28,8 @@ public class PortalServiceImportsTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.PortalServiceImports";
+	public String getImplClassName() {
+		return "PortalServiceImports";
 	}
 
 	@Override

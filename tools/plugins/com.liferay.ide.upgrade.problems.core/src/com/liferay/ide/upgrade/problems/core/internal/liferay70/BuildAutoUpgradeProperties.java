@@ -26,7 +26,7 @@ import com.liferay.ide.upgrade.problems.core.internal.PropertiesFileMigrator;
  */
 @Component(property = {
 	"file.extensions=properties", "problem.title=Build Auto Upgrade", "problem.summary=Build Auto Upgrade",
-	"problem.tickets=LPS-73967", "problem.section=#build-auto-upgrade", 
+	"problem.tickets=LPS-73967", "problem.section=#build-auto-upgrade", "implName=BuildAutoUpgradeProperties",
 	"version=7.0"
 },
 	service = FileMigrator.class)

@@ -26,7 +26,7 @@ import com.liferay.ide.upgrade.problems.core.internal.JSPTagMigrator;
 	"file.extensions=jsp,jspf", "problem.title=Removed the liferay-ui:journal-article tag",
 	"problem.section=#removed-the-liferay-uijournal-article-tag",
 	"problem.summary=Removed the liferay-ui:journal-article Tag", "problem.tickets=LPS-69321",
-	 "version=7.0"
+	"implName=JournalArticleTags", "version=7.0"
 },
 	service = FileMigrator.class)
 public class JournalArticleTags extends JSPTagMigrator {

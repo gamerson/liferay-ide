@@ -22,8 +22,8 @@ import java.io.File;
 public class DescriptorsTest extends APIVersionSupportTestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.descriptors.LiferayDescriptorVersion70";
+	public String getImplClassName() {
+		return "LiferayDescriptorVersion";
 	}
 
 	@Override

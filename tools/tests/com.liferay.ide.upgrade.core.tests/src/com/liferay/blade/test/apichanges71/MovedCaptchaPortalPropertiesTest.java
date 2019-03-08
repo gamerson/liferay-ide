@@ -28,8 +28,8 @@ public class MovedCaptchaPortalPropertiesTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay71.apichanges.MovedCaptchaPortalProperties";
+	public String getImplClassName() {
+		return "MovedCaptchaPortalProperties";
 	}
 
 	@Override

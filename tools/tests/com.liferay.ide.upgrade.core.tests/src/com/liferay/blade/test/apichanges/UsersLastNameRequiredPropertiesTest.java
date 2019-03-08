@@ -23,8 +23,8 @@ import java.io.File;
 public class UsersLastNameRequiredPropertiesTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.UsersLastNameRequiredProperties";
+	public String getImplClassName() {
+		return "UsersLastNameRequiredProperties";
 	}
 
 	@Override

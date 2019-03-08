@@ -37,8 +37,8 @@ public class LockLegacyAPITest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.LockLegacyAPI";
+	public String getImplClassName() {
+		return "LockLegacyAPI";
 	}
 
 	@Override

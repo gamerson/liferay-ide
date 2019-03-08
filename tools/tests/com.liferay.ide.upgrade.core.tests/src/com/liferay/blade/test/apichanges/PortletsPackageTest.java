@@ -23,8 +23,8 @@ import java.io.File;
 public class PortletsPackageTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.PortletsPackage";
+	public String getImplClassName() {
+		return "PortletsPackage";
 	}
 
 	@Override

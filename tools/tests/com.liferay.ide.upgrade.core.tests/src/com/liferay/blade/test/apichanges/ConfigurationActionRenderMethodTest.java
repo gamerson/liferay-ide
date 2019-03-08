@@ -44,8 +44,8 @@ public class ConfigurationActionRenderMethodTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.ConfigurationActionRenderMethod";
+	public String getImplClassName() {
+		return "ConfigurationActionRenderMethod";
 	}
 
 	@Override

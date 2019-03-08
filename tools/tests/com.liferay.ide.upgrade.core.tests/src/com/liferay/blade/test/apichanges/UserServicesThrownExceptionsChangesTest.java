@@ -28,8 +28,8 @@ public class UserServicesThrownExceptionsChangesTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.UserServicesThrownExceptionsChanges";
+	public String getImplClassName() {
+		return "UserServicesThrownExceptionsChanges";
 	}
 
 	@Override

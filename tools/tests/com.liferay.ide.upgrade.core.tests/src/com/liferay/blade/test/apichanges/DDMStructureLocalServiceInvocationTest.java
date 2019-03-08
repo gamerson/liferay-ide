@@ -57,8 +57,8 @@ public class DDMStructureLocalServiceInvocationTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.DDMStructureLocalServiceAPI";
+	public String getImplClassName() {
+		return "DDMStructureLocalServiceAPI";
 	}
 
 	@Override

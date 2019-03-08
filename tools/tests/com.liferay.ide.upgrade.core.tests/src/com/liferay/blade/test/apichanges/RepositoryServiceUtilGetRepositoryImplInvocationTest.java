@@ -23,8 +23,8 @@ import java.io.File;
 public class RepositoryServiceUtilGetRepositoryImplInvocationTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.RepositoryServiceUtilGetRepositoryImplInvocation";
+	public String getImplClassName() {
+		return "RepositoryServiceUtilGetRepositoryImplInvocation";
 	}
 
 	@Override

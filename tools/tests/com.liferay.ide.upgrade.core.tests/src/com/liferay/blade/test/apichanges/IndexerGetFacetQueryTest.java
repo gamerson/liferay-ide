@@ -31,8 +31,8 @@ import org.junit.Test;
 public class IndexerGetFacetQueryTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.IndexerGetFacetQuery";
+	public String getImplClassName() {
+		return "IndexerGetFacetQuery";
 	}
 
 	@Override

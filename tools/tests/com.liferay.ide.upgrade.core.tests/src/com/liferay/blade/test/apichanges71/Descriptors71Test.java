@@ -24,8 +24,8 @@ import com.liferay.blade.test.apichanges.APIVersionSupportTestBase;
 public class Descriptors71Test extends APIVersionSupportTestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay71.descriptors.LiferayDescriptorVersion71";
+	public String getImplClassName() {
+		return "LiferayDescriptorVersion";
 	}
 
 	@Override

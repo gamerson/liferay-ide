@@ -33,7 +33,7 @@ import com.liferay.ide.upgrade.problems.core.internal.JavaFileMigrator;
 		"Parameters",
 	"problem.tickets=LPS-44639,LPS-44894", "problem.title=Indexer API Changes",
 	"problem.section=#changed-the-assetrenderer-and-indexer-apis-to-include-the-portletrequest-an",
-	 "version=7.0"
+	"implName=IndexerDoGetSummaryDecl", "version=7.0"
 },
 	service = FileMigrator.class)
 public class IndexerDoGetSummaryDecl extends JavaFileMigrator {

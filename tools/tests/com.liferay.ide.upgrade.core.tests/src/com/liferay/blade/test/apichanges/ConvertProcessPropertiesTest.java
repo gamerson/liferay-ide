@@ -23,8 +23,8 @@ import java.io.File;
 public class ConvertProcessPropertiesTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.ConvertProcessProperties";
+	public String getImplClassName() {
+		return "ConvertProcessProperties";
 	}
 
 	@Override

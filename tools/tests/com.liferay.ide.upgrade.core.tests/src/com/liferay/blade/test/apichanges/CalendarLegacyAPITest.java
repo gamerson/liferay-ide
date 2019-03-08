@@ -140,8 +140,8 @@ public class CalendarLegacyAPITest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.CalendarLegacyAPI";
+	public String getImplClassName() {
+		return "CalendarLegacyAPI";
 	}
 
 	@Override

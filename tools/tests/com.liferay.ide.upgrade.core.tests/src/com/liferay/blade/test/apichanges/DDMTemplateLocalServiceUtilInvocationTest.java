@@ -28,8 +28,8 @@ public class DDMTemplateLocalServiceUtilInvocationTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.DDMTemplateLocalServiceUtilInvocation";
+	public String getImplClassName() {
+		return "DDMTemplateLocalServiceUtilInvocation";
 	}
 
 	@Override

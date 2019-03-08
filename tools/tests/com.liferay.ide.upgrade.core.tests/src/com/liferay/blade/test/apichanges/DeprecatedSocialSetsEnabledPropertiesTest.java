@@ -22,8 +22,8 @@ import java.io.File;
 public class DeprecatedSocialSetsEnabledPropertiesTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.DeprecatedSocialSetsEnabledProperties";
+	public String getImplClassName() {
+		return "DeprecatedSocialSetsEnabledProperties";
 	}
 
 	@Override

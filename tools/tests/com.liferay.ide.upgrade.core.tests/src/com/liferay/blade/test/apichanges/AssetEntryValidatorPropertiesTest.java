@@ -23,8 +23,8 @@ import java.io.File;
 public class AssetEntryValidatorPropertiesTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.AssetEntryValidatorProperties";
+	public String getImplClassName() {
+		return "AssetEntryValidatorProperties";
 	}
 
 	@Override

@@ -28,8 +28,8 @@ public class ContactNameExceptionImportTest extends APITestBase {
 	}
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.ContactNameExceptionImport";
+	public String getImplClassName() {
+		return "ContactNameExceptionImport";
 	}
 
 	@Override

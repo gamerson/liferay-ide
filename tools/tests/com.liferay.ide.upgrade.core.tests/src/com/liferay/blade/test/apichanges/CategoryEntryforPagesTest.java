@@ -22,8 +22,8 @@ import java.io.File;
 public class CategoryEntryforPagesTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.CategoryEntryforPages";
+	public String getImplClassName() {
+		return "CategoryEntryforPages";
 	}
 
 	@Override

@@ -23,8 +23,8 @@ import java.io.File;
 public class BaseAssetRendererGetIconPathDeclTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.BaseAssetRendererGetIconPathDecl";
+	public String getImplClassName() {
+		return "BaseAssetRendererGetIconPathDecl";
 	}
 
 	@Override

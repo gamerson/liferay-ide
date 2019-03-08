@@ -57,10 +57,10 @@ public abstract class APITestBase {
 	}
 
 	protected Filter getFilter() throws Exception {
-		return context.createFilter("(component.name=" + getComponentName() + ")");
+		return context.createFilter("(implName=" + getImplClassName() + ")");
 	}
 
-	public abstract String getComponentName();
+	public abstract String getImplClassName();
 
 	public abstract File getTestFile();
 

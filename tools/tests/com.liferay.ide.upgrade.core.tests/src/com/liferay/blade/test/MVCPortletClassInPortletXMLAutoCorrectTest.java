@@ -42,9 +42,7 @@ public class MVCPortletClassInPortletXMLAutoCorrectTest {
 
 	@Before
 	public void beforeTest() throws Exception {
-		Filter filter =
-			_context.createFilter(
-				"(component.name=com.liferay.blade.upgrade.liferay70.apichanges.MVCPortletClassInPortletXML)");
+		Filter filter = _context.createFilter("(implName=MVCPortletClassInPortletXML)");
 
 		ServiceTracker<AutoMigrator, AutoMigrator> tracker = new ServiceTracker<>(_context, filter, null);
 

@@ -23,8 +23,8 @@ import java.io.File;
 public class DLProcessorGetTypeTest extends APITestBase {
 
 	@Override
-	public String getComponentName() {
-		return "com.liferay.blade.upgrade.liferay70.apichanges.DLProcessorGetType";
+	public String getImplClassName() {
+		return "DLProcessorGetType";
 	}
 
 	@Override
