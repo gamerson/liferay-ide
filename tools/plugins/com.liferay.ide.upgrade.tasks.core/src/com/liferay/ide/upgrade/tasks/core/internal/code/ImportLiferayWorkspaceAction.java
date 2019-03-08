@@ -14,19 +14,27 @@
 
 package com.liferay.ide.upgrade.tasks.core.internal.code;
 
+import com.liferay.ide.gradle.core.LiferayGradleWorkspaceProjectProvider;
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStepAction;
+import com.liferay.ide.upgrade.plan.core.UpgradePlan;
+import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepAction;
+import com.liferay.ide.upgrade.tasks.core.ResourceSelection;
 import com.liferay.ide.upgrade.tasks.core.code.ImportExistingProjectsStepKeys;
+
+import java.nio.file.Path;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 @Component(
 	property = {
@@ -39,7 +47,24 @@ public class ImportLiferayWorkspaceAction extends BaseUpgradeTaskStepAction {
 
 	@Override
 	public IStatus perform(IProgressMonitor progressMonitor) {
-		return Status.OK_STATUS;
+		Path path = _resourceSelection.selectPath("Please select the workspace location.");
+
+		if (path == null) {
+			return Status.CANCEL_STATUS;
+		}
+
+		LiferayGradleWorkspaceProjectProvider provider = new LiferayGradleWorkspaceProjectProvider();
+
+		UpgradePlan upgradePlan = _upgradePlanner.getCurrentUpgradePlan();
+
+		upgradePlan.setTargetProjectLocation(path);
+
+		return provider.importProject(new org.eclipse.core.runtime.Path(path.toString()), progressMonitor);
 	}
+
+	@Reference
+	private ResourceSelection _resourceSelection;
+
+	@Reference private UpgradePlanner _upgradePlanner;
 
 }
