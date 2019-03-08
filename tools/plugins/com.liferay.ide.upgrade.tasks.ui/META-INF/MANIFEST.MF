@@ -8,7 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: com.liferay.ide.upgrade.tasks.ui;singleton:=true
 Bundle-Vendor: Liferay, Inc.
 Bundle-Version: 3.6.0.qualifier
-Require-Bundle: com.liferay.ide.project.ui,
+Require-Bundle: com.liferay.ide.gradle.core,
+ com.liferay.ide.project.ui,
  com.liferay.ide.ui,
  com.liferay.ide.upgrade.plan.core,
  com.liferay.ide.upgrade.tasks.core,
