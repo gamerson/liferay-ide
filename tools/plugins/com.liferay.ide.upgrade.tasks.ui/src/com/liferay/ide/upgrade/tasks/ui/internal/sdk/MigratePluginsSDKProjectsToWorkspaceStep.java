@@ -19,6 +19,7 @@ import com.liferay.ide.core.util.SapphireContentAccessor;
 import com.liferay.ide.project.core.ProjectSynchronizer;
 import com.liferay.ide.project.core.model.ProjectNamedItem;
 import com.liferay.ide.project.core.modules.BladeCLI;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.ui.util.UIUtil;
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradePlan;
@@ -73,13 +74,17 @@ public class MigratePluginsSDKProjectsToWorkspaceStep extends BaseUpgradeTaskSte
 			return UpgradeTasksUIPlugin.createErrorStatus("There is no target project configured for current plan.");
 		}
 
-		Path workspaceLocation = upgradePlan.getCurrentProjectLocation();
+		Path currentProjectLocation = upgradePlan.getCurrentProjectLocation();
 
-		if (FileUtil.notExists(workspaceLocation.toFile())) {
-			return UpgradeTasksUIPlugin.createErrorStatus("There is no code located at " + workspaceLocation);
+		if (LiferayWorkspaceUtil.isValidGradleWorkspaceLocation(currentProjectLocation.toString())) {
+			currentProjectLocation = currentProjectLocation.resolve("plugins-sdk");
 		}
 
-		Path legacyPluginsSDKPath = workspaceLocation.resolve("plugins-sdk");
+		final Path legacyPluginsSDKPath = currentProjectLocation;
+
+		if (FileUtil.notExists(legacyPluginsSDKPath.toFile())) {
+			return UpgradeTasksUIPlugin.createErrorStatus("There is no code located at " + legacyPluginsSDKPath);
+		}
 
 		final AtomicInteger returnCode = new AtomicInteger();
 
