@@ -15,8 +15,6 @@
 package com.liferay.ide.upgrade.tasks.core.internal.sdk;
 
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.upgrade.tasks.core.ProjectImporter;
 
 import java.io.File;
@@ -39,9 +37,10 @@ public class PluginsSDKProjectImporter implements ProjectImporter {
 
 	@Override
 	public IStatus canImport(Path rootProjectPath) {
-		SDK sdk = SDKUtil.createSDKFromLocation(new org.eclipse.core.runtime.Path(rootProjectPath.toString()));
 
-		return sdk.validate();
+		// SDK sdk = SDKUtil.createSDKFromLocation(new org.eclipse.core.runtime.Path(rootProjectPath.toString()));
+
+		return Status.OK_STATUS;
 	}
 
 	@Override
