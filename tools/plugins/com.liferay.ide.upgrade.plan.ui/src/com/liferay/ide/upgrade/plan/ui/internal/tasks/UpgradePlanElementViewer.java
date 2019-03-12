@@ -18,6 +18,7 @@ import com.liferay.ide.upgrade.plan.core.UpgradePlanElement;
 import com.liferay.ide.upgrade.plan.core.UpgradeTask;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepAction;
+import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepActions;
 import com.liferay.ide.upgrade.plan.ui.Disposable;
 import com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanUIPlugin;
 import com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanViewer;
@@ -165,10 +166,18 @@ public class UpgradePlanElementViewer implements ISelectionProvider {
 
 			_scrolledForm.setText(upgradeTaskStepAction.getTitle());
 
-			UpgradeTaskStepActionItem upgradeTaskStepActionItem = new UpgradeTaskStepActionItem(
-				_formToolkit, _scrolledForm, upgradeTaskStepAction);
+			if (upgradePlanElement instanceof UpgradeTaskStepActions) {
+				UpgradeTaskStepActionsItem upgradeTaskStepMultiActionsItem = new UpgradeTaskStepActionsItem(
+					_formToolkit, _scrolledForm, (UpgradeTaskStepActions)upgradeTaskStepAction);
 
-			upgradeTaskStepActionItem.addSelectionChangedListener(this::_fireSelectionChanged);
+				upgradeTaskStepMultiActionsItem.addSelectionChangedListener(this::_fireSelectionChanged);
+			}
+			else {
+				UpgradeTaskStepActionItem upgradeTaskStepActionItem = new UpgradeTaskStepActionItem(
+					_formToolkit, _scrolledForm, upgradeTaskStepAction);
+
+				upgradeTaskStepActionItem.addSelectionChangedListener(this::_fireSelectionChanged);
+			}
 		}
 		else if (upgradePlanElement != null) {
 			_scrolledForm.setText(upgradePlanElement.getTitle());

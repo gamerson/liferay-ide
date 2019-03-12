@@ -25,7 +25,7 @@ import com.liferay.ide.upgrade.plan.core.UpgradePlanElementStatus;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepAction;
 import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepActionPerformedEvent;
-import com.liferay.ide.upgrade.tasks.core.code.SetupLiferayWorkspaceStepKeys;
+import com.liferay.ide.upgrade.tasks.core.code.CreateNewLiferayWorkspaceActionKeys;
 
 import java.nio.file.Paths;
 
@@ -54,8 +54,7 @@ import org.osgi.service.component.annotations.ServiceScope;
 @Component(
 	property = {
 		"description=" + CreateNewLiferayWorkspaceActionKeys.DESCRIPTION,
-		"id=" + CreateNewLiferayWorkspaceActionKeys.ID, "order=1", "requirement=required",
-		"stepId=" + SetupLiferayWorkspaceStepKeys.ID, "title=" + CreateNewLiferayWorkspaceActionKeys.TITLE,
+		"id=" + CreateNewLiferayWorkspaceActionKeys.ID, "title=" + CreateNewLiferayWorkspaceActionKeys.TITLE,
 		"url=" + CreateNewLiferayWorkspaceActionKeys.URL
 	},
 	scope = ServiceScope.PROTOTYPE, service = UpgradeTaskStepAction.class
