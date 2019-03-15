@@ -15,18 +15,16 @@
 package com.liferay.ide.upgrade.plan.core.internal;
 
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.upgrade.plan.core.IMemento;
 import com.liferay.ide.upgrade.plan.core.UpgradeEvent;
 import com.liferay.ide.upgrade.plan.core.UpgradeListener;
 import com.liferay.ide.upgrade.plan.core.UpgradePlan;
-import com.liferay.ide.upgrade.plan.core.UpgradePlanElementStatus;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanStartedEvent;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
 import com.liferay.ide.upgrade.plan.core.UpgradeProblem;
-import com.liferay.ide.upgrade.plan.core.UpgradeTask;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepAction;
+import com.liferay.ide.upgrade.plan.core.UpgradeStep;
+import com.liferay.ide.upgrade.plan.core.UpgradeStepStatus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -134,26 +133,12 @@ public class UpgradePlannerService implements UpgradePlanner {
 					projectPath = Paths.get(currentProjectLocation);
 				}
 
-				IMemento ugpradeCategoriesMemento = upgradePlanMemento.getChild("categories");
+				String categoriesValue = upgradePlanMemento.getString("categories");
 
-				List<String> upgradeTaskCategoryIds = new ArrayList<>();
-
-				if (ugpradeCategoriesMemento != null) {
-					IMemento[] upgradeTaskCategoryMementos = ugpradeCategoriesMemento.getChildren("category");
-
-					if (ListUtil.isNotEmpty(upgradeTaskCategoryMementos)) {
-						upgradeTaskCategoryIds = Stream.of(
-							upgradeTaskCategoryMementos
-						).map(
-							memento -> memento.getString("id")
-						).collect(
-							Collectors.toList()
-						);
-					}
-				}
+				String[] categories = categoriesValue.split(",");
 
 				_currentUpgradePlan = new StandardUpgradePlan(
-					name, currentVersion, targetVersion, projectPath, upgradeTaskCategoryIds);
+					name, currentVersion, targetVersion, projectPath, Arrays.asList(categories));
 
 				String targetProjectLocationValue = upgradePlanMemento.getString("targetProjectLocation");
 
@@ -161,7 +146,9 @@ public class UpgradePlannerService implements UpgradePlanner {
 					_currentUpgradePlan.setTargetProjectLocation(Paths.get(targetProjectLocationValue));
 				}
 
-				_loadActionStatus(upgradePlanMemento, _currentUpgradePlan);
+				List<UpgradeStep> rootSteps = _currentUpgradePlan.getRootSteps();
+
+				_loadStepsStatus(upgradePlanMemento, rootSteps);
 
 				_loadUpgradeProblems(upgradePlanMemento, _currentUpgradePlan);
 
@@ -178,9 +165,9 @@ public class UpgradePlannerService implements UpgradePlanner {
 	@Override
 	public UpgradePlan newUpgradePlan(
 		String name, String currentVersion, String targetVersion, Path sourceCodeLocation,
-		List<String> upgradeTaskCategories) {
+		List<String> upgradeStepCategories) {
 
-		return new StandardUpgradePlan(name, currentVersion, targetVersion, sourceCodeLocation, upgradeTaskCategories);
+		return new StandardUpgradePlan(name, currentVersion, targetVersion, sourceCodeLocation, upgradeStepCategories);
 	}
 
 	@Override
@@ -191,32 +178,17 @@ public class UpgradePlannerService implements UpgradePlanner {
 	}
 
 	@Override
-	public void restartStep(UpgradeTaskStep upgradeTaskStep) {
-		upgradeTaskStep.setStatus(UpgradePlanElementStatus.INCOMPLETE);
+	public void restartStep(UpgradeStep upgradeStep) {
+		List<UpgradeStep> children = upgradeStep.getChildren();
 
-		List<UpgradeTaskStepAction> actions = upgradeTaskStep.getActions();
-
-		upgradeTaskStep.setStatus(UpgradePlanElementStatus.INCOMPLETE);
-
-		Stream<UpgradeTaskStepAction> stream = actions.stream();
-
-		stream.forEach(action -> action.setStatus(UpgradePlanElementStatus.INCOMPLETE));
-	}
-
-	@Override
-	public void restartTask(UpgradeTask upgradeTask) {
-		List<UpgradeTaskStep> upgradeTaskSteps = upgradeTask.getSteps();
-
-		for (UpgradeTaskStep upgradeTaskStep : upgradeTaskSteps) {
-			upgradeTaskStep.setStatus(UpgradePlanElementStatus.INCOMPLETE);
-
-			List<UpgradeTaskStepAction> actions = upgradeTaskStep.getActions();
-
-			Stream<UpgradeTaskStepAction> stream = actions.stream();
-
-			stream.forEach(action -> action.setStatus(UpgradePlanElementStatus.INCOMPLETE));
+		if (children.isEmpty()) {
+			upgradeStep.setStatus(UpgradeStepStatus.INCOMPLETE);
 		}
-
+		else {
+			for (UpgradeStep child : children) {
+				restartStep(child);
+			}
+		}
 	}
 
 	@Override
@@ -256,20 +228,14 @@ public class UpgradePlannerService implements UpgradePlanner {
 				upgradePlanMemento.putString("targetProjectLocation", targetProjectLocation.toString());
 			}
 
-			List<String> upgradeTaskCategories = upgradePlan.getUpgradeTaskCategories();
+			List<String> upgradeStepCategories = upgradePlan.getUpgradeStepCategories();
 
-			IMemento categoriesMemento = upgradePlanMemento.createChild("categories");
+			upgradePlanMemento.putString(
+				"categories", StringUtil.merge(upgradeStepCategories.toArray(new String[0]), ","));
 
-			Stream<String> stream = upgradeTaskCategories.stream();
+			List<UpgradeStep> steps = upgradePlan.getRootSteps();
 
-			stream.forEach(
-				upgradeTaskCategory -> {
-					IMemento childMemento = categoriesMemento.createChild("category");
-
-					childMemento.putString("id", upgradeTaskCategory);
-				});
-
-			_saveActionStatus(upgradePlanMemento, upgradePlan);
+			_saveStepsStatus(upgradePlanMemento, steps);
 
 			_saveUpgradeProblems(upgradePlanMemento, upgradePlan);
 
@@ -314,46 +280,22 @@ public class UpgradePlannerService implements UpgradePlanner {
 		return file;
 	}
 
-	private void _loadActionStatus(IMemento memento, UpgradePlan upgradePlan) {
-		List<UpgradeTask> tasks = upgradePlan.getTasks();
+	private void _loadStepsStatus(IMemento memento, List<UpgradeStep> upgradeSteps) {
+		for (UpgradeStep upgradeStep : upgradeSteps) {
+			IMemento stepMemento = memento.getChild(upgradeStep.getId());
 
-		for (UpgradeTask task : tasks) {
-			IMemento taskMemento = memento.getChild(task.getId());
-
-			if (taskMemento == null) {
+			if (stepMemento == null) {
 				continue;
 			}
 
-			List<UpgradeTaskStep> steps = task.getSteps();
+			String status = stepMemento.getString("status");
 
-			for (UpgradeTaskStep step : steps) {
-				IMemento stepMemento = taskMemento.getChild(step.getId());
+			upgradeStep.setStatus(UpgradeStepStatus.valueOf(status));
 
-				if (stepMemento == null) {
-					continue;
-				}
+			List<UpgradeStep> children = upgradeStep.getChildren();
 
-				List<UpgradeTaskStepAction> actions = step.getActions();
-
-				String stepStatus = stepMemento.getString("status");
-
-				if (stepStatus != null) {
-					step.setStatus(UpgradePlanElementStatus.valueOf(stepStatus));
-				}
-
-				for (UpgradeTaskStepAction action : actions) {
-					if (action == null) {
-						continue;
-					}
-
-					IMemento actionMemento = stepMemento.getChild(action.getId());
-
-					if (actionMemento != null) {
-						String actionStatus = actionMemento.getString("status");
-
-						action.setStatus(UpgradePlanElementStatus.valueOf(actionStatus));
-					}
-				}
+			if (!children.isEmpty()) {
+				_loadStepsStatus(stepMemento, children);
 			}
 		}
 	}
@@ -405,38 +347,20 @@ public class UpgradePlannerService implements UpgradePlanner {
 		upgradePlan.addUpgradeProblems(upgradeProblems);
 	}
 
-	private void _saveActionStatus(IMemento memento, UpgradePlan upgradePlan) {
-		List<UpgradeTask> tasks = upgradePlan.getTasks();
+	private void _saveStepsStatus(IMemento memento, List<UpgradeStep> upgradeSteps) {
+		for (UpgradeStep upgradeStep : upgradeSteps) {
+			IMemento stepMemento = memento.getChild(upgradeStep.getId());
 
-		for (UpgradeTask task : tasks) {
-			IMemento taskMemento = memento.getChild(task.getId());
-
-			if (taskMemento == null) {
-				taskMemento = memento.createChild(task.getId());
+			if (stepMemento == null) {
+				stepMemento = memento.createChild(upgradeStep.getId());
 			}
 
-			List<UpgradeTaskStep> steps = task.getSteps();
+			stepMemento.putString("status", String.valueOf(upgradeStep.getStatus()));
 
-			for (UpgradeTaskStep step : steps) {
-				IMemento stepMemento = taskMemento.getChild(step.getId());
+			List<UpgradeStep> children = upgradeStep.getChildren();
 
-				if (stepMemento == null) {
-					stepMemento = taskMemento.createChild(step.getId());
-				}
-
-				stepMemento.putString("status", String.valueOf(step.getStatus()));
-
-				List<UpgradeTaskStepAction> actions = step.getActions();
-
-				for (UpgradeTaskStepAction action : actions) {
-					IMemento actionMemento = stepMemento.getChild(action.getId());
-
-					if (actionMemento == null) {
-						actionMemento = stepMemento.createChild(action.getId());
-					}
-
-					actionMemento.putString("status", String.valueOf(action.getStatus()));
-				}
+			if (!children.isEmpty()) {
+				_saveStepsStatus(stepMemento, children);
 			}
 		}
 	}

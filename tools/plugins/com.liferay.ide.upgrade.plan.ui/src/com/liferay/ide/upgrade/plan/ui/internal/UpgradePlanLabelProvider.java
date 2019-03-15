@@ -16,21 +16,14 @@ package com.liferay.ide.upgrade.plan.ui.internal;
 
 import com.liferay.ide.upgrade.plan.core.Pair;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanAcessor;
-import com.liferay.ide.upgrade.plan.core.UpgradePlanElement;
-import com.liferay.ide.upgrade.plan.core.UpgradePlanElementRequirement;
-import com.liferay.ide.upgrade.plan.core.UpgradePlanElementStatus;
-import com.liferay.ide.upgrade.plan.core.UpgradeTask;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskCategory;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeTaskStepAction;
+import com.liferay.ide.upgrade.plan.core.UpgradeStep;
+import com.liferay.ide.upgrade.plan.core.UpgradeStepCategory;
+import com.liferay.ide.upgrade.plan.core.UpgradeStepRequirement;
 
+import java.util.List;
 import java.util.function.Function;
 
-import org.eclipse.core.runtime.Adapters;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
-import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Image;
@@ -51,34 +44,8 @@ public class UpgradePlanLabelProvider extends BundleImageLabelProvider implement
 
 	@Override
 	public Image getImage(Object element) {
-		if (UpgradePlanContentProvider.NO_TASKS.equals(element)) {
-			return UpgradePlanUIPlugin.getImage(UpgradePlanUIPlugin.NO_TASKS_IMAGE);
-		}
-
-		Image baseImage = super.getImage(element);
-
-		UpgradeTaskStepAction upgradeTaskStepAction = Adapters.adapt(element, UpgradeTaskStepAction.class);
-
-		if (upgradeTaskStepAction != null) {
-			ImageDescriptor statusImageDescriptor = null;
-
-			if (UpgradePlanElementStatus.COMPLETED.equals(upgradeTaskStepAction.getStatus())) {
-				statusImageDescriptor = UpgradePlanUIPlugin.getImageDescriptor(
-					UpgradePlanUIPlugin.TASK_STEP_ACTION_COMPLETE_OVERLAY_IMAGE);
-			}
-			else if (UpgradePlanElementStatus.SKIPPED.equals(upgradeTaskStepAction.getStatus())) {
-				statusImageDescriptor = UpgradePlanUIPlugin.getImageDescriptor(
-					UpgradePlanUIPlugin.TASK_STEP_ACTION_SKIP_OVERLAY_IMAGE);
-			}
-			else if (UpgradePlanElementStatus.FAILED.equals(upgradeTaskStepAction.getStatus())) {
-				statusImageDescriptor = UpgradePlanUIPlugin.getImageDescriptor(
-					UpgradePlanUIPlugin.TASK_STEP_ACTION_FAILED_OVERLAY_IMAGE);
-			}
-
-			ImageDescriptor descriptor = new DecorationOverlayIcon(
-				baseImage, statusImageDescriptor, IDecoration.TOP_RIGHT);
-
-			return descriptor.createImage();
+		if (UpgradePlanContentProvider.NO_STEPS.equals(element)) {
+			return UpgradePlanUIPlugin.getImage(UpgradePlanUIPlugin.NO_STEPS_IMAGE);
 		}
 
 		return super.getImage(element);
@@ -86,48 +53,28 @@ public class UpgradePlanLabelProvider extends BundleImageLabelProvider implement
 
 	@Override
 	public StyledString getStyledText(Object element) {
-		if (UpgradePlanContentProvider.NO_TASKS.equals(element)) {
-			return new StyledString("No upgrade tasks. Double-click to start a new upgrade plan.");
+		if (UpgradePlanContentProvider.NO_STEPS.equals(element)) {
+			return new StyledString("No upgrade steps. Double-click to start a new upgrade plan.");
 		}
 
-		if (element instanceof UpgradeTask) {
-			UpgradeTask upgradeTask = (UpgradeTask)element;
-
-			return new StyledString(upgradeTask.getTitle());
-		}
-		else if (element instanceof UpgradeTaskStep) {
-			UpgradeTaskStep upgradeTaskStep = (UpgradeTaskStep)element;
+		if (element instanceof UpgradeStep) {
+			UpgradeStep upgradeStep = (UpgradeStep)element;
 
 			Styler styler = null;
 
-			if (upgradeTaskStep.completed() || !upgradeTaskStep.enabled()) {
+			if (upgradeStep.completed()) {
 				styler = StyledString.QUALIFIER_STYLER;
 			}
 
-			StyledString styledString = new StyledString(upgradeTaskStep.getTitle(), styler);
+			StyledString styledString = new StyledString(upgradeStep.getTitle(), styler);
 
-			UpgradePlanElementRequirement upgradePlanElementRequirement = upgradeTaskStep.getRequirement();
+			List<UpgradeStep> children = upgradeStep.getChildren();
 
-			styledString.append(" [" + upgradePlanElementRequirement.toString() + "]", StyledString.DECORATIONS_STYLER);
+			if (children.isEmpty()) {
+				UpgradeStepRequirement upgradeStepRequirement = upgradeStep.getRequirement();
 
-			return styledString;
-		}
-		else if (element instanceof UpgradeTaskStepAction) {
-			UpgradeTaskStepAction upgradeAction = (UpgradeTaskStepAction)element;
-
-			Styler styler = null;
-
-			if (upgradeAction.completed() || !upgradeAction.enabled()) {
-				styler = StyledString.QUALIFIER_STYLER;
+				styledString.append(" [" + upgradeStepRequirement.toString() + "]", StyledString.DECORATIONS_STYLER);
 			}
-
-			StyledString styledString = new StyledString(upgradeAction.getTitle(), styler);
-
-			styledString.setStyle(0, styledString.length(), styler);
-
-			UpgradePlanElementRequirement upgradeTaskStepRequirement = upgradeAction.getRequirement();
-
-			styledString.append(" [" + upgradeTaskStepRequirement.toString() + "]", StyledString.DECORATIONS_STYLER);
 
 			return styledString;
 		}
@@ -141,50 +88,26 @@ public class UpgradePlanLabelProvider extends BundleImageLabelProvider implement
 
 			String imagePath = null;
 
-			if (element instanceof UpgradePlanElement) {
-				UpgradePlanElement upgradePlanElement = (UpgradePlanElement)element;
+			if (element instanceof UpgradeStep) {
+				UpgradeStep upgradeStep = (UpgradeStep)element;
 
-				imagePath = upgradePlanElement.getImagePath();
+				imagePath = upgradeStep.getImagePath();
 
 				if (imagePath != null) {
 					bundle = FrameworkUtil.getBundle(element.getClass());
 				}
 			}
 
-			if ((imagePath == null) && (element instanceof UpgradeTask)) {
-				UpgradeTask upgradeTask = (UpgradeTask)element;
+			if ((imagePath == null) && (element instanceof UpgradeStep)) {
+				UpgradeStep upgradeStep = (UpgradeStep)element;
 
-				UpgradeTaskCategory upgradeTaskCategory = _accessor.getCategory(upgradeTask);
+				UpgradeStepCategory upgradeStepCategory = _accessor.getCategory(upgradeStep);
 
-				imagePath = upgradeTaskCategory.getImagePath();
+				if (upgradeStepCategory != null) {
+					imagePath = upgradeStepCategory.getImagePath();
 
-				bundle = FrameworkUtil.getBundle(upgradeTaskCategory.getClass());
-			}
-
-			if ((imagePath == null) && (element instanceof UpgradeTaskStep)) {
-				UpgradeTaskStep upgradeTaskStep = (UpgradeTaskStep)element;
-
-				UpgradeTask upgradeTask = _accessor.getTask(upgradeTaskStep);
-
-				UpgradeTaskCategory upgradeTaskCategory = _accessor.getCategory(upgradeTask);
-
-				imagePath = upgradeTaskCategory.getImagePath();
-
-				bundle = FrameworkUtil.getBundle(upgradeTaskCategory.getClass());
-			}
-
-			if ((imagePath == null) && (element instanceof UpgradeTaskStepAction)) {
-				UpgradeTaskStepAction upgradeTaskStepAction = (UpgradeTaskStepAction)element;
-
-				UpgradeTaskStep upgradeTaskStep = _accessor.getStep(upgradeTaskStepAction);
-
-				UpgradeTask upgradeTask = _accessor.getTask(upgradeTaskStep);
-
-				UpgradeTaskCategory upgradeTaskCategory = _accessor.getCategory(upgradeTask);
-
-				imagePath = upgradeTaskCategory.getImagePath();
-
-				bundle = FrameworkUtil.getBundle(upgradeTaskCategory.getClass());
+					bundle = FrameworkUtil.getBundle(upgradeStepCategory.getClass());
+				}
 			}
 
 			if ((bundle != null) && (imagePath != null)) {
