@@ -1,13 +1,16 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
- * Contributors:
- *     IBM Corporation - Initial API and implementation
- *******************************************************************************/
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 
 package com.liferay.ide.upgrade.plan.core;
 
@@ -39,8 +42,11 @@ import java.util.List;
  * </p><p>
  * This interface is not intended to be implemented by clients.
  * </p>
+ *
+ * @author Terry Jia
  */
 public interface IMemento {
+
 	/**
 	 * Creates a new child of this memento with the given type.
 	 * <p>
@@ -54,6 +60,15 @@ public interface IMemento {
 	 * @see #getChildren
 	 */
 	public IMemento createChild(String type);
+
+	/**
+	 * Returns the boolean value of the given key.
+	 *
+	 * @param key the key
+	 * @return the value, or <code>null</code> if the key was not found or was found
+	 *  but was not a boolean
+	 */
+	public Boolean getBoolean(String key);
 
 	/**
 	 * Returns the first child with the given type id.
@@ -89,6 +104,8 @@ public interface IMemento {
 	 */
 	public Integer getInteger(String key);
 
+	public List<String> getNames();
+
 	/**
 	 * Returns the string value of the given key.
 	 *
@@ -99,15 +116,12 @@ public interface IMemento {
 	public String getString(String key);
 
 	/**
-	 * Returns the boolean value of the given key.
+	 * Sets the value of the given key to the given boolean value.
 	 *
 	 * @param key the key
-	 * @return the value, or <code>null</code> if the key was not found or was found
-	 *  but was not a boolean
+	 * @param value the value
 	 */
-	public Boolean getBoolean(String key);
-
-	public List<String> getNames();
+	public void putBoolean(String key, boolean value);
 
 	/**
 	 * Sets the value of the given key to the given integer.
@@ -116,14 +130,6 @@ public interface IMemento {
 	 * @param value the value
 	 */
 	public void putInteger(String key, int value);
-
-	/**
-	 * Sets the value of the given key to the given boolean value.
-	 *
-	 * @param key the key
-	 * @param value the value
-	 */
-	public void putBoolean(String key, boolean value);
 
 	/**
 	 * Sets the value of the given key to the given string.
