@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="com.liferay.ide.upgrade.steps.core.internal.code.SetupLiferayWorkspaceSteps">
+   <property name="id" value="setup_liferay_workspace_steps"/>
+   <property name="order" value="0"/>
+   <property name="requirement" value="required"/>
+   <property name="parentId" value="setup_liferay_workspace"/>
+   <property name="title" value="Setup Liferay Workspace"/>
+   <property name="stepIds" value="import_liferay_workspace,create_new_liferay_workspace"/>
+   <property name="description" value="In order to continue upgrade plan, you need {0} or {0} to have one Liferay Workspace inside this plan."/>
+   <service scope="prototype">
+      <provide interface="com.liferay.ide.upgrade.plan.core.UpgradeStep"/>
+   </service>
+   <implementation class="com.liferay.ide.upgrade.steps.core.internal.code.SetupLiferayWorkspaceSteps"/>
+</scr:component>

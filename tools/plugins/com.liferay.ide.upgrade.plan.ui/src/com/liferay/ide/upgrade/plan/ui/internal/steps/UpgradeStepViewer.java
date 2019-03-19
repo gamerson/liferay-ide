@@ -15,6 +15,7 @@
 package com.liferay.ide.upgrade.plan.ui.internal.steps;
 
 import com.liferay.ide.upgrade.plan.core.UpgradeStep;
+import com.liferay.ide.upgrade.plan.core.UpgradeSteps;
 import com.liferay.ide.upgrade.plan.ui.Disposable;
 import com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanUIPlugin;
 import com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanViewer;
@@ -144,9 +145,18 @@ public class UpgradeStepViewer implements ISelectionProvider {
 		if (upgradeStep != null) {
 			_scrolledForm.setText(upgradeStep.getTitle());
 
-			UpgradeStepItem upgradeStepItem = new UpgradeStepItem(_formToolkit, _scrolledForm, upgradeStep.getId());
+			if (upgradeStep instanceof UpgradeSteps) {
+				UpgradeStepsItem upgradeStepsItem = new UpgradeStepsItem(
+					_formToolkit, _scrolledForm, upgradeStep.getId());
 
-			upgradeStepItem.addSelectionChangedListener(this::_fireSelectionChanged);
+				upgradeStepsItem.addSelectionChangedListener(this::_fireSelectionChanged);
+			}
+			else {
+				UpgradeStepItem upgradeStepItem = new UpgradeStepItem(_formToolkit, _scrolledForm, upgradeStep.getId());
+
+				upgradeStepItem.addSelectionChangedListener(this::_fireSelectionChanged);
+
+			}
 		}
 
 		_scrolledForm.reflow(true);

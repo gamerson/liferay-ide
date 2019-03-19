@@ -21,7 +21,7 @@ import com.liferay.ide.upgrade.plan.core.UpgradePlan;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
 import com.liferay.ide.upgrade.plan.core.UpgradeStep;
 import com.liferay.ide.upgrade.steps.core.ResourceSelection;
-import com.liferay.ide.upgrade.steps.core.code.SetupLiferayWorkspaceStepKeys;
+import com.liferay.ide.upgrade.steps.core.code.ImportLiferayWorkspaceStepKeys;
 
 import java.nio.file.Path;
 
@@ -38,10 +38,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * @author Terry Jia
  */
 @Component(
-	property = {
-		"id=import_liferay_workspace", "order=2", "requirement=required",
-		"parentId=" + SetupLiferayWorkspaceStepKeys.ID, "title=Import Liferay Workspace"
-	},
+	property = {"id=" + ImportLiferayWorkspaceStepKeys.ID, "title=" + ImportLiferayWorkspaceStepKeys.TITLE},
 	scope = ServiceScope.PROTOTYPE, service = UpgradeStep.class
 )
 public class ImportLiferayWorkspaceStep extends BaseUpgradeStep {

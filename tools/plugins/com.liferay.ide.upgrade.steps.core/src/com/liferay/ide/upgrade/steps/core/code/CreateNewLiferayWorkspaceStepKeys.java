@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.steps.ui.internal;
+package com.liferay.ide.upgrade.steps.core.code;
 
 /**
  * @author Gregory Amerson

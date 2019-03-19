@@ -12,6 +12,7 @@
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/buildservice/RebuildServicesStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/buildservice/RebuildServicesTaskKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/code/ConfigureLiferayWorkspaceSettingsStepKeys\.java" />
+		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/code/CreateNewLiferayWorkspaceStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/code/ImportExistingProjectsStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/code/SetupDevelopmentEnvironmentStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/code/SetupLiferayWorkspaceStepKeys\.java" />
@@ -23,7 +24,6 @@
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/sdk/CreateLegacyPluginsSDKStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/sdk/ImportExistingPluginsSDKStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/sdk/MigratePluginsSDKProjectsStepKeys\.java" />
-		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.ui/src/com/liferay/ide/upgrade/steps/ui/internal/CreateNewLiferayWorkspaceStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.ui/src/com/liferay/ide/upgrade/steps/ui/internal/sdk/ConvertPluginsSDKProjectsToModulesStepKeys\.java" />
 		<suppress checks="IndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.ui/src/com/liferay/ide/upgrade/steps/ui/internal/sdk/CopyPluginsSDKProjectsToWorkspaceStepKeys\.java" />
 	</checkstyle>
@@ -39,7 +39,7 @@
 		<suppress checks="CopyrightCheck" files="tools/plugins/com.liferay.ide.core/src/com/liferay/ide/core/workspace/ProjectDeletedEvent\.java" />
 		<suppress checks="CopyrightCheck" files="tools/plugins/com.liferay.ide.core/src/com/liferay/ide/core/workspace/ProjectMovedEvent\.java" />
 		<suppress checks="CopyrightCheck" files="tools/plugins/com.liferay.ide.core/src/com/liferay/ide/core/workspace/ProjectOpenedEvent\.java" />
-		<suppress checks="JavaLongLinesCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.ui/src/com/liferay/ide/upgrade/steps/ui/internal/CreateNewLiferayWorkspaceStepKeys\.java" />
+		<suppress checks="JavaLongLinesCheck" files="tools/plugins/com.liferay.ide.upgrade.steps.core/src/com/liferay/ide/upgrade/steps/core/code/CreateNewLiferayWorkspaceStepKeys\.java" />
 		<suppress checks="XMLIndentationCheck" files="tools/plugins/com.liferay.ide.gradle.core/OSGI-INF/.*\.xml" />
 		<suppress checks="XMLIndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.plan.core/OSGI-INF/.*\.xml" />
 		<suppress checks="XMLIndentationCheck" files="tools/plugins/com.liferay.ide.upgrade.plan.ui/OSGI-INF/.*\.xml" />

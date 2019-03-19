@@ -63,4 +63,5 @@ Service-Component: OSGI-INF/com.liferay.ide.upgrade.steps.core.internal.code.Con
  OSGI-INF/com.liferay.ide.upgrade.steps.core.internal.prerequisite.CheckInstalledJDKsStep.xml,
  OSGI-INF/com.liferay.ide.upgrade.steps.core.internal.prerequisite.CheckIsBladeInstalledStep.xml,
  OSGI-INF/com.liferay.ide.upgrade.steps.core.internal.prerequisite.PrepareForCodeUpgradeStep.xml,
- OSGI-INF/com.liferay.ide.upgrade.steps.core.internal.sdk.MigratePluginsSDKProjectsStep.xml
+ OSGI-INF/com.liferay.ide.upgrade.steps.core.internal.sdk.MigratePluginsSDKProjectsStep.xml,
+ OSGI-INF/com.liferay.ide.upgrade.steps.core.internal.code.SetupLiferayWorkspaceSteps.xml
