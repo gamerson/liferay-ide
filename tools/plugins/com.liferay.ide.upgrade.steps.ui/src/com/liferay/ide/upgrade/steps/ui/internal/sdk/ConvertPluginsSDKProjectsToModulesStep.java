@@ -26,7 +26,6 @@ import com.liferay.ide.upgrade.plan.core.UpgradePlan;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
 import com.liferay.ide.upgrade.plan.core.UpgradeStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeStepPerformedEvent;
-import com.liferay.ide.upgrade.plan.core.UpgradeStepStatus;
 import com.liferay.ide.upgrade.steps.core.ImportSDKProjectsOp;
 import com.liferay.ide.upgrade.steps.core.sdk.MigratePluginsSDKProjectsStepKeys;
 import com.liferay.ide.upgrade.steps.ui.internal.ImportSDKProjectsWizard;
@@ -160,8 +159,6 @@ public class ConvertPluginsSDKProjectsToModulesStep extends BaseUpgradeStep impl
 			status = multiStatusBuilder.build();
 
 			if (status.isOK()) {
-				setStatus(UpgradeStepStatus.COMPLETED);
-
 				Stream<ProjectNamedItem> projectNamedItems = projects.stream();
 
 				List<String> projectNames = projectNamedItems.map(

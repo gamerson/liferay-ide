@@ -16,7 +16,6 @@ package com.liferay.ide.upgrade.steps.core.internal.prerequisite;
 
 import com.liferay.ide.upgrade.plan.core.BaseUpgradeStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeStep;
-import com.liferay.ide.upgrade.plan.core.UpgradeStepStatus;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -40,8 +39,6 @@ public class CheckForUpgradePlannerUpdatesStep extends BaseUpgradeStep {
 
 	@Override
 	public IStatus perform(IProgressMonitor progressMonitor) {
-		setStatus(UpgradeStepStatus.COMPLETED);
-
 		return Status.OK_STATUS;
 	}
 
