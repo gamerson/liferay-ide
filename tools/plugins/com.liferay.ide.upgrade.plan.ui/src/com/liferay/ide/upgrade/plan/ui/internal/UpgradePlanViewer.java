@@ -102,7 +102,7 @@ public class UpgradePlanViewer implements UpgradeListener, IDoubleClickListener,
 		selectOptional.filter(
 			item -> item instanceof UpgradeStep
 		).filter(
-			item -> _treeContentProvider.hasChildren(item)
+			_treeContentProvider::hasChildren
 		).ifPresent(
 			s -> {
 				_treeViewer.setExpandedState(s, !_treeViewer.getExpandedState(s));

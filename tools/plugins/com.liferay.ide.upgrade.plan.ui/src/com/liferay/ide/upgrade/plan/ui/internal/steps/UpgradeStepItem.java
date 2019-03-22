@@ -165,7 +165,6 @@ public class UpgradeStepItem implements UpgradeItem, UpgradeListener, UpgradePla
 		_upgradePlanner.addListener(this);
 
 		_updateEnablement(_upgradeStep, _enables);
-
 	}
 
 	@Override
