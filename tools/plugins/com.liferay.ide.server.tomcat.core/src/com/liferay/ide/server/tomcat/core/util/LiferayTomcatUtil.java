@@ -563,13 +563,13 @@ public class LiferayTomcatUtil {
 
 			IPath liferayHome = appServerDir.append("..");
 
-			Properties extProperties = PropertiesUtil.loadProperties(liferayHome.append(_PORTAL_EXT_PROPERTIES));
+			Properties extProperties = PropertiesUtil.loadProperties(liferayHome.append("portal-ext.properties"));
 
-			String portalCTX = extProperties.getProperty(_PORTALCTX_KEY);
+			String portalCTX = extProperties.getProperty("portal.ctx");
 
 			File contextFile = contextFilePath.toFile();
 
-			if (!FileUtil.exists(contextFile) && (portalCTX != null)) {
+			if (FileUtil.notExists(contextFile) && CoreUtil.isNotNullOrEmpty(portalCTX)) {
 				contextFilePath = hostPath.append(portalCTX.substring(1) + ".xml");
 
 				contextFile = contextFilePath.toFile();
@@ -768,10 +768,6 @@ public class LiferayTomcatUtil {
 	private static final String _HOST_NAME = "localhost";
 
 	private static final Version _MANIFEST_VERSION_REQUIRED = ILiferayConstants.V620;
-
-	private static final String _PORTAL_EXT_PROPERTIES = "portal-ext.properties";
-
-	private static final String _PORTALCTX_KEY = "portal.ctx";
 
 	private static final String _SERVICE_NAME = "Catalina";
 

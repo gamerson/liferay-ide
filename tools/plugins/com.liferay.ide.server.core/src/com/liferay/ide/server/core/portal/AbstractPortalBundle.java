@@ -149,7 +149,7 @@ public abstract class AbstractPortalBundle implements PortalBundle {
 
 	@Override
 	public String getPortalContext() {
-		String portalContext = portalExtProperties.getProperty(_PORTAL_CONTEXT_PROPERTY_KEY);
+		String portalContext = portalExtProperties.getProperty("portal.ctx");
 
 		if (CoreUtil.isNotNullOrEmpty(portalContext) && !portalContext.startsWith("/")) {
 			return "/" + portalContext;
@@ -384,8 +384,6 @@ public abstract class AbstractPortalBundle implements PortalBundle {
 	private static final String _CONFIG_TYPE_VERSION = "version";
 
 	private static final Version _MANIFEST_VERSION_REQUIRED = ILiferayConstants.V700;
-
-	private static final String _PORTAL_CONTEXT_PROPERTY_KEY = "portal.ctx";
 
 	private static boolean _clearedConfigInfoCacheOnce = false;
 
