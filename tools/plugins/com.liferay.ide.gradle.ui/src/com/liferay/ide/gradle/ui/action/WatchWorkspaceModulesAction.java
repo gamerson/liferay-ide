@@ -29,11 +29,17 @@ import java.io.File;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -123,17 +129,31 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 
 						Set<IProject> childProjects = liferayGradleWorkspaceProject.getChildProjects();
 
-						for (IProject childProject : childProjects) {
-							_undeployModuleFromServer(childProject);
-						}
+						Stream<IProject> childProjectStream = childProjects.stream();
+
+						childProjectStream.map(
+							childProject -> LiferayCore.create(IBundleProject.class, childProject)
+						).parallel(
+						).filter(
+							Objects::nonNull
+						).forEach(
+							bundleProject -> {
+								IProject childProject = bundleProject.getProject();
+
+								new StopWatchBundleJob(childProject.getName(), bundleProject).schedule();
+							}
+						);
 
 						projectsToWatch.clear();
 
 						break;
 					}
 					else {
+						IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, selectedProject);
+
+						new StopWatchBundleJob(selectedProject.getName(), bundleProject).schedule();
+
 						projectsToWatch.remove(selectedProject);
-						_undeployModuleFromServer(selectedProject);
 					}
 				}
 			}
@@ -146,31 +166,47 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 		UIUtil.async(() -> decoratorManager.update(LiferayGradleUI.LIFERAY_WATCH_DECORATOR_ID));
 	}
 
-	private void _undeployModuleFromServer(IProject selectedProject) {
-		IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, selectedProject);
-
-		if (bundleProject == null) {
-			return;
-		}
-
-		try {
-			GogoBundleDeployer gogoBundleDeployer = new GogoBundleDeployer();
-
-			gogoBundleDeployer.uninstall(bundleProject);
-
-			GradleProject gradleProject = GradleUtil.getGradleProject(selectedProject);
-
-			if (gradleProject != null) {
-				File installedBundleIdFile = new File(gradleProject.getBuildDirectory(), "installedBundleId");
-
-				FileUtil.delete(installedBundleIdFile);
-			}
-		}
-		catch (Exception e) {
-			LiferayGradleUI.logError(e);
-		}
-	}
-
 	private String _action;
+
+	private class StopWatchBundleJob extends Job {
+
+		public StopWatchBundleJob(String projectName, IBundleProject bundleProject) {
+			super("Stop bundle for project " + projectName);
+
+			_bundleProject = bundleProject;
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			UIUtil.async(
+				() -> {
+					try {
+						GogoBundleDeployer gogoBundleDeployer = new GogoBundleDeployer();
+
+						gogoBundleDeployer.uninstall(_bundleProject);
+
+						GradleProject gradleProject = GradleUtil.getGradleProject(_bundleProject.getProject());
+
+						if (gradleProject != null) {
+							File installedBundleIdFile = new File(
+								gradleProject.getBuildDirectory(), "installedBundleId");
+
+							FileUtil.delete(installedBundleIdFile);
+						}
+
+						IDecoratorManager decoratorManager = UIUtil.getDecoratorManager();
+
+						decoratorManager.update(LiferayGradleUI.LIFERAY_WATCH_DECORATOR_ID);
+					}
+					catch (Exception e) {
+					}
+				});
+
+			return Status.OK_STATUS;
+		}
+
+		private IBundleProject _bundleProject;
+
+	}
 
 }

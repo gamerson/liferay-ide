@@ -139,6 +139,10 @@ public class GogoBundleDeployer {
 	public long getBundleId(String bsn) throws IOException {
 		String result = run("lb -s " + bsn, true);
 
+		if (CoreUtil.isNullOrEmpty(result)) {
+			return -1;
+		}
+
 		if ("No matching bundles found".equals(result)) {
 			return -1;
 		}
@@ -252,7 +256,11 @@ public class GogoBundleDeployer {
 		String symbolicName = bundleProject.getSymbolicName();
 
 		if (symbolicName != null) {
-			long bundleId = getBundleId(symbolicName);
+			long bundleId = -1;
+
+			synchronized (this) {
+				bundleId = getBundleId(symbolicName);
+			}
 
 			if (bundleId > 0) {
 				retVal = uninstall(bundleId);
