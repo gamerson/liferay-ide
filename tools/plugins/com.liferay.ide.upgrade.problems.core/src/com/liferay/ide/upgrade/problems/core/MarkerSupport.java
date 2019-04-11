@@ -17,6 +17,7 @@ package com.liferay.ide.upgrade.problems.core;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.upgrade.plan.core.UpgradeProblem;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -48,6 +49,18 @@ public interface MarkerSupport {
 				catch (CoreException ce) {
 				}
 			}
+		);
+	}
+
+	public default void removeMarkers(Collection<UpgradeProblem> upgradeProblems) {
+		Stream<UpgradeProblem> ugradeProblemsStream = upgradeProblems.stream();
+
+		ugradeProblemsStream.map(
+			this::findMarker
+		).filter(
+			this::markerExists
+		).forEach(
+			this::deleteMarker
 		);
 	}
 
