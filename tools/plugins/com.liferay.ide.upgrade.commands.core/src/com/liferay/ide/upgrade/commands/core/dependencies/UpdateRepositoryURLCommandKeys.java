@@ -12,28 +12,13 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.commands.ui.internal;
-
-import com.liferay.ide.ui.util.UIUtil;
-import com.liferay.ide.upgrade.plan.core.MessagePrompt;
-
-import org.osgi.service.component.annotations.Component;
+package com.liferay.ide.upgrade.commands.core.dependencies;
 
 /**
  * @author Terry Jia
- * @author Gregory Amerson
  */
-@Component(service = MessagePrompt.class)
-public class MessagePromptImpl implements MessagePrompt {
+public class UpdateRepositoryURLCommandKeys {
 
-	@Override
-	public void postInfo(String title, String message) {
-		UIUtil.postInfo(title, message);
-	}
-
-	@Override
-	public boolean prompt(String title, String message) {
-		return UIUtil.promptQuestion(title, message);
-	}
+	public static final String ID = "update_repository_url";
 
 }
