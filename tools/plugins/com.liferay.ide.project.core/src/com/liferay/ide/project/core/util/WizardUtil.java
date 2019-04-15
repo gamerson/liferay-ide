@@ -25,6 +25,7 @@ import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -65,7 +66,9 @@ public class WizardUtil {
 
 			templateOp.execute(monitor);
 
-			CoreUtil.prepareFolder((IFolder)serviceBuilderFile.getParent());
+			if (!(serviceBuilderFile.getParent() instanceof IProject)) {
+				CoreUtil.prepareFolder((IFolder)serviceBuilderFile.getParent());
+			}
 
 			String s = sb.toString();
 
