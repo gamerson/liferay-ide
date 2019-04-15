@@ -83,9 +83,13 @@ public class GradleDependencyUpdater {
 		sb.append(artifact.getGroupId());
 		sb.append("\", name:\"");
 		sb.append(artifact.getArtifactId());
-		sb.append("\", version:\"");
-		sb.append(artifact.getVersion());
 		sb.append("\"");
+
+		if (artifact.getVersion() != null) {
+			sb.append(", version:\"");
+			sb.append(artifact.getVersion());
+			sb.append("\"");
+		}
 
 		return _insertDependency(sb.toString());
 	}

@@ -18,6 +18,7 @@ import com.liferay.ide.core.templates.ITemplateContext;
 import com.liferay.ide.core.templates.ITemplateOperation;
 import com.liferay.ide.core.templates.TemplatesCore;
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
 
 import java.io.ByteArrayInputStream;
@@ -33,9 +34,29 @@ import org.eclipse.wst.xml.core.internal.provisional.format.FormatProcessorXML;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings("restriction")
 public class WizardUtil {
+
+	public static void addBundleInfo(IProject project) throws CoreException {
+		IFile bndFile = project.getFile("bnd.bnd");
+
+		if (FileUtil.exists(bndFile)) {
+			String contents = FileUtil.readContents(bndFile, true);
+
+			if (!contents.contains("Liferay-Service")) {
+				contents = contents + "Liferay-Service: true";
+
+				try (ByteArrayInputStream bis = new ByteArrayInputStream(contents.getBytes("UTF-8"))) {
+					bndFile.setContents(bis, IFile.FORCE, null);
+				}
+				catch (Exception e) {
+					ProjectCore.logError(e);
+				}
+			}
+		}
+	}
 
 	public static void createDefaultServiceBuilderFile(
 			IFile serviceBuilderFile, String descriptorVersion, boolean useSampleTemplate, String packagePath,
