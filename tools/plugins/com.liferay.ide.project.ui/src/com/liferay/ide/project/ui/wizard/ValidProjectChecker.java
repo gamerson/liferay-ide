@@ -14,8 +14,9 @@
 
 package com.liferay.ide.project.ui.wizard;
 
+import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.project.core.util.ProjectUtil;
@@ -24,7 +25,6 @@ import com.liferay.ide.ui.util.UIUtil;
 
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -51,38 +51,6 @@ public class ValidProjectChecker {
 		init();
 	}
 
-	public void checkValidProjectForServiceBuilder() {
-		IProject[] projects = CoreUtil.getAllProjects();
-
-		boolean hasValidProjectTypes = false;
-
-		for (IProject project : projects) {
-			if (CoreUtil.isLiferayProject(project)) {
-				if (!_isServiceBuilderProject(project)) {
-					hasValidProjectTypes = true;
-				}
-			}
-		}
-
-		if (!hasValidProjectTypes) {
-			Shell activeShell = UIUtil.getActiveShell();
-
-			Boolean openNewLiferayProjectWizard = MessageDialog.openQuestion(
-				activeShell, NLS.bind(Msgs.newElement, wizardName),
-				NLS.bind(Msgs.noSuitableLiferayProjects, wizardName));
-
-			if (openNewLiferayProjectWizard) {
-				Action defaultAction = NewPluginProjectDropDownAction.getPluginProjectAction();
-
-				if (defaultAction != null) {
-					defaultAction.run();
-
-					checkValidProjectForServiceBuilder();
-				}
-			}
-		}
-	}
-
 	public void checkValidProjectTypes() {
 		IProject[] projects = CoreUtil.getAllProjects();
 		boolean hasValidProjectTypes = false;
@@ -90,6 +58,14 @@ public class ValidProjectChecker {
 		boolean hasJsfFacet = false;
 
 		for (IProject project : projects) {
+			IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
+
+			if (bundleProject != null) {
+				hasValidProjectTypes = true;
+
+				break;
+			}
+
 			if (ProjectUtil.isLiferayFacetedProject(project)) {
 				IFacetedProject facetedProject = ProjectUtil.getFacetedProject(project);
 
@@ -192,16 +168,6 @@ public class ValidProjectChecker {
 		}
 
 		return null;
-	}
-
-	private boolean _isServiceBuilderProject(IProject project) {
-		IFile serviceFile = project.getFile("src/main/webapp/WEB-INF/service.xml");
-
-		if (FileUtil.exists(serviceFile)) {
-			return true;
-		}
-
-		return false;
 	}
 
 	private static final String _ATT_ID = "id";
