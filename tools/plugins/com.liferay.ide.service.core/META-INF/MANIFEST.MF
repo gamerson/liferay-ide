@@ -6,6 +6,7 @@ Bundle-Version: 3.6.1.qualifier
 Bundle-Activator: com.liferay.ide.service.core.ServiceCore
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.liferay.ide.core,
+ com.liferay.ide.gradle.core,
  com.liferay.ide.project.core,
  org.eclipse.core.commands,
  org.eclipse.core.resources,

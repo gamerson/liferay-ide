@@ -33,6 +33,7 @@ import org.eclipse.wst.xml.core.internal.provisional.format.FormatProcessorXML;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
 @SuppressWarnings("restriction")
 public class WizardUtil {
