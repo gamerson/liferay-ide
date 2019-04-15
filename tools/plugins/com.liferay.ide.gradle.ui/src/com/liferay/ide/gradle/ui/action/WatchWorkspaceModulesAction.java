@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -129,18 +128,19 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 
 						Set<IProject> childProjects = liferayGradleWorkspaceProject.getChildProjects();
 
-						Stream<IProject> childProjectStream = childProjects.stream();
-
-						childProjectStream.map(
+						childProjects.stream(
+						).map(
 							childProject -> LiferayCore.create(IBundleProject.class, childProject)
-						).parallel(
 						).filter(
 							Objects::nonNull
+						).parallel(
 						).forEach(
 							bundleProject -> {
 								IProject childProject = bundleProject.getProject();
 
-								new StopWatchBundleJob(childProject.getName(), bundleProject).schedule();
+								new StopWatchBundleJob(
+									childProject.getName(), bundleProject
+								).schedule();
 							}
 						);
 
@@ -151,7 +151,9 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 					else {
 						IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, selectedProject);
 
-						new StopWatchBundleJob(selectedProject.getName(), bundleProject).schedule();
+						new StopWatchBundleJob(
+							selectedProject.getName(), bundleProject
+						).schedule();
 
 						projectsToWatch.remove(selectedProject);
 					}
