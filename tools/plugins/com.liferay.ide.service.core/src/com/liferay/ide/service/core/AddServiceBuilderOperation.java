@@ -17,9 +17,11 @@ package com.liferay.ide.service.core;
 import com.liferay.ide.core.ILiferayPortal;
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.IWebProject;
+import com.liferay.ide.core.IWorkspaceProject;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.core.util.WizardUtil;
 import com.liferay.ide.service.core.operation.INewServiceBuilderDataModelProperties;
@@ -30,6 +32,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -60,7 +63,16 @@ public class AddServiceBuilderOperation
 
 			ILiferayPortal portal = liferayProject.adapt(ILiferayPortal.class);
 
-			Version portalVersion = new Version(portal.getVersion());
+			Version portalVersion = null;
+
+			if (portal != null) {
+				portalVersion = new Version(portal.getVersion());
+			}
+			else {
+				IWorkspaceProject workspaceProject = LiferayWorkspaceUtil.getLiferayWorkspaceProject();
+
+				portalVersion = new Version(workspaceProject.getTargetPlatformVersion());
+			}
 
 			descriptorVersion = portalVersion.getMajor() + "." + portalVersion.getMinor() + ".0";
 		}
@@ -100,16 +112,27 @@ public class AddServiceBuilderOperation
 
 		// IDE-110 IDE-648
 
-		IWebProject webproject = LiferayCore.create(IWebProject.class, project);
+		IFile serviceBuilderFile = null;
 
-		if ((webproject == null) || (webproject.getDefaultDocrootFolder() == null)) {
-			return ServiceCore.createErrorStatus("Could not find webapp root folder.");
+		if (project.getWorkspace() != null) {
+			IPath projectRelativePath = project.getProjectRelativePath();
+
+			Path path = new Path(projectRelativePath.toString() + getDataModel().getStringProperty(SERVICE_FILE));
+
+			serviceBuilderFile = project.getFile(path);
 		}
+		else {
+			IWebProject webproject = LiferayCore.create(IWebProject.class, project);
 
-		IFolder defaultDocroot = webproject.getDefaultDocrootFolder();
-		Path path = new Path("WEB-INF/" + getDataModel().getStringProperty(SERVICE_FILE));
+			if ((webproject == null) || (webproject.getDefaultDocrootFolder() == null)) {
+				return ServiceCore.createErrorStatus("Could not find webapp root folder.");
+			}
 
-		IFile serviceBuilderFile = defaultDocroot.getFile(path);
+			IFolder defaultDocroot = webproject.getDefaultDocrootFolder();
+			Path path = new Path("WEB-INF/" + getDataModel().getStringProperty(SERVICE_FILE));
+
+			serviceBuilderFile = defaultDocroot.getFile(path);
+		}
 
 		if (FileUtil.notExists(serviceBuilderFile)) {
 			try {

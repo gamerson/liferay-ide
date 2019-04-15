@@ -56,7 +56,8 @@ public class NewServiceBuilderWizard
 
 		ValidProjectChecker checker = new ValidProjectChecker(ID);
 
-		checker.checkValidProjectTypes();
+		checker.checkValidProjectForServiceBuilder();
+		//		checker.checkValidProjectTypes();
 	}
 
 	@Override
