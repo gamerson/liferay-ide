@@ -77,7 +77,7 @@ public class GradleDependencyUpdater {
 	}
 
 	public DependenciesClosureVisitor insertDependency(Artifact artifact) throws IOException {
-		return _insertDependency(wrapDependency(artifact));
+		return _insertDependency(_wrapDependency(artifact));
 	}
 
 	public void updateDependency(String dependency) throws IOException {
@@ -86,25 +86,50 @@ public class GradleDependencyUpdater {
 		FileUtils.writeLines(_file, _gradleFileContents);
 	}
 
-	public String wrapDependency(Artifact artifact) {
-		StringBuilder sb = new StringBuilder();
+	public void updateVersion(boolean buildscript, Artifact artifact) throws IOException {
+		DependenciesClosureVisitor visitor = new DependenciesClosureVisitor(buildscript);
 
-		sb.append(artifact.getConfiguration());
-		sb.append(" group: \"");
-		sb.append(artifact.getGroupId());
-		sb.append("\", name:\"");
-		sb.append(artifact.getArtifactId());
+		_walkScript(visitor);
 
-		if (CoreUtil.isNotNullOrEmpty(artifact.getVersion())) {
-			sb.append("\", version:\"");
-			sb.append(artifact.getVersion());
-			sb.append("\"");
-		}
-		else {
-			sb.append("\"");
+		int[] lineNumbers = visitor.getDependenceLineNumbers(artifact);
+
+		if (lineNumbers.length != 2) {
+			return;
 		}
 
-		return sb.toString();
+		int startLineNumber = lineNumbers[0];
+
+		int endLineNumber = lineNumbers[1];
+
+		_gradleFileContents = FileUtils.readLines(_file);
+
+		String content = _gradleFileContents.get(startLineNumber - 1);
+
+		int startPos = content.indexOf(artifact.getConfiguration());
+
+		if (startPos == -1) {
+			return;
+		}
+
+		StringBuilder dependencyBuilder = new StringBuilder(_wrapDependency(artifact));
+
+		String prefixString = content.substring(0, startPos);
+
+		prefixString.chars(
+		).filter(
+			ch -> ch == '\t'
+		).asLongStream(
+		).forEach(
+			it -> dependencyBuilder.insert(0, "\t")
+		);
+
+		_gradleFileContents.set(startLineNumber - 1, dependencyBuilder.toString());
+
+		for (int i = endLineNumber - 1; i > startLineNumber - 1; i--) {
+			_gradleFileContents.remove(i);
+		}
+
+		FileUtils.writeLines(_file, _gradleFileContents);
 	}
 
 	private DependenciesClosureVisitor _insertDependency(String dependency) throws IOException {
@@ -137,6 +162,27 @@ public class GradleDependencyUpdater {
 		for (ASTNode node : _nodes) {
 			node.visit(visitor);
 		}
+	}
+
+	private String _wrapDependency(Artifact artifact) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(artifact.getConfiguration());
+		sb.append(" group: \"");
+		sb.append(artifact.getGroupId());
+		sb.append("\", name:\"");
+		sb.append(artifact.getArtifactId());
+
+		if (CoreUtil.isNotNullOrEmpty(artifact.getVersion())) {
+			sb.append("\", version:\"");
+			sb.append(artifact.getVersion());
+			sb.append("\"");
+		}
+		else {
+			sb.append("\"");
+		}
+
+		return sb.toString();
 	}
 
 	private File _file;
