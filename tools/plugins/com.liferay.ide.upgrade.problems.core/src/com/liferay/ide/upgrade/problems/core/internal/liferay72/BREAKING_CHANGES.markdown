@@ -138,20 +138,20 @@ every page that was mostly unused and redundant.
 - **Date:** 2018-Dec-12
 - **JIRA Ticket:** [LPS-88018](https://issues.liferay.com/browse/LPS-88018)
 
-#### What changed?
+#### What changed? [](id=what-changed-3)
 
 Two Staging properties have been moved from `portal.properties` to an
 OSGi configuration named `ExportImportServiceConfiguration.java` in the
 `export-import-service` module.
 
-#### Who is affected?
+#### Who is affected? [](id=who-is-affected-3)
 
 This affects anyone using the following portal properties:
 
 - `staging.delete.temp.lar.on.failure`
 - `staging.delete.temp.lar.on.success`
 
-#### How should I update my code?
+#### How should I update my code? [](id=how-should-i-update-my-code-3)
 
 Instead of overriding the `portal.properties` file, you can manage the
 properties from Portal's configuration administrator. This can be accessed by
@@ -163,7 +163,7 @@ If you would like to include the new configuration in your application, follow
 the instructions for
 [making applications configurable](https://dev.liferay.com/develop/tutorials/-/knowledge_base/7-1/making-applications-configurable).
 
-#### Why was this change made?
+#### Why was this change made? [](id=why-was-this-change-made-3)
 
 This change was made as part of the modularization efforts to ease portal
 configuration changes.
