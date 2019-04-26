@@ -14,6 +14,8 @@
 
 package com.liferay.ide.gradle.core.parser;
 
+import com.google.common.collect.Lists;
+
 import com.liferay.ide.core.Artifact;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
@@ -21,7 +23,6 @@ import com.liferay.ide.core.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -106,7 +107,7 @@ public class GradleDependencyUpdater {
 
 			});
 
-		_gradleFileContents = Arrays.asList(FileUtil.readLinesFromFile(_file));
+		_gradleFileContents = Lists.newArrayList(FileUtil.readLinesFromFile(_file));
 
 		for (Artifact artifact : artifacts) {
 			int[] lineNumbers = dependenciesClosureVisitor.getDependenceLineNumbers(artifact);
@@ -154,7 +155,7 @@ public class GradleDependencyUpdater {
 
 		_walkScript(visitor);
 
-		_gradleFileContents = Arrays.asList(FileUtil.readLinesFromFile(_file));
+		_gradleFileContents = Lists.newArrayList(FileUtil.readLinesFromFile(_file));
 
 		if (!dependency.startsWith("\t")) {
 			dependency = "\t" + dependency;
