@@ -46,11 +46,25 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
 import org.osgi.service.component.annotations.Component;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import org.xml.sax.InputSource;
 
 /**
  * @author Gregory Amerson
@@ -144,39 +158,38 @@ public class UpgradePlannerService implements UpgradePlanner {
 			if (upgradePlanMementoOptional.isPresent()) {
 				IMemento upgradePlanMemento = upgradePlanMementoOptional.get();
 
-				String currentVersion = upgradePlanMemento.getString("currentVersion");
-				String targetVersion = upgradePlanMemento.getString("targetVersion");
-
-				String currentProjectLocation = upgradePlanMemento.getString("currentProjectLocation");
-
-				Path projectPath = null;
-
-				if (currentProjectLocation != null) {
-					projectPath = Paths.get(currentProjectLocation);
-				}
-
-				List<UpgradeStep> upgradeSteps = new ArrayList<>();
-
-				_loadUpgradeSteps(upgradePlanMemento, upgradeSteps, null);
-
-				String upgradePlanOutline = upgradePlanMemento.getString("upgradePlanOutline");
-
-				_currentUpgradePlan = new StandardUpgradePlan(
-					name, currentVersion, targetVersion, projectPath, upgradePlanOutline, upgradeSteps);
-
-				String targetProjectLocationValue = upgradePlanMemento.getString("targetProjectLocation");
-
-				if (targetProjectLocationValue != null) {
-					_currentUpgradePlan.setTargetProjectLocation(Paths.get(targetProjectLocationValue));
-				}
-
-				_loadUpgradeProblems(upgradePlanMemento, _currentUpgradePlan);
-
-				return _currentUpgradePlan;
+				return _initUpgradePlan(upgradePlanMemento);
 			}
 		}
 		catch (IOException ioe) {
 			UpgradePlanCorePlugin.logError("Could not load upgrade plan " + name, ioe);
+		}
+
+		return null;
+	}
+
+	public List<UpgradePlan> loadUpgradePlans() {
+		try (InputStream inputStream = new FileInputStream(_getUpgradePlannerStorageFile())) {
+			IMemento rootMemento = XMLMemento.loadMemento(inputStream);
+
+			if (rootMemento == null) {
+				return null;
+			}
+
+			return Stream.of(
+				rootMemento.getChildren("upgradePlan")
+			).filter(
+				Objects::nonNull
+			).map(
+				this::_initUpgradePlan
+			).filter(
+				Objects::nonNull
+			).collect(
+				Collectors.toList()
+			);
+		}
+		catch (IOException ioe) {
+			UpgradePlanCorePlugin.logError("Could not load upgrade plan list.", ioe);
 		}
 
 		return null;
@@ -202,6 +215,65 @@ public class UpgradePlannerService implements UpgradePlanner {
 	@Override
 	public void removeListener(UpgradeListener upgradeListener) {
 		_upgradeListeners.remove(upgradeListener);
+	}
+
+	@Override
+	public void removeUpgradePlan(UpgradePlan upgradePlan) {
+		String upgradePlanName = upgradePlan.getName();
+		Document document = null;
+
+		try (InputStream inputStream = new FileInputStream(_getUpgradePlannerStorageFile())) {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+			DocumentBuilder parser = factory.newDocumentBuilder();
+
+			document = parser.parse(new InputSource(inputStream));
+
+			NodeList upgradePlannerNodes = document.getChildNodes();
+
+			for (int i = 0; i < upgradePlannerNodes.getLength(); i++) {
+				Node upgradePlannerNode = upgradePlannerNodes.item(i);
+
+				if (upgradePlannerNode instanceof Element) {
+					Element upgradePlannerElement = (Element)upgradePlannerNode;
+
+					NodeList upgradePlanNodes = upgradePlannerElement.getChildNodes();
+
+					for (int j = 0; j < upgradePlanNodes.getLength(); j++) {
+						Node upgradePlannNode = upgradePlanNodes.item(j);
+
+						if (upgradePlannNode instanceof Element) {
+							Element upgradePlanElement = (Element)upgradePlannNode;
+
+							String planName = upgradePlanElement.getAttribute("upgradePlanName");
+
+							if (CoreUtil.isNullOrEmpty(planName)) {
+								continue;
+							}
+
+							if (upgradePlanName.equalsIgnoreCase(upgradePlanElement.getAttribute("upgradePlanName"))) {
+								upgradePlannerElement.removeChild(upgradePlannNode);
+
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+			Transformer transformer = transformerFactory.newTransformer();
+
+			DOMSource domSource = new DOMSource(document);
+
+			StreamResult streamResult = new StreamResult(_getUpgradePlannerStorageFile());
+
+			transformer.transform(domSource, streamResult);
+		}
+		catch (Exception e) {
+			UpgradePlanCorePlugin.logError("Unable to remove upgrade plan .", e);
+		}
 	}
 
 	@Override
@@ -309,6 +381,44 @@ public class UpgradePlannerService implements UpgradePlanner {
 		}
 
 		return file;
+	}
+
+	private StandardUpgradePlan _initUpgradePlan(IMemento upgradePlanMemento) {
+		String upgradePlanName = upgradePlanMemento.getString("upgradePlanName");
+
+		if (CoreUtil.isNullOrEmpty(upgradePlanName)) {
+			return null;
+		}
+
+		String currentVersion = upgradePlanMemento.getString("currentVersion");
+		String targetVersion = upgradePlanMemento.getString("targetVersion");
+
+		String currentProjectLocation = upgradePlanMemento.getString("currentProjectLocation");
+
+		Path projectPath = null;
+
+		if (currentProjectLocation != null) {
+			projectPath = Paths.get(currentProjectLocation);
+		}
+
+		List<UpgradeStep> upgradeSteps = new ArrayList<>();
+
+		_loadUpgradeSteps(upgradePlanMemento, upgradeSteps, null);
+
+		String upgradePlanOutline = upgradePlanMemento.getString("upgradePlanOutline");
+
+		StandardUpgradePlan currentUpgradePlan = new StandardUpgradePlan(
+			upgradePlanName, currentVersion, targetVersion, projectPath, upgradePlanOutline, upgradeSteps);
+
+		String targetProjectLocationValue = upgradePlanMemento.getString("targetProjectLocation");
+
+		if (targetProjectLocationValue != null) {
+			currentUpgradePlan.setTargetProjectLocation(Paths.get(targetProjectLocationValue));
+		}
+
+		_loadUpgradeProblems(upgradePlanMemento, currentUpgradePlan);
+
+		return currentUpgradePlan;
 	}
 
 	private void _loadUpgradeProblems(IMemento memento, UpgradePlan upgradePlan) {
