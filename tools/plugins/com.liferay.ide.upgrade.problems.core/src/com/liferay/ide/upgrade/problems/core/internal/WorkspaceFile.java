@@ -26,6 +26,8 @@ import java.io.IOException;
 
 import java.nio.file.Files;
 
+import java.util.UUID;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -52,7 +54,7 @@ public class WorkspaceFile implements SourceFile {
 
 		IProject project = javaProject.getProject();
 
-		IFile projectFile = project.getFile("/temp/" + file.getName());
+		IFile projectFile = project.getFile("/temp/" + UUID.randomUUID() + "-" + file.getName());
 
 		if (projectFile.exists()) {
 			try {
@@ -123,7 +125,6 @@ public class WorkspaceFile implements SourceFile {
 				retval = createIFile(FileMigration.HELPER_PROJECT_NAME, file);
 			}
 			catch (CoreException | IOException e) {
-				e.printStackTrace();
 			}
 		}
 

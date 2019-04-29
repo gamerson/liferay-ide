@@ -72,7 +72,7 @@ public class MarkdownParser {
 				retval = sections;
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				UpgradeProblemsCorePlugin.logError(e.getMessage());
 			}
 		}
 

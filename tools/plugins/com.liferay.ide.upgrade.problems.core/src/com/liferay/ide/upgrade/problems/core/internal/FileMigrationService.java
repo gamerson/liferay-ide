@@ -179,7 +179,7 @@ public class FileMigrationService implements FileMigration {
 
 			if (ListUtil.isNotEmpty(fileMigrators)) {
 				try {
-					Stream<ServiceReference<FileMigrator>> migratorStream = fileMigrators.stream();
+					Stream<ServiceReference<FileMigrator>> migratorStream = fileMigrators.parallelStream();
 
 					migratorStream.filter(
 						serviceReference -> {
@@ -201,7 +201,6 @@ public class FileMigrationService implements FileMigration {
 						}
 					).map(
 						_context::getService
-					).parallel(
 					).forEach(
 						fileMigrator -> {
 							List<UpgradeProblem> problems = fileMigrator.analyze(file);
