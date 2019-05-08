@@ -8,6 +8,7 @@ Require-Bundle: com.liferay.ide.gradle.core,
  com.liferay.ide.project.core,
  org.eclipse.buildship.core;bundle-version="[3.0.0,4.0.0)",
  com.liferay.ide.test.core.base,
- com.liferay.ide.test.project.core.base
+ com.liferay.ide.test.project.core.base,
+ org.apache.commons.logging
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

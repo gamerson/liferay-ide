@@ -10,6 +10,7 @@ Require-Bundle: com.liferay.ide.maven.core,
  com.liferay.ide.test.project.core.base,
  com.liferay.ide.test.core.base,
  org.eclipse.m2e.maven.runtime;bundle-version="[1.9,2.0)",
- com.liferay.ide.core
+ com.liferay.ide.core,
+ org.apache.commons.logging
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
