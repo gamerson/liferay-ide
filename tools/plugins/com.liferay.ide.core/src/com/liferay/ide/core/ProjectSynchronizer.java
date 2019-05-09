@@ -12,32 +12,17 @@
  * details.
  */
 
-package com.liferay.ide.project.core;
+package com.liferay.ide.core;
 
-import com.liferay.ide.core.Artifact;
-
-import java.util.List;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * @author Gregory Amerson
  * @author Terry Jia
  */
-public interface IProjectBuilder {
+public interface ProjectSynchronizer {
 
-	public IStatus buildLang(IFile langFile, IProgressMonitor monitor) throws CoreException;
-
-	public IStatus buildService(IProgressMonitor monitor) throws CoreException;
-
-	public IStatus buildWSDD(IProgressMonitor monitor) throws CoreException;
-
-	public List<Artifact> getDependencies(String configration);
-
-	public IStatus updateDependencies(IProject project, List<Artifact> dependencies) throws CoreException;
+	public IStatus synchronizePath(IPath path, IProgressMonitor progressMonitor);
 
 }

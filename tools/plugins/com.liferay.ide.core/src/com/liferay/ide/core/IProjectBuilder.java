@@ -12,17 +12,30 @@
  * details.
  */
 
-package com.liferay.ide.project.core;
+package com.liferay.ide.core;
 
+import java.util.List;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
 /**
  * @author Gregory Amerson
+ * @author Terry Jia
  */
-public interface IWorkspaceProjectBuilder {
+public interface IProjectBuilder {
 
-	public IStatus initBundle(IProject project, String bundleUrl, IProgressMonitor monitor);
+	public IStatus buildLang(IFile langFile, IProgressMonitor monitor) throws CoreException;
+
+	public IStatus buildService(IProgressMonitor monitor) throws CoreException;
+
+	public IStatus buildWSDD(IProgressMonitor monitor) throws CoreException;
+
+	public List<Artifact> getDependencies(String configration);
+
+	public IStatus updateDependencies(IProject project, List<Artifact> dependencies) throws CoreException;
 
 }

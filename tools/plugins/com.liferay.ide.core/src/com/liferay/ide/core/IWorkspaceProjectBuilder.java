@@ -12,17 +12,17 @@
  * details.
  */
 
-package com.liferay.ide.project.core;
+package com.liferay.ide.core;
 
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * @author Terry Jia
+ * @author Gregory Amerson
  */
-public interface ProjectSynchronizer {
+public interface IWorkspaceProjectBuilder {
 
-	public IStatus synchronizePath(IPath path, IProgressMonitor progressMonitor);
+	public IStatus initBundle(IProject project, String bundleUrl, IProgressMonitor monitor);
 
 }
