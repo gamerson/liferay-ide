@@ -23,7 +23,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Stream;
@@ -89,6 +91,11 @@ public class StandardUpgradePlan implements UpgradePlan {
 	@Override
 	public String getCurrentVersion() {
 		return _currentVersion;
+	}
+
+	@Override
+	public String getExternalProperty(String key) {
+		return _externalProperties.get(key);
 	}
 
 	@Override
@@ -207,6 +214,11 @@ public class StandardUpgradePlan implements UpgradePlan {
 	}
 
 	@Override
+	public void setExternalProperty(String key, String value) {
+		_externalProperties.put(key, value);
+	}
+
+	@Override
 	public void setTargetProjectLocation(Path path) {
 		_targetProjectLocation = path;
 	}
@@ -222,6 +234,7 @@ public class StandardUpgradePlan implements UpgradePlan {
 
 	private Path _currentProjectLocation;
 	private final String _currentVersion;
+	private final Map<String, String> _externalProperties = new HashMap<>();
 	private final String _name;
 	private Path _targetProjectLocation;
 	private final String _targetVersion;
