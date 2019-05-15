@@ -33,6 +33,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -187,10 +190,27 @@ public class UpgradePlannerService implements UpgradePlanner {
 			String upgradePlanOutline)
 		throws IOException {
 
-		String markdownFileName = upgradePlanOutline + ".markdown";
+		URL url = loadAllUpgradePlanOutlines(
+		).stream(
+		).map(
+			outline -> outline.split(",")
+		).filter(
+			outline -> upgradePlanOutline.equals(outline[0])
+		).map(
+			outline -> outline[1]
+		).map(
+			urlValue -> {
+				try {
+					return new URL(urlValue);
+				}
+				catch (MalformedURLException e) {
+					return null;
+				}
+			}
+		).findFirst(
+		).get();
 
-		UpgradeStepsBuilder upgradeStepsBuilder = new UpgradeStepsBuilder(
-			UpgradePlannerService.class.getResourceAsStream(markdownFileName));
+		UpgradeStepsBuilder upgradeStepsBuilder = new UpgradeStepsBuilder(url);
 
 		List<UpgradeStep> upgradeSteps = upgradeStepsBuilder.build();
 
@@ -535,5 +555,61 @@ public class UpgradePlannerService implements UpgradePlanner {
 	private UpgradePlan _currentUpgradePlan;
 	private final Collection<UpgradeEvent> _upgradeEvents = new CopyOnWriteArrayList<>();
 	private final Collection<UpgradeListener> _upgradeListeners = new CopyOnWriteArraySet<>();
+
+	@Override
+	public List<String> loadAllUpgradePlanOutlines() {
+		try (InputStream inputStream = new FileInputStream(_getUpgradePlannerStorageFile())) {
+			IMemento rootMemento = XMLMemento.loadMemento(inputStream);
+
+			if (rootMemento != null) {
+				IMemento[] outlineMementos = rootMemento.getChildren("outline");
+
+				List<String> outlines = Stream.of(
+					outlineMementos
+				).map(
+					outline -> outline.getString("name") + "," + outline.getString("url")
+				).collect(
+					Collectors.toList()
+				);
+
+				if (!outlines.isEmpty()) {
+					return outlines;
+				}
+			}
+		}
+		catch (IOException ioe) {
+		}
+
+		return defaultUpgradePlanOutlines;
+	}
+
+	@Override
+	public void updateUpgradePlanOutlines(List<String> outlines) {
+		try (InputStream inputStream = new FileInputStream(_getUpgradePlannerStorageFile())) {
+			IMemento rootMemento = XMLMemento.loadMemento(inputStream);
+
+			if (rootMemento == null) {
+				rootMemento = XMLMemento.createWriteRoot("upgradePlanner");
+			}
+
+			rootMemento.removeChildren("outline");
+
+			for (String outline : outlines) {
+				IMemento outlineMemento = rootMemento.createChild("outline");
+
+				String[] o = outline.split(",");
+
+				outlineMemento.putString("name", o[0]);
+				outlineMemento.putString("url", o[1]);
+			}
+
+			try (FileOutputStream fileOutputStream = new FileOutputStream(_getUpgradePlannerStorageFile())) {
+				((XMLMemento)rootMemento).save(fileOutputStream);
+			}
+		}
+		catch (IOException ioe) {
+			UpgradePlanCorePlugin.logError("Unable to save upgrade plan to storage.", ioe);
+		}
+	}
 
 }
