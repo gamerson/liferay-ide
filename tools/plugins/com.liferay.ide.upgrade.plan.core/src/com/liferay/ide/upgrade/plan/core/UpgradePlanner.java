@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import java.nio.file.Path;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,6 +37,8 @@ public interface UpgradePlanner {
 	public void dispose(UpgradePlan upgradePlan);
 
 	public UpgradePlan getCurrentUpgradePlan();
+
+	public List<String> loadAllUpgradePlanOutlines();
 
 	public List<UpgradePlan> loadAllUpgradePlans();
 
@@ -57,5 +60,11 @@ public interface UpgradePlanner {
 	public void skipStep(UpgradeStep upgradeStep);
 
 	public void startUpgradePlan(UpgradePlan upgradePlan);
+
+	public void updateUpgradePlanOutlines(List<String> outlines);
+
+	public final List<String> defaultUpgradePlanOutlines = Arrays.asList(
+		"liferay-code-upgrade-plan," +
+			"http://localhost:8080/web/guest/docs/7-2/reference#upgrading-code-to-liferay-portal-ce-72");
 
 }
