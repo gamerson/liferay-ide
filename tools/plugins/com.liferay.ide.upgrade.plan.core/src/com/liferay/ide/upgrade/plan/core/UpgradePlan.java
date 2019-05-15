@@ -30,6 +30,8 @@ public interface UpgradePlan {
 
 	public String getCurrentVersion();
 
+	public String getExternalProperty(String key);
+
 	public String getName();
 
 	public Path getTargetProjectLocation();
@@ -45,6 +47,8 @@ public interface UpgradePlan {
 	public List<String> getUpgradeVersions();
 
 	public void setCurrentProjectLocation(Path path);
+
+	public void setExternalProperty(String key, String value);
 
 	public void setTargetProjectLocation(Path path);
 
