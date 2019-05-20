@@ -17,15 +17,18 @@ package com.liferay.ide.upgrade.plan.core.internal;
 import com.liferay.ide.core.util.SapphireContentAccessor;
 import com.liferay.ide.upgrade.plan.core.NewUpgradePlanOp;
 import com.liferay.ide.upgrade.plan.core.UpgradePlan;
+import com.liferay.ide.upgrade.plan.core.UpgradePlanProperty;
 import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
 import com.liferay.ide.upgrade.plan.core.util.LiferayWorkspaceUtil;
 
 import java.io.IOException;
 
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.Path;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
@@ -66,26 +69,29 @@ public class NewUpgradePlanOpMethods {
 
 		String targetVersion = _getter.get(newUpgradePlanOp.getTargetVersion());
 
-		Path path = _getter.get(newUpgradePlanOp.getLocation());
+		ElementList<UpgradePlanProperty> upgradePlanProperties = newUpgradePlanOp.getProperties();
 
-		java.nio.file.Path sourceCodeLocation = null;
+		Map<String, String> properties = new HashMap<>();
 
-		if (path != null) {
-			sourceCodeLocation = Paths.get(path.toOSString());
+		for (UpgradePlanProperty upgradePlanProperty : upgradePlanProperties) {
+			String key = _getter.get(upgradePlanProperty.getKey());
+			Path value = _getter.get(upgradePlanProperty.getValue());
+
+			properties.put(key, value.toOSString());
 		}
 
 		try {
 			UpgradePlan upgradePlan = upgradePlanner.newUpgradePlan(
-				name, currentVersion, targetVersion, sourceCodeLocation, upgradePlanOutline);
+				name, currentVersion, targetVersion, upgradePlanOutline, properties);
 
 			IProject workspaceProject = LiferayWorkspaceUtil.getWorkspaceProject();
 
 			if (workspaceProject != null) {
 				IPath location = workspaceProject.getLocation();
 
-				java.nio.file.Path targetProjectLocation = Paths.get(location.toOSString());
+				properties = upgradePlan.getProperties();
 
-				upgradePlan.setTargetProjectLocation(targetProjectLocation);
+				properties.put("targetProjectLocation", location.toOSString());
 			}
 
 			upgradePlanner.startUpgradePlan(upgradePlan);

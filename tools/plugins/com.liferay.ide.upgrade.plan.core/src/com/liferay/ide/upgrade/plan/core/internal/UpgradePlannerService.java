@@ -36,13 +36,13 @@ import java.io.InputStream;
 
 import java.net.URL;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -186,8 +186,8 @@ public class UpgradePlannerService implements UpgradePlanner {
 
 	@Override
 	public UpgradePlan newUpgradePlan(
-			String name, String currentVersion, String targetVersion, Path sourceCodeLocation,
-			String upgradePlanOutline)
+			String name, String currentVersion, String targetVersion, String upgradePlanOutline,
+			Map<String, String> properties)
 		throws IOException {
 
 		URL url = new URL(upgradePlanOutline);
@@ -197,7 +197,7 @@ public class UpgradePlannerService implements UpgradePlanner {
 		List<UpgradeStep> upgradeSteps = upgradeStepsBuilder.build();
 
 		return new StandardUpgradePlan(
-			name, currentVersion, targetVersion, sourceCodeLocation, upgradePlanOutline, upgradeSteps);
+			name, currentVersion, targetVersion, upgradePlanOutline, upgradeSteps, properties);
 	}
 
 	@Override
@@ -274,16 +274,31 @@ public class UpgradePlannerService implements UpgradePlanner {
 			upgradePlanMemento.putString("targetVersion", upgradePlan.getTargetVersion());
 			upgradePlanMemento.putString("upgradePlanOutline", upgradePlan.getUpgradePlanOutline());
 
-			Path currentProjectLocation = upgradePlan.getCurrentProjectLocation();
+			Map<String, String> properties = upgradePlan.getProperties();
 
-			if (currentProjectLocation != null) {
-				upgradePlanMemento.putString("currentProjectLocation", currentProjectLocation.toString());
-			}
+			IMemento[] existingPropertyMementos = upgradePlanMemento.getChildren("property");
 
-			Path targetProjectLocation = upgradePlan.getTargetProjectLocation();
+			for (Entry<String, String> entry : properties.entrySet()) {
+				String key = entry.getKey();
 
-			if (targetProjectLocation != null) {
-				upgradePlanMemento.putString("targetProjectLocation", targetProjectLocation.toString());
+				IMemento propertyMemento = null;
+
+				for (IMemento existingPropertyMemento : existingPropertyMementos) {
+					String existingKey = existingPropertyMemento.getString("key");
+
+					if (existingKey.equals(key)) {
+						propertyMemento = existingPropertyMemento;
+
+						break;
+					}
+				}
+
+				if (propertyMemento == null) {
+					propertyMemento = upgradePlanMemento.createChild("property");
+				}
+
+				propertyMemento.putString("key", key);
+				propertyMemento.putString("value", entry.getValue());
 			}
 
 			List<UpgradeStep> rootUpgradeSteps = upgradePlan.getUpgradeSteps();
@@ -354,28 +369,25 @@ public class UpgradePlannerService implements UpgradePlanner {
 		String currentVersion = upgradePlanMemento.getString("currentVersion");
 		String targetVersion = upgradePlanMemento.getString("targetVersion");
 
-		String currentProjectLocation = upgradePlanMemento.getString("currentProjectLocation");
-
-		Path projectPath = null;
-
-		if (currentProjectLocation != null) {
-			projectPath = Paths.get(currentProjectLocation);
-		}
-
 		List<UpgradeStep> upgradeSteps = new ArrayList<>();
 
 		_loadUpgradeSteps(upgradePlanMemento, upgradeSteps, null);
 
 		String upgradePlanOutline = upgradePlanMemento.getString("upgradePlanOutline");
 
-		UpgradePlan currentUpgradePlan = new StandardUpgradePlan(
-			upgradePlanName, currentVersion, targetVersion, projectPath, upgradePlanOutline, upgradeSteps);
+		IMemento[] propertyMementos = upgradePlanMemento.getChildren("property");
 
-		String targetProjectLocationValue = upgradePlanMemento.getString("targetProjectLocation");
+		Map<String, String> properties = new HashMap<>();
 
-		if (targetProjectLocationValue != null) {
-			currentUpgradePlan.setTargetProjectLocation(Paths.get(targetProjectLocationValue));
+		for (IMemento propertyMemento : propertyMementos) {
+			String key = propertyMemento.getString("key");
+			String value = propertyMemento.getString("value");
+
+			properties.put(key, value);
 		}
+
+		UpgradePlan currentUpgradePlan = new StandardUpgradePlan(
+			upgradePlanName, currentVersion, targetVersion, upgradePlanOutline, upgradeSteps, properties);
 
 		_loadUpgradeProblems(upgradePlanMemento, currentUpgradePlan);
 
