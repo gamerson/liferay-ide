@@ -15,10 +15,14 @@
 package com.liferay.ide.upgrade.plan.ui.internal;
 
 import com.liferay.ide.upgrade.plan.core.NewUpgradePlanOp;
+import com.liferay.ide.upgrade.plan.core.UpgradePlanProperty;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.sapphire.Element;
+import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
+import org.eclipse.sapphire.ui.forms.WizardDef;
 import org.eclipse.sapphire.ui.forms.swt.SapphireWizard;
 import org.eclipse.sapphire.ui.forms.swt.SapphireWizardPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
@@ -48,6 +52,23 @@ public class NewUpgradePlanWizard extends SapphireWizard<NewUpgradePlanOp> {
 		}
 
 		return wizardPages;
+	}
+
+	@Override
+	protected void init(Element element, DefinitionLoader.Reference<WizardDef> definition) {
+		NewUpgradePlanOp op = (NewUpgradePlanOp)element;
+
+		ElementList<UpgradePlanProperty> list = op.getProperties();
+
+		UpgradePlanProperty property1 = list.insert();
+
+		property1.setKey("t1");
+
+		UpgradePlanProperty property2 = list.insert();
+
+		property2.setKey("t2");
+
+		super.init(element, definition);
 	}
 
 	@Override
