@@ -53,7 +53,7 @@ public class UpgradeStepsBuilder {
 		return upgradeSteps;
 	}
 
-	private static void _loopChildren(List<UpgradeStep> upgradeSteps, UpgradeStep parent, Element olElement) {
+	private void _loopChildren(List<UpgradeStep> upgradeSteps, UpgradeStep parent, Element olElement) {
 		Elements children = olElement.children();
 
 		UpgradeStep upgradeStep = null;
@@ -77,7 +77,11 @@ public class UpgradeStepsBuilder {
 				if (aTags.size() > 0) {
 					Element aTag = aTags.get(0);
 
-					url = aTag.attr("href");
+					String protocol = _url.getProtocol();
+
+					String authority = _url.getAuthority();
+
+					url = protocol + "://" + authority + aTag.attr("href");
 
 					title = aTag.text();
 				}
@@ -96,7 +100,7 @@ public class UpgradeStepsBuilder {
 					description = title;
 				}
 
-				String commandId = "";
+				String commandId = child.attr("commandid");
 
 				String imagePath = "";
 
