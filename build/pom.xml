@@ -44,6 +44,14 @@
             </modules>
         </profile>
         <profile>
+            <id>upgradePlanner</id>
+            <modules>
+                <module>../tools/features/com.liferay.ide.upgrade.planner</module>
+                <module>../tools/plugins</module>
+                <module>com.liferay.ide.upgrade.planner-repository</module>
+            </modules>
+        </profile>
+        <profile>
             <id>installersOnly</id>
             <modules>
                 <module>installers</module>
