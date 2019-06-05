@@ -512,6 +512,38 @@ public class LiferayWorkspaceUtil {
 		return null;
 	}
 
+	public static String guessLiferayWorkspaceVersion(IProject project) {
+		IPath location = project.getLocation();
+
+		String bundleUrl = getGradleProperty(location.toOSString(), WorkspaceConstants.BUNDLE_URL_PROPERTY, "");
+
+		if (bundleUrl.contains("7.0")) {
+			return "7.0";
+		}
+		else if (bundleUrl.contains("7.1")) {
+			return "7.1";
+		}
+		else if (bundleUrl.contains("7.2")) {
+			return "7.2";
+		}
+		else {
+			String targetPlatformVersion = getGradleProperty(
+				location.toOSString(), WorkspaceConstants.TARGET_PLATFORM_VERSION_PROPERTY, "");
+
+			if (targetPlatformVersion.startsWith("7.0")) {
+				return "7.0";
+			}
+			else if (targetPlatformVersion.startsWith("7.1")) {
+				return "7.1";
+			}
+			else if (targetPlatformVersion.startsWith("7.2")) {
+				return "7.2";
+			}
+		}
+
+		return "";
+	}
+
 	public static boolean hasBundlesDir(String location) {
 		File bundles = new File(location, getHomeDir(location));
 

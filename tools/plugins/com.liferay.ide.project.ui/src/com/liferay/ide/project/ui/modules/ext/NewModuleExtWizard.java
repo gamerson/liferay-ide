@@ -16,19 +16,58 @@ package com.liferay.ide.project.ui.modules.ext;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.modules.ext.NewModuleExtOp;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.modules.BaseProjectWizard;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
+import org.eclipse.sapphire.ui.forms.swt.SapphireWizardPage;
+
+import org.osgi.framework.Version;
 
 /**
  * @author Charles Wu
+ * @author Terry Jia
  */
 public class NewModuleExtWizard extends BaseProjectWizard<NewModuleExtOp> {
 
 	public NewModuleExtWizard() {
 		super(_createDefaultOp(), DefinitionLoader.sdef(NewModuleExtWizard.class).wizard());
+	}
+
+	@Override
+	public IWizardPage[] getPages() {
+		IWizardPage[] wizardPages = super.getPages();
+
+		if (!_firstErrorMessageRemoved && (wizardPages != null)) {
+			SapphireWizardPage wizardPage = (SapphireWizardPage)wizardPages[0];
+
+			try {
+				IProject workspaceProject = LiferayWorkspaceUtil.getWorkspaceProject();
+
+				Version liferayWorkspaceVersion = new Version(
+					LiferayWorkspaceUtil.guessLiferayWorkspaceVersion(workspaceProject));
+
+				Version version70 = new Version("7.0");
+
+				if (CoreUtil.compareVersions(liferayWorkspaceVersion, version70) > 0) {
+					wizardPage.setMessage("Please enter the module ext project name.", SapphireWizardPage.NONE);
+				}
+				else {
+					wizardPage.setMessage(
+						"Module Ext projects only work on liferay workspace which version is greater than 7.0.",
+						SapphireWizardPage.WARNING);
+				}
+			}
+			catch (IllegalArgumentException iae) {
+			}
+
+			_firstErrorMessageRemoved = true;
+		}
+
+		return wizardPages;
 	}
 
 	@Override
@@ -52,5 +91,7 @@ public class NewModuleExtWizard extends BaseProjectWizard<NewModuleExtOp> {
 	private static NewModuleExtOp _createDefaultOp() {
 		return NewModuleExtOp.TYPE.instantiate();
 	}
+
+	private boolean _firstErrorMessageRemoved = false;
 
 }
