@@ -65,7 +65,7 @@ public class PortalPublishTask extends PublishTaskDelegate {
 
 				IModuleResourceDelta[] deltas = ((Server)server).getPublishedResourceDelta(module);
 
-				if (deltas.length == 1 && kind == IServer.PUBLISH_AUTO) {
+				if ((deltas.length == 1) && (kind == IServer.PUBLISH_AUTO)) {
 					IModuleResource moduleResource = deltas[0].getModuleResource();
 
 					if (".classpath".equals(moduleResource.getName())) {
