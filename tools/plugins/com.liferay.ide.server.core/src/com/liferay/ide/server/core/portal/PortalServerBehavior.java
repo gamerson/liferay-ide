@@ -75,7 +75,7 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
  * @author Simon Jiang
  * @author Terry Jia
  */
-@SuppressWarnings({"restriction", "rawtypes"})
+@SuppressWarnings({"restriction", "rawtypes", "deprecation"})
 public class PortalServerBehavior
 	extends ServerBehaviourDelegate implements IJavaLaunchConfigurationConstants, ILiferayServerBehavior {
 
@@ -226,6 +226,12 @@ public class PortalServerBehavior
 		_info = info;
 
 		super.publish(kind, modules, monitor, info);
+
+		if (modules == null) {
+			IModule[] modules2 = getServer().getModules();
+
+			setModulePublishState2(modules2, IServer.PUBLISH_STATE_NONE);
+		}
 
 		_info = null;
 	}
