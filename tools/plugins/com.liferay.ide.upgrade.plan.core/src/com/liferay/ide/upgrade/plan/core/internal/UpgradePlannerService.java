@@ -190,11 +190,24 @@ public class UpgradePlannerService implements UpgradePlanner {
 			Map<String, String> upgradeContext)
 		throws IOException {
 
-		URL url = new URL(upgradePlanOutline);
+		boolean offline = upgradePlanOutline.startsWith("offline");
 
-		UpgradeStepsBuilder upgradeStepsBuilder = new UpgradeStepsBuilder(url);
+		List<UpgradeStep> upgradeSteps = new ArrayList<>();
 
-		List<UpgradeStep> upgradeSteps = upgradeStepsBuilder.build();
+		if (offline) {
+			String[] offlineArgs = upgradePlanOutline.split("\\$");
+
+			UpgradeStepsBuilder upgradeStepsBuilder = new UpgradeStepsBuilder(offlineArgs);
+
+			upgradeSteps = upgradeStepsBuilder.buildOffline();
+		}
+		else {
+			URL url = new URL(upgradePlanOutline);
+
+			UpgradeStepsBuilder upgradeStepsBuilder = new UpgradeStepsBuilder(url);
+
+			upgradeSteps = upgradeStepsBuilder.build();
+		}
 
 		return new StandardUpgradePlan(
 			name, currentVersion, targetVersion, upgradePlanOutline, upgradeSteps, upgradeContext);

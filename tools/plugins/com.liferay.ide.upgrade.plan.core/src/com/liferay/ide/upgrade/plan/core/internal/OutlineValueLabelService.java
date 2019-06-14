@@ -28,9 +28,16 @@ public class OutlineValueLabelService extends ValueLabelService {
 		String retval = "";
 
 		if (CoreUtil.isNotNullOrEmpty(value)) {
-			String[] s = value.split("/");
+			if (value.startsWith("offline")) {
+				String[] s = value.split("\\$");
 
-			retval = s[s.length - 1] + " - " + value;
+				retval = s[0] + " - " + s[1];
+			}
+			else {
+				String[] s = value.split("/");
+
+				retval = s[s.length - 1] + " - " + value;
+			}
 		}
 
 		return retval;

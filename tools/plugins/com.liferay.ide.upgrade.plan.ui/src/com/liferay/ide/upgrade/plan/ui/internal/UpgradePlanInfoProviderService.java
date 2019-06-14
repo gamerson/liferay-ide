@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -133,81 +134,86 @@ public class UpgradePlanInfoProviderService implements UpgradeInfoProvider {
 	private String _renderKBMainContent(String upgradeStepUrl) throws ClientProtocolException, IOException {
 		Connection connection = Jsoup.connect(upgradeStepUrl);
 
-		Document document = connection.get();
-
-		StringBuffer sb = new StringBuffer();
-
-		sb.append("<html>");
-
-		Elements heads = document.getElementsByTag("head");
-
-		sb.append(heads.get(0));
-
-		// If it is possible, we should modify KB portlet by adding one main content id to allow us to get it easily.
-
-		// Actually the kb portlet of dev.liferay.com and one of web-community-beta.wedeploy.io seem to be different.
-
-		Elements kbEntityBodies = document.getElementsByClass("kb-entity-body");
-
-		Element kbEntityBody = kbEntityBodies.get(0);
-
-		Elements mainContents = kbEntityBody.getAllElements();
-
-		Element mainContent = mainContents.get(1);
+		String retval = "";
 
 		try {
-			Elements h1s = mainContent.getElementsByTag("h1");
+			Document document = connection.get();
 
-			Element h1 = h1s.get(0);
+			StringBuffer sb = new StringBuffer();
 
-			h1.remove();
-		}
-		catch (Exception e) {
-		}
+			sb.append("<html>");
 
-		try {
-			Elements uls = mainContent.getElementsByTag("ul");
+			Elements heads = document.getElementsByTag("head");
 
-			Element ul = uls.get(0);
+			sb.append(heads.get(0));
 
-			ul.remove();
-		}
-		catch (Exception e) {
-		}
+			Elements kbEntityBodies = document.getElementsByClass("kb-entity-body");
 
-		try {
-			Elements learnPathSteps = mainContent.getElementsByClass("learn-path-step");
+			Element kbEntityBody = kbEntityBodies.get(0);
 
-			Element learnPathStep = learnPathSteps.get(0);
+			Elements mainContents = kbEntityBody.getAllElements();
 
-			learnPathStep.remove();
-		}
-		catch (Exception e) {
-		}
+			Element mainContent = mainContents.get(1);
 
-		URL url = new URL(upgradeStepUrl);
+			try {
+				Elements h1s = mainContent.getElementsByTag("h1");
 
-		String protocol = url.getProtocol();
+				Element h1 = h1s.get(0);
 
-		String authority = url.getAuthority();
+				h1.remove();
+			}
+			catch (Exception e) {
+			}
 
-		String prefix = protocol + "://" + authority;
+			try {
+				Elements uls = mainContent.getElementsByTag("ul");
 
-		for (Element element : mainContent.getAllElements()) {
-			if ("a".equals(element.tagName())) {
-				String href = element.attr("href");
+				Element ul = uls.get(0);
 
-				if (href.startsWith("/")) {
-					element.attr("href", prefix + href);
+				ul.remove();
+			}
+			catch (Exception e) {
+			}
+
+			try {
+				Elements learnPathSteps = mainContent.getElementsByClass("learn-path-step");
+
+				Element learnPathStep = learnPathSteps.get(0);
+
+				learnPathStep.remove();
+			}
+			catch (Exception e) {
+			}
+
+			URL url = new URL(upgradeStepUrl);
+
+			String protocol = url.getProtocol();
+
+			String authority = url.getAuthority();
+
+			String prefix = protocol + "://" + authority;
+
+			for (Element element : mainContent.getAllElements()) {
+				if ("a".equals(element.tagName())) {
+					String href = element.attr("href");
+
+					if (href.startsWith("/")) {
+						element.attr("href", prefix + href);
+					}
 				}
 			}
+
+			sb.append(mainContent.toString());
+
+			sb.append("</html>");
+
+			retval = sb.toString();
+		}
+		catch (HttpStatusException hse) {
+			retval = hse.getMessage() + ":" + upgradeStepUrl;
 		}
 
-		sb.append(mainContent.toString());
-
-		sb.append("</html>");
-
-		return sb.toString();
+		return retval;
 	}
 
 	private final PromiseFactory _promiseFactory;

@@ -15,6 +15,7 @@
 package com.liferay.ide.upgrade.plan.core.internal;
 
 import com.liferay.ide.core.util.SapphireContentAccessor;
+import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.upgrade.plan.core.NewUpgradePlanOp;
 
 import java.net.MalformedURLException;
@@ -40,7 +41,9 @@ public class OutlineValidationService extends ValidationService implements Sapph
 			new URL(outline);
 		}
 		catch (MalformedURLException murle) {
-			retval = Status.createErrorStatus(outline + " is not a vaild url.");
+			if (!StringUtil.startsWith(outline, "offline")) {
+				retval = Status.createErrorStatus(outline + " is not a vaild url.");
+			}
 		}
 
 		return retval;
