@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component name="com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanInfoProviderService" xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0">
-	<service>
-		<provide interface="com.liferay.ide.upgrade.plan.ui.UpgradeInfoProvider" />
-	</service>
-	<implementation class="com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanInfoProviderService" />
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanInfoProviderService">
+   <service>
+      <provide interface="com.liferay.ide.upgrade.plan.ui.UpgradeInfoProvider"/>
+   </service>
+   <reference cardinality="1..1" field="_upgradePlanner" interface="com.liferay.ide.upgrade.plan.core.UpgradePlanner" name="_upgradePlanner"/>
+   <implementation class="com.liferay.ide.upgrade.plan.ui.internal.UpgradePlanInfoProviderService"/>
 </scr:component>

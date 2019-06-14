@@ -14,26 +14,37 @@
 
 package com.liferay.ide.upgrade.plan.core.internal;
 
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.upgrade.plan.core.UpgradePlanCorePlugin;
 import com.liferay.ide.upgrade.plan.core.UpgradeStep;
 import com.liferay.ide.upgrade.plan.core.UpgradeStepRequirement;
 import com.liferay.ide.upgrade.plan.core.UpgradeStepStatus;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import org.osgi.framework.Bundle;
+
 /**
  * @author Terry Jia
  */
 public class UpgradeStepsBuilder {
+
+	public UpgradeStepsBuilder(String[] offlineArgs) {
+		_offlineArgs = offlineArgs;
+	}
 
 	public UpgradeStepsBuilder(URL url) {
 		_url = url;
@@ -44,16 +55,41 @@ public class UpgradeStepsBuilder {
 
 		Document document = Jsoup.parse(_url, 10000);
 
-		Elements roots = document.select("ol");
+		Elements roots = document.select(".root");
 
 		Element root = roots.get(0);
 
-		_loopChildren(upgradeSteps, null, root);
+		_loopChildren(upgradeSteps, null, root, false);
 
 		return upgradeSteps;
 	}
 
-	private void _loopChildren(List<UpgradeStep> upgradeSteps, UpgradeStep parent, Element olElement) {
+	public List<UpgradeStep> buildOffline() throws IOException {
+		List<UpgradeStep> upgradeSteps = new ArrayList<>();
+
+		String outlineName = _offlineArgs[1];
+		String filePath = _offlineArgs[2];
+
+		Bundle bundle = Platform.getBundle(UpgradePlanCorePlugin.ID);
+
+		URL url = bundle.getEntry("resources/" + outlineName + filePath);
+
+		InputStream in = url.openStream();
+
+		String contents = FileUtil.readContents(in);
+
+		Document document = Jsoup.parse(contents);
+
+		Elements roots = document.select(".root");
+
+		Element root = roots.get(0);
+
+		_loopChildren(upgradeSteps, null, root, true);
+
+		return upgradeSteps;
+	}
+
+	private void _loopChildren(List<UpgradeStep> upgradeSteps, UpgradeStep parent, Element olElement, boolean offline) {
 		Elements children = olElement.children();
 
 		UpgradeStep upgradeStep = null;
@@ -79,11 +115,16 @@ public class UpgradeStepsBuilder {
 				if (aTags.size() > 0) {
 					Element aTag = aTags.get(0);
 
-					String protocol = _url.getProtocol();
+					if (offline) {
+						url = aTag.attr("href");
+					}
+					else {
+						String protocol = _url.getProtocol();
 
-					String authority = _url.getAuthority();
+						String authority = _url.getAuthority();
 
-					url = protocol + "://" + authority + aTag.attr("href");
+						url = protocol + "://" + authority + aTag.attr("href");
+					}
 
 					title = aTag.text();
 
@@ -122,13 +163,14 @@ public class UpgradeStepsBuilder {
 					}
 
 					if ((titleNextElement != null) && "ol".equals(titleNextElement.nodeName())) {
-						_loopChildren(upgradeSteps, upgradeStep, titleNextElement);
+						_loopChildren(upgradeSteps, upgradeStep, titleNextElement, offline);
 					}
 				}
 			}
 		}
 	}
 
+	private String[] _offlineArgs;
 	private URL _url;
 
 }

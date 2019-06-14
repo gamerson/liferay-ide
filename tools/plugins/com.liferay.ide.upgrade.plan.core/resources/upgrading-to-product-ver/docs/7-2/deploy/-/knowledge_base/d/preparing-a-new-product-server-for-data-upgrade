@@ -1,0 +1,1714 @@
+<!doctype html>
+<html class="ltr" dir="ltr" lang="en-US">
+ <head> 
+  <title>Preparing a New Liferay Portal Server for Data Upgrade</title> 
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" rel="stylesheet" type="text/css"> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script> 
+  <script>
+		window.addEventListener("load", function(){
+			window.cookieconsent.initialise({
+				"palette": {
+					"popup": {
+						"background": "#edeff5",
+						"text": "#838391"
+					},
+					"button": {
+						"background": "#4b81e8"
+					}
+				},
+				"theme": "classic",
+				"position": "top",
+				"static": true
+			})
+		});
+	</script> 
+  <meta content="initial-scale=1.0, width=device-width" name="viewport"> 
+  <meta class="swiftype" content="portal.liferay.dev" data-type="string" name="domain-identifier"> 
+  <meta class="swiftype" content="Documentation" data-type="string" name="page-type"> 
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type"> 
+  <script data-senna-track="permanent" src="/o/frontend-js-lodash-web/lodash/lodash.js" type="text/javascript"></script> 
+  <script data-senna-track="permanent" src="/o/frontend-js-lodash-web/lodash/util.js" type="text/javascript"></script> 
+  <script data-senna-track="temporary" type="text/javascript">
+	if (window.Analytics) {
+		window._com_liferay_document_library_analytics_isViewFileEntry = false;
+	}
+</script> 
+  <link href="https://portal.liferay.dev/o/dynamic-data-mapping-form-builder/css/main.css?browserId=other&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444441220" rel="stylesheet" type="text/css"> 
+  <link href="https://portal.liferay.dev/o/dynamic-data-mapping-form-renderer/css/main.css?browserId=other&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444441220" rel="stylesheet" type="text/css"> 
+  <link href="https://portal.liferay.dev/o/dynamic-data-mapping-web/css/main.css?browserId=other&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444441220" rel="stylesheet" type="text/css"> 
+  <link href="https://portal.liferay.dev/o/liferay-portal-site-theme/images/favicon.ico" rel="icon"> 
+  <link data-senna-track="temporary" href="https://portal.liferay.dev/docs/7-2/deploy/-/knowledge_base/d/preparing-a-new-product-server-for-data-upgrade" rel="canonical"> 
+  <link class="lfr-css-file" data-senna-track="temporary" href="https://portal.liferay.dev/o/liferay-portal-site-theme/css/clay.css?browserId=other&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444441220" id="liferayAUICSS" rel="stylesheet" type="text/css"> 
+  <link data-senna-track="temporary" href="/o/frontend-css-web/main.css?browserId=other&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444375674" id="liferayPortalCSS" rel="stylesheet" type="text/css"> 
+  <link data-senna-track="temporary" href="/combo?browserId=other&amp;minifierType=&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;languageId=en_US&amp;b=7102&amp;com_liferay_knowledge_base_web_portlet_DisplayPortlet:%2Fadmin%2Fcss%2Fcommon.css&amp;com_liferay_knowledge_base_web_portlet_DisplayPortlet:%2Fdisplay%2Fcss%2Fmain.css&amp;com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch:%2Fsearch%2Fbar%2Fcss%2Fmain.css&amp;com_liferay_product_navigation_product_menu_web_portlet_ProductMenuPortlet:%2Fcss%2Fmain.css&amp;t=1560444438000" id="ed0291d4" rel="stylesheet" type="text/css"> 
+  <script data-senna-track="temporary" type="text/javascript">
+	// <![CDATA[
+		var Liferay = Liferay || {};
+
+		Liferay.Browser = {
+			acceptsGzip: function() {
+				return true;
+			},
+
+			
+
+			getMajorVersion: function() {
+				return 0;
+			},
+
+			getRevision: function() {
+				return '';
+			},
+			getVersion: function() {
+				return '';
+			},
+
+			
+
+			isAir: function() {
+				return false;
+			},
+			isChrome: function() {
+				return false;
+			},
+			isEdge: function() {
+				return false;
+			},
+			isFirefox: function() {
+				return false;
+			},
+			isGecko: function() {
+				return false;
+			},
+			isIe: function() {
+				return false;
+			},
+			isIphone: function() {
+				return false;
+			},
+			isLinux: function() {
+				return false;
+			},
+			isMac: function() {
+				return false;
+			},
+			isMobile: function() {
+				return false;
+			},
+			isMozilla: function() {
+				return false;
+			},
+			isOpera: function() {
+				return false;
+			},
+			isRtf: function() {
+				return false;
+			},
+			isSafari: function() {
+				return false;
+			},
+			isSun: function() {
+				return false;
+			},
+			isWebKit: function() {
+				return false;
+			},
+			isWindows: function() {
+				return false;
+			}
+		};
+
+		Liferay.Data = Liferay.Data || {};
+
+		Liferay.Data.ICONS_INLINE_SVG = true;
+
+		Liferay.Data.NAV_SELECTOR = '#navigation';
+
+		Liferay.Data.NAV_SELECTOR_MOBILE = '#navigationCollapse';
+
+		Liferay.Data.isCustomizationView = function() {
+			return false;
+		};
+
+		Liferay.Data.notices = [
+			null
+
+			
+
+			
+		];
+
+		Liferay.PortletKeys = {
+			DOCUMENT_LIBRARY: 'com_liferay_document_library_web_portlet_DLPortlet',
+			DYNAMIC_DATA_MAPPING: 'com_liferay_dynamic_data_mapping_web_portlet_DDMPortlet',
+			ITEM_SELECTOR: 'com_liferay_item_selector_web_portlet_ItemSelectorPortlet'
+		};
+
+		Liferay.PropsValues = {
+			JAVASCRIPT_SINGLE_PAGE_APPLICATION_TIMEOUT: 0,
+			NTLM_AUTH_ENABLED: false,
+			UPLOAD_SERVLET_REQUEST_IMPL_MAX_SIZE: 104857600
+		};
+
+		Liferay.ThemeDisplay = {
+
+			
+
+			
+				getLayoutId: function() {
+					return '66';
+				},
+
+				
+
+				getLayoutRelativeControlPanelURL: function() {
+					return '/group/liferay-portal/~/control_panel/manage?p_p_id=com_liferay_knowledge_base_web_portlet_DisplayPortlet';
+				},
+
+				getLayoutRelativeURL: function() {
+					return '/docs/7-2/deploy';
+				},
+				getLayoutURL: function() {
+					return 'https://portal.liferay.dev/docs/7-2/deploy';
+				},
+				getParentLayoutId: function() {
+					return '45';
+				},
+				isControlPanel: function() {
+					return false;
+				},
+				isPrivateLayout: function() {
+					return 'false';
+				},
+				isVirtualLayout: function() {
+					return false;
+				},
+			
+
+			getBCP47LanguageId: function() {
+				return 'en-US';
+			},
+			getCanonicalURL: function() {
+
+				
+
+				return 'https://portal.liferay.dev/docs/7-2/deploy/-/knowledge_base/d/preparing-a-new-product-server-for-data-upgrade';
+			},
+			getCDNBaseURL: function() {
+				return 'https://portal.liferay.dev';
+			},
+			getCDNDynamicResourcesHost: function() {
+				return '';
+			},
+			getCDNHost: function() {
+				return '';
+			},
+			getCompanyGroupId: function() {
+				return '8431626';
+			},
+			getCompanyId: function() {
+				return '1';
+			},
+			getDefaultLanguageId: function() {
+				return 'en_US';
+			},
+			getDoAsUserIdEncoded: function() {
+				return '';
+			},
+			getLanguageId: function() {
+				return 'en_US';
+			},
+			getParentGroupId: function() {
+				return '113763090';
+			},
+			getPathContext: function() {
+				return '';
+			},
+			getPathImage: function() {
+				return '/image';
+			},
+			getPathJavaScript: function() {
+				return '/o/frontend-js-web';
+			},
+			getPathMain: function() {
+				return '/c';
+			},
+			getPathThemeImages: function() {
+				return 'https://portal.liferay.dev/o/liferay-portal-site-theme/images';
+			},
+			getPathThemeRoot: function() {
+				return '/o/liferay-portal-site-theme';
+			},
+			getPlid: function() {
+				return '113767687';
+			},
+			getPortalURL: function() {
+				return 'https://portal.liferay.dev';
+			},
+			getScopeGroupId: function() {
+				return '113763090';
+			},
+			getScopeGroupIdOrLiveGroupId: function() {
+				return '113763090';
+			},
+			getSessionId: function() {
+				return '';
+			},
+			getSiteAdminURL: function() {
+				return 'https://portal.liferay.dev/group/liferay-portal/~/control_panel/manage?p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view';
+			},
+			getSiteGroupId: function() {
+				return '113763090';
+			},
+			getURLControlPanel: function() {
+				return '/group/control_panel?refererPlid=113767687';
+			},
+			getURLHome: function() {
+				return 'https\x3a\x2f\x2fportal\x2eliferay\x2edev\x2fweb\x2fguest';
+			},
+			getUserEmailAddress: function() {
+				return '';
+			},
+			getUserId: function() {
+				return '5';
+			},
+			getUserName: function() {
+				return '';
+			},
+			isAddSessionIdToURL: function() {
+				return false;
+			},
+			isFreeformLayout: function() {
+				return false;
+			},
+			isImpersonated: function() {
+				return false;
+			},
+			isSignedIn: function() {
+				return false;
+			},
+			isStateExclusive: function() {
+				return false;
+			},
+			isStateMaximized: function() {
+				return false;
+			},
+			isStatePopUp: function() {
+				return false;
+			}
+		};
+
+		var themeDisplay = Liferay.ThemeDisplay;
+
+		Liferay.AUI = {
+
+			
+
+			getAvailableLangPath: function() {
+				return 'available_languages.jsp?browserId=other&themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&colorSchemeId=01&minifierType=js&languageId=en_US&b=7102&t=1560444496997';
+			},
+			getCombine: function() {
+				return true;
+			},
+			getComboPath: function() {
+				return '/combo/?browserId=other&minifierType=&languageId=en_US&b=7102&t=1560444376058&';
+			},
+			getDateFormat: function() {
+				return '%m/%d/%Y';
+			},
+			getEditorCKEditorPath: function() {
+				return '/o/frontend-editor-ckeditor-web';
+			},
+			getFilter: function() {
+				var filter = 'raw';
+
+				
+					
+						filter = 'min';
+					
+					
+				
+
+				return filter;
+			},
+			getFilterConfig: function() {
+				var instance = this;
+
+				var filterConfig = null;
+
+				if (!instance.getCombine()) {
+					filterConfig = {
+						replaceStr: '.js' + instance.getStaticResourceURLParams(),
+						searchExp: '\\.js$'
+					};
+				}
+
+				return filterConfig;
+			},
+			getJavaScriptRootPath: function() {
+				return '/o/frontend-js-web';
+			},
+			getLangPath: function() {
+				return 'aui_lang.jsp?browserId=other&themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&colorSchemeId=01&minifierType=js&languageId=en_US&b=7102&t=1560444376058';
+			},
+			getPortletRootPath: function() {
+				return '/html/portlet';
+			},
+			getStaticResourceURLParams: function() {
+				return '?browserId=other&minifierType=&languageId=en_US&b=7102&t=1560444376058';
+			}
+		};
+
+		Liferay.authToken = 'KvUoDQSp';
+
+		
+
+		Liferay.currentURL = '\x2fdocs\x2f7-2\x2fdeploy\x2f-\x2fknowledge_base\x2fd\x2fpreparing-a-new-product-server-for-data-upgrade';
+		Liferay.currentURLEncoded = '\x252Fdocs\x252F7-2\x252Fdeploy\x252F-\x252Fknowledge_base\x252Fd\x252Fpreparing-a-new-product-server-for-data-upgrade';
+	// ]]>
+</script> 
+  <script src="/o/js_loader_modules?t=1560444441220" type="text/javascript"></script> 
+  <script src="/o/js_loader_config?t=1560444396557" type="text/javascript"></script> 
+  <script src="/o/frontend-js-web/loader/config.js" type="text/javascript"></script> 
+  <script src="/o/frontend-js-web/loader/loader.3.js" type="text/javascript"></script> 
+  <script data-senna-track="permanent" src="https://portal.liferay.dev/combo?browserId=other&amp;minifierType=js&amp;languageId=en_US&amp;b=7102&amp;t=1560444376058&amp;/o/frontend-js-web/jquery/jquery.js&amp;/o/frontend-js-web/clay/popper.js&amp;/o/frontend-js-web/clay/bootstrap.js&amp;/o/frontend-js-web/aui/aui/aui.js&amp;/o/frontend-js-web/aui/aui-base-html5-shiv/aui-base-html5-shiv.js&amp;/o/frontend-js-web/liferay/browser_selectors.js&amp;/o/frontend-js-web/liferay/modules.js&amp;/o/frontend-js-web/liferay/aui_sandbox.js&amp;/o/frontend-js-web/clay/collapsible-search.js&amp;/o/frontend-js-web/clay/side-navigation.js&amp;/o/frontend-js-web/jquery/fm.js&amp;/o/frontend-js-web/jquery/form.js&amp;/o/frontend-js-web/misc/svg4everybody.js&amp;/o/frontend-js-web/aui/arraylist-add/arraylist-add.js&amp;/o/frontend-js-web/aui/arraylist-filter/arraylist-filter.js&amp;/o/frontend-js-web/aui/arraylist/arraylist.js&amp;/o/frontend-js-web/aui/array-extras/array-extras.js&amp;/o/frontend-js-web/aui/array-invoke/array-invoke.js&amp;/o/frontend-js-web/aui/attribute-base/attribute-base.js&amp;/o/frontend-js-web/aui/attribute-complex/attribute-complex.js&amp;/o/frontend-js-web/aui/attribute-core/attribute-core.js&amp;/o/frontend-js-web/aui/attribute-observable/attribute-observable.js&amp;/o/frontend-js-web/aui/attribute-extras/attribute-extras.js&amp;/o/frontend-js-web/aui/base-base/base-base.js&amp;/o/frontend-js-web/aui/base-pluginhost/base-pluginhost.js&amp;/o/frontend-js-web/aui/classnamemanager/classnamemanager.js&amp;/o/frontend-js-web/aui/datatype-xml-format/datatype-xml-format.js&amp;/o/frontend-js-web/aui/datatype-xml-parse/datatype-xml-parse.js&amp;/o/frontend-js-web/aui/dom-base/dom-base.js&amp;/o/frontend-js-web/aui/dom-core/dom-core.js&amp;/o/frontend-js-web/aui/dom-screen/dom-screen.js&amp;/o/frontend-js-web/aui/dom-style/dom-style.js&amp;/o/frontend-js-web/aui/event-base/event-base.js&amp;/o/frontend-js-web/aui/event-custom-base/event-custom-base.js&amp;/o/frontend-js-web/aui/event-custom-complex/event-custom-complex.js&amp;/o/frontend-js-web/aui/event-delegate/event-delegate.js&amp;/o/frontend-js-web/aui/event-focus/event-focus.js&amp;/o/frontend-js-web/aui/event-hover/event-hover.js" type="text/javascript"></script> 
+  <script data-senna-track="permanent" src="https://portal.liferay.dev/combo?browserId=other&amp;minifierType=js&amp;languageId=en_US&amp;b=7102&amp;t=1560444376058&amp;/o/frontend-js-web/aui/event-key/event-key.js&amp;/o/frontend-js-web/aui/event-mouseenter/event-mouseenter.js&amp;/o/frontend-js-web/aui/event-mousewheel/event-mousewheel.js&amp;/o/frontend-js-web/aui/event-outside/event-outside.js&amp;/o/frontend-js-web/aui/event-resize/event-resize.js&amp;/o/frontend-js-web/aui/event-simulate/event-simulate.js&amp;/o/frontend-js-web/aui/event-synthetic/event-synthetic.js&amp;/o/frontend-js-web/aui/intl/intl.js&amp;/o/frontend-js-web/aui/io-base/io-base.js&amp;/o/frontend-js-web/aui/io-form/io-form.js&amp;/o/frontend-js-web/aui/io-queue/io-queue.js&amp;/o/frontend-js-web/aui/io-upload-iframe/io-upload-iframe.js&amp;/o/frontend-js-web/aui/io-xdr/io-xdr.js&amp;/o/frontend-js-web/aui/json-parse/json-parse.js&amp;/o/frontend-js-web/aui/json-stringify/json-stringify.js&amp;/o/frontend-js-web/aui/node-base/node-base.js&amp;/o/frontend-js-web/aui/node-core/node-core.js&amp;/o/frontend-js-web/aui/node-event-delegate/node-event-delegate.js&amp;/o/frontend-js-web/aui/node-event-simulate/node-event-simulate.js&amp;/o/frontend-js-web/aui/node-focusmanager/node-focusmanager.js&amp;/o/frontend-js-web/aui/node-pluginhost/node-pluginhost.js&amp;/o/frontend-js-web/aui/node-screen/node-screen.js&amp;/o/frontend-js-web/aui/node-style/node-style.js&amp;/o/frontend-js-web/aui/oop/oop.js&amp;/o/frontend-js-web/aui/plugin/plugin.js&amp;/o/frontend-js-web/aui/pluginhost-base/pluginhost-base.js&amp;/o/frontend-js-web/aui/pluginhost-config/pluginhost-config.js&amp;/o/frontend-js-web/aui/querystring-stringify-simple/querystring-stringify-simple.js&amp;/o/frontend-js-web/aui/queue-promote/queue-promote.js&amp;/o/frontend-js-web/aui/selector-css2/selector-css2.js&amp;/o/frontend-js-web/aui/selector-css3/selector-css3.js&amp;/o/frontend-js-web/aui/selector-native/selector-native.js&amp;/o/frontend-js-web/aui/selector/selector.js&amp;/o/frontend-js-web/aui/widget-base/widget-base.js&amp;/o/frontend-js-web/aui/widget-htmlparser/widget-htmlparser.js&amp;/o/frontend-js-web/aui/widget-skin/widget-skin.js&amp;/o/frontend-js-web/aui/widget-uievents/widget-uievents.js" type="text/javascript"></script> 
+  <script data-senna-track="permanent" src="https://portal.liferay.dev/combo?browserId=other&amp;minifierType=js&amp;languageId=en_US&amp;b=7102&amp;t=1560444376058&amp;/o/frontend-js-web/aui/yui-throttle/yui-throttle.js&amp;/o/frontend-js-web/aui/aui-base-core/aui-base-core.js&amp;/o/frontend-js-web/aui/aui-base-lang/aui-base-lang.js&amp;/o/frontend-js-web/aui/aui-classnamemanager/aui-classnamemanager.js&amp;/o/frontend-js-web/aui/aui-component/aui-component.js&amp;/o/frontend-js-web/aui/aui-debounce/aui-debounce.js&amp;/o/frontend-js-web/aui/aui-delayed-task-deprecated/aui-delayed-task-deprecated.js&amp;/o/frontend-js-web/aui/aui-event-base/aui-event-base.js&amp;/o/frontend-js-web/aui/aui-event-input/aui-event-input.js&amp;/o/frontend-js-web/aui/aui-form-validator/aui-form-validator.js&amp;/o/frontend-js-web/aui/aui-node-base/aui-node-base.js&amp;/o/frontend-js-web/aui/aui-node-html5/aui-node-html5.js&amp;/o/frontend-js-web/aui/aui-selector/aui-selector.js&amp;/o/frontend-js-web/aui/aui-timer/aui-timer.js&amp;/o/frontend-js-web/liferay/dependency.js&amp;/o/frontend-js-web/liferay/dom_task_runner.js&amp;/o/frontend-js-web/liferay/events.js&amp;/o/frontend-js-web/liferay/language.js&amp;/o/frontend-js-web/liferay/lazy_load.js&amp;/o/frontend-js-web/liferay/liferay.js&amp;/o/frontend-js-web/liferay/util.js&amp;/o/frontend-js-web/liferay/global.bundle.js&amp;/o/frontend-js-web/liferay/portal.js&amp;/o/frontend-js-web/liferay/portlet.js&amp;/o/frontend-js-web/liferay/workflow.js&amp;/o/frontend-js-web/liferay/address.js&amp;/o/frontend-js-web/liferay/form.js&amp;/o/frontend-js-web/liferay/form_placeholders.js&amp;/o/frontend-js-web/liferay/icon.js&amp;/o/frontend-js-web/liferay/menu.js&amp;/o/frontend-js-web/liferay/notice.js&amp;/o/frontend-js-web/liferay/poller.js&amp;/o/frontend-js-web/aui/async-queue/async-queue.js&amp;/o/frontend-js-web/aui/base-build/base-build.js&amp;/o/frontend-js-web/aui/cookie/cookie.js&amp;/o/frontend-js-web/aui/event-touch/event-touch.js&amp;/o/frontend-js-web/aui/overlay/overlay.js&amp;/o/frontend-js-web/aui/querystring-stringify/querystring-stringify.js&amp;/o/frontend-js-web/aui/widget-child/widget-child.js&amp;/o/frontend-js-web/aui/widget-position-align/widget-position-align.js" type="text/javascript"></script> 
+  <script data-senna-track="permanent" src="https://portal.liferay.dev/combo?browserId=other&amp;minifierType=js&amp;languageId=en_US&amp;b=7102&amp;t=1560444376058&amp;/o/frontend-js-web/aui/widget-position-constrain/widget-position-constrain.js&amp;/o/frontend-js-web/aui/widget-position/widget-position.js&amp;/o/frontend-js-web/aui/widget-stack/widget-stack.js&amp;/o/frontend-js-web/aui/widget-stdmod/widget-stdmod.js&amp;/o/frontend-js-web/aui/aui-aria/aui-aria.js&amp;/o/frontend-js-web/aui/aui-io-plugin-deprecated/aui-io-plugin-deprecated.js&amp;/o/frontend-js-web/aui/aui-io-request/aui-io-request.js&amp;/o/frontend-js-web/aui/aui-loading-mask-deprecated/aui-loading-mask-deprecated.js&amp;/o/frontend-js-web/aui/aui-overlay-base-deprecated/aui-overlay-base-deprecated.js&amp;/o/frontend-js-web/aui/aui-overlay-context-deprecated/aui-overlay-context-deprecated.js&amp;/o/frontend-js-web/aui/aui-overlay-manager-deprecated/aui-overlay-manager-deprecated.js&amp;/o/frontend-js-web/aui/aui-overlay-mask-deprecated/aui-overlay-mask-deprecated.js&amp;/o/frontend-js-web/aui/aui-parse-content/aui-parse-content.js&amp;/o/frontend-js-web/liferay/layout_exporter.js&amp;/o/frontend-js-web/liferay/session.js&amp;/o/frontend-js-web/liferay/deprecated.js" type="text/javascript"></script> 
+  <script data-senna-track="temporary" src="/o/js_bundle_config?t=1560444441418" type="text/javascript"></script> 
+  <script data-senna-track="temporary" type="text/javascript">
+	// <![CDATA[
+		
+			
+				
+				
+			
+		
+
+		
+
+		
+	// ]]>
+</script> 
+  <script data-senna-track="permanent" id="googleAnalyticsScript" type="text/javascript">
+					(function(i, s, o, g, r, a, m) {
+						i['GoogleAnalyticsObject'] = r;
+
+						i[r] = i[r] || function() {
+							var arrayValue = i[r].q || [];
+
+							i[r].q = arrayValue;
+
+							(i[r].q).push(arguments);
+						};
+
+						i[r].l = 1 * new Date();
+
+						a = s.createElement(o);
+						m = s.getElementsByTagName(o)[0];
+						a.async = 1;
+						a.src = g;
+						m.parentNode.insertBefore(a, m);
+					})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+					ga('create', 'UA-37033501-15', 'auto');
+					ga('send', 'pageview');
+
+					
+						Liferay.on(
+							'endNavigate',
+							function(event) {
+								ga('set', 'page', event.path);
+								ga('send', 'pageview');
+							}
+						);
+					
+				</script> 
+  <link data-senna-track="temporary" href="/o/social-bookmarks-taglib/css/main.css?browserId=other&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444441220" rel="stylesheet" type="text/css"> 
+  <link class="lfr-css-file" data-senna-track="temporary" href="https://portal.liferay.dev/o/liferay-portal-site-theme/css/main.css?browserId=other&amp;themeId=liferayportalsitetheme_WAR_liferayportalsitetheme&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444441220" id="liferayThemeCSS" rel="stylesheet" type="text/css"> 
+  <style data-senna-track="temporary" type="text/css">
+
+		
+
+			
+
+				
+
+					
+
+#p_p_id_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf_ .portlet-content {
+
+}
+
+
+
+
+				
+
+			
+
+		
+
+			
+
+				
+
+					
+
+#p_p_id_com_liferay_knowledge_base_web_portlet_DisplayPortlet_ .portlet-content {
+
+}
+
+
+
+
+				
+
+			
+
+		
+
+			
+
+		
+
+			
+
+		
+
+			
+
+		
+
+			
+
+		
+
+			
+
+		
+
+			
+
+		
+
+	</style> 
+  <script type="text/javascript">
+// <![CDATA[
+Liferay.Loader.require('frontend-js-spa-web@2.0.20/liferay/init.es', function(frontendJsSpaWeb2020LiferayInitEs) {
+(function(){
+var frontendJsSpaWebLiferayInitEs = frontendJsSpaWeb2020LiferayInitEs;
+(function() {var $ = AUI.$;var _ = AUI._;
+
+Liferay.SPA = Liferay.SPA || {};
+Liferay.SPA.cacheExpirationTime = -1;
+Liferay.SPA.clearScreensCache = false;
+Liferay.SPA.debugEnabled = false;
+Liferay.SPA.excludedPaths = ["/documents","/image"];
+Liferay.SPA.loginRedirect = '';
+Liferay.SPA.navigationExceptionSelectors = ':not([target="_blank"]):not([data-senna-off]):not([data-resource-href]):not([data-cke-saved-href]):not([data-cke-saved-href])';
+Liferay.SPA.requestTimeout = 0;
+Liferay.SPA.userNotification = {
+	message: 'It looks like this is taking longer than expected.',
+	timeout: 30000,
+	title: 'Oops'
+};
+
+frontendJsSpaWebLiferayInitEs.default.init(
+	function(app) {
+		app.setPortletsBlacklist({"com_liferay_knowledge_base_web_portlet_AdminPortlet":true,"com_liferay_site_navigation_directory_web_portlet_SitesDirectoryPortlet":true,"com_liferay_nested_portlets_web_portlet_NestedPortletsPortlet":true,"com_liferay_login_web_portlet_LoginPortlet":true,"com_liferay_osb_community_meetup_groups_web_MeetupGroupsPortlet":true,"com_liferay_login_web_portlet_FastLoginPortlet":true});
+		app.setValidStatusCodes([221,490,494,499,491,492,493,495,220]);
+	}
+);})();})();
+},
+function(error) {
+console.error(error);
+});
+// ]]>
+</script>
+  <link data-senna-track="permanent" href="https://portal.liferay.dev/combo?browserId=other&amp;minifierType=css&amp;languageId=en_US&amp;b=7102&amp;t=1560444379016&amp;/o/product-navigation-simulation-theme-contributor/css/simulation_panel.css&amp;/o/product-navigation-product-menu-theme-contributor/product_navigation_product_menu.css&amp;/o/product-navigation-control-menu-theme-contributor/product_navigation_control_menu.css" rel="stylesheet" type="text/css"> 
+  <script data-senna-track="permanent" src="https://portal.liferay.dev/combo?browserId=other&amp;minifierType=js&amp;languageId=en_US&amp;b=7102&amp;t=1560444379016&amp;/o/product-navigation-control-menu-theme-contributor/product_navigation_control_menu.js" type="text/javascript"></script> 
+  <script type="text/javascript">
+// <![CDATA[
+Liferay.on(
+	'ddmFieldBlur', function(event) {
+		if (window.Analytics) {
+			Analytics.send(
+				'fieldBlurred',
+				'Form',
+				{
+					fieldName: event.fieldName,
+					focusDuration: event.focusDuration,
+					formId: event.formId,
+					page: event.page - 1
+				}
+			);
+		}
+	}
+);
+
+Liferay.on(
+	'ddmFieldFocus', function(event) {
+		if (window.Analytics) {
+			Analytics.send(
+				'fieldFocused',
+				'Form',
+				{
+					fieldName: event.fieldName,
+					formId: event.formId,
+					page: event.page - 1
+				}
+			);
+		}
+	}
+);
+
+Liferay.on(
+	'ddmFormPageShow', function(event) {
+		if (window.Analytics) {
+			Analytics.send(
+				'pageViewed',
+				'Form',
+				{
+					formId: event.formId,
+					page: event.page,
+					title: event.title
+				}
+			);
+		}
+	}
+);
+
+Liferay.on(
+	'ddmFormSubmit', function(event) {
+		if (window.Analytics) {
+			Analytics.send(
+				'formSubmitted',
+				'Form',
+				{
+					formId: event.formId
+				}
+			);
+		}
+	}
+);
+
+Liferay.on(
+	'ddmFormView', function(event) {
+		if (window.Analytics) {
+			Analytics.send(
+				'formViewed',
+				'Form',
+				{
+					formId: event.formId,
+					title: event.title
+				}
+			);
+		}
+	}
+);
+// ]]>
+</script> 
+ </head> 
+ <body class=" controls-visible  yui3-skin-sam signed-out public-page site"> 
+  <div class="pt-0" id="wrapper"> 
+   <header data-swiftype-index="false" id="banner"> 
+    <div class="application-bar application-bar-dark navbar navbar-dark navbar-expand-lg"> 
+     <div class="container d-inline-flex flex-wrap"> 
+      <a class="logo custom-logo mr-auto" href="https://portal.liferay.dev" rel="nofollow"> <img alt="Liferay Portal" class="mr-2" height="56" src="/image/layout_set_logo?img_id=113768202&amp;t=1560444476867"> </a> 
+      <div class="p-3" id="searchBar" role="search"> 
+       <div class="mx-auto" id="search"> 
+        <div class="portlet-boundary portlet-boundary_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_  portlet-static portlet-static-end portlet-barebone portlet-search-bar " id="p_p_id_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_"> 
+         <span id="p_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch"></span> 
+         <section class="portlet" id="portlet_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch"> 
+          <div class="portlet-content"> 
+           <div class=" portlet-content-container"> 
+            <div class="portlet-body"> 
+             <form action="https://portal.liferay.dev/search" class="form  " data-fm-namespace="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_" id="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_fm" method="get" name="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_fm"> 
+              <input class="field form-control" id="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_formDate" name="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_formDate" type="hidden" value="1560498444370"> 
+              <fieldset class="fieldset ">
+               <div class=""> 
+                <div class="input-group search-bar search-bar-simple"> 
+                 <input class="field search-bar-empty-search-input form-control" id="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_emptySearchEnabled" name="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_emptySearchEnabled" type="hidden" value="false"> 
+                 <div class="input-group-item search-bar-keywords-input-wrapper"> 
+                  <input class="form-control input-group-inset input-group-inset-after search-bar-keywords-input" data-qa-id="searchInput" id="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_vcqz" name="q" placeholder="Search..." title="Search" type="text" value=""> 
+                  <input class="field form-control" id="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_scope" name="_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_scope" type="hidden" value=""> 
+                  <div class="input-group-inset-item input-group-inset-item-after search-bar-search-button-wrapper"> 
+                   <button class="btn search-bar-search-button btn-unstyled" aria-label="Submit" id="iphv" type="submit">
+                    <svg class="lexicon-icon lexicon-icon-search" focusable="false" role="presentation">
+                     <use xlink:href="https://portal.liferay.dev/o/liferay-portal-site-theme/images/clay/icons.svg#search" />
+                    </svg></button>
+                   <script type="text/javascript">
+// <![CDATA[
+Liferay.Loader.require.apply(
+	Liferay.Loader,
+	["frontend-taglib-clay$clay-button@2.10.0\/lib\/ClayButton"].concat(
+		[
+			function(Component) {
+				var context = {"_INJECTED_DATA_":{},"spritemap":"https:\/\/portal.liferay.dev\/o\/liferay-portal-site-theme\/images\/clay\/icons.svg","icon":"search","portletId":"com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch","style":"unstyled","elementClasses":"search-bar-search-button","id":"iphv","type":"submit","locale":{"ISO3Country":"USA","ISO3Language":"eng","country":"US","displayCountry":"United States","displayLanguage":"English","displayName":"English (United States)","displayScript":"","displayVariant":"","extensionKeys":[],"language":"en","script":"","unicodeLocaleAttributes":[],"unicodeLocaleKeys":[],"variant":""},"ariaLabel":"Submit","element":"#iphv"};
+
+				var destroyConfig = {
+					destroyOnNavigate: true,
+					portletId: context.portletId
+				};
+
+				if (context.defaultEventHandler) {
+					Liferay.componentReady(
+						context.defaultEventHandler
+					).then(
+						function(defaultEventHandler) {
+							context.defaultEventHandler = defaultEventHandler;
+
+							if (false) {
+								Liferay.component(
+									'iphv',
+									new Component.default(context, '#iphv'),
+									destroyConfig
+								);
+							}
+							else {
+								Liferay.component(
+									'iphv',
+									new Component.default(context),
+									destroyConfig
+								);
+							}
+						}
+					);
+				}
+				else {
+					if (false) {
+						Liferay.component(
+							'iphv',
+							new Component.default(context, '#iphv'),
+							destroyConfig
+						);
+					}
+					else {
+						Liferay.component(
+							'iphv',
+							new Component.default(context),
+							destroyConfig
+						);
+					}
+				}
+			},
+			function(error) {
+				console.error('Unable to load ' + ["frontend-taglib-clay$clay-button@2.10.0\/lib\/ClayButton"]);
+
+				Liferay.fire(
+					'soyComponentLoadingError',
+					{
+						error: error,
+						modules: ["frontend-taglib-clay$clay-button@2.10.0\/lib\/ClayButton"]
+					}
+				);
+			}
+		]
+	)
+);
+// ]]>
+</script> 
+                  </div> 
+                 </div> 
+                </div> 
+               </div>
+              </fieldset> 
+             </form> 
+             <script type="text/javascript">
+// <![CDATA[
+AUI().use('liferay-form', function(A) {(function() {var $ = AUI.$;var _ = AUI._;
+	Liferay.Form.register(
+		{
+			id: '_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_fm'
+
+			
+				, fieldRules: [
+
+					
+
+				]
+			
+
+			
+
+			, validateOnBlur: true
+		}
+	);
+
+	var onDestroyPortlet = function(event) {
+		if (event.portletId === 'com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch') {
+			delete Liferay.Form._INSTANCES['_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_fm'];
+		}
+	};
+
+	Liferay.on('destroyPortlet', onDestroyPortlet);
+
+	
+
+	Liferay.fire(
+		'_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_formReady',
+		{
+			formName: '_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_fm'
+		}
+	);
+})();});
+// ]]>
+</script> 
+             <script type="text/javascript">
+// <![CDATA[
+AUI().use('liferay-search-bar', function(A) {(function() {var $ = AUI.$;var _ = AUI._;
+			new Liferay.Search.SearchBar(A.one('#_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_fm'));
+		})();});
+// ]]>
+</script> 
+            </div> 
+           </div> 
+          </div> 
+         </section> 
+        </div> 
+       </div> 
+      </div> 
+      <button aria-controls="navigationCollapse" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler navbar-toggler-right" data-target="#navigationCollapse" data-toggle="collapse" type="button"> <span class="navbar-toggler-icon"></span> </button> 
+     </div> 
+    </div> 
+    <div class="navbar navbar-classic navbar-expand-lg navbar-light"> 
+     <div class="container"> 
+      <div aria-expanded="true" class="collapse navbar-collapse" data-swiftype-index="false" id="navigationCollapse"> 
+       <nav class="navbar-nav site-navigation" id="navigation" role="navigation"> 
+        <div class="portlet-boundary portlet-boundary_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_  portlet-static portlet-static-end portlet-barebone portlet-navigation " id="p_p_id_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu_"> 
+         <span id="p_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu"></span> 
+         <section class="portlet" id="portlet_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu"> 
+          <div class="portlet-content"> 
+           <div class=" portlet-content-container"> 
+            <div class="portlet-body"> 
+             <div id="navbar_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu"> 
+              <ul aria-label="Site Pages" class="nav navbar-nav navbar-site" role="menubar"> 
+               <li class="lfr-nav-item nav-item dropdown" id="layout_113766627" role="presentation"> <a aria-labelledby="layout_113766627" aria-haspopup="true" class="nav-link text-truncate dropdown-toggle" role="menuitem"> <span class="text-truncate"> Discover <span class="lfr-nav-child-toggle"><i class="icon-caret-down"></i></span></span> </a> 
+                <ul aria-expanded="false" class="child-menu dropdown-menu" role="menu"> 
+                 <li class="" id="layout_113766674" role="presentation"> <a aria-labelledby="layout_113766674" class="dropdown-item" href="https://portal.liferay.dev/discover/about" role="menuitem">About</a> </li> 
+                 <li class="" id="layout_113766691" role="presentation"> <a aria-labelledby="layout_113766691" class="dropdown-item" href="https://portal.liferay.dev/discover/architecture" role="menuitem">Architecture</a> </li> 
+                 <li class="" id="layout_113766708" role="presentation"> <a aria-labelledby="layout_113766708" class="dropdown-item" href="https://portal.liferay.dev/discover/applications" role="menuitem">Applications</a> </li> 
+                 <li class="" id="layout_113766729" role="presentation"> <a aria-labelledby="layout_113766729" class="dropdown-item" href="https://portal.liferay.dev/discover/tooling" role="menuitem">Build tools</a> </li> 
+                 <li class="" id="layout_113766746" role="presentation"> <a aria-labelledby="layout_113766746" class="dropdown-item" href="https://portal.liferay.dev/discover/license" role="menuitem">License</a> </li> 
+                </ul> </li> 
+               <li class="lfr-nav-item nav-item dropdown" id="layout_113766629" role="presentation"> <a aria-labelledby="layout_113766629" aria-haspopup="true" class="nav-link text-truncate dropdown-toggle" role="menuitem"> <span class="text-truncate"> Get <span class="lfr-nav-child-toggle"><i class="icon-caret-down"></i></span></span> </a> 
+                <ul aria-expanded="false" class="child-menu dropdown-menu" role="menu"> 
+                 <li class="" id="layout_113766765" role="presentation"> <a aria-labelledby="layout_113766765" class="dropdown-item" href="https://portal.liferay.dev/download" role="menuitem">Download</a> </li> 
+                 <li class="" id="layout_113766775" role="presentation"> <a aria-labelledby="layout_113766775" class="dropdown-item" href="https://github.com/liferay/liferay-portal" target="sourcecode" role="menuitem">Source Code ☍</a> </li> 
+                </ul> </li> 
+               <li class="lfr-nav-item nav-item dropdown" id="layout_113766628" role="presentation"> <a aria-labelledby="layout_113766628" aria-haspopup="true" class="nav-link text-truncate dropdown-toggle" role="menuitem"> <span class="text-truncate"> Learn <span class="lfr-nav-child-toggle"><i class="icon-caret-down"></i></span></span> </a> 
+                <ul aria-expanded="false" class="child-menu dropdown-menu" role="menu"> 
+                 <li class="" id="layout_113766794" role="presentation"> <a aria-labelledby="layout_113766794" class="dropdown-item" href="https://portal.liferay.dev/docs" role="menuitem">Documentation</a> </li> 
+                 <li class="" id="layout_113766810" role="presentation"> <a aria-labelledby="layout_113766810" class="dropdown-item" href="https://portal.liferay.dev/learn/code-samples" role="menuitem">Code samples</a> </li> 
+                 <li class="" id="layout_113766820" role="presentation"> <a aria-labelledby="layout_113766820" class="dropdown-item" href="https://portal.liferay.dev/learn/security" role="menuitem">Security Advisories</a> </li> 
+                 <li class="" id="layout_113766977" role="presentation"> <a aria-labelledby="layout_113766977" class="dropdown-item" href="https://portal.liferay.dev/learn/other" role="menuitem">Training / Events / Videos</a> </li> 
+                </ul> </li> 
+               <li class="lfr-nav-item nav-item dropdown" id="layout_113766630" role="presentation"> <a aria-labelledby="layout_113766630" aria-haspopup="true" class="nav-link text-truncate dropdown-toggle" role="menuitem"> <span class="text-truncate"> Participate <span class="lfr-nav-child-toggle"><i class="icon-caret-down"></i></span></span> </a> 
+                <ul aria-expanded="false" class="child-menu dropdown-menu" role="menu"> 
+                 <li class="" id="layout_113766839" role="presentation"> <a aria-labelledby="layout_113766839" class="dropdown-item" href="https://portal.liferay.dev/participate/feedback" role="menuitem">Help us improve</a> </li> 
+                 <li class="" id="layout_113766910" role="presentation"> <a aria-labelledby="layout_113766910" class="dropdown-item" href="https://portal.liferay.dev/participate/continuous-feedback" role="menuitem">Continuous feedback</a> </li> 
+                 <li class="" id="layout_113766856" role="presentation"> <a aria-labelledby="layout_113766856" class="dropdown-item" href="https://portal.liferay.dev/participate/help-a-fellow-developer" role="menuitem">Help a fellow developer</a> </li> 
+                 <li class="" id="layout_113766866" role="presentation"> <a aria-labelledby="layout_113766866" class="dropdown-item" href="https://portal.liferay.dev/participate/translate" role="menuitem">Translate to your language</a> </li> 
+                 <li class="" id="layout_113766883" role="presentation"> <a aria-labelledby="layout_113766883" class="dropdown-item" href="https://portal.liferay.dev/participate/knowledge" role="menuitem">Share your knowledge</a> </li> 
+                 <li class="" id="layout_113859411" role="presentation"> <a aria-labelledby="layout_113859411" class="dropdown-item" href="https://portal.liferay.dev/participate/fix-a-bug" role="menuitem">Fix a bug or develop a feature</a> </li> 
+                </ul> </li> 
+               <li class="lfr-nav-item nav-item dropdown" id="layout_113766631" role="presentation"> <a aria-labelledby="layout_113766631" aria-haspopup="true" class="nav-link text-truncate dropdown-toggle" role="menuitem"> <span class="text-truncate"> People <span class="lfr-nav-child-toggle"><i class="icon-caret-down"></i></span></span> </a> 
+                <ul aria-expanded="false" class="child-menu dropdown-menu" role="menu"> 
+                 <li class="" id="layout_113766940" role="presentation"> <a aria-labelledby="layout_113766940" class="dropdown-item" href="https://portal.liferay.dev/people/community-security-team" role="menuitem">Community Security Team</a> </li> 
+                 <li class="" id="layout_113766961" role="presentation"> <a aria-labelledby="layout_113766961" class="dropdown-item" href="https://portal.liferay.dev/people/community-translation-team" role="menuitem">Community Translation Team</a> </li> 
+                 <li class="" id="layout_113766987" role="presentation"> <a aria-labelledby="layout_113766987" class="dropdown-item" href="https://portal.liferay.dev/hall-of-fame" role="menuitem">Hall of Fame</a> </li> 
+                </ul> </li> 
+               <li class="lfr-nav-item nav-item dropdown" id="layout_113766632" role="presentation"> <a aria-labelledby="layout_113766632" aria-haspopup="true" class="nav-link text-truncate dropdown-toggle" role="menuitem"> <span class="text-truncate"> Solutions <span class="lfr-nav-child-toggle"><i class="icon-caret-down"></i></span></span> </a> 
+                <ul aria-expanded="false" class="child-menu dropdown-menu" role="menu"> 
+                 <li class="" id="layout_113767012" role="presentation"> <a aria-labelledby="layout_113767012" class="dropdown-item" href="https://portal.liferay.dev/solutions/liferay-solutions" role="menuitem">Liferay solutions</a> </li> 
+                 <li class="" id="layout_113767028" role="presentation"> <a aria-labelledby="layout_113767028" class="dropdown-item" href="https://portal.liferay.dev/solutions/partner-solutions" role="menuitem">Partner solutions</a> </li> 
+                </ul> </li> 
+              </ul> 
+             </div> 
+             <script type="text/javascript">
+// <![CDATA[
+AUI().use('liferay-navigation-interaction', function(A) {(function() {var $ = AUI.$;var _ = AUI._;		var navigation = A.one('#navbar_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu');
+
+		Liferay.Data.NAV_INTERACTION_LIST_SELECTOR = '.navbar-site';
+		Liferay.Data.NAV_LIST_SELECTOR = '.navbar-site';
+
+		if (navigation) {
+			navigation.plug(Liferay.NavigationInteraction);
+		}
+})();});
+// ]]>
+</script> 
+            </div> 
+           </div> 
+          </div> 
+         </section> 
+        </div> 
+       </nav> 
+       <div class="portlet-boundary portlet-boundary_com_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet_  portlet-static portlet-static-end portlet-barebone portlet-user-personal-bar " id="p_p_id_com_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet_"> 
+        <span id="p_com_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet"></span> 
+        <span class="sign-in text-default" role="presentation"> <a href="https://portal.liferay.dev/c/portal/login?p_l_id=113767687" class="sign-in text-default" id="_com_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet_qfkd____" data-redirect="true">
+          <svg class="lexicon-icon lexicon-icon-user" focusable="false" role="presentation" title="Sign In">
+           <use data-href="https://portal.liferay.dev/o/liferay-portal-site-theme/images/lexicon/icons.svg#user"></use>
+          </svg><span class="taglib-icon-label">Sign In</span></a> </span> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </header> 
+   <section class="ml-3 mr-3" id="content"> 
+    <h1 class="sr-only">Preparing a New Liferay Portal Server for Data Upgrade</h1> 
+    <div class="columns-1" id="main-content" role="main"> 
+     <div class="portlet-layout row"> 
+      <div class="col-md-12 portlet-column portlet-column-only" id="column-1"> 
+       <div class="portlet-dropzone portlet-column-content portlet-column-content-only" id="layout-column_column-1"> 
+        <div class="portlet-boundary portlet-boundary_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_  portlet-static portlet-static-end portlet-barebone portlet-navigation " id="p_p_id_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf_"> 
+         <span id="p_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf"></span> 
+         <section class="portlet" id="portlet_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf"> 
+          <div class="portlet-content"> 
+           <div class=" portlet-content-container"> 
+            <div class="portlet-body"> 
+             <div id="navbar_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf" data-swiftype-index="false"> 
+              <ul aria-label="Site Pages" class="navbar-blank navbar-nav navbar-site" role="menubar"> 
+               <div class="dropdown"> 
+                <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" type="button" aria-expanded="false">version 7.2</button> 
+                <div class="dropdown-menu" x-placement="top-start" style="position: absolute; transform: translate3d(0px, -2px, 0px); top: 0px; left: 0px; will-change: transform;"> 
+                 <a class="dropdown-item" href="https://portal.liferay.dev/docs/7-2">version 7.2</a> 
+                 <a class="dropdown-item" href="https://portal.liferay.dev/docs/7-1">version 7.1</a> 
+                 <a class="dropdown-item" href="https://portal.liferay.dev/docs/7-0">version 7.0</a> 
+                 <a class="dropdown-item" href="https://portal.liferay.dev/docs/6-2">version 6.2</a> 
+                 <a class="dropdown-item" href="https://portal.liferay.dev/docs/6-1">version 6.1</a> 
+                </div> 
+               </div> 
+               <li class="lfr-nav-item nav-item" id="layout_65" role="presentation"> <a aria-labelledby="layout_65" class="nav-link text-truncate" href="https://portal.liferay.dev/docs/7-2/user" role="menuitem"> <span class="text-truncate"> User </span> </a> </li> 
+               <li class="lfr-nav-item nav-item dropdown" id="layout_60" role="presentation"> <a aria-labelledby="layout_60" aria-haspopup="true" class="nav-link text-truncate dropdown-toggle" href="https://portal.liferay.dev/docs/7-2/dev" role="menuitem"> <span class="text-truncate"> Developer <span class="lfr-nav-child-toggle"><i class="icon-caret-down"></i></span></span> </a> 
+                <ul aria-expanded="false" class="child-menu dropdown-menu" role="menu"> 
+                 <li class="" id="layout_59" role="presentation"> <a aria-labelledby="layout_59" class="dropdown-item" href="https://portal.liferay.dev/docs/7-2/appdev" role="menuitem">Application development</a> </li> 
+                 <li class="" id="layout_61" role="presentation"> <a aria-labelledby="layout_61" class="dropdown-item" href="https://portal.liferay.dev/docs/7-2/tutorials" role="menuitem">Tutorials</a> </li> 
+                 <li class="" id="layout_62" role="presentation"> <a aria-labelledby="layout_62" class="dropdown-item" href="https://portal.liferay.dev/docs/7-2/frameworks" role="menuitem">Frameworks</a> </li> 
+                 <li class="" id="layout_63" role="presentation"> <a aria-labelledby="layout_63" class="dropdown-item" href="https://portal.liferay.dev/docs/7-2/customization" role="menuitem">Customization</a> </li> 
+                 <li class="" id="layout_64" role="presentation"> <a aria-labelledby="layout_64" class="dropdown-item" href="https://portal.liferay.dev/docs/7-2/reference" role="menuitem">Reference</a> </li> 
+                </ul> </li> 
+               <li class="lfr-nav-item nav-item selected active" id="layout_66" role="presentation"> <a aria-labelledby="layout_66" class="nav-link text-truncate" href="https://portal.liferay.dev/docs/7-2/deploy" role="menuitem"> <span class="text-truncate"> Deployment </span> </a> </li> 
+              </ul> 
+             </div> 
+            </div> 
+           </div> 
+          </div> 
+         </section> 
+        </div> 
+        <div class="portlet-boundary portlet-boundary_com_liferay_knowledge_base_web_portlet_DisplayPortlet_  portlet-static portlet-static-end portlet-barebone knowledge-base-portlet knowledge-base-portlet-display " id="p_p_id_com_liferay_knowledge_base_web_portlet_DisplayPortlet_"> 
+         <span id="p_com_liferay_knowledge_base_web_portlet_DisplayPortlet"></span> 
+         <section class="portlet" id="portlet_com_liferay_knowledge_base_web_portlet_DisplayPortlet"> 
+          <div class="portlet-content"> 
+           <div class=" portlet-content-container"> 
+            <div class="portlet-body"> 
+             <div class="row" data-swiftype-index="false"> 
+              <div class="col-md-3"> 
+               <div class="kbarticle-navigation"> 
+                <div class="kb-article-nav-tools"> 
+                </div> 
+                <ul> 
+                 <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/deploying-product">Deploying Liferay Portal</a> </li> 
+                </ul> 
+                <ul> 
+                 <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/configuring-product">Configuring Liferay Portal</a> </li> 
+                </ul> 
+                <ul> 
+                 <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/installing-a-search-engine">Installing a Search Engine</a> </li> 
+                </ul> 
+                <ul> 
+                 <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/securing-product">Securing Liferay Portal</a> </li> 
+                </ul> 
+                <ul> 
+                 <li> <a class="kbarticle-expanded" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/upgrading-to-product-ver">Upgrading to Liferay Portal CE 7.2</a> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/planning-for-deprecated-applications">Planning for Deprecated Applications</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/test-upgrading-a-product-backup-copy">Test Upgrading a Liferay Portal Backup Copy</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/preparing-to-upgrade-the-product-database">Preparing to Upgrade the Liferay Portal Database</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="kbarticle-selected" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/preparing-a-new-product-server-for-data-upgrade">Preparing a New Liferay Portal Server for Data Upgrade</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/upgrading-the-product-data">Upgrading the Liferay Portal Data</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/executing-post-upgrade-tasks">Executing Post-Upgrade Tasks</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/upgrading-a-sharded-environment">Upgrading a Sharded Environment</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/migrating-from-audience-targeting-to-segmentation-and-personalization">Migrating From Audience Targeting to Segmentation and Personalization</a> </li> 
+                  </ul> 
+                  <ul> 
+                   <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/deprecated-apps-in-7-2-what-to-do">Deprecated Apps in 7.2: What to Do</a> </li> 
+                  </ul> </li> 
+                </ul> 
+                <ul> 
+                 <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/maintaining-liferay">Maintaining Liferay Portal</a> </li> 
+                </ul> 
+                <ul> 
+                 <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/troubleshooting-deployments">Troubleshooting Deployments</a> </li> 
+                </ul> 
+                <ul> 
+                 <li> <a class="" href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/deployment-reference">Deployment Reference</a> </li> 
+                </ul> 
+               </div> 
+              </div> 
+              <div class="col-md-9"> 
+               <div id="_com_liferay_knowledge_base_web_portlet_DisplayPortlet_message-container"></div> 
+               <div class="kb-article-container"> 
+                <div> 
+                 <div class="sidenav-content"> 
+                  <div class="taglib-header "> 
+                   <h3 class="header-title"> <span> Preparing a New Liferay Portal Server for Data Upgrade </span> </h3> 
+                  </div> 
+                  <div class="kb-tools"> 
+                   <div class="kb-article-tools"> 
+                    <span class=""> <a href="https://portal.liferay.dev:443/docs/7-2/deploy?p_p_id=com_liferay_knowledge_base_web_portlet_DisplayPortlet&amp;p_p_lifecycle=2&amp;p_p_state=normal&amp;p_p_mode=view&amp;p_p_resource_id=kbArticleRSS&amp;p_p_cacheability=cacheLevelPage&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourceClassNameId=113674871&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourcePrimKey=113869586&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_kbFolderUrlTitle=d&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_urlTitle=preparing-a-new-product-server-for-data-upgrade" target="_blank" class=" lfr-icon-item taglib-icon" id="_com_liferay_knowledge_base_web_portlet_DisplayPortlet_rjus__column1__1"> <span class="taglib-text ">RSS</span> 
+                      <svg class="lexicon-icon lexicon-icon-shortcut" focusable="false" role="img">
+                       <use data-href="https://portal.liferay.dev/o/liferay-portal-site-theme/images/lexicon/icons.svg#shortcut" />
+                       <span class="sr-only">(Opens New Window)</span>
+                       <title>(Opens New Window)</title>
+                      </svg></a> </span> 
+                    <liferay-util:html-top> 
+                     <link href="https://portal.liferay.dev:443/docs/7-2/deploy?p_p_id=com_liferay_knowledge_base_web_portlet_DisplayPortlet&amp;p_p_lifecycle=2&amp;p_p_state=normal&amp;p_p_mode=view&amp;p_p_resource_id=kbArticleRSS&amp;p_p_cacheability=cacheLevelPage&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourceClassNameId=113674871&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourcePrimKey=113869586&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_kbFolderUrlTitle=d&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_urlTitle=preparing-a-new-product-server-for-data-upgrade" rel="alternate" title="RSS" type="application/rss+xml"> 
+                    </liferay-util:html-top> 
+                    <span class=""> <a href="https://portal.liferay.dev:443/docs/7-2/deploy?p_p_id=com_liferay_knowledge_base_web_portlet_DisplayPortlet&amp;p_p_lifecycle=0&amp;p_p_state=normal&amp;p_p_mode=view&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_redirect=https%3A%2F%2Fportal.liferay.dev%3A443%2Fdocs%2F7-2%2Fdeploy%2F-%2Fknowledge_base%2Fd%2Fpreparing-a-new-product-server-for-data-upgrade&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_mvcPath=%2Fdisplay%2Fhistory.jsp&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourceClassNameId=113674871&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourcePrimKey=113869586&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_status=0" target="_self" class=" lfr-icon-item taglib-icon" id="_com_liferay_knowledge_base_web_portlet_DisplayPortlet_ctvk__column1__1"> <i class="icon-file-alt"></i> <span class="taglib-text ">History</span> </a> </span> 
+                    <span class=""> <a href="javascript:var printKBArticleWindow = window.open('https://portal.liferay.dev:443/docs/7-2/deploy?p_p_id=com_liferay_knowledge_base_web_portlet_DisplayPortlet&amp;p_p_lifecycle=0&amp;p_p_state=pop_up&amp;p_p_mode=view&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_mvcPath=%2Fdisplay%2Fprint_article.jsp&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourceClassNameId=113674871&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_resourcePrimKey=113869586&amp;_com_liferay_knowledge_base_web_portlet_DisplayPortlet_status=0', 'printKBArticle', 'directories=no,height=640,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=680'); void(''); printKBArticleWindow.focus();" target="_self" class=" lfr-icon-item taglib-icon" id="_com_liferay_knowledge_base_web_portlet_DisplayPortlet_suxb__column1__1"> <i class="icon-print"></i> <span class="taglib-text ">Print</span> </a> </span> 
+                   </div> 
+                  </div> 
+                  <div> 
+                   <div class="kb-entity-body "> 
+                    <div id="_com_liferay_knowledge_base_web_portlet_DisplayPortlet_113869586" data-swiftype-index="true" data-swiftype-name="body"> 
+                     <h1 id="preparing-a-new-liferay-portal-server-for-data-upgrade"><a href="#preparing-a-new-liferay-portal-server-for-data-upgrade" id="preparing-a-new-liferay-portal-server-for-data-upgrade">Preparing a New Liferay Portal Server for Data Upgrade</a></h1> 
+                     <ul> 
+                      <li><a href="#preparing-a-new-liferay-portal-server-for-data-upgrade">Preparing a New Liferay Portal Server for Data Upgrade</a> 
+                       <ul> 
+                        <li><a href="#request-an-upgrade-patch-from-liferay-support-liferay-dxp-only">Request an Upgrade Patch from Liferay Support (Liferay DXP only)</a></li> 
+                        <li><a href="#install-liferay">Install Liferay</a></li> 
+                        <li><a href="#install-the-latest-upgrade-patch-or-fix-pack-liferay-dxp-only">Install the Latest Upgrade Patch or Fix Pack (Liferay DXP only)</a></li> 
+                        <li><a href="#migrate-your-osgi-configurations-70">Migrate Your OSGi Configurations (7.0+)</a></li> 
+                        <li><a href="#migrate-your-portal-properties">Migrate Your Portal Properties</a> 
+                         <ul> 
+                          <li><a href="#update-your-portal-properties">Update Your Portal Properties</a></li> 
+                          <li><a href="#convert-applicable-properties-to-osgi-configurations">Convert Applicable Properties to OSGi Configurations</a></li> 
+                         </ul> </li> 
+                        <li><a href="#update-your-database-driver">Update Your Database Driver</a></li> 
+                        <li><a href="#configure-your-documents-and-media-file-store">Configure Your Documents and Media File Store</a></li> 
+                        <li><a href="#configure-kerberos-in-place-of-ntlm">Configure Kerberos in place of NTLM</a></li> 
+                        <li><a href="#disable-indexing">Disable Indexing</a></li> 
+                       </ul> </li> 
+                     </ul> 
+                     <p>To upgrade your Liferay Portal database, prepare a new server for hosting Liferay Portal CE 7.2. You'll use this server to run the database upgrade and run Liferay Portal CE 7.2. Then you can run your production server while you're configuring a new server to host Liferay Portal CE 7.2 exactly the way you want.</p> 
+                     <aside> 
+                      <p><strong>Note:</strong> these steps can be done in parallel with any of the upgrade preparation steps: planning for deprecated apps, testing upgrades on a Liferay Portal backup copy, or preparing to upgrade the Liferay Portal database.</p> 
+                     </aside> 
+                     <p>Get the latest fixes for Liferay Portal CE 7.2 by requesting an upgrade patch.</p> 
+                     <h2 id="request-an-upgrade-patch-from-liferay-support-liferay-dxp-only"><a href="#request-an-upgrade-patch-from-liferay-support-liferay-dxp-only" id="request-an-upgrade-patch-from-liferay-support-liferay-dxp-only">Request an Upgrade Patch from Liferay Support (Liferay DXP only)</a></h2> 
+                     <p>An <em>upgrade patch</em> contains the latest fix pack and hot fixes planned for the next service pack. Upgrade patches provide the latest fixes available for your data upgrade.</p> 
+                     <h2 id="install-liferay"><a href="#install-liferay" id="install-liferay">Install Liferay</a></h2> 
+                     <p><a href="/docs/7-2/deploy/-/knowledge_base/d/deploying-product">Install Liferay Portal on your application server</a> or <a href="/docs/7-2/deploy/-/knowledge_base/d/installing-product">use Liferay Portal bundled with your application server of choice</a>.</p> 
+                     <aside> 
+                      <p><strong>Important:</strong> Do not start your application server. It's not ready to start until after the Liferay Portal database upgrade.</p> 
+                     </aside> 
+                     <h2 id="install-the-latest-upgrade-patch-or-fix-pack-liferay-dxp-only"><a href="#install-the-latest-upgrade-patch-or-fix-pack-liferay-dxp-only" id="install-the-latest-upgrade-patch-or-fix-pack-liferay-dxp-only">Install the Latest Upgrade Patch or Fix Pack (Liferay DXP only)</a></h2> 
+                     <p>Install the upgrade patch (if you requested it from Liferay Support) or the <a href="/docs/7-2/deploy/-/knowledge_base/d/patching-liferay">latest Fix Pack</a>.</p> 
+                     <h2 id="migrate-your-osgi-configurations-70"><a href="#migrate-your-osgi-configurations-70" id="migrate-your-osgi-configurations-70">Migrate Your OSGi Configurations (7.0+)</a></h2> 
+                     <p>Copy your <a href="/docs/7-2/user/-/knowledge_base/u/understanding-system-configuration-files">OSGi configuration files</a> (i.e., <code>.config</code> files) to your new server's <code>[Liferay Home]/osgi/configs</code> folder.</p> 
+                     <h2 id="migrate-your-portal-properties"><a href="#migrate-your-portal-properties" id="migrate-your-portal-properties">Migrate Your Portal Properties</a></h2> 
+                     <p>It is likely that you have overridden portal properties to customize your installation. If so, you must update the properties files (e.g., <code>portal-setup-wizard.properties</code> and <code>portal-ext.properties</code>) to Liferay Portal CE 7.2. For features that use OSGi Config Admin, you must convert your properties to OSGi configurations. As you do this, you must account for property changes in all versions of Liferay Portal since your current version up to and including Liferay Portal CE 7.2. Start with updating your portal properties.</p> 
+                     <h3 id="update-your-portal-properties"><a href="#update-your-portal-properties" id="update-your-portal-properties">Update Your Portal Properties</a></h3> 
+                     <p>If you're coming from a version prior to Liferay Portal 6.2, start with these property-related updates:</p> 
+                     <ul> 
+                      <li> <p>If you're on Liferay Portal 6.1, <a href="/docs/6-2/deploy/-/knowledge_base/deploy/upgrading-liferay#review-the-liferay-6">adapt your properties to the new defaults that Liferay Portal 6.2 introduced</a>.</p> </li> 
+                      <li> <p>If you're on Liferay 6.0.12, <a href="/docs/6-2/deploy/-/knowledge_base/deploy/upgrading-liferay#migrate-your-image-gallery-images">migrate the Image Gallery</a>.</p> </li> 
+                      <li> <p>If you have a sharded environment, <a href="/docs/7-2/deploy/-/knowledge_base/d/upgrading-a-sharded-environment">configure your upgrade to generate a non-sharded environment</a>.</p> </li> 
+                     </ul> 
+                     <p>When a new version of Liferay Portal is released, there are often changes to default settings, and this release is no different. If you rely on the defaults from your old version, you should review the changes and decide to keep the defaults from your old version or accept the defaults of the new.</p> 
+                     <p>Because no properties changed from 7.1 to 7.2, here's a list of the 6.2 properties that have changed in 7.2:</p> 
+                     <pre><code class="language-properties">users.image.check.token=false
+organizations.types=regular-organization,location
+organizations.rootable[regular-organization]=true
+organizations.children.types[regular-organization]=regular-organization,location
+organizations.country.enabled[regular-organization]=false
+organizations.country.required[regular-organization]=false
+organizations.rootable[location]=false
+organizations.country.enabled[location]=true
+organizations.country.required[location]=true
+layout.set.prototype.propagate.logo=true
+editor.wysiwyg.portal-web.docroot.html.taglib.ui.discussion.jsp=simple
+web.server.servlet.check.image.gallery=true
+blogs.trackback.enabled=true
+discussion.comments.format=bbcode
+discussion.max.comments=0
+dl.file.entry.thumbnail.max.height=128
+dl.file.entry.thumbnail.max.width=128
+</code></pre> 
+                     <p>This property was removed:</p> 
+                     <pre><code class="language-properties">organizations.children.types[location]
+</code></pre> 
+                     <p>The latest <a href="https://docs.liferay.com/ce/portal/7.2-latest/propertiesdoc/portal.properties.html">portal properties reference</a> provides property details and examples. Some properties are replaced by OSGi configurations.</p> 
+                     <h3 id="convert-applicable-properties-to-osgi-configurations"><a href="#convert-applicable-properties-to-osgi-configurations" id="convert-applicable-properties-to-osgi-configurations">Convert Applicable Properties to OSGi Configurations</a></h3> 
+                     <p>Properties in modularized features have changed and must now be deployed separately in <a href="/docs/7-2/user/-/knowledge_base/u/system-settings#exporting-and-importing-configurations">OSGi configuration files</a> (OSGi Config Admin).</p> 
+                     <p>Use the <a href="/docs/7-2/reference/-/knowledge_base/r/blade-cli"><code>blade upgradeProps</code></a> command to scan your <code>portal-ext.properties</code> file to discover which properties are now set via OSGi Config Admin. You can also check the upgrade log from previous attempts for traces like these:</p> 
+                     <pre><code class="language-properties">2019-03-09 17:05:17.678 ERROR [main][VerifyProperties:161] Portal property "layout.first.pageable[link_to_layout]" is obsolete
+2019-03-09 17:05:17.679 ERROR [main][VerifyProperties:136] Portal property "journal.article.check.interval" was modularized to com.liferay.journal.web as "check.interval"
+</code></pre> 
+                     <aside> 
+                      <p><strong>Tip:</strong> The Control Panel's <em>Configuration → System Settings</em> screens are the most accurate way to create <code>.config</code> files. Use them to <a href="/docs/7-2/user/-/knowledge_base/u/system-settings#exporting-and-importing-configurations">export a screen's configuration</a> to a <code>.config</code> file.</p> 
+                     </aside> 
+                     <h2 id="update-your-database-driver"><a href="#update-your-database-driver" id="update-your-database-driver">Update Your Database Driver</a></h2> 
+                     <p>Install the recommended database driver and update your database connection driver specified in your <code>portal-ext.properties</code>. See the <a href="/docs/7-2/deploy/-/knowledge_base/d/database-templates">Database Templates</a>.</p> 
+                     <h2 id="configure-your-documents-and-media-file-store"><a href="#configure-your-documents-and-media-file-store" id="configure-your-documents-and-media-file-store">Configure Your Documents and Media File Store</a></h2> 
+                     <p>General document store configuration (e.g., <code>dl.store.impl=[File Store Impl Class]</code>) continues to be done using <code>portal-ext.properties</code>. But here's what's changed for document storage:</p> 
+                     <ul> 
+                      <li> <p>Store implementation class package names changed from <code>com.liferay.portlet.documentlibrary.store.*</code> in Liferay Portal 6.2 to <code>com.liferay.portal.store.*</code> in Liferay Portal 7.0+. Make sure your <code>portal-ext.properties</code> file sets <code>dl.store.impl</code> in one of these ways:</p> <pre><code class="language-properties">dl.store.impl=com.liferay.portal.store.file.system.FileSystemStore
+dl.store.impl=com.liferay.portal.store.db.DBStore
+dl.store.impl=com.liferay.portal.store.file.system.AdvancedFileSystemStore
+dl.store.impl=com.liferay.portal.store.s3.S3Store
+</code></pre> </li> 
+                      <li> <p>JCR Store was deprecated in Liferay Portal 7.0. The <a href="/docs/7-2/deploy/-/knowledge_base/d/document-repository-configuration">Document Repository Configuration</a> documentation describes other store options. <a href="/docs/7-2/user/-/knowledge_base/u/server-administration">Migrate to a supported document store</a> before upgrading your data.</p> </li> 
+                      <li> <p>CMIS Store was deprecated since 7.0.10 Fix Pack 14 and was removed in Liferay Portal 7.2. The <a href="/docs/7-2/deploy/-/knowledge_base/d/document-repository-configuration">Document Repository Configuration</a> documentation describes other store options. <a href="/docs/7-2/user/-/knowledge_base/u/server-administration">Migrate to a supported document store</a> before upgrading your data.</p> </li> 
+                      <li> <p>Since Liferay Portal 7.0, document store type-specific configuration (e.g., specific to Simple File Store, Advanced File Store, S3, etc.) is done in the Control Panel at <em>Configuration → System Settings → File Storage</em> or using OSGi configuration files (<code>.config</code> files). Type specific configuration is no longer done using <code>portal-ext.properties</code>.</p> </li> 
+                     </ul> 
+                     <p>For example, these steps to create a <code>.config</code> file specifying a root file location for a Simple File Store or Advanced File Store:</p> 
+                     <ol> 
+                      <li> <p>Create a <code>.config</code> file named after your store implementation class.</p> <p>Simple File Store: <code>com.liferay.portal.store.file.system.configuration.FileSystemStoreConfiguration.config</code></p> <p>Advanced File Store: <code>com.liferay.portal.store.file.system.configuration.AdvancedFileSystemStoreConfiguration.config</code></p> </li> 
+                      <li> <p>Set the following <code>rootDir</code> property and replace <code>{document_library_path}</code> with your file store's path.</p> <pre><code class="language-properties">rootDir="{document_library_path}"
+</code></pre> </li> 
+                      <li> <p>Copy the <code>.config</code> file to your <code>[Liferay Home]/osgi/configs</code> folder.</p> </li> 
+                     </ol> 
+                     <p>The <a href="/docs/7-2/deploy/-/knowledge_base/d/document-repository-configuration">Document Repository Configuration</a> provides more document store configuration details.</p> 
+                     <h2 id="configure-kerberos-in-place-of-ntlm"><a href="#configure-kerberos-in-place-of-ntlm" id="configure-kerberos-in-place-of-ntlm">Configure Kerberos in place of NTLM</a></h2> 
+                     <p>If you're using NTLM to authenticate Microsoft Windows ™ accounts with Liferay Portal, switch to using <a href="/docs/7-2/deploy/-/knowledge_base/d/authenticating-with-kerberos">Kerberos</a>. Security vulnerabilities persist with NTLM. NTLM has been deprecated and removed from the bundle, but you can still <a href="https://github.com/liferay/liferay-portal/tree/7.2.x/modules/apps/portal-security-sso-ntlm">build and deploy the module</a>.</p> 
+                     <h2 id="disable-indexing"><a href="#disable-indexing" id="disable-indexing">Disable Indexing</a></h2> 
+                     <p>Before starting the upgrade process in your new installation, you must disable indexing to prevent upgrade process performance issues that arise when the indexer attempts to re-index content.</p> 
+                     <p>To disable indexing, create a file called <code>com.liferay.portal.search.configuration.IndexStatusManagerConfiguration.config</code> in your <code>[Liferay Home]/osgi/configs</code> folder and add the following content:</p> 
+                     <pre><code class="language-properties">indexReadOnly="true"
+</code></pre> 
+                     <p>After you complete the upgrade, re-enable indexing by removing the <code>.config</code> file or setting <code>indexReadOnly="false"</code>.</p> 
+                     <p>Your new Liferay Portal CE 7.2 server is ready for upgrading your database.</p> 
+                    </div> 
+                    <div class="taglib-social-bookmarks" id="ykmt_column1_1_socialBookmarks"> 
+                     <div class="dropdown" id="ykmt_column1_1_socialBookmarksDropdownMenu">
+                      <button aria-expanded="false" aria-haspopup="true" class="dropdown-toggle btn btn-outline-borderless btn-outline-secondary btn-sm btn-secondary" data-onclick="toggle" ref="triggerButton" type="button">
+                       <svg class="lexicon-icon lexicon-icon-share inline-item inline-item-before" focusable="false" role="presentation">
+                        <use xlink:href="https://portal.liferay.dev/o/liferay-portal-site-theme/images/clay/icons.svg#share" />
+                       </svg>Share</button>
+                      <div class="dropdown-menu" ref="menu">
+                       <ul class="list-unstyled">
+                        <li data-onclick="null" tabindex="-1"><a class=" dropdown-item" href="#">Twitter</a></li>
+                        <li data-onclick="null" tabindex="-1"><a class=" dropdown-item" href="#">Facebook</a></li>
+                        <li data-onclick="null" tabindex="-1"><a class=" dropdown-item" href="#">LinkedIn</a></li>
+                        <li data-onclick="null" tabindex="-1"><a class=" dropdown-item" href="#">Google+</a></li>
+                       </ul>
+                      </div>
+                     </div> 
+                    </div> 
+                    <div class="kb-article-ratings"> 
+                     <div class="taglib-ratings thumbs" id="zyfa_column1_1_ratingContainer"> 
+                      <div class="liferay-rating-vote thumbrating" id="zyfa_column1_1_ratingThumb"> 
+                       <div class="helper-clearfix rating-content thumbrating-content" id="zyfa_column1_1_ratingThumbContent"> 
+                        <span class="btn btn-outline-borderless btn-outline-secondary btn-sm rating-element rating-thumb-up rating-off" title=""><span class="inline-item inline-item-before">
+                          <svg aria-hidden="true" class="lexicon-icon lexicon-icon-thumbs-up">
+                           <use xlink:href="https://portal.liferay.dev/o/liferay-portal-site-theme/images/lexicon/icons.svg#thumbs-up" />
+                          </svg></span>0</span>
+                        <span class="rating-element rating-thumb-down rating-off" title=""><span class="inline-item inline-item-before">
+                          <svg aria-hidden="true" class="lexicon-icon lexicon-icon-thumbs-down">
+                           <use xlink:href="https://portal.liferay.dev/o/liferay-portal-site-theme/images/lexicon/icons.svg#thumbs-down" />
+                          </svg></span>0</span> 
+                       </div> 
+                      </div> 
+                     </div> 
+                     <script type="text/javascript">
+// <![CDATA[
+AUI().use('liferay-ratings', function(A) {(function() {var $ = AUI.$;var _ = AUI._;
+		Liferay.Ratings.register(
+			{
+				averageScore: 0.0,
+				className: 'com\x2eliferay\x2eknowledge\x2ebase\x2emodel\x2eKBArticle',
+				classPK: '113869586',
+				containerId: 'zyfa_column1_1_ratingContainer',
+				namespace: 'zyfa_column1_1_',
+				round: true,
+				size: 5,
+				totalEntries: 0,
+				totalScore: 0.0,
+				type: 'thumbs',
+				uri: '/c/portal/rate_entry',
+				yourScore: -1.0
+			}
+		);
+	})();});
+// ]]>
+</script> 
+                    </div> 
+                    <div class="kb-article-siblings"> 
+                     <span class="kb-article-previous"> <a href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/preparing-to-upgrade-the-product-database" class="hidden-xs"> <i class="icon icon-circle-arrow-left"></i> <span class="title">Preparing to Upgrade the Liferay Portal Database</span> </a> <a href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/preparing-to-upgrade-the-product-database" class="visible-xs"> <i class="icon icon-circle-arrow-left"></i> <span class="title">Previous</span> </a> </span> 
+                     <span class="kb-article-next"> <a href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/upgrading-the-product-data" class="hidden-xs next"> <span class="title">Upgrading the Liferay Portal Data</span> <i class="icon icon-circle-arrow-right"></i> </a> <a href="https://portal.liferay.dev:443/docs/7-2/deploy/-/knowledge_base/d/upgrading-the-product-data" class="next visible-xs"> <span class="title">Next</span> <i class="icon icon-circle-arrow-right"></i> </a> </span> 
+                    </div> 
+                   </div> 
+                  </div> 
+                 </div> 
+                </div> 
+               </div> 
+              </div> 
+             </div> 
+            </div> 
+           </div> 
+          </div> 
+         </section> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <form action="#" id="hrefFm" method="post" name="hrefFm">
+     <span></span>
+    </form> 
+   </section> 
+   <footer class="footer" data-swiftype-index="false" role="contentinfo"> 
+    <div class="container-hybrid"> 
+     <div class="row"> 
+      <div class="col-md-6 col-xs-12"> 
+       <div class="footer-nav-container"> 
+        <ul class="footer-nav"> 
+         <li> Community </li> 
+         <li> <a href="https://liferay.dev/chat">Chat</a> </li> 
+         <li> <a href="https://www.liferay.com/events" rel="noopener" target="_blank">Events</a> </li> 
+         <li> <a href="https://liferay.dev/forums">Forums</a> </li> 
+         <li> <a href="https://liferay.dev/user-groups">User Groups</a> </li> 
+        </ul> 
+        <ul class="footer-nav"> 
+         <li> Company </li> 
+         <li> <a href="https://liferay.dev/blogs/">Blogs</a> </li> 
+         <li> <a href="https://www.liferay.com/careers" rel="noopener" target="_blank">Careers</a> </li> 
+         <li> <a href="https://www.liferay.com/press-releases/newsletter-signup" rel="noopener" target="_blank">Newsletter</a> </li> 
+         <li> <a href="https://liferay.dev/open-source">Open Source</a> </li> 
+        </ul> 
+        <ul class="footer-nav"> 
+         <li> Feedback </li> 
+         <li> <a href="mailto:community@liferay.com" target="_blank">Contact Us</a> </li> 
+        </ul> 
+       </div> 
+      </div> 
+      <div class="col-md-6 col-xs-12"> 
+       <ul class="footer-social"> 
+        <li> <a href="https://github.com/liferay" rel="noopener" target="_blank" title="GitHub"> 
+          <svg viewbox="0 0 20 20"> 
+           <path d="M10 0C4.5 0 0 4.5 0 10c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 2.9.9.1-.6.3-1.1.6-1.3-2.1-.3-4.5-1.2-4.5-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1 .9-.1 1.8-.3 2.6-.3s1.7.1 2.5.3c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.6.6.7 1 1.6 1 2.7 0 3.8-2.3 4.7-4.6 4.9.4.3.7.9.7 1.9v2.7c0 .3.2.6.7.5 4-1.3 6.8-5.1 6.8-9.5C20 4.5 15.5 0 10 0z"></path> 
+          </svg> </a> </li> 
+        <li> <a href="https://twitter.com/liferay" rel="noopener" target="_blank" title="Twitter"> 
+          <svg viewbox="0 0 20 20"> 
+           <path d="M20 3.8c-.7.3-1.5.5-2.4.6.8-.5 1.5-1.3 1.8-2.3-.8.5-1.7.8-2.6 1-.7-.8-1.8-1.3-3-1.3-2.3 0-4.1 1.8-4.1 4.1 0 .3 0 .6.1.9-3.4-.1-6.4-1.7-8.4-4.2C1 3.2.8 3.9.8 4.7c0 1.4.7 2.7 1.8 3.4-.6 0-1.2-.2-1.8-.5v.1c0 2 1.4 3.6 3.3 4-.3.1-.7.1-1.1.1-.3 0-.5 0-.8-.1.5 1.6 2 2.8 3.8 2.8-1.4 1.1-3.2 1.8-5.1 1.8-.3 0-.7 0-1-.1 1.8 1.2 4 1.8 6.3 1.8 7.5 0 11.7-6.3 11.7-11.7v-.5c.9-.5 1.5-1.2 2.1-2z"></path> 
+          </svg> </a> </li> 
+        <li> <a href="https://www.youtube.com/user/liferayinc" rel="noopener" target="_blank" title="YouTube"> 
+          <svg viewbox="0 0 20 20"> 
+           <path d="M19.8 6s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.8-2.8-.2-7-.2-7-.2s-4.2 0-7 .2c-.4 0-1.2 0-2 .8-.6.6-.8 2-.8 2S0 7.6 0 9.2v1.5c0 1.7.2 3.3.2 3.3s.2 1.4.8 2c.8.8 1.8.8 2.2.9 1.6.1 6.8.1 6.8.1s4.2 0 7-.2c.4 0 1.2-.1 2-.8.6-.6.8-2 .8-2s.2-1.6.2-3.2V9.2c0-1.6-.2-3.2-.2-3.2zM7.9 12.6V7l5.4 2.8-5.4 2.8z"></path> 
+          </svg> </a> </li> 
+        <li> <a href="https://www.facebook.com/liferay/" rel="noopener" target="_blank" title="Facebook"> 
+          <svg viewbox="0 0 20 20"> 
+           <path d="M18.9 0H1.1C.5 0 0 .5 0 1.1v17.8c0 .6.5 1.1 1.1 1.1h9.6v-7.7H8.1v-3h2.6V7c0-2.6 1.6-4 3.9-4 1.1 0 2.1.1 2.3.1v2.7h-1.6c-1.3 0-1.5.6-1.5 1.5v1.9h3l-.4 3h-2.6V20h5.1c.6 0 1.1-.5 1.1-1.1V1.1c0-.6-.5-1.1-1.1-1.1z"></path> 
+          </svg> </a> </li> 
+        <li> <a href="https://www.instagram.com/liferayinc/" rel="noopener" target="_blank" title="Instagram"> 
+          <svg viewbox="0 0 20 20"> 
+           <path d="M20 2.6v14.8c0 .7-.3 1.3-.8 1.8s-1.1.8-1.8.8H2.6c-.7 0-1.3-.3-1.8-.8-.5-.6-.8-1.2-.8-1.9V2.6C0 1.9.3 1.3.8.8S1.9 0 2.6 0h14.9c.7 0 1.3.3 1.8.8.4.5.7 1.1.7 1.8zm-2.3 14.2V8.5H16c.2.5.3 1.1.3 1.7 0 1.1-.3 2.1-.8 3-.6.9-1.3 1.7-2.3 2.2s-2 .8-3.1.8c-1.7 0-3.2-.6-4.4-1.8s-1.8-2.6-1.8-4.3c0-.6.1-1.2.3-1.7h-2v8.3c0 .2.1.4.2.6.2.2.3.2.6.2h13.9c.2 0 .4-.1.6-.2s.2-.3.2-.5zm-4.8-4.1C13.6 12 14 11 14 10s-.4-2-1.2-2.8-1.7-1.1-2.8-1.1-2 .4-2.8 1.1C6.4 8 6 8.9 6 10s.4 2 1.2 2.8 1.7 1.1 2.8 1.1c1.1 0 2.1-.4 2.9-1.2zm4.8-7.4V3.1c0-.2-.1-.5-.3-.6-.2-.2-.4-.3-.6-.3h-2.3c-.3 0-.5.1-.6.3-.2.2-.3.4-.3.6v2.1c0 .3.1.5.3.6.2.2.4.3.6.3h2.3c.3 0 .5-.1.6-.3.2-.1.3-.3.3-.5z"></path> 
+          </svg> </a> </li> 
+        <li> <a href="https://www.linkedin.com/company/liferay-inc-/" rel="noopener" target="_blank" title="LinkedIn"> 
+          <svg viewbox="0 0 20 20"> 
+           <path d="M18.5 0h-17C.7 0 0 .6 0 1.4v17.1c0 .9.7 1.5 1.5 1.5h17c.8 0 1.5-.6 1.5-1.4V1.4c0-.8-.7-1.4-1.5-1.4zM5.9 17H3V7.5h3V17zM4.4 6.2c-1 0-1.7-.8-1.7-1.7s.8-1.7 1.7-1.7c.9 0 1.7.8 1.7 1.7s-.7 1.7-1.7 1.7zM17 17h-3v-4.6c0-1.1 0-2.5-1.5-2.5s-1.8 1.2-1.8 2.5V17h-3V7.5h2.8v1.3c.4-.8 1.4-1.5 2.8-1.5 3 0 3.6 2 3.6 4.5V17z"></path> 
+          </svg> </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div class="row"> 
+      <div class="col-md-6 col-xs-12"> 
+       <p class="footer-copyright"> Copyright © 2019 <a href="http://liferay.com" rel="noopener" target="_blank">Liferay, Inc</a> </p> 
+      </div> 
+      <div class="col-md-6 col-xs-12"> 
+       <p class="footer-credits"> Powered by <a href="http://portal.liferay.dev" rel="noopener" target="_blank">Liferay Portal CE™</a> </p> 
+      </div> 
+     </div> 
+    </div> 
+   </footer> 
+  </div> 
+  <script type="text/javascript">
+// <![CDATA[
+
+	
+		
+		
+
+			
+
+			
+		
+	
+
+	Liferay.BrowserSelectors.run();
+
+// ]]>
+</script> 
+  <script type="text/javascript">
+	// <![CDATA[
+
+		
+
+		Liferay.currentURL = '\x2fdocs\x2f7-2\x2fdeploy\x2f-\x2fknowledge_base\x2fd\x2fpreparing-a-new-product-server-for-data-upgrade';
+		Liferay.currentURLEncoded = '\x252Fdocs\x252F7-2\x252Fdeploy\x252F-\x252Fknowledge_base\x252Fd\x252Fpreparing-a-new-product-server-for-data-upgrade';
+
+	// ]]>
+</script> 
+  <script type="text/javascript">
+		// <![CDATA[
+			
+
+			
+		// ]]>
+	</script> 
+  <script type="text/javascript">
+// <![CDATA[
+(function() {var $ = AUI.$;var _ = AUI._;
+	var onDestroyPortlet = function() {
+		Liferay.detach('messagePosted', onMessagePosted);
+		Liferay.detach('destroyPortlet', onDestroyPortlet);
+	}
+
+	Liferay.on('destroyPortlet', onDestroyPortlet);
+
+	var onMessagePosted = function(event) {
+		if (window.Analytics) {
+			Analytics.send(
+				'posted',
+				'Comment',
+				{
+					className: event.className,
+					classPK: event.classPK,
+					commentId: event.commentId,
+					text: event.text
+				}
+			);
+		}
+	}
+
+	Liferay.on('messagePosted', onMessagePosted);
+})();(function() {var $ = AUI.$;var _ = AUI._;
+	var onVote = function(event) {
+		if (window.Analytics) {
+			Analytics.send(
+				'VOTE',
+				'Ratings',
+				{
+					className: event.className,
+					classPK: event.classPK,
+					ratingType: event.ratingType,
+					score: event.score
+				}
+			);
+		}
+	}
+
+	var onDestroyPortlet = function() {
+		Liferay.detach('ratings:vote', onVote);
+		Liferay.detach('destroyPortlet', onDestroyPortlet);
+	}
+
+	Liferay.on('ratings:vote', onVote);
+	Liferay.on('destroyPortlet', onDestroyPortlet);
+})();(function() {var $ = AUI.$;var _ = AUI._;
+	var onShare = function(data) {
+		if (window.Analytics) {
+			Analytics.send(
+				'shared',
+				'SocialBookmarks',
+				{
+					className: data.className,
+					classPK: data.classPK,
+					type: data.type,
+					url: data.url
+				}
+			);
+		}
+	}
+
+	var onDestroyPortlet = function() {
+		Liferay.detach('socialBookmarks:share', onShare);
+		Liferay.detach('destroyPortlet', onDestroyPortlet);
+	}
+
+	Liferay.on('socialBookmarks:share', onShare);
+	Liferay.on('destroyPortlet', onDestroyPortlet);
+})();
+	if (Liferay.Data.ICONS_INLINE_SVG) {
+		svg4everybody(
+			{
+				attributeName: 'data-href',
+				polyfill: true
+			}
+		);
+	}
+
+	
+		Liferay.Portlet.register('com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu');
+	
+
+	Liferay.Portlet.onLoad(
+		{
+			canEditTitle: false,
+			columnPos: 0,
+			isStatic: 'end',
+			namespacedId: 'p_p_id_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu_',
+			portletId: 'com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu',
+			refreshURL: '\x2fc\x2fportal\x2frender_portlet\x3fp_l_id\x3d113767687\x26p_p_id\x3dcom_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_main_navigation_menu\x26p_p_lifecycle\x3d0\x26p_t_lifecycle\x3d0\x26p_p_state\x3dnormal\x26p_p_mode\x3dview\x26p_p_col_id\x3dnull\x26p_p_col_pos\x3dnull\x26p_p_col_count\x3dnull\x26p_p_static\x3d1\x26p_p_isolated\x3d1\x26currentURL\x3d\x252Fdocs\x252F7-2\x252Fdeploy\x252F-\x252Fknowledge_base\x252Fd\x252Fpreparing-a-new-product-server-for-data-upgrade\x26settingsScope\x3dportletInstance',
+			refreshURLData: {}
+		}
+	);
+
+	
+		Liferay.Portlet.register('com_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet');
+	
+
+	Liferay.Portlet.onLoad(
+		{
+			canEditTitle: false,
+			columnPos: 0,
+			isStatic: 'end',
+			namespacedId: 'p_p_id_com_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet_',
+			portletId: 'com_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet',
+			refreshURL: '\x2fc\x2fportal\x2frender_portlet\x3fp_l_id\x3d113767687\x26p_p_id\x3dcom_liferay_product_navigation_user_personal_bar_web_portlet_ProductNavigationUserPersonalBarPortlet\x26p_p_lifecycle\x3d0\x26p_t_lifecycle\x3d0\x26p_p_state\x3dnormal\x26p_p_mode\x3dview\x26p_p_col_id\x3dnull\x26p_p_col_pos\x3dnull\x26p_p_col_count\x3dnull\x26p_p_static\x3d1\x26p_p_isolated\x3d1\x26currentURL\x3d\x252Fdocs\x252F7-2\x252Fdeploy\x252F-\x252Fknowledge_base\x252Fd\x252Fpreparing-a-new-product-server-for-data-upgrade\x26settingsScope\x3dportletInstance',
+			refreshURLData: {}
+		}
+	);
+
+	
+		Liferay.Portlet.register('com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf');
+	
+
+	Liferay.Portlet.onLoad(
+		{
+			canEditTitle: false,
+			columnPos: 0,
+			isStatic: 'end',
+			namespacedId: 'p_p_id_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf_',
+			portletId: 'com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf',
+			refreshURL: '\x2fc\x2fportal\x2frender_portlet\x3fp_l_id\x3d113767687\x26p_p_id\x3dcom_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf\x26p_p_lifecycle\x3d0\x26p_t_lifecycle\x3d0\x26p_p_state\x3dnormal\x26p_p_mode\x3dview\x26p_p_col_id\x3dcolumn-1\x26p_p_col_pos\x3d0\x26p_p_col_count\x3d2\x26p_p_isolated\x3d1\x26currentURL\x3d\x252Fdocs\x252F7-2\x252Fdeploy\x252F-\x252Fknowledge_base\x252Fd\x252Fpreparing-a-new-product-server-for-data-upgrade',
+			refreshURLData: {}
+		}
+	);
+Liferay.Loader.require.apply(
+	Liferay.Loader,
+	["frontend-taglib-clay$clay-dropdown@2.10.0\/lib\/ClayDropdown"].concat(
+		[
+			function(Component) {
+				var context = {"_INJECTED_DATA_":{},"spritemap":"https:\/\/portal.liferay.dev\/o\/liferay-portal-site-theme\/images\/clay\/icons.svg","icon":"share","portletId":"com_liferay_knowledge_base_web_portlet_DisplayPortlet","style":"secondary","label":"Share","triggerClasses":"btn-outline-borderless btn-outline-secondary btn-sm","id":"ykmt_column1_1_socialBookmarksDropdownMenu","locale":{"ISO3Country":"USA","ISO3Language":"eng","country":"US","displayCountry":"United States","displayLanguage":"English","displayName":"English (United States)","displayScript":"","displayVariant":"","extensionKeys":[],"language":"en","script":"","unicodeLocaleAttributes":[],"unicodeLocaleKeys":[],"variant":""},"items":[{"data":{"postURL":"https:\/\/twitter.com\/intent\/tweet?text=Preparing+a+New+Liferay+Portal+Server+for+Data+Upgrade&tw_p=tweetbutton&url=https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade","classPK":"113944381","action":"post","className":"com.liferay.knowledge.base.model.KBArticle","type":"twitter","url":"https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade"},"href":"#","label":"Twitter","type":"item"},{"data":{"postURL":"http:\/\/www.facebook.com\/sharer.php?u=https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade","classPK":"113944381","action":"post","className":"com.liferay.knowledge.base.model.KBArticle","type":"facebook","url":"https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade"},"href":"#","label":"Facebook","type":"item"},{"data":{"postURL":"http:\/\/www.linkedin.com\/shareArticle?&title=Preparing+a+New+Liferay+Portal+Server+for+Data+Upgrade&mini=true&url=https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade&summary=","classPK":"113944381","action":"post","className":"com.liferay.knowledge.base.model.KBArticle","type":"linkedin","url":"https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade"},"href":"#","label":"LinkedIn","type":"item"},{"data":{"postURL":"https:\/\/plus.google.com\/share?url=https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade","classPK":"113944381","action":"post","className":"com.liferay.knowledge.base.model.KBArticle","type":"plusone","url":"https:\/\/portal.liferay.dev\/docs\/7-2\/deploy\/-\/knowledge_base\/d\/preparing-a-new-product-server-for-data-upgrade"},"href":"#","label":"Google+","type":"item"}],"element":"#ykmt_column1_1_socialBookmarksDropdownMenu"};
+
+				var destroyConfig = {
+					destroyOnNavigate: true,
+					portletId: context.portletId
+				};
+
+				if (context.defaultEventHandler) {
+					Liferay.componentReady(
+						context.defaultEventHandler
+					).then(
+						function(defaultEventHandler) {
+							context.defaultEventHandler = defaultEventHandler;
+
+							if (false) {
+								Liferay.component(
+									'ykmt_column1_1_socialBookmarksDropdownMenu',
+									new Component.default(context, '#ykmt_column1_1_socialBookmarksDropdownMenu'),
+									destroyConfig
+								);
+							}
+							else {
+								Liferay.component(
+									'ykmt_column1_1_socialBookmarksDropdownMenu',
+									new Component.default(context),
+									destroyConfig
+								);
+							}
+						}
+					);
+				}
+				else {
+					if (false) {
+						Liferay.component(
+							'ykmt_column1_1_socialBookmarksDropdownMenu',
+							new Component.default(context, '#ykmt_column1_1_socialBookmarksDropdownMenu'),
+							destroyConfig
+						);
+					}
+					else {
+						Liferay.component(
+							'ykmt_column1_1_socialBookmarksDropdownMenu',
+							new Component.default(context),
+							destroyConfig
+						);
+					}
+				}
+			},
+			function(error) {
+				console.error('Unable to load ' + ["frontend-taglib-clay$clay-dropdown@2.10.0\/lib\/ClayDropdown"]);
+
+				Liferay.fire(
+					'soyComponentLoadingError',
+					{
+						error: error,
+						modules: ["frontend-taglib-clay$clay-dropdown@2.10.0\/lib\/ClayDropdown"]
+					}
+				);
+			}
+		]
+	)
+);
+			function socialBookmarks_handleItemClick(event, className, classPK, type, postURL, url) {
+				var SHARE_WINDOW_HEIGHT = 436;
+				var SHARE_WINDOW_WIDTH = 626;
+
+				var shareWindowFeatures = [
+					'left=' + (window.innerWidth / 2 - SHARE_WINDOW_WIDTH / 2),
+					'height=' + SHARE_WINDOW_HEIGHT,
+					'toolbar=0',
+					'top=' + (window.innerHeight / 2 - SHARE_WINDOW_HEIGHT / 2),
+					'status=0',
+					'width=' + SHARE_WINDOW_WIDTH
+				];
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				window.open(postURL, null, shareWindowFeatures.join()).focus();
+
+				Liferay.fire(
+					'socialBookmarks:share',
+					{
+						className: className,
+						classPK: classPK,
+						type: type,
+						url: url
+					}
+				);
+
+				return false;
+			}
+		(function() {var $ = AUI.$;var _ = AUI._;
+		Liferay.componentReady('ykmt_column1_1_socialBookmarksDropdownMenu').then(
+			function(dropdownMenu) {
+				dropdownMenu.on(
+					['itemClicked'],
+					function(event) {
+						event.preventDefault();
+
+						var data = event.data.item.data;
+
+						socialBookmarks_handleItemClick(
+							event,
+							data.className,
+							parseInt(data.classPK),
+							data.type,
+							data.postURL,
+							data.url
+						);
+					}
+				);
+			}
+		);
+	})();
+	
+		Liferay.Portlet.register('com_liferay_knowledge_base_web_portlet_DisplayPortlet');
+	
+
+	Liferay.Portlet.onLoad(
+		{
+			canEditTitle: false,
+			columnPos: 1,
+			isStatic: 'end',
+			namespacedId: 'p_p_id_com_liferay_knowledge_base_web_portlet_DisplayPortlet_',
+			portletId: 'com_liferay_knowledge_base_web_portlet_DisplayPortlet',
+			refreshURL: '\x2fc\x2fportal\x2frender_portlet\x3fp_l_id\x3d113767687\x26p_p_id\x3dcom_liferay_knowledge_base_web_portlet_DisplayPortlet\x26p_p_lifecycle\x3d0\x26p_t_lifecycle\x3d0\x26p_p_state\x3dnormal\x26p_p_mode\x3dview\x26p_p_col_id\x3dcolumn-1\x26p_p_col_pos\x3d1\x26p_p_col_count\x3d2\x26p_p_isolated\x3d1\x26currentURL\x3d\x252Fdocs\x252F7-2\x252Fdeploy\x252F-\x252Fknowledge_base\x252Fd\x252Fpreparing-a-new-product-server-for-data-upgrade',
+			refreshURLData: {"_com_liferay_knowledge_base_web_portlet_DisplayPortlet_kbFolderUrlTitle":["d"],"_com_liferay_knowledge_base_web_portlet_DisplayPortlet_urlTitle":["preparing-a-new-product-server-for-data-upgrade"]}
+		}
+	);
+
+	
+		Liferay.Portlet.register('com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch');
+	
+
+	Liferay.Portlet.onLoad(
+		{
+			canEditTitle: false,
+			columnPos: 0,
+			isStatic: 'end',
+			namespacedId: 'p_p_id_com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch_',
+			portletId: 'com_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch',
+			refreshURL: '\x2fc\x2fportal\x2frender_portlet\x3fp_l_id\x3d113767687\x26p_p_id\x3dcom_liferay_portal_search_web_search_bar_portlet_SearchBarPortlet_INSTANCE_templateSearch\x26p_p_lifecycle\x3d0\x26p_t_lifecycle\x3d0\x26p_p_state\x3dnormal\x26p_p_mode\x3dview\x26p_p_col_id\x3dnull\x26p_p_col_pos\x3dnull\x26p_p_col_count\x3dnull\x26p_p_static\x3d1\x26p_p_isolated\x3d1\x26currentURL\x3d\x252Fdocs\x252F7-2\x252Fdeploy\x252F-\x252Fknowledge_base\x252Fd\x252Fpreparing-a-new-product-server-for-data-upgrade\x26settingsScope\x3dportletInstance',
+			refreshURLData: {}
+		}
+	);
+Liferay.Loader.require('metal-dom/src/all/dom', 'metal-uri/src/Uri', 'clay-tooltip/src/ClayTooltip', function(metalDomSrcAllDom, metalUriSrcUri, clayTooltipSrcClayTooltip) {
+(function(){
+var dom = metalDomSrcAllDom;
+var metalUriSrcUri1 = metalUriSrcUri;
+var ClayTooltip = clayTooltipSrcClayTooltip;
+(function() {var $ = AUI.$;var _ = AUI._;
+	var Uri = metalUriSrcUri.default;
+	var pathnameRegexp = /\/documents\/(\d+)\/(\d+)\/(.+?)\/([^&]+)/;
+
+	var downloadClickHandler = dom.delegate(
+		document.body,
+		'click',
+		'a',
+		function(event) {
+			if (window.Analytics) {
+				var anchor = event.delegateTarget;
+				var uri = new Uri(anchor.href);
+
+				var match = pathnameRegexp.exec(uri.getPathname());
+
+				if (match) {
+					var groupId = match[1];
+					var fileEntryUUID = match[4];
+
+					fetch(
+						'https://portal.liferay.dev/o/document_library/analytics/resolve_file_entry?groupId=' + encodeURIComponent(groupId) + '&uuid=' + encodeURIComponent(fileEntryUUID),
+						{
+							credentials: 'include',
+							method: 'GET'
+						}
+					).then(function(response) {
+						return response.json();
+					}).then(function(response) {
+						Analytics.send(
+							'documentDownloaded',
+							'Document',
+							{
+								groupId: groupId,
+								fileEntryId: response.fileEntryId,
+								preview: !!window._com_liferay_document_library_analytics_isViewFileEntry,
+								title: decodeURIComponent(match[3].replace(/\+/ig, ' ')),
+								version: uri.getParameterValue('version')
+							}
+						);
+					}).catch(function() {
+						return;
+					});
+				}
+			}
+		}
+	);
+
+	var onDestroyPortlet = function() {
+		downloadClickHandler.removeListener()
+		Liferay.detach('destroyPortlet', onDestroyPortlet);
+	}
+
+	Liferay.on('destroyPortlet', onDestroyPortlet);
+})();(function() {var $ = AUI.$;var _ = AUI._;
+	if (!Liferay.Data.LFR_PORTAL_CLAY_TOOLTIP) {
+		Liferay.Data.LFR_PORTAL_CLAY_TOOLTIP = ClayTooltip.default.init(
+			{
+				selectors: [
+					'.management-bar [data-title]:not(.lfr-portal-tooltip)',
+					'.management-bar [title]:not(.lfr-portal-tooltip)'
+				]
+			}
+		);
+	}
+})();})();
+},
+function(error) {
+console.error(error);
+});AUI().use('aui-tooltip', 'liferay-menu', 'liferay-notice', 'aui-base', 'liferay-navigation-interaction', 'liferay-session', 'liferay-poller', function(A) {(function() {var $ = AUI.$;var _ = AUI._;
+	if (A.UA.mobile) {
+		Liferay.Util.addInputCancel();
+	}
+})();(function() {var $ = AUI.$;var _ = AUI._;
+	if (!Liferay.Data.LFR_PORTAL_TOOLTIP) {
+		var triggerShowEvent = ['mouseenter', 'MSPointerDown', 'touchstart'];
+
+		if (A.UA.ios) {
+			triggerShowEvent = ['touchstart'];
+		}
+
+		Liferay.Data.LFR_PORTAL_TOOLTIP = new A.TooltipDelegate(
+			{
+				constrain: true,
+				opacity: 1,
+				trigger: '.lfr-portal-tooltip',
+				triggerHideEvent: ['click', 'mouseleave', 'MSPointerUp', 'touchend'],
+				triggerShowEvent: triggerShowEvent,
+				visible: false,
+				zIndex: Liferay.zIndex.TOOLTIP
+			}
+		);
+
+		Liferay.on(
+			'beforeNavigate',
+			function(event) {
+				Liferay.Data.LFR_PORTAL_TOOLTIP.getTooltip().hide();
+			}
+		);
+	}
+})();(function() {var $ = AUI.$;var _ = AUI._;
+	new Liferay.Menu();
+
+	var liferayNotices = Liferay.Data.notices;
+
+	for (var i = 1; i < liferayNotices.length; i++) {
+		new Liferay.Notice(liferayNotices[i]);
+	}
+
+	
+})();(function() {var $ = AUI.$;var _ = AUI._;
+			Liferay.Session = new Liferay.SessionBase(
+				{
+					autoExtend: true,
+					redirectOnExpire: false,
+					redirectUrl: 'https\x3a\x2f\x2fportal\x2eliferay\x2edev\x2fweb\x2fguest',
+					sessionLength: 600,
+					warningLength: 0
+				}
+			);
+
+			
+		})();(function() {var $ = AUI.$;var _ = AUI._;		var navigation = A.one('#navbar_com_liferay_site_navigation_menu_web_portlet_SiteNavigationMenuPortlet_INSTANCE_hwXOlVYxCODf');
+
+		Liferay.Data.NAV_INTERACTION_LIST_SELECTOR = '.navbar-site';
+		Liferay.Data.NAV_LIST_SELECTOR = '.navbar-site';
+
+		if (navigation) {
+			navigation.plug(Liferay.NavigationInteraction);
+		}
+})();});
+// ]]>
+</script> 
+  <script src="https://portal.liferay.dev/o/liferay-portal-site-theme/js/main.js?browserId=other&amp;minifierType=js&amp;languageId=en_US&amp;b=7102&amp;t=1560444441220" type="text/javascript"></script> 
+  <script type="text/javascript">
+	// <![CDATA[
+		AUI().use(
+			'aui-base',
+			function(A) {
+				var frameElement = window.frameElement;
+
+				if (frameElement && frameElement.getAttribute('id') === 'simulationDeviceIframe') {
+					A.getBody().addClass('lfr-has-simulation-panel');
+				}
+			}
+		);
+	// ]]>
+</script> 
+  <script src="https://portal.liferay.dev/o/liferay-portal-site-theme/js/faq_toggler.js"></script> 
+  <script src="https://portal.liferay.dev/o/liferay-portal-site-theme/js/kb_portlet_adjustments.js"></script> 
+  <script src="https://portal.liferay.dev/o/liferay-portal-site-theme/js/toc_sidebar.js"></script> 
+  <script src="https://portal.liferay.dev/o/liferay-portal-site-theme/js/prism.js"></script> 
+  <script src="https://portal.liferay.dev/o/liferay-portal-site-theme/js/tablet_navigation.js"></script>   
+ </body>
+</html>

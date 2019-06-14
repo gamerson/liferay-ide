@@ -15,10 +15,15 @@
 package com.liferay.ide.upgrade.plan.ui.internal;
 
 import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.upgrade.plan.core.UpgradePlan;
+import com.liferay.ide.upgrade.plan.core.UpgradePlanCorePlugin;
+import com.liferay.ide.upgrade.plan.core.UpgradePlanner;
 import com.liferay.ide.upgrade.plan.core.UpgradeStep;
 import com.liferay.ide.upgrade.plan.ui.UpgradeInfoProvider;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.net.URL;
 
@@ -28,16 +33,20 @@ import org.apache.http.client.ClientProtocolException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.util.promise.Deferred;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.promise.PromiseFactory;
@@ -131,85 +140,122 @@ public class UpgradePlanInfoProviderService implements UpgradeInfoProvider {
 	}
 
 	private String _renderKBMainContent(String upgradeStepUrl) throws ClientProtocolException, IOException {
-		Connection connection = Jsoup.connect(upgradeStepUrl);
-
-		Document document = connection.get();
-
-		StringBuffer sb = new StringBuffer();
-
-		sb.append("<html>");
-
-		Elements heads = document.getElementsByTag("head");
-
-		sb.append(heads.get(0));
-
-		// If it is possible, we should modify KB portlet by adding one main content id to allow us to get it easily.
-
-		// Actually the kb portlet of dev.liferay.com and one of web-community-beta.wedeploy.io seem to be different.
-
-		Elements kbEntityBodies = document.getElementsByClass("kb-entity-body");
-
-		Element kbEntityBody = kbEntityBodies.get(0);
-
-		Elements mainContents = kbEntityBody.getAllElements();
-
-		Element mainContent = mainContents.get(1);
+		String retval = "";
 
 		try {
-			Elements h1s = mainContent.getElementsByTag("h1");
+			Document document = null;
 
-			Element h1 = h1s.get(0);
+			if (upgradeStepUrl.startsWith("http://") || upgradeStepUrl.startsWith("https://")) {
+				Connection connection = Jsoup.connect(upgradeStepUrl);
 
-			h1.remove();
-		}
-		catch (Exception e) {
-		}
+				document = connection.get();
+			}
+			else {
+				Bundle bundle = Platform.getBundle(UpgradePlanCorePlugin.ID);
 
-		try {
-			Elements uls = mainContent.getElementsByTag("ul");
+				UpgradePlan upgradePlan = _upgradePlanner.getCurrentUpgradePlan();
 
-			Element ul = uls.get(0);
+				String outline = upgradePlan.getUpgradePlanOutline();
 
-			ul.remove();
-		}
-		catch (Exception e) {
-		}
+				String[] args = outline.split("\\$");
 
-		try {
-			Elements learnPathSteps = mainContent.getElementsByClass("learn-path-step");
+				String outlineName = args[1];
 
-			Element learnPathStep = learnPathSteps.get(0);
+				URL url = bundle.getEntry("resources/" + outlineName + upgradeStepUrl);
 
-			learnPathStep.remove();
-		}
-		catch (Exception e) {
-		}
+				if (url == null) {
+					return retval;
+				}
 
-		URL url = new URL(upgradeStepUrl);
+				InputStream in = url.openStream();
 
-		String protocol = url.getProtocol();
+				String contents = FileUtil.readContents(in);
 
-		String authority = url.getAuthority();
+				document = Jsoup.parse(contents);
+			}
 
-		String prefix = protocol + "://" + authority;
+			StringBuffer sb = new StringBuffer();
 
-		for (Element element : mainContent.getAllElements()) {
-			if ("a".equals(element.tagName())) {
-				String href = element.attr("href");
+			sb.append("<html>");
 
-				if (href.startsWith("/")) {
-					element.attr("href", prefix + href);
+			Elements heads = document.getElementsByTag("head");
+
+			sb.append(heads.get(0));
+
+			Elements kbEntityBodies = document.getElementsByClass("kb-entity-body");
+
+			Element kbEntityBody = kbEntityBodies.get(0);
+
+			Elements mainContents = kbEntityBody.getAllElements();
+
+			Element mainContent = mainContents.get(1);
+
+			try {
+				Elements h1s = mainContent.getElementsByTag("h1");
+
+				Element h1 = h1s.get(0);
+
+				h1.remove();
+			}
+			catch (Exception e) {
+			}
+
+			try {
+				Elements uls = mainContent.getElementsByTag("ul");
+
+				Element ul = uls.get(0);
+
+				ul.remove();
+			}
+			catch (Exception e) {
+			}
+
+			try {
+				Elements learnPathSteps = mainContent.getElementsByClass("learn-path-step");
+
+				Element learnPathStep = learnPathSteps.get(0);
+
+				learnPathStep.remove();
+			}
+			catch (Exception e) {
+			}
+
+			if (upgradeStepUrl.startsWith("http://") || upgradeStepUrl.startsWith("https://")) {
+				URL url = new URL(upgradeStepUrl);
+
+				String protocol = url.getProtocol();
+
+				String authority = url.getAuthority();
+
+				String prefix = protocol + "://" + authority;
+
+				for (Element element : mainContent.getAllElements()) {
+					if ("a".equals(element.tagName())) {
+						String href = element.attr("href");
+
+						if (href.startsWith("/")) {
+							element.attr("href", prefix + href);
+						}
+					}
 				}
 			}
+
+			sb.append(mainContent.toString());
+
+			sb.append("</html>");
+
+			retval = sb.toString();
+		}
+		catch (HttpStatusException hse) {
+			retval = hse.getMessage() + ":" + upgradeStepUrl;
 		}
 
-		sb.append(mainContent.toString());
-
-		sb.append("</html>");
-
-		return sb.toString();
+		return retval;
 	}
 
 	private final PromiseFactory _promiseFactory;
+
+	@Reference
+	private UpgradePlanner _upgradePlanner;
 
 }
