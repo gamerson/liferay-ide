@@ -41,7 +41,7 @@ public class LiferayWorkspaceGradleSupport extends LiferayWorkspaceSupport {
 
 		wizardAction.openNewLiferayWorkspaceWizard();
 
-		wizardAction.newLiferayWorkspace.prepareGradleWithIndexSources(getName());
+		prepareGradleWorkspace();
 
 		wizardAction.finish();
 
@@ -67,6 +67,10 @@ public class LiferayWorkspaceGradleSupport extends LiferayWorkspaceSupport {
 		viewAction.project.runGradleInitBundle(getName());
 
 		jobAction.waitForNoRunningJobs();
+	}
+
+	public void prepareGradleWorkspace() {
+		wizardAction.newLiferayWorkspace.prepareGradle(getName());
 	}
 
 }

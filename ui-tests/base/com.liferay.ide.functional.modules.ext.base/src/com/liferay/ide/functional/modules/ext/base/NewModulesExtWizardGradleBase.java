@@ -24,32 +24,24 @@ import org.junit.Rule;
 
 /**
  * @author Rui Wang
+ * @author Ashley Yuan
  */
 public class NewModulesExtWizardGradleBase extends SwtbotBase {
 
 	@ClassRule
-	public static LiferayWorkspaceGradleSupport liferayWorkspace = new LiferayWorkspaceGradleSupport(bot);
+	public static LiferayWorkspaceGradleSupport liferayWorkspace = new LiferayWorkspaceGradleSupport(bot) {
 
-	public void addModulesExtWithJavaAndJSP() {
-		wizardAction.openNewLiferayModulesExtWizard();
+		@Override
+		public void prepareGradleWorkspace() {
+			wizardAction.newLiferayWorkspace.prepareGradleWithIndexSources(getName());
+		}
 
-		wizardAction.newModulesExt.prepare(project.getName());
+	};
 
-		wizardAction.newModulesExt.openSelectBrowseDialog();
+	public void addModulesExtWithJava() {
+		overrideOriginalModule("com.liferay.login.web");
 
-		dialogAction.prepareText("com.liferay.login.web");
-
-		dialogAction.confirm();
-
-		wizardAction.next();
-
-		wizardAction.newModulesExt.openAddOriginMoudleDialog();
-
-		dialogAction.addFiles("META-INF", "resources", "configuration.jsp");
-
-		wizardAction.newModulesExt.openAddOriginMoudleDialog();
-
-		dialogAction.addFiles("com", "liferay", "login", "web", "internal", "constants", "LoginPortletKeys.java");
+		addOverrideFiles("com", "liferay", "login", "web", "internal", "constants", "LoginPortletKeys.java");
 
 		wizardAction.finish();
 
@@ -59,43 +51,42 @@ public class NewModulesExtWizardGradleBase extends SwtbotBase {
 			viewAction.project.visibleFileTry(
 				liferayWorkspace.getName(), "ext", project.getName(), "src/main/java",
 				"com.liferay.login.web.internal.constants", "LoginPortletKeys.java"));
+	}
+
+	public void addModulesExtWithJSP() {
+		overrideOriginalModule("com.liferay.login.web");
+
+		addOverrideFiles("META-INF", "resources", "configuration.jsp");
+
+		wizardAction.finish();
+
+		jobAction.waitForNoRunningProjectBuildingJobs();
 
 		Assert.assertTrue(
 			viewAction.project.visibleFileTry(
 				liferayWorkspace.getName(), "ext", project.getName(), "src/main/resources", "META-INF", "resources",
 				"configuration.jsp"));
-
-		viewAction.project.closeAndDelete(liferayWorkspace.getName(), "ext");
 	}
 
-	public void addModulesExtWithOtherResources() {
-		wizardAction.openNewLiferayModulesExtWizard();
+	public void addModulesExtWithLanguageProperties() {
+		overrideOriginalModule("com.liferay.login.web");
 
-		wizardAction.newModulesExt.prepare(project.getName());
+		addOverrideFiles("content", "Language.properties");
 
-		wizardAction.newModulesExt.openSelectBrowseDialog();
+		wizardAction.finish();
 
-		dialogAction.prepareText("com.liferay.login.web");
+		jobAction.waitForNoRunningProjectBuildingJobs();
 
-		dialogAction.confirm();
+		Assert.assertTrue(
+			viewAction.project.visibleFileTry(
+				liferayWorkspace.getName(), "ext", project.getName(), "src/main/resources", "content",
+				"Language.properties"));
+	}
 
-		wizardAction.next();
+	public void addModulesExtWithManifest() {
+		overrideOriginalModule("com.liferay.login.web");
 
-		wizardAction.newModulesExt.openAddOriginMoudleDialog();
-
-		dialogAction.addFiles("META-INF", "MANIFEST.MF");
-
-		wizardAction.newModulesExt.openAddOriginMoudleDialog();
-
-		dialogAction.addFiles("resource-actions", "default.xml");
-
-		wizardAction.newModulesExt.openAddOriginMoudleDialog();
-
-		dialogAction.addFiles("portlet.properties");
-
-		wizardAction.newModulesExt.openAddOriginMoudleDialog();
-
-		dialogAction.addFiles("content", "Language.properties");
+		addOverrideFiles("META-INF", "MANIFEST.MF");
 
 		wizardAction.finish();
 
@@ -104,47 +95,63 @@ public class NewModulesExtWizardGradleBase extends SwtbotBase {
 		Assert.assertTrue(
 			viewAction.project.visibleFileTry(
 				liferayWorkspace.getName(), "ext", project.getName(), "src/main/resources", "META-INF", "MANIFEST.MF"));
+	}
+
+	public void addModulesExtWithoutOverrideFiles() {
+		overrideOriginalModule("com.liferay.login.web");
+
+		wizardAction.finish();
+
+		jobAction.waitForNoRunningProjectBuildingJobs();
+	}
+
+	public void addModulesExtWithPortletProperties() {
+		overrideOriginalModule("com.liferay.login.web");
+
+		addOverrideFiles("portlet.properties");
+
+		wizardAction.finish();
+
+		jobAction.waitForNoRunningProjectBuildingJobs();
 
 		Assert.assertTrue(
 			viewAction.project.visibleFileTry(
-				liferayWorkspace.getName(), "ext", project.getName(), "src/main/resources", "content",
-				"Language.properties"));
+				liferayWorkspace.getName(), "ext", project.getName(), "src/main/resources", "portlet.properties"));
+	}
+
+	public void addModulesExtWithResourceAction() {
+		overrideOriginalModule("com.liferay.login.web");
+
+		addOverrideFiles("resource-actions", "default.xml");
+
+		wizardAction.finish();
+
+		jobAction.waitForNoRunningProjectBuildingJobs();
 
 		Assert.assertTrue(
 			viewAction.project.visibleFileTry(
 				liferayWorkspace.getName(), "ext", project.getName(), "src/main/resources", "resource-actions",
 				"default.xml"));
-
-		Assert.assertTrue(
-			viewAction.project.visibleFileTry(
-				liferayWorkspace.getName(), "ext", project.getName(), "src/main/resources", "portlet.properties"));
-
-		viewAction.project.closeAndDelete(liferayWorkspace.getName(), "ext");
 	}
 
-	public void addModulesExtWithoutOverrideFiles() {
+	public void addOverrideFiles(String... file) {
+		wizardAction.next();
+
+		wizardAction.newModulesExt.openAddOriginMoudleDialog();
+
+		dialogAction.selectOverrideFile(file);
+	}
+
+	public void overrideOriginalModule(String module) {
 		wizardAction.openNewLiferayModulesExtWizard();
 
 		wizardAction.newModulesExt.prepare(project.getName());
 
 		wizardAction.newModulesExt.openSelectBrowseDialog();
 
-		dialogAction.prepareText("com.liferay.login.web");
+		dialogAction.prepareText(module);
 
 		dialogAction.confirm();
-
-		wizardAction.finish();
-
-		jobAction.waitForNoRunningProjectBuildingJobs();
-
-		viewAction.project.openFile(liferayWorkspace.getName(), "ext", project.getName(), "build.gradle");
-
-		Assert.assertTrue(
-			viewAction.project.visibleFileTry(liferayWorkspace.getName(), "ext", project.getName(), "build.gradle"));
-
-		editorAction.close();
-
-		viewAction.project.closeAndDelete(liferayWorkspace.getName(), "ext");
 	}
 
 	@Rule
