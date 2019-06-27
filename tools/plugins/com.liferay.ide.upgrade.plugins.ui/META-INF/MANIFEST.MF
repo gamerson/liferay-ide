@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-Activator: com.liferay.ide.upgrade.plugins.ui.internal.UpgradePluginsUIPlugin
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: Liferay IDE Upgrade Plugins UI
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: com.liferay.ide.upgrade.plugins.ui;singleton:=true
+Bundle-Vendor: Liferay, Inc.
+Bundle-Version: 3.6.0.qualifier
+Require-Bundle: com.liferay.ide.core,
+ com.liferay.ide.project.core,
+ com.liferay.ide.project.ui,
+ com.liferay.ide.ui,
+ com.liferay.ide.upgrade.plan.core,
+ org.apache.commons.io,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.osgi.services,
+ org.eclipse.sapphire.java,
+ org.eclipse.sapphire.modeling,
+ org.eclipse.sapphire.platform,
+ org.eclipse.sapphire.ui,
+ org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.wst.sse.core,
+ org.eclipse.wst.xml.core
+Service-Component: OSGI-INF/com.liferay.ide.upgrade.plugins.ui.internal.servicewrapper.UpgradeServiceWrappersCommand.xml

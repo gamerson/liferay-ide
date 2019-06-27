@@ -217,28 +217,39 @@ public class GradleUtil {
 	}
 
 	public static void refreshProject(IProject project) {
+		refreshProject(project, true);
+	}
+
+	public static void refreshProject(IProject project, boolean background) {
 		GradleWorkspace workspace = GradleCore.getWorkspace();
 
 		Optional<GradleBuild> buildOpt = workspace.getBuild(project);
 
-		Job synchronizeJob = new Job("Liferay refresh gradle project job") {
+		if (background) {
+			Job synchronizeJob = new Job("Liferay refresh gradle project job") {
 
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				if (buildOpt.isPresent()) {
-					GradleBuild gradleBuild = buildOpt.get();
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					if (buildOpt.isPresent()) {
+						GradleBuild gradleBuild = buildOpt.get();
 
-					gradleBuild.synchronize(monitor);
+						gradleBuild.synchronize(monitor);
+					}
+
+					return Status.OK_STATUS;
 				}
 
-				return Status.OK_STATUS;
-			}
+			};
 
-		};
+			synchronizeJob.setProperty(ILiferayProjectProvider.LIFERAY_PROJECT_JOB, new Object());
 
-		synchronizeJob.setProperty(ILiferayProjectProvider.LIFERAY_PROJECT_JOB, new Object());
+			synchronizeJob.schedule();
+		}
+		else {
+			GradleBuild gradleBuild = buildOpt.get();
 
-		synchronizeJob.schedule();
+			gradleBuild.synchronize(null);
+		}
 	}
 
 	public static void runGradleTask(IProject project, String task, IProgressMonitor monitor) throws CoreException {

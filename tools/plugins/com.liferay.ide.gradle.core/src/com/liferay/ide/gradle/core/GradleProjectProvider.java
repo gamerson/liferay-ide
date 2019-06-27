@@ -175,7 +175,7 @@ public class GradleProjectProvider
 			}
 
 			if ((hasGradleWorkspace && useDefaultLocation) || inWorkspacePath) {
-				GradleUtil.refreshProject(liferayWorkspaceProject);
+				GradleUtil.refreshProject(liferayWorkspaceProject, get(op.getBackground()));
 			}
 			else {
 				CoreUtil.openProject(projectName, projectLocation, monitor);

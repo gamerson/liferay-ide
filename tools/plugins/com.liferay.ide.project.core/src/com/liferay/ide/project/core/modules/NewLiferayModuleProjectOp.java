@@ -48,6 +48,8 @@ public interface NewLiferayModuleProjectOp extends BaseModuleOp {
 
 	public Value<String> getArtifactVersion();
 
+	public Value<Boolean> getBackground();
+
 	public Value<String> getComponentName();
 
 	public Value<String> getGroupId();
@@ -65,6 +67,8 @@ public interface NewLiferayModuleProjectOp extends BaseModuleOp {
 	public void setArchetype(String value);
 
 	public void setArtifactVersion(String value);
+
+	public void setBackground(Boolean value);
 
 	public void setComponentName(String value);
 
@@ -84,6 +88,10 @@ public interface NewLiferayModuleProjectOp extends BaseModuleOp {
 	@Label(standard = "artifact version")
 	@Service(impl = ModuleProjectArtifactVersionDefaultValueService.class)
 	public ValueProperty PROP_ARTIFACT_VERSION = new ValueProperty(TYPE, "ArtifactVersion");
+
+	@DefaultValue(text = "true")
+	@Type(base = Boolean.class)
+	public ValueProperty PROP_BACKGROUND = new ValueProperty(TYPE, "Background");
 
 	@Label(standard = "Component Class Name")
 	@Service(impl = ComponentNameDefaultValueService.class)

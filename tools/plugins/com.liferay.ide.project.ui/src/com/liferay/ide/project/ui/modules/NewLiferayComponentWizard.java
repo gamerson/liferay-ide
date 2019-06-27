@@ -52,6 +52,10 @@ public class NewLiferayComponentWizard
 		super(_createDefaultOp(), DefinitionLoader.sdef(NewLiferayComponentWizard.class).wizard());
 	}
 
+	public NewLiferayComponentWizard(NewLiferayComponentOp op) {
+		super(op, DefinitionLoader.sdef(NewLiferayComponentWizard.class).wizard());
+	}
+
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		if ((selection != null) && !selection.isEmpty()) {
