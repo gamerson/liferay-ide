@@ -1889,4 +1889,40 @@
 		>
 		</include>
 	</extension>
+	<extension
+		point="org.eclipse.core.contenttype.contentTypes"
+	>
+		<content-type
+			base-type="org.eclipse.core.runtime.text"
+			file-names="portal.properties"
+			id="com.liferay.ide.language.server.portal.properties"
+			name="Portal Properties"
+			priority="normal"
+		>
+		</content-type>
+	</extension>
+	<extension
+		point="org.eclipse.lsp4e.languageServer"
+	>
+		<server
+			class="com.liferay.ide.project.ui.languageserver.LanguageServerConnectionProvider"
+			id="com.liferay.ide.language.server"
+			label="Liferay Language Server"
+		>
+		</server>
+		<contentTypeMapping
+			contentType="com.liferay.ide.language.server.portal.properties"
+			id="com.liferay.ide.language.server"
+		>
+		</contentTypeMapping>
+	</extension>
+	<extension
+		point="org.eclipse.ui.editors"
+	>
+		<editorContentTypeBinding
+			contentTypeId="com.liferay.ide.language.server.portal.properties"
+			editorId="org.eclipse.ui.genericeditor.GenericEditor"
+		>
+		</editorContentTypeBinding>
+	</extension>
 </plugin>
