@@ -228,40 +228,44 @@ public abstract class AbstractResourceBundleActionHandler extends PropertyEditor
 	 * @return
 	 */
 	protected IFolder getResourceBundleFolderLocation(IProject project, String ioFileName) {
-		IClasspathEntry[] cpEntries = CoreUtil.getClasspathEntries(project);
-
-		Stream<IClasspathEntry> stream = Arrays.stream(cpEntries);
-
-		cpEntries = stream.filter(
-			iClasspathEntry -> {
-				if (IClasspathEntry.CPE_SOURCE == iClasspathEntry.getEntryKind()) {
-					return true;
-				}
-				else {
-					return false;
-				}
-			}
+		IClasspathEntry[] cpEntries = Stream.of(CoreUtil.getClasspathEntries(project)).filter(
+			classpathEntry -> IClasspathEntry.CPE_SOURCE == classpathEntry.getEntryKind()
 		).toArray(
 			IClasspathEntry[]::new
 		);
 
-		for (IClasspathEntry iClasspathEntry : cpEntries) {
-			IPath classPath = iClasspathEntry.getPath();
+		if (cpEntries.length == 0) {
+			return null;
+		}
 
-			String path = classPath.toString();
+		IClasspathEntry classpathEntry = null;
 
-			if ((cpEntries.length > 1) ? path.contains("resources") : true) {
-				IFolder srcFolder = wroot.getFolder(iClasspathEntry.getPath());
+		if (cpEntries.length == 1) {
+			classpathEntry = cpEntries[0];
+		}
+		else {
+			for (IClasspathEntry entry : cpEntries) {
+				IPath classPath = entry.getPath();
 
-				IPath rbSourcePath = srcFolder.getLocation();
+				String path = classPath.toString();
 
-				rbSourcePath = rbSourcePath.append(ioFileName);
-
-				IFile resourceBundleFile = wroot.getFileForLocation(rbSourcePath);
-
-				if (resourceBundleFile != null) {
-					return srcFolder;
+				if (path.startsWith("/src/main/resources/")) {
+					classpathEntry = entry;
 				}
+			}
+		}
+
+		if (classpathEntry != null) {
+			IFolder srcFolder = wroot.getFolder(classpathEntry.getPath());
+
+			IPath rbSourcePath = srcFolder.getLocation();
+
+			rbSourcePath = rbSourcePath.append(ioFileName);
+
+			IFile resourceBundleFile = wroot.getFileForLocation(rbSourcePath);
+
+			if (resourceBundleFile != null) {
+				return srcFolder;
 			}
 		}
 
