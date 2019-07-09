@@ -14,73 +14,20 @@
 
 package com.liferay.ide.project.ui.languageserver;
 
-import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.modules.BladeCLI;
 import com.liferay.ide.project.core.modules.BladeCLIException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.Arrays;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.lsp4e.server.ProcessStreamConnectionProvider;
-import org.eclipse.lsp4e.server.StreamConnectionProvider;
+import org.eclipse.lsp4e.server.ProcessOverSocketStreamConnectionProvider;
 
 /**
  * @author Terry Jia
  */
-public class LanguageServerConnectionProvider implements StreamConnectionProvider {
+public class LanguageServerConnectionProvider extends ProcessOverSocketStreamConnectionProvider {
 
-	public LanguageServerConnectionProvider() {
-		List<String> commands = new ArrayList<>();
-
-		try {
-			commands.add("java");
-			commands.add("-jar");
-
-			IPath bladeCliPath = BladeCLI.getBladeCLIPath();
-
-			commands.add(bladeCliPath.toOSString());
-
-			commands.add("languageServer");
-
-			IPath workingDir = CoreUtil.getWorkspaceRootLocation();
-
-			_provider = new ProcessStreamConnectionProvider(commands, workingDir.toOSString()) {
-			};
-		}
-		catch (BladeCLIException bclie) {
-		}
+	public LanguageServerConnectionProvider() throws BladeCLIException {
+		super(Arrays.asList("java", "-jar", BladeCLI.getBladeCLIPathString(), "languageServer", "-p", "12345"), 12345);
 	}
-
-	@Override
-	public InputStream getErrorStream() {
-		return _provider.getErrorStream();
-	}
-
-	@Override
-	public InputStream getInputStream() {
-		return _provider.getInputStream();
-	}
-
-	@Override
-	public OutputStream getOutputStream() {
-		return _provider.getOutputStream();
-	}
-
-	@Override
-	public void start() throws IOException {
-		_provider.start();
-	}
-
-	@Override
-	public void stop() {
-		_provider.stop();
-	}
-
-	private StreamConnectionProvider _provider;
 
 }

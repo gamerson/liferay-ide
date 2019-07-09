@@ -195,6 +195,10 @@ public class BladeCLI {
 		}
 	}
 
+	public static synchronized String getBladeCLIPathString() throws BladeCLIException {
+		return FileUtil.toOSString(getBladeCLIPath());
+	}
+
 	public static synchronized String[] getProjectTemplates() throws BladeCLIException {
 		List<String> templateNames = new ArrayList<>();
 
