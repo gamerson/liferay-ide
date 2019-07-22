@@ -15,23 +15,37 @@
 package com.liferay.ide.portlet.ui.editor;
 
 import com.liferay.ide.portlet.core.model.PortletApp;
+import com.liferay.ide.portlet.core.model.PortletApp30;
+import com.liferay.ide.project.ui.SapphireEditorForXml;
 
-import org.eclipse.sapphire.ui.swt.xml.editor.SapphireEditorForXml;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.sapphire.ElementType;
 import org.eclipse.ui.PartInitException;
 
 /**
  * @author Kamesh Sampath
  * @author Gregory Amerson
+ * @author Terry Jia
  */
+@SuppressWarnings("serial")
 public class PortletXmlEditor extends SapphireEditorForXml {
 
 	public PortletXmlEditor() {
-		super(PortletApp.TYPE, null);
+		super(_typeMap);
 	}
 
 	@Override
 	protected void createFormPages() throws PartInitException {
 		addDeferredPage(1, "Overview", "portlet-app.editor");
 	}
+
+	private static Map<String, ElementType> _typeMap = new HashMap<String, ElementType>() {
+		{
+			put("http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd", PortletApp.TYPE);
+			put("http://xmlns.jcp.org/xml/ns/portlet", PortletApp30.TYPE);
+		}
+	};
 
 }
