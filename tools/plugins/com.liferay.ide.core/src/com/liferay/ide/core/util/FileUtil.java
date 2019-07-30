@@ -36,6 +36,7 @@ import java.net.URI;
 import java.net.URL;
 
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,14 @@ public class FileUtil {
 		catch (Exception ex) {
 			LiferayCore.logError("Unable clean contents for " + versionFile.getName(), ex);
 		}
+	}
+
+	public static void copyDir(java.nio.file.Path source, java.nio.file.Path target) throws IOException {
+		if (!Files.exists(target)) {
+			Files.createDirectories(target);
+		}
+
+		Files.walkFileTree(source, new CopyDirVisitor(source, target, StandardCopyOption.REPLACE_EXISTING));
 	}
 
 	public static void copyFile(File src, File dest) {
