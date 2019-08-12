@@ -75,5 +75,29 @@ public class WorkspaceConstants {
 			put("7.0", new String[] {"7.0.6"});
 		}
 	};
+	public static final Map<String, String> springDependenciesInjectors = new HashMap<String, String>() {
+		{
+			put("DS", new String("ds"));
+			put("Spring", new String("spring"));
+		}
+	};
+	public static final Map<String, String> springFrameworkDependeices = new HashMap<String, String>() {
+		{
+			put("Provided", new String("provided"));
+			put("Embedded", new String("embedded"));
+		}
+	};
+	public static final Map<String, String> springFrameworks = new HashMap<String, String>() {
+		{
+			put("Portlet MVC For SPring", new String("portletmvc4spring"));
+			put("Spring Portlet MVC", new String("springportletmvc"));
+		}
+	};
+	public static final Map<String, String> springViewTypes = new HashMap<String, String>() {
+		{
+			put("Thymeleaf", new String("thymeleaf"));
+			put("Jsp", new String("jsp"));
+		}
+	};
 
 }
