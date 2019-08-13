@@ -46,7 +46,7 @@ public class NewLiferaySpringProjectOpMethods {
 	public static final Status execute(NewLiferaySpringProjectOp op, ProgressMonitor pm) {
 		IProgressMonitor monitor = ProgressMonitorBridge.create(pm);
 
-		monitor.beginTask("Creating Liferay spring project (this process may take several minutes)", 100);
+		monitor.beginTask("Creating Liferay spring mvc project (this process may take several minutes)", 100);
 
 		Status retval = Status.createOkStatus();
 
