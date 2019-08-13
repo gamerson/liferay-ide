@@ -93,49 +93,15 @@ public class SpringProjectNameListener
 					}
 				}
 
-				boolean themeProject = false;
-
-				if (op instanceof NewLiferaySpringProjectOp) {
-					NewLiferaySpringProjectOp moduleProjectOp = op;
-
-					String projectTemplateName = get(moduleProjectOp.getProjectTemplateName());
-
-					for (String projectType : _WAR_TYPE_PROJECT) {
-						if (projectType.equals(projectTemplateName)) {
-							themeProject = true;
-						}
-					}
-				}
-
 				if ((gradleModule && hasGradleWorkspace) || (mavenModule && hasMavenWorkspace)) {
 					IProject liferayWorkspaceProject = LiferayWorkspaceUtil.getWorkspaceProject();
 
 					if (FileUtil.exists(liferayWorkspaceProject)) {
 						IPath workspaceLocation = liferayWorkspaceProject.getLocation();
 
-						NewLiferaySpringProjectOp moduleProjectOp = op;
+						String[] warsNames = LiferayWorkspaceUtil.getWarsDirs(liferayWorkspaceProject);
 
-						String projectTemplateName = get(moduleProjectOp.getProjectTemplateName());
-
-						if (themeProject) {
-							String[] warsNames = LiferayWorkspaceUtil.getWarsDirs(liferayWorkspaceProject);
-
-							// use the first configured wars fodle name
-
-							newLocationBase = PathBridge.create(workspaceLocation.append(warsNames[0]));
-						}
-						else if ("war-core-ext".equals(projectTemplateName)) {
-							String extName = LiferayWorkspaceUtil.getExtDir(liferayWorkspaceProject);
-
-							newLocationBase = PathBridge.create(workspaceLocation.append(extName));
-						}
-						else {
-							String folder = LiferayWorkspaceUtil.getModulesDir(liferayWorkspaceProject);
-
-							if (folder != null) {
-								newLocationBase = PathBridge.create(workspaceLocation.append(folder));
-							}
-						}
+						newLocationBase = PathBridge.create(workspaceLocation.append(warsNames[0]));
 					}
 				}
 				else {
@@ -148,9 +114,5 @@ public class SpringProjectNameListener
 			}
 		}
 	}
-
-	private static final String[] _WAR_TYPE_PROJECT = {
-		"layout-template", "spring-mvc-portlet", "theme", "war-hook", "war-mvc-portlet"
-	};
 
 }

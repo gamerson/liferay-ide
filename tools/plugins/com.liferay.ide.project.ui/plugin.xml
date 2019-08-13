@@ -163,7 +163,7 @@
 			finalPerspective="com.liferay.ide.eclipse.ui.perspective.liferay"
 			icon="icons/n16/bundle_new.png"
 			id="com.liferay.ide.project.ui.newSpringProjectWizard"
-			name="Liferay Spring Project"
+			name="Liferay Spring MVC Project"
 			preferredPerspectives="com.liferay.ide.eclipse.ui.perspective.liferay,org.eclipse.jst.j2ee.J2EEPerspective"
 			project="true"
 		>

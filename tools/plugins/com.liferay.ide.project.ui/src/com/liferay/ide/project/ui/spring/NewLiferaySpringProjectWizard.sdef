@@ -22,10 +22,10 @@
     <wizard>
         <id>NewLiferaySpringProjectWizard</id>
         <element-type>com.liferay.ide.project.core.spring.NewLiferaySpringProjectOp</element-type>
-        <label>New Liferay Spring Project</label>
+        <label>New Liferay Spring MVC Project</label>
         <page>
             <id>LiferaySpringProjectWizardPage</id>
-            <label>Liferay Spring Project</label>
+            <label>Liferay Spring MVC Project</label>
             <content>
                 <property-editor>ProjectName</property-editor>
                 <spacer/>
@@ -49,7 +49,7 @@
                     <class>com.liferay.ide.project.ui.wizard.WorkingSetCustomPart</class>
                 </custom>
             </content>
-            <description>Enter a name for a new Liferay Spring Project.</description>
+            <description>Enter a name for a new Liferay Spring MVC Project.</description>
             <scale-vertically>true</scale-vertically>
             <margin-right>10</margin-right>
             <scroll-vertically>true</scroll-vertically>
@@ -61,10 +61,10 @@
             <margin>0</margin>
             <image>NewLiferaySpringProjectWizard.png</image>
         </page>
-        <description>Create a new project configured as a Liferay Spring Project</description>
+        <description>Create a new project configured as a Liferay Spring MVC Project</description>
          <page>
             <id>LiferaySpringSettingWizardPage</id>
-            <label>Liferay Spring Project</label>
+            <label>Liferay Spring MVC Project</label>
             <description>Configure Spring Setting</description>
             <content>
                 <property-editor>
@@ -90,7 +90,7 @@
         </page>       
         <page>
             <id>LiferaProjectSettingWizardPage</id>
-            <label>Liferay Spring Project</label>
+            <label>Liferay Spring MVC Project</label>
             <description>Configure Component Class</description>
             <content>
                 <property-editor>
