@@ -14,6 +14,7 @@
 
 package com.liferay.ide.server.ui.editor;
 
+import com.liferay.ide.core.properties.PortalPropertiesConfiguration;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.StringPool;
@@ -30,11 +31,16 @@ import com.liferay.ide.server.util.ServerUtil;
 import java.beans.PropertyChangeEvent;
 
 import java.io.File;
+import java.io.InputStream;
+
+import java.nio.file.Files;
 
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -59,6 +65,73 @@ import org.eclipse.wst.server.core.internal.Server;
 public class PortalServerLaunchEditorSection extends AbstractPortalServerEditorSection {
 
 	public PortalServerLaunchEditorSection() {
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		boolean defaultLaunchSetting = portalServer.getLaunchSettings();
+
+		IPath liferayHome = portalRuntime.getLiferayHome();
+
+		IPath portalExtPath = liferayHome.append("portal-ext.properties");
+
+		File portalext = portalExtPath.toFile();
+
+		try {
+			PortalPropertiesConfiguration config = new PortalPropertiesConfiguration();
+
+			if (FileUtil.notExists(portalext)) {
+				portalext.createNewFile();
+			}
+
+			if (FileUtil.exists(portalext) && portalext.canRead()) {
+				try (InputStream in = Files.newInputStream(portalext.toPath())) {
+					config.load(in);
+				}
+			}
+			else {
+				LiferayServerCore.logInfo("Can not read portal-ext.properties file.");
+			}
+
+			String[] includeAndOverrideProperties = config.getStringArray("include-and-override");
+
+			if (!defaultLaunchSetting && portalServer.getDeveloperMode()) {
+				boolean existing = false;
+
+				for (String prop : includeAndOverrideProperties) {
+					if (prop.equals("portal-developer.properties")) {
+						existing = true;
+
+						break;
+					}
+				}
+
+				if (!existing) {
+					config.addProperty("include-and-override", "portal-developer.properties");
+				}
+			}
+			else if (FileUtil.exists(portalext)) {
+				config.clearProperty("include-and-override");
+
+				for (String prop : includeAndOverrideProperties) {
+					if (!prop.equals("portal-developer.properties")) {
+						config.addProperty("include-and-override", prop);
+					}
+				}
+			}
+
+			if (portalext.canWrite()) {
+				config.save(portalext);
+			}
+			else {
+				LiferayServerCore.logInfo("Can not write to portal-ext.properties file.");
+			}
+		}
+		catch (Exception e) {
+			LiferayServerCore.logError(e);
+		}
+
+		super.doSave(monitor);
 	}
 
 	public IStatus[] getSaveStatus() {
