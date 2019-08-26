@@ -720,6 +720,90 @@ public class LiferayWorkspaceUtil {
 		return false;
 	}
 
+	public static boolean isWorkspaceExt(IProject project) {
+		if (hasWorkspace() && FileUtil.exists(project.getFolder("src"))) {
+			IProject wsProject = getWorkspaceProject();
+
+			File wsRootDir = getWorkspaceProjectFile();
+
+			String[] extNames = {getExtDir(wsProject)};
+
+			File[] extDirs = new File[extNames.length];
+
+			for (int i = 0; i < extNames.length; i++) {
+				extDirs[i] = new File(wsRootDir, extNames[i]);
+			}
+
+			IPath location = project.getLocation();
+
+			File projectDir = location.toFile();
+
+			File parentDir = projectDir.getParentFile();
+
+			if (parentDir == null) {
+				return false;
+			}
+
+			while (true) {
+				for (File dir : extDirs) {
+					if (parentDir.equals(dir)) {
+						return true;
+					}
+				}
+
+				parentDir = parentDir.getParentFile();
+
+				if (parentDir == null) {
+					return false;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean isWorkspaceWar(IProject project) {
+		if (hasWorkspace() && FileUtil.exists(project.getFolder("src"))) {
+			IProject wsProject = getWorkspaceProject();
+
+			File wsRootDir = getWorkspaceProjectFile();
+
+			String[] warsNames = getWarsDirs(wsProject);
+
+			File[] warsDirs = new File[warsNames.length];
+
+			for (int i = 0; i < warsNames.length; i++) {
+				warsDirs[i] = new File(wsRootDir, warsNames[i]);
+			}
+
+			IPath location = project.getLocation();
+
+			File projectDir = location.toFile();
+
+			File parentDir = projectDir.getParentFile();
+
+			if (parentDir == null) {
+				return false;
+			}
+
+			while (true) {
+				for (File dir : warsDirs) {
+					if (parentDir.equals(dir)) {
+						return true;
+					}
+				}
+
+				parentDir = parentDir.getParentFile();
+
+				if (parentDir == null) {
+					return false;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public static String read(File file) throws IOException {
 		return new String(Files.readAllBytes(file.toPath()));
 	}

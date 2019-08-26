@@ -250,6 +250,11 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IBundleP
 	}
 
 	@Override
+	public boolean isExtWar() {
+		return ProjectUtil.isExtWarProject(getProject());
+	}
+
+	@Override
 	public boolean isFragmentBundle() {
 		return false;
 	}

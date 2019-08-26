@@ -17,6 +17,7 @@ package com.liferay.ide.maven.core;
 import com.liferay.ide.core.IBundleProject;
 import com.liferay.ide.core.ILiferayPortal;
 import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +149,11 @@ public class FacetedMavenBundleProject extends FacetedMavenProject implements IB
 	@Override
 	public String getSymbolicName() throws CoreException {
 		return this._bundleProject.getSymbolicName();
+	}
+
+	@Override
+	public boolean isExtWar() {
+		return ProjectUtil.isExtWarProject(getProject());
 	}
 
 	@Override

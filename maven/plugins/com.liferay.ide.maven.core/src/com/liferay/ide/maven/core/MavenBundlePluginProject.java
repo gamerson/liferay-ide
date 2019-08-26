@@ -252,6 +252,11 @@ public class MavenBundlePluginProject extends LiferayMavenProject implements IBu
 	}
 
 	@Override
+	public boolean isExtWar() {
+		return ProjectUtil.isExtWarProject(getProject());
+	}
+
+	@Override
 	public boolean isFragmentBundle() {
 		IFile bndFile = getProject().getFile("bnd.bnd");
 

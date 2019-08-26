@@ -1223,8 +1223,22 @@ public class ProjectUtil {
 		return hasFacet(project, IPluginFacetConstants.LIFERAY_EXT_PROJECT_FACET);
 	}
 
+	public static boolean isExtWarProject(IProject project) {
+		for (String name : _EXT_SOURCESET_NAMES) {
+			IResource folder = project.getFolder("src/" + name);
+
+			if (FileUtil.exists(folder)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public static boolean isFacetedGradleBundleProject(IProject project) {
-		if (isWorkspaceWars(project) || _checkGradleThemePlugin(project) || _checkGradleWarPlugin(project)) {
+		if (LiferayWorkspaceUtil.isWorkspaceWar(project) || _checkGradleThemePlugin(project) ||
+			_checkGradleWarPlugin(project)) {
+
 			return true;
 		}
 
@@ -1490,48 +1504,6 @@ public class ProjectUtil {
 		return hasFacet(project, IPluginFacetConstants.LIFERAY_WEB_FACET_ID);
 	}
 
-	public static boolean isWorkspaceWars(IProject project) {
-		if (LiferayWorkspaceUtil.hasWorkspace() && FileUtil.exists(project.getFolder("src"))) {
-			IProject wsProject = LiferayWorkspaceUtil.getWorkspaceProject();
-
-			File wsRootDir = LiferayWorkspaceUtil.getWorkspaceProjectFile();
-
-			String[] warsNames = LiferayWorkspaceUtil.getWarsDirs(wsProject);
-
-			File[] warsDirs = new File[warsNames.length];
-
-			for (int i = 0; i < warsNames.length; i++) {
-				warsDirs[i] = new File(wsRootDir, warsNames[i]);
-			}
-
-			IPath location = project.getLocation();
-
-			File projectDir = location.toFile();
-
-			File parentDir = projectDir.getParentFile();
-
-			if (parentDir == null) {
-				return false;
-			}
-
-			while (true) {
-				for (File dir : warsDirs) {
-					if (parentDir.equals(dir)) {
-						return true;
-					}
-				}
-
-				parentDir = parentDir.getParentFile();
-
-				if (parentDir == null) {
-					return false;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	public static String removePluginSuffix(String string) {
 		if (string == null) {
 			return null;
@@ -1733,6 +1705,10 @@ public class ProjectUtil {
 
 		return retval;
 	}
+
+	private static final String[] _EXT_SOURCESET_NAMES = {
+		"extImpl", "extKernel", "extUtilBridges", "extUtilJava", "extUtilTaglib"
+	};
 
 	private static final SapphireContentAccessor _getter = new SapphireContentAccessor() {
 	};

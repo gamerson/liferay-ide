@@ -76,8 +76,10 @@ public class BundlePublishFullAdd extends BundlePublishOperation {
 				try {
 					IPath outputJar = bundleProject.getOutputBundle(cleanBuildNeeded(), monitor);
 
+					boolean extWar = bundleProject.isExtWar();
+
 					if (FileUtil.exists(outputJar)) {
-						if (server.getServerState() == IServer.STATE_STARTED) {
+						if ((server.getServerState() == IServer.STATE_STARTED) && !extWar) {
 							monitor.subTask(
 								"Remotely deploying " + module.getName() + " to Liferay module framework...");
 

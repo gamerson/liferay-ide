@@ -218,6 +218,21 @@ public class LiferayGradleProject
 
 			return new Path(outputFile.getAbsolutePath());
 		}
+		else if (ProjectUtil.isExtWarProject(gradleProject)) {
+			String extProjectName = gradleProject.getName();
+
+			if (!extProjectName.endsWith("-ext")) {
+				extProjectName = extProjectName + "-ext";
+			}
+
+			File outputFile = new File(buildFolder, extProjectName + ".war");
+
+			if (FileUtil.exists(outputFile)) {
+				return new Path(outputFile.getAbsolutePath());
+			}
+
+			return null;
+		}
 		else {
 			IPath outputPath = FileUtil.pathAppend(
 				gradleProject.getLocation(), "dist", gradleProject.getName() + ".war");
@@ -349,6 +364,11 @@ public class LiferayGradleProject
 		}
 
 		return retval;
+	}
+
+	@Override
+	public boolean isExtWar() {
+		return ProjectUtil.isExtWarProject(getProject());
 	}
 
 	@Override

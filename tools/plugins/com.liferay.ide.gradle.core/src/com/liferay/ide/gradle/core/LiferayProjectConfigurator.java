@@ -17,7 +17,7 @@ package com.liferay.ide.gradle.core;
 import com.liferay.blade.gradle.model.CustomModel;
 import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +72,10 @@ public class LiferayProjectConfigurator implements ProjectConfigurator {
 			if (FileUtil.exists(bndFile)) {
 				needAddNature[0] = true;
 			}
-			else if (ProjectUtil.isWorkspaceWars(project)) {
+			else if (LiferayWorkspaceUtil.isWorkspaceWar(project)) {
+				needAddNature[0] = true;
+			}
+			else if (LiferayWorkspaceUtil.isWorkspaceExt(project)) {
 				needAddNature[0] = true;
 			}
 			else {
