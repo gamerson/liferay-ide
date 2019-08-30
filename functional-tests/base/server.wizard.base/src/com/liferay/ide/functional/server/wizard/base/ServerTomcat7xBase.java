@@ -15,6 +15,7 @@
 package com.liferay.ide.functional.server.wizard.base;
 
 import com.liferay.ide.functional.liferay.ServerTestBase;
+import com.liferay.ide.functional.swtbot.util.StringPool;
 
 /**
  * @author Terry Jia
@@ -262,6 +263,44 @@ public class ServerTomcat7xBase extends ServerTestBase {
 		editorAction.save();
 
 		editorAction.close();
+
+		resetTestServer();
+	}
+
+	public void testDefaultServerName() {
+		dialogAction.openPreferencesDialog();
+
+		dialogAction.preferences.openServerRuntimeEnvironmentsTry();
+
+		dialogAction.serverRuntimeEnvironments.openNewRuntimeWizard();
+
+		wizardAction.newRuntime.prepare7();
+
+		wizardAction.next();
+
+		validationAction.assertEquals(LIFERAY_7_X, wizardAction.newRuntime7.getName());
+
+		validationAction.assertEquals(StringPool.BLANK, wizardAction.newRuntime7.getLiferayPortalBundleDirectory());
+
+		validationAction.assertEquals(StringPool.BLANK, wizardAction.newRuntime7.getDetectedPortalBundleType());
+
+		wizardAction.newRuntime7.prepare(testServer.getFullServerDir());
+
+		validationAction.assertContains("Liferay Community Edition Portal 7", wizardAction.newRuntime7.getName());
+
+		validationAction.assertEquals("Tomcat", wizardAction.newRuntime7.getDetectedPortalBundleType());
+
+		wizardAction.finish();
+
+		dialogAction.preferences.confirm();
+
+		wizardAction.openNewLiferayServerWizard();
+
+		wizardAction.finish();
+
+		viewAction.servers.visibleServer("Liferay Community Edition Portal 7");
+
+		dialogAction.deleteRuntimFromPreferences(0);
 
 		resetTestServer();
 	}
