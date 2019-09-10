@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -42,7 +43,11 @@ public class UpgradeStepsBuilder {
 	public List<UpgradeStep> build() throws IOException {
 		List<UpgradeStep> upgradeSteps = new ArrayList<>();
 
-		Document document = Jsoup.parse(_url, 10000);
+		Connection urlConnection = Jsoup.connect(_url.toString());
+
+		Connection disableCertValidationConnection = urlConnection.validateTLSCertificates(false);
+
+		Document document = disableCertValidationConnection.get();
 
 		Elements roots = document.select("ol");
 
