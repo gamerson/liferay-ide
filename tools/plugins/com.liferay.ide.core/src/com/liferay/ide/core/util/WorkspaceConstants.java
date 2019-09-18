@@ -89,7 +89,7 @@ public class WorkspaceConstants {
 	};
 	public static final Map<String, String> springFrameworks = new HashMap<String, String>() {
 		{
-			put("Portlet MVC For SPring", new String("portletmvc4spring"));
+			put("Portlet MVC For Spring", new String("portletmvc4spring"));
 			put("Spring Portlet MVC", new String("springportletmvc"));
 		}
 	};
