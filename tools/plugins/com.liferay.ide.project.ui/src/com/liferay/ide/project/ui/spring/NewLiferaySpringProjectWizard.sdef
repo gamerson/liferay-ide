@@ -67,22 +67,10 @@
             <label>Liferay Spring MVC Project</label>
             <description>Configure Spring Setting</description>
             <content>
-                <property-editor>
-                    <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
-                    <property>DependencyInjector</property>
-                </property-editor>
-                <property-editor>
-                    <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
-                    <property>Framework</property>
-                </property-editor>
-                <property-editor>
-                    <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
-                    <property>FrameworkDependencies</property>
-                </property-editor>type filter text
-                <property-editor>
-                    <style>Sapphire.PropertyEditor.PopUpListField.Strict</style>
-                    <property>ViewType</property>
-                </property-editor>
+                <custom>
+                    <scale-vertically>true</scale-vertically>
+                    <class>com.liferay.ide.project.ui.spring.LiferaySpringConfigurationPresentationPart</class>
+                </custom>
             </content>type filter text
             <initial-focus>DependencyInjector</initial-focus>
             <margin-right>10</margin-right>
