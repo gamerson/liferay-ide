@@ -25,7 +25,6 @@ import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ValueProperty;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.modeling.annotations.DefaultValue;
 import org.eclipse.sapphire.modeling.annotations.DelegateImplementation;
 import org.eclipse.sapphire.modeling.annotations.InitialValue;
 import org.eclipse.sapphire.modeling.annotations.Label;
@@ -80,22 +79,14 @@ public interface NewLiferaySpringProjectOp extends BaseModuleOp {
 	@Service(impl = SpringComponentNameValidationService.class)
 	public ValueProperty PROP_COMPONENT_NAME = new ValueProperty(TYPE, "ComponentName");
 
-	@DefaultValue(text = "DS")
-	@Label(standard = "dependency injector")
-	@Service(impl = SpringDependenciesInjectorPossibleValuesService.class)
 	public ValueProperty PROP_DEPENDENCY_INJECTOR = new ValueProperty(TYPE, "DependencyInjector");
 
-	@DefaultValue(text = "Portlet MVC For SPring")
-	@Label(standard = "framework")
-	@Service(impl = SpringFrameworkPossibleValuesService.class)
 	public ValueProperty PROP_FRAMEWORK = new ValueProperty(TYPE, "Framework");
 
-	@DefaultValue(text = "Provided")
-	@Label(standard = "framework dependencies")
-	@Service(impl = SpringFrameworkDependenciesPossibleValuesService.class)
 	public ValueProperty PROP_FRAMEWORK_DEPENDENCIES = new ValueProperty(TYPE, "FrameworkDependencies");
 
 	@Label(standard = "liferay version")
+	@Listeners(SpringProjectNameListener.class)
 	@Service(impl = TargetLiferayVersionDefaultValueService.class)
 	@Service(impl = TargetLiferayVersionPossibleValuesService.class)
 	public ValueProperty PROP_LIFERAY_VERSION = new ValueProperty(TYPE, "LiferayVersion");
@@ -126,9 +117,6 @@ public interface NewLiferaySpringProjectOp extends BaseModuleOp {
 	@Listeners(SpringProjectUseDefaultLocationListener.class)
 	public ValueProperty PROP_USE_DEFAULT_LOCATION = new ValueProperty(TYPE, BaseModuleOp.PROP_USE_DEFAULT_LOCATION);
 
-	@DefaultValue(text = "Jsp")
-	@Label(standard = "view type")
-	@Service(impl = SpringViewtypePossibleValuesService.class)
 	public ValueProperty PROP_VIEW_TYPE = new ValueProperty(TYPE, "ViewType");
 
 }
