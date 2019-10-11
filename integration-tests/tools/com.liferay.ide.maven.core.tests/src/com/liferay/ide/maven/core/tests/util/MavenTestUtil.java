@@ -52,6 +52,7 @@ import org.eclipse.m2e.tests.common.WorkspaceHelpers;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
+
 import org.junit.Assert;
 
 /**
@@ -60,7 +61,11 @@ import org.junit.Assert;
 @SuppressWarnings("restriction")
 public class MavenTestUtil {
 
-	public static IProject create(BaseModuleOp op) throws InterruptedException, CoreException {
+	public static void copyDir(File src, File dst) throws IOException {
+		FileHelpers.copyDir(src, dst);
+	}
+
+	public static IProject create(BaseModuleOp op) throws CoreException, InterruptedException {
 		Status status = op.execute(ProgressMonitorBridge.create(new NullProgressMonitor()));
 
 		Assert.assertNotNull(status);
@@ -79,44 +84,11 @@ public class MavenTestUtil {
 
 		Assert.assertTrue(validation.message(), validation.ok());
 
-		IProject project = MavenTestUtil.create(op);
+		IProject project = create(op);
 
 		verifyProject(project);
 
 		return project;
-	}
-
-	public static void verifyProject(IProject project) throws Exception {
-		IProgressMonitor monitor = new NullProgressMonitor();
-
-		Assert.assertNotNull(project);
-		Assert.assertTrue(project.exists());
-
-		Assert.assertFalse(FileUtil.exists(project.getFile("build.gradle")));
-
-		project.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
-
-		JobHelpers.waitForJobsToComplete(monitor);
-
-		project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-
-		JobHelpers.waitForJobsToComplete(monitor);
-
-		WorkspaceHelpers.assertNoErrors(project);
-
-		IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
-
-		Assert.assertNotNull(bundleProject);
-
-		IPath outputBundle = bundleProject.getOutputBundle(true, monitor);
-
-		Assert.assertNotNull(outputBundle);
-
-		Assert.assertTrue(FileUtil.exists(outputBundle.toFile()));
-	}
-
-	public static void copyDir(File src, File dst) throws IOException {
-		FileHelpers.copyDir(src, dst);
 	}
 
 	public static IProject importProject(String pomLocation) throws CoreException, IOException {
@@ -218,6 +190,35 @@ public class MavenTestUtil {
 		}
 
 		return projects;
+	}
+
+	public static void verifyProject(IProject project) throws Exception {
+		IProgressMonitor monitor = new NullProgressMonitor();
+
+		Assert.assertNotNull(project);
+		Assert.assertTrue(project.exists());
+
+		Assert.assertFalse(FileUtil.exists(project.getFile("build.gradle")));
+
+		project.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+
+		JobHelpers.waitForJobsToComplete(monitor);
+
+		project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+
+		JobHelpers.waitForJobsToComplete(monitor);
+
+		WorkspaceHelpers.assertNoErrors(project);
+
+		IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
+
+		Assert.assertNotNull(bundleProject);
+
+		IPath outputBundle = bundleProject.getOutputBundle(true, monitor);
+
+		Assert.assertNotNull(outputBundle);
+
+		Assert.assertTrue(FileUtil.exists(outputBundle.toFile()));
 	}
 
 	public static void waitForJobsToComplete() throws CoreException, InterruptedException {
