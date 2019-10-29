@@ -17,7 +17,7 @@ package com.liferay.ide.functional.module.tests;
 import com.liferay.ide.functional.liferay.SwtbotBase;
 import com.liferay.ide.functional.liferay.support.project.ProjectSupport;
 import com.liferay.ide.functional.liferay.support.server.LiferaryWorkspaceTomcat7xSupport;
-import com.liferay.ide.functional.liferay.support.workspace.LiferayWorkspaceGradle71Support;
+import com.liferay.ide.functional.liferay.support.workspace.LiferayWorkspaceGradle72Support;
 import com.liferay.ide.functional.liferay.util.RuleUtil;
 
 import org.junit.Assert;
@@ -31,7 +31,7 @@ import org.junit.rules.RuleChain;
  */
 public class WatchModuleLiferayWorkspaceGradleTomcatTests extends SwtbotBase {
 
-	public static LiferayWorkspaceGradle71Support workspace = new LiferayWorkspaceGradle71Support(bot);
+	public static LiferayWorkspaceGradle72Support workspace = new LiferayWorkspaceGradle72Support(bot);
 	public static LiferaryWorkspaceTomcat7xSupport server = new LiferaryWorkspaceTomcat7xSupport(bot, workspace);
 
 	@ClassRule
@@ -41,19 +41,24 @@ public class WatchModuleLiferayWorkspaceGradleTomcatTests extends SwtbotBase {
 	public void watchMVCPortlet() {
 		wizardAction.openNewLiferayModuleWizard();
 
-		wizardAction.newModule.prepareGradle(project.getName(), MVC_PORTLET, "7.1");
+		wizardAction.newModule.prepareGradle(project.getName(), MVC_PORTLET, "7.2");
 
 		wizardAction.finish();
 
 		jobAction.waitForNoRunningJobs();
 
-		viewAction.servers.startWatchingProject(server.getStartedLabel(), workspace.getName(), project.getName());
+		viewAction.servers.startWatchingProject(server.getStartedLabel(), workspace.getName());
 
 		jobAction.waitForConsoleContent(
 			server.getServerName() + " [Liferay 7.x]", "STARTED " + project.getName() + "_", M1);
 
-		viewAction.servers.stopWatchingProject(
-			server.getStartedLabel(), workspace.getName(), project.getName() + " [watching]");
+		viewAction.servers.removeModuleFromPortal(
+			server.getStartedLabel(), workspace.getName() + " [watching]", project.getName());
+
+		jobAction.waitForConsoleContent(
+			server.getServerName() + " [Liferay 7.x]", "STOPPED " + project.getName() + "_", M1);
+
+		viewAction.servers.stopWatchingProject(server.getStartedLabel(), workspace.getName() + " [watching]");
 
 		jobAction.waitForNoRunningJobs();
 
@@ -63,10 +68,69 @@ public class WatchModuleLiferayWorkspaceGradleTomcatTests extends SwtbotBase {
 	}
 
 	@Test
+	public void watchServiceBuilder() {
+		wizardAction.openNewLiferayModuleWizard();
+
+		wizardAction.newModule.prepareGradle(project.getName(), SERVICE_BUILDER, "7.2");
+
+		wizardAction.finish();
+
+		jobAction.waitForNoRunningJobs();
+
+		viewAction.project.runBuildService(workspace.getName(), "modules", project.getName());
+
+		jobAction.waitForNoRunningJobs();
+
+		viewAction.servers.startWatchingProject(
+			server.getStartedLabel(), workspace.getName(), project.getName() + "-api");
+
+		jobAction.waitForConsoleContent(
+			server.getServerName() + " [Liferay 7.x]", "STARTED " + project.getName() + ".api_", M1);
+
+		viewAction.servers.startWatchingProject(
+			server.getStartedLabel(), workspace.getName(), project.getName() + "-service");
+
+		jobAction.waitForConsoleContent(
+			server.getServerName() + " [Liferay 7.x]", "STARTED " + project.getName() + ".service_", M1);
+
+		viewAction.servers.stopWatchingProject(
+			server.getStartedLabel(), workspace.getName(), project.getName() + "-api [Active] [watching]");
+
+		jobAction.waitForConsoleContent(
+			server.getServerName() + " [Liferay 7.x]", "STOPPED " + project.getName() + ".api_", M1);
+
+		viewAction.servers.refreshWatchProject(
+			server.getStartedLabel(), workspace.getName(), project.getName() + "-service [Active] [watching]");
+
+		jobAction.waitForConsoleContent(
+			server.getServerName() + " [Liferay 7.x]", "Could not resolve module: " + project.getName() + ".service",
+			M1);
+
+		Assert.assertTrue(
+			viewAction.servers.visibleWorkspaceTry(
+				server.getStartedLabel(), workspace.getName(), project.getName() + "-service [Installed] [watching]"));
+
+		viewAction.servers.startWatchingProject(
+			server.getStartedLabel(), workspace.getName(), project.getName() + "-api");
+
+		viewAction.servers.stopWatchingProject(server.getStartedLabel(), workspace.getName());
+
+		jobAction.waitForNoRunningJobs();
+
+		viewAction.project.closeAndDeleteFromDisk(
+			workspace.getModuleFiles(project.getName(), project.getName() + "-api"));
+
+		viewAction.project.closeAndDeleteFromDisk(
+			workspace.getModuleFiles(project.getName(), project.getName() + "-service"));
+
+		viewAction.project.closeAndDeleteFromDisk(workspace.getModuleFiles(project.getName()));
+	}
+
+	@Test
 	public void watchWarMvcPortlet() {
 		wizardAction.openNewLiferayModuleWizard();
 
-		wizardAction.newModule.prepareGradle(project.getName(), WAR_MVC_PORTLET, "7.1");
+		wizardAction.newModule.prepareGradle(project.getName(), WAR_MVC_PORTLET, "7.2");
 
 		wizardAction.finish();
 
@@ -80,9 +144,14 @@ public class WatchModuleLiferayWorkspaceGradleTomcatTests extends SwtbotBase {
 		viewAction.servers.stopWatchingProject(
 			server.getStartedLabel(), workspace.getName(), project.getName() + " [watching]");
 
+		jobAction.waitForConsoleContent(
+			server.getServerName() + " [Liferay 7.x]", "STOPPED " + project.getName() + "_", M1);
+
 		jobAction.waitForNoRunningJobs();
 
 		viewAction.project.closeAndDeleteFromDisk(workspace.getWarFiles(project.getName()));
+
+		jobAction.waitForNoRunningJobs();
 
 		Assert.assertFalse(viewAction.servers.visibleModuleTry(server.getStartedLabel(), project.getName()));
 	}
