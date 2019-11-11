@@ -12,11 +12,12 @@
  * details.
  */
 
-package com.liferay.ide.gradle.core;
+package com.liferay.ide.gradle.core.tooling;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.StringUtil;
+import com.liferay.ide.gradle.core.LiferayGradleCore;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -24,9 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.Optional;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import org.eclipse.buildship.core.GradleBuild;
 import org.eclipse.buildship.core.GradleCore;
@@ -38,12 +36,12 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.gradle.tooling.ModelBuilder;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
  * @author Terry Jia
  * @author Andy Wu
+ * @author Simon Jiang
  */
 public class GradleTooling {
 
@@ -59,8 +57,7 @@ public class GradleTooling {
 
 			path = path.replaceAll("\\\\", "/");
 
-			_extractJar(depsDir, "com.liferay.blade.gradle.model");
-			_extractJar(depsDir, "com.liferay.blade.gradle.plugin");
+			_extractJar(depsDir, "gradle-tooling");
 
 			String initScriptTemplate = CoreUtil.readStreamToString(
 				GradleTooling.class.getResourceAsStream("init.gradle"));
@@ -87,7 +84,8 @@ public class GradleTooling {
 				connection -> {
 					ModelBuilder<T> model = connection.model(modelClass);
 
-					ModelBuilder<T> withArguments = model.withArguments("--init-script", scriptFile.getAbsolutePath());
+					ModelBuilder<T> withArguments = model.withArguments(
+						"--init-script", scriptFile.getAbsolutePath(), "--stacktrace");
 
 					return withArguments.get();
 				},
@@ -117,55 +115,17 @@ public class GradleTooling {
 			}
 		}
 
-		String embeddedJarVersion = null;
-
 		LiferayGradleCore gradleCore = LiferayGradleCore.getDefault();
 
 		Bundle bundle = gradleCore.getBundle();
 
 		File embeddedJarFile = FileUtil.getFile(FileLocator.toFileURL(bundle.getEntry("lib/" + fullFileName)));
 
-		try (JarFile embededJarFile = new JarFile(embeddedJarFile)) {
-			Manifest manifest = embededJarFile.getManifest();
-
-			Attributes attributes = manifest.getMainAttributes();
-
-			embeddedJarVersion = attributes.getValue("Bundle-Version");
-		}
-		catch (IOException ioe) {
-		}
-
 		File jarFile = new File(depsDir, fullFileName);
 
 		if (FileUtil.exists(jarFile)) {
-			boolean shouldDelete = false;
-
-			try (JarFile jar = new JarFile(jarFile)) {
-				Manifest manifest = jar.getManifest();
-
-				Attributes attributes = manifest.getMainAttributes();
-
-				String bundleVersion = attributes.getValue("Bundle-Version");
-
-				if (!CoreUtil.empty(bundleVersion)) {
-					Version rightVersion = new Version(embeddedJarVersion);
-					Version version = new Version(bundleVersion);
-
-					if (version.compareTo(rightVersion) != 0) {
-						shouldDelete = true;
-					}
-				}
-				else {
-					shouldDelete = true;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			if (shouldDelete) {
-				if (!jarFile.delete()) {
-					LiferayGradleCore.logError("Error: delete file " + jarFile.getAbsolutePath() + " fail");
-				}
+			if (!jarFile.delete()) {
+				LiferayGradleCore.logError("Error: delete file " + jarFile.getAbsolutePath() + " fail");
 			}
 		}
 
