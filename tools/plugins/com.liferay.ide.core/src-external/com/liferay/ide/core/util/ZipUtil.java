@@ -21,14 +21,13 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.nio.file.Files;
-
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -237,7 +236,54 @@ public final class ZipUtil {
 			}
 		}
 	}
+	
+	public static void unzip(InputStream inputStream, File destinationDir) throws IOException {
+		try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+			ZipEntry zipEntry = null;
 
+			while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+				String entryName = zipEntry.getName();
+
+				if (zipEntry.isDirectory()) {
+					continue;
+				}
+
+				final File f = new File(destinationDir, entryName);
+
+				if (f.exists()) {
+					Files.delete(f.toPath());
+
+					if (f.exists()) {
+						throw new IOException("Could not delete " + f.getAbsolutePath());
+					}
+				}
+
+				final File dir = f.getParentFile();
+
+				if (!dir.exists() && !dir.mkdirs()) {
+					final String msg = "Could not create dir: " + dir.getPath();
+
+					throw new IOException(msg);
+				}
+
+				try (final FileOutputStream out = new FileOutputStream(f)) {
+					final byte[] bytes = new byte[1024];
+
+					int count = zipInputStream.read(bytes);
+
+					while (count != -1) {
+						out.write(bytes, 0, count);
+						count = zipInputStream.read(bytes);
+					}
+
+					out.flush();
+				}
+
+				zipInputStream.closeEntry();
+			}
+		}
+	}	
+	
 	public static void zip(File dir, File target) throws IOException {
 		zip(dir, null, target);
 	}

@@ -15,6 +15,7 @@
 package com.liferay.ide.gradle.core;
 
 import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.gradle.core.tooling.GradleTooling;
 
 import java.io.File;
 

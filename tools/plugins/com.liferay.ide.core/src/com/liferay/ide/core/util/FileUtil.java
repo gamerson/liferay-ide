@@ -674,7 +674,7 @@ public class FileUtil {
 
 		return false;
 	}
-
+	
 	public static void mkdirs(File f) throws CoreException {
 		if (f.exists()) {
 			if (f.isFile()) {
