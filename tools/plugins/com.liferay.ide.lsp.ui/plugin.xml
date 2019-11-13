@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+	<extension
+		id="component.properties.proposal"
+		name="OSGI Component Properties Proposal Computer"
+		point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
+	>
+		<proposalCategory icon="icons/liferay_logo_16.png" />
+	</extension>
+	<extension
+		id="component.properties.proposal.computer"
+		point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
+	>
+		<javaCompletionProposalComputer
+			activate="true"
+			categoryId="component.properties.proposal"
+			class="com.liferay.ide.project.ui.jdt.ComponentPropertiesCompletionProposalComputer"
+			needsSortingAfterFiltering="false"
+		>
+		</javaCompletionProposalComputer>
+	</extension>
+	<extension
+		point="org.eclipse.ui.editors.templates"
+	>
+		<include
+			file="templates/java-templates-components.xml"
+		>
+		</include>
+		<include
+			file="templates/java-templates-refrence.xml"
+		>
+		</include>
+	</extension>
+	<extension
+		point="org.eclipse.core.contenttype.contentTypes"
+	>
+		<content-type
+			base-type="org.eclipse.core.runtime.text"
+			file-names="gradle.properties,.blade.properties,portal-ext.properties,portal.properties,bnd.bnd"
+			id="com.liferay.ide.language.server.properties"
+			name="Liferay Language Server Properties Type"
+			priority="normal"
+		>
+		</content-type>
+	</extension>
+	<extension
+		point="org.eclipse.lsp4e.languageServer"
+	>
+		<server
+			class="com.liferay.ide.lsp.ui.languageserver.LanguageServerConnectionProvider"
+			id="com.liferay.ide.language.server"
+			label="Liferay Language Server"
+		>
+		</server>
+		<contentTypeMapping
+			contentType="com.liferay.ide.language.server.properties"
+			id="com.liferay.ide.language.server"
+		>
+		</contentTypeMapping>
+	</extension>
+	<extension
+		point="org.eclipse.ui.editors"
+	>
+		<editorContentTypeBinding
+			contentTypeId="com.liferay.ide.language.server.properties"
+			editorId="org.eclipse.ui.genericeditor.GenericEditor"
+		>
+		</editorContentTypeBinding>
+	</extension>
+	<extension
+		point="org.eclipse.tm4e.registry.grammars"
+	>
+		<grammar
+			path="grammars/ini/ini.tmLanguage.json"
+			scopeName="source.ini"
+		>
+		</grammar>
+		<scopeNameContentTypeBinding
+			contentTypeId="com.liferay.ide.language.server.properties"
+			scopeName="source.ini"
+		>
+		</scopeNameContentTypeBinding>
+	</extension>
+</plugin>
