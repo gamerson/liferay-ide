@@ -3,25 +3,6 @@
 <plugin>
 
 	<extension
-		id="component.properties.proposal"
-		name="OSGI Component Properties Proposal Computer"
-		point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
-	>
-		<proposalCategory icon="icons/liferay_logo_16.png" />
-	</extension>
-	<extension
-		id="component.properties.proposal.computer"
-		point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
-	>
-		<javaCompletionProposalComputer
-			activate="true"
-			categoryId="component.properties.proposal"
-			class="com.liferay.ide.project.ui.jdt.ComponentPropertiesCompletionProposalComputer"
-			needsSortingAfterFiltering="false"
-		>
-		</javaCompletionProposalComputer>
-	</extension>
-	<extension
 		point="org.eclipse.ui.editors.templates"
 	>
 		<include
