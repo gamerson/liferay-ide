@@ -284,4 +284,12 @@
 		unpack="false"
 		version="0.0.0"
 	/>
+
+	<plugin
+		download-size="0"
+		id="com.liferay.ide.lsp.ui"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
 </feature>

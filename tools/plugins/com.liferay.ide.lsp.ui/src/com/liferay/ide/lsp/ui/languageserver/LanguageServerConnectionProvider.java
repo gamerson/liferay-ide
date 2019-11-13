@@ -15,38 +15,82 @@
 package com.liferay.ide.lsp.ui.languageserver;
 
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.modules.BladeCLIException;
+import com.liferay.ide.core.util.FileUtil;
 
 import java.io.File;
+import java.io.IOException;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import java.util.Arrays;
-import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.lsp4e.server.ProcessStreamConnectionProvider;
+
+import org.osgi.framework.Bundle;
 
 /**
  * @author Terry Jia
  */
 public class LanguageServerConnectionProvider extends ProcessStreamConnectionProvider {
 
-	public LanguageServerConnectionProvider() throws BladeCLIException {
+	public static final String PROPERTIES_LSP_JAR_FILE_NAME = "liferay-properties-server-all.jar";
+
+	public LanguageServerConnectionProvider() {
 		super(
-			Arrays.asList("java", "-DliferayLanguageServerStandardIO=true", "-jar", _getLiferayPropertiesServerPath()),
+			Arrays.asList(
+				_computeJavaPath(), "-DliferayLanguageServerStandardIO=true", "-jar",
+				_getLiferayPropertiesServerPath()),
 			CoreUtil.getWorkspaceRootLocationString());
 	}
 
-	private static String _getLiferayPropertiesServerPath() {
-		Properties properties = System.getProperties();
+	private static String _computeJavaPath() {
+		String javaPath = "java";
 
-		File temp = new File(properties.getProperty("user.home"), ".liferay-ide");
+		String paths = System.getenv("PATH");
 
-		File liferayPropertiesServerJar = new File(temp, "liferay-properties-server-all.jar");
+		boolean existsInPath = Stream.of(
+			paths.split(Pattern.quote(File.pathSeparator))
+		).map(
+			Paths::get
+		).anyMatch(
+			path -> Files.exists(path.resolve("java"))
+		);
 
-		if (liferayPropertiesServerJar.exists()) {
-			return liferayPropertiesServerJar.getAbsolutePath();
+		if (!existsInPath) {
+			String javaHome = System.getProperty("java.home");
+
+			File file = new File(javaHome, "bin/java" + (CoreUtil.isWindows() ? ".exe" : ""));
+
+			javaPath = file.getAbsolutePath();
 		}
 
-		return null;
+		return javaPath;
+	}
+
+	private static String _getLiferayPropertiesServerPath() {
+		LiferayLSPUIPlugin lspUI = LiferayLSPUIPlugin.getDefault();
+
+		Bundle bundle = lspUI.getBundle();
+
+		File bladeJarBundleFile;
+
+		try {
+			bladeJarBundleFile = FileUtil.getFile(
+				FileLocator.toFileURL(bundle.getEntry("lib/" + PROPERTIES_LSP_JAR_FILE_NAME)));
+
+			Path path = new Path(bladeJarBundleFile.getCanonicalPath());
+
+			return path.toOSString();
+		}
+		catch (IOException ioe) {
+		}
+
+		return "";
 	}
 
 }
