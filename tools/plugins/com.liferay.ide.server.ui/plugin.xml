@@ -339,7 +339,7 @@
 				<or>
 					<objectState
 						name="serverType"
-						value="com.liferay.ide.server.portal.*"
+						value="com.liferay.ide.server.*"
 					>
 					</objectState>
 				</or>
