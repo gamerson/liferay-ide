@@ -21,7 +21,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.nio.file.Files;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -236,7 +238,7 @@ public final class ZipUtil {
 			}
 		}
 	}
-	
+
 	public static void unzip(InputStream inputStream, File destinationDir) throws IOException {
 		try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
 			ZipEntry zipEntry = null;
@@ -282,8 +284,8 @@ public final class ZipUtil {
 				zipInputStream.closeEntry();
 			}
 		}
-	}	
-	
+	}
+
 	public static void zip(File dir, File target) throws IOException {
 		zip(dir, null, target);
 	}

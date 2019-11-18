@@ -22,6 +22,7 @@ import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+
 import org.osgi.framework.Bundle;
 
 /**
@@ -43,30 +44,30 @@ public class DockerRuntimeSettingFragment extends WizardFragment {
 
 		return _composite;
 	}
-	
+
 	@Override
 	public void enter() {
 		if (_composite != null) {
-			IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+			IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 
 			_composite.setRuntime(runtime);
 		}
 	}
-	
+
 	@Override
 	public boolean hasComposite() {
 		return true;
-	}	
+	}
 
 	@Override
 	public boolean isComplete() {
 		return _composite.isComplete();
 	}
-	
-	private DockerRuntimeSettingComposite _composite;
-	
-	
+
 	public boolean isForceLastFragment() {
 		return true;
 	}
+
+	private DockerRuntimeSettingComposite _composite;
+
 }

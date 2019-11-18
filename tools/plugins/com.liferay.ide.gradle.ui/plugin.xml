@@ -38,6 +38,10 @@
 					name="init-bundle"
 				>
 				</groupMarker>
+				<groupMarker
+					name="init-docker-bundle"
+				>
+				</groupMarker>
 			</menu>
 		</objectContribution>
 		<objectContribution
@@ -88,6 +92,15 @@
 				id="com.liferay.ide.gradle.popup.action.mergelang"
 				label="merge-lang"
 				menubarPath="liferayPopupMenuCategory/merge-lang"
+			>
+			</action>
+			<action
+				class="com.liferay.ide.gradle.action.InitDockerBundleTaskAction"
+				enablesFor="1"
+				icon="icons/e16/liferay_logo_16.png"
+				id="com.liferay.ide.gradle.popup.action.initDockerBundle"
+				label="Init Portal Docker Bundle"
+				menubarPath="liferayPopupMenuCategory/init-docker-bundle"
 			>
 			</action>
 			<enablement>
@@ -423,7 +436,7 @@
 			id="com.liferay.ide.server.portal.docker.image"
 			typeIds="com.liferay.ide.server.portal.docker"
 		>
-		</image>		
+		</image>
 		<image
 			icon="icons/liferay_logo_16.png"
 			id="com.liferay.ide.server.portal.runtime.image"
@@ -473,6 +486,6 @@
 			id="com.liferay.ide.server.portal.docker.launch.image"
 		>
 		</launchConfigurationTypeImage>
-	</extension>	
-	
+	</extension>
+
 </plugin>

@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.Optional;
 
 import org.eclipse.buildship.core.GradleBuild;
@@ -31,14 +32,16 @@ import org.eclipse.buildship.core.GradleWorkspace;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
+
 import org.gradle.tooling.ModelBuilder;
+
 import org.osgi.framework.Bundle;
 
 /**
  * @author Gregory Amerson
  * @author Terry Jia
  * @author Andy Wu
- * @author Simon Jiang 
+ * @author Simon Jiang
  */
 public class GradleTooling {
 
@@ -70,7 +73,7 @@ public class GradleTooling {
 			try (InputStream inputStream = new ByteArrayInputStream(initScriptContents.getBytes())) {
 				FileUtil.writeFileFromStream(scriptFile, inputStream);
 			}
-			
+
 			GradleWorkspace gradleWorkspace = GradleCore.getWorkspace();
 
 			Optional<GradleBuild> buildOptional = gradleWorkspace.getBuild(project);
@@ -80,11 +83,13 @@ public class GradleTooling {
 			retval = gradleBuild.withConnection(
 				connection -> {
 					ModelBuilder<T> model = connection.model(modelClass);
-					ModelBuilder<T> withArguments = model.withArguments("--init-script", scriptFile.getAbsolutePath(), "--stacktrace");
-					
+
+					ModelBuilder<T> withArguments = model.withArguments(
+						"--init-script", scriptFile.getAbsolutePath(), "--stacktrace");
+
 					return withArguments.get();
 				},
-				new NullProgressMonitor());		
+				new NullProgressMonitor());
 		}
 		catch (Exception e) {
 			LiferayGradleCore.logError("get gradle custom model error", e);

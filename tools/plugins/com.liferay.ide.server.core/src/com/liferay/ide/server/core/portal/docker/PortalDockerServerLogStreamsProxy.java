@@ -12,69 +12,67 @@
  * details.
  */
 
- package com.liferay.ide.server.core.portal.docker;
+package com.liferay.ide.server.core.portal.docker;
 
- import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunch;
 
- /**
+/**
  * @author Simon Jiang
  */
 public class PortalDockerServerLogStreamsProxy extends PortalDockerServerStreamsProxy {
 
- 	public PortalDockerServerLogStreamsProxy(
+	public PortalDockerServerLogStreamsProxy(
 		PortalDockerServer curPortalServer, PortalDockerServerBehavior curServerBehaviour, ILaunch curLaunch) {
 
- 		this(
+		this(
 			curPortalServer, curServerBehaviour, curLaunch, new PortalDockerServerOutputStreamMonitor(),
 			new PortalDockerServerOutputStreamMonitor());
 	}
 
- 	public PortalDockerServerLogStreamsProxy(
+	public PortalDockerServerLogStreamsProxy(
 		PortalDockerServer portalServer, PortalDockerServerBehavior curServerBehaviour, ILaunch curLaunch,
 		PortalDockerServerOutputStreamMonitor systemOut, PortalDockerServerOutputStreamMonitor systemErr) {
 
- 		_launch = null;
+		_launch = null;
 
- 		if ((portalServer == null) || (curServerBehaviour == null)) {
+		if ((portalServer == null) || (curServerBehaviour == null)) {
 			return;
 		}
 
- 		_serverBehaviour = curServerBehaviour;
+		_serverBehaviour = curServerBehaviour;
 
- 		_launch = curLaunch;
+		_launch = curLaunch;
 
- 		try {
- 			if (systemOut != null) {
+		try {
+			if (systemOut != null) {
 				sysOut = systemOut;
 			}
 			else {
 				sysOut = new PortalDockerServerOutputStreamMonitor();
 			}
 
- 			if (systemErr != null) {
+			if (systemErr != null) {
 				sysErr = systemErr;
 			}
 			else {
 				sysErr = new PortalDockerServerOutputStreamMonitor();
 			}
 
- 			startMonitoring(portalServer);
+			startMonitoring(portalServer);
 		}
 		catch (Exception e) {
 		}
 	}
- 	
- 	
 
- 	public ILaunch getLaunch() {
+	public ILaunch getLaunch() {
 		return _launch;
 	}
 
- 	public PortalDockerServerBehavior getServerBehaviour() {
+	public PortalDockerServerBehavior getServerBehaviour() {
 		return _serverBehaviour;
 	}
 
- 	private ILaunch _launch;
+	private ILaunch _launch;
 	private PortalDockerServerBehavior _serverBehaviour;
 
- } 
+}

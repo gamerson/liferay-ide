@@ -21,8 +21,10 @@ import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+
 import java.util.Set;
 
 import org.eclipse.buildship.core.InitializationContext;
@@ -115,9 +117,9 @@ public class LiferayProjectConfigurator implements ProjectConfigurator {
 				}
 
 				Set<String> pluginClassNames = customModel.getPluginClassNames();
-				
+
 				if (customModel.isLiferayProject() || pluginClassNames.contains("org.gradle.api.plugins.WarPlugin") ||
-						pluginClassNames.contains("com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin")) {
+					pluginClassNames.contains("com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin")) {
 
 					LiferayNature.addLiferayNature(project, monitor);
 				}

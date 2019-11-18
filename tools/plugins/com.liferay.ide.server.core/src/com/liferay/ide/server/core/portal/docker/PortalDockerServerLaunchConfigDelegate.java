@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,12 +11,15 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
+
 package com.liferay.ide.server.core.portal.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.model.Container;
+
 import com.google.common.collect.Lists;
+
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.server.core.ILiferayServer;
 import com.liferay.ide.server.core.LiferayServerCore;
@@ -35,6 +37,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
@@ -73,7 +76,8 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 				throw new CoreException(LiferayServerCore.createErrorStatus("Server runtime is invalid."));
 			}
 
-			PortalDockerRuntime portalRuntime = (PortalDockerRuntime)runtime.loadAdapter(PortalDockerRuntime.class, monitor);
+			PortalDockerRuntime portalRuntime = (PortalDockerRuntime)runtime.loadAdapter(
+				PortalDockerRuntime.class, monitor);
 
 			if (portalRuntime == null) {
 				throw new CoreException(LiferayServerCore.createErrorStatus("Server portal runtime is invalid."));
@@ -85,26 +89,30 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 				throw new CoreException(status);
 			}
 
-			PortalDockerServer portalDockerServer = (PortalDockerServer)server.loadAdapter(PortalDockerServer.class, monitor);
+			PortalDockerServer portalDockerServer = (PortalDockerServer)server.loadAdapter(
+				PortalDockerServer.class, monitor);
 
 			if (portalDockerServer == null) {
 				throw new CoreException(LiferayServerCore.createErrorStatus("Server portal server is invalid."));
 			}
-			
-			try(DockerClient dockerClient = LiferayDockerClient.getDockerClient()){
+
+			try (DockerClient dockerClient = LiferayDockerClient.getDockerClient()) {
 				ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
+
 				listContainersCmd.withShowAll(true);
 				listContainersCmd.withNameFilter(Lists.newArrayList(portalDockerServer.getContainerName()));
 				listContainersCmd.withIdFilter(Lists.newArrayList(portalDockerServer.getContainerId()));
+
 				List<Container> containers = listContainersCmd.exec();
-				
+
 				if (ListUtil.isEmpty(containers)) {
-					throw new CoreException(LiferayServerCore.createErrorStatus("The container of Portal server is invalid."));
+					throw new CoreException(
+						LiferayServerCore.createErrorStatus("The container of Portal server is invalid."));
 				}
-				
-				_launchServer(server, config, mode, launch, monitor);				
+
+				_launchServer(server, config, mode, launch, monitor);
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -145,21 +153,23 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 
 		connectMap.put("hostname", host);
 		connectMap.put("port", port);
-        int connectTimeout = Platform.getPreferencesService().getInt(
-        		LaunchingPlugin.ID_PLUGIN,
-        		JavaRuntime.PREF_CONNECT_TIMEOUT,
-        		JavaRuntime.DEF_CONNECT_TIMEOUT,
-        		null);
-        connectMap.put("timeout", Integer.toString(connectTimeout));  //$NON-NLS-1$
+
+		IPreferencesService preferencesService = Platform.getPreferencesService();
+
+		int connectTimeout = preferencesService.getInt(
+			LaunchingPlugin.ID_PLUGIN, JavaRuntime.PREF_CONNECT_TIMEOUT, JavaRuntime.DEF_CONNECT_TIMEOUT, null);
+
+		connectMap.put("timeout", String.valueOf(connectTimeout));  //$NON-NLS-1$
 
 		// check for cancellation
 
 		if (monitor.isCanceled()) {
 			return;
 		}
+
 		if (!launch.isTerminated()) {
 			IStatus canConnect = SocketUtil.canConnect(host, port);
-			
+
 			if (canConnect.isOK()) {
 				connector.connect(connectMap, monitor, launch);
 			}
@@ -183,8 +193,8 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 	}
 
 	private IProcess _createTerminateableStreamsProxyProcess(
-		IServer server, PortalDockerServer portalServer, final PortalDockerServerBehavior poratlServerBehaviour, ILaunch launch,
-		boolean debug, ILaunchConfiguration config, IProgressMonitor monitor) {
+		IServer server, PortalDockerServer portalServer, final PortalDockerServerBehavior poratlServerBehaviour,
+		ILaunch launch, boolean debug, ILaunchConfiguration config, IProgressMonitor monitor) {
 
 		try {
 			if ((server == null) || (portalServer == null) || (poratlServerBehaviour == null) || (launch == null)) {
@@ -198,14 +208,14 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 
 			if (retvalProcess == null) {
 				retvalProcess = new PortalDockerServerMonitorProcess(
-					server, poratlServerBehaviour, launch, debug, streamsProxy, config, this,  monitor);
+					server, poratlServerBehaviour, launch, debug, streamsProxy, config, this, monitor);
 
 				launch.addProcess(retvalProcess);
 			}
 			else {
 				launch.addProcess(retvalProcess);
 			}
-		
+
 			return retvalProcess;
 		}
 		catch (Exception e) {
@@ -214,8 +224,6 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 		return null;
 	}
 
-	
-	
 	private void _launchServer(
 			IServer server, ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor)
 		throws CoreException {
@@ -223,7 +231,7 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 		PortalDockerServer portalServer = (PortalDockerServer)server.loadAdapter(PortalDockerServer.class, monitor);
 
 		PortalDockerServerBehavior portalServerBehavior = (PortalDockerServerBehavior)server.loadAdapter(
-				PortalDockerServerBehavior.class, monitor);
+			PortalDockerServerBehavior.class, monitor);
 
 		IProcess streamProxyProcess = _createTerminateableStreamsProxyProcess(
 			server, portalServer, portalServerBehavior, launch, ILaunchManager.DEBUG_MODE.equals(mode), config,
@@ -278,6 +286,7 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 						}
 					}
 				}
+
 			});
 
 		try {
@@ -287,4 +296,5 @@ public class PortalDockerServerLaunchConfigDelegate extends AbstractJavaLaunchCo
 			portalServerBehavior.cleanup();
 		}
 	}
+
 }

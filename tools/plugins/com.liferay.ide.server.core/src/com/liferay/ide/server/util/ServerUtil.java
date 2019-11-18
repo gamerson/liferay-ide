@@ -84,6 +84,7 @@ import org.eclipse.jdt.internal.launching.StandardVMType;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -99,6 +100,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -1068,6 +1070,28 @@ public class ServerUtil {
 		return true;
 	}
 
+	public static void setRuntimeName(IRuntimeWorkingCopy runtime, int suffix, String projectName) {
+		if (runtime == null) {
+			return;
+		}
+
+		IRuntimeType runtimeType = runtime.getRuntimeType();
+
+		String runtimeName = runtimeType.getName() + " " + projectName;
+
+		if (suffix == -1) {
+			runtimeName = NLS.bind(Msgs.defaultRuntimeName, runtimeName);
+		}
+		else {
+			runtimeName = NLS.bind(
+				Msgs.defaultRuntimeNameWithSuffix, new String[] {runtimeName, String.valueOf(suffix)});
+		}
+
+		runtimeName = _verifyRuntimeName(runtime, runtimeName, suffix);
+
+		runtime.setName(runtimeName);
+	}
+
 	public static void setupPortalDevelopModeConfiguration(PortalRuntime portalRuntime, PortalServer portalServer) {
 		boolean customLaunchSettings = portalServer.getCustomLaunchSettings();
 
@@ -1188,6 +1212,54 @@ public class ServerUtil {
 		}
 
 		return moduleOsgiBundle;
+	}
+
+	private static String _formateRuntimeName(String runtimeName, int suffix) {
+		if (suffix != -1) {
+			return NLS.bind(Msgs.defaultRuntimeNameWithSuffix, new String[] {runtimeName, String.valueOf(suffix)});
+		}
+
+		return NLS.bind(Msgs.defaultRuntimeName, new String[] {runtimeName});
+	}
+
+	private static String _verifyRuntimeName(IRuntimeWorkingCopy runtime, String runtimeName, int suffix) {
+		String name = null;
+
+		if (ServerPlugin.isNameInUse(runtime.getOriginal(), runtimeName)) {
+			if (suffix == -1) {
+
+				// If the no suffix name is in use, the next suffix to try is 2
+
+				suffix = 2;
+			}
+			else {
+				suffix++;
+			}
+
+			name = _formateRuntimeName(runtimeName, suffix);
+
+			while (ServerPlugin.isNameInUse(runtime.getOriginal(), name)) {
+				suffix++;
+
+				name = _formateRuntimeName(runtimeName, suffix);
+			}
+		}
+		else {
+			name = runtimeName;
+		}
+
+		return name;
+	}
+
+	private static class Msgs extends NLS {
+
+		public static String defaultRuntimeName;
+		public static String defaultRuntimeNameWithSuffix;
+
+		static {
+			initializeMessages(ServerUtil.class.getName(), Msgs.class);
+		}
+
 	}
 
 }

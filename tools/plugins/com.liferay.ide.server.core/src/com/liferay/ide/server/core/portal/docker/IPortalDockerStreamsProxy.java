@@ -11,14 +11,18 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
+
 package com.liferay.ide.server.core.portal.docker;
 
 import org.eclipse.debug.core.model.IStreamsProxy;
 
+/**
+ * @author Simon Jiang
+ */
 public interface IPortalDockerStreamsProxy extends IStreamsProxy {
 
- 	public abstract boolean isTerminated();
+	public abstract boolean isTerminated();
 
- 	public abstract void terminate();
+	public abstract void terminate();
 
-} 
+}

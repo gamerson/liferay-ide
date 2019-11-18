@@ -12,17 +12,17 @@
  * details.
  */
 
- package com.liferay.ide.server.core.portal.docker;
+package com.liferay.ide.server.core.portal.docker;
 
- import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 
- /**
+/**
  * @author Simon Jiang
  */
 public class PortalDockerServerStateStopThread {
 
- 	/**
+	/**
 	 * Create a new PingThread.
 	 *
 	 * @param server
@@ -36,73 +36,76 @@ public class PortalDockerServerStateStopThread {
 		_behaviour = behaviour;
 		_mointorProcess = behaviour.getProcess();
 
- 		int serverStopTimeout = server.getStopTimeout();
+		int serverStopTimeout = server.getStopTimeout();
 
- 		if (serverStopTimeout < (_defaultTimeout / 1000)) {
+		if (serverStopTimeout < (_defaultTimeout / 1000)) {
 			_timeout = _defaultTimeout;
 		}
 		else {
 			_timeout = serverStopTimeout * 1000;
 		}
 
- 		Thread t = new Thread("Liferay Portal Docker Server Stop Thread") {
+		Thread t = new Thread("Liferay Portal Docker Server Stop Thread") {
 
- 			public void run() {
+			public void run() {
 				_startedTime = System.currentTimeMillis();
 				startMonitor();
 			}
 
- 		};
+		};
 
- 		t.setDaemon(true);
+		t.setDaemon(true);
 		t.start();
 	}
 
- 	public IProcess getMonitorProcess() {
+	public IProcess getMonitorProcess() {
 		return _mointorProcess;
 	}
 
- 	/**
+	/**
 	 * Tell the pinging to stop.
 	 */
 	public void stop() {
 		_stop = true;
 	}
 
- 	/**
+	/**
 	 * Ping the server until it is started. Then set the server state to
 	 * STATE_STARTED.
 	 */
 	protected void startMonitor() {
 		long currentTime = 0;
 
- 		try {
+		try {
 			Thread.sleep(_pingDelay);
 		}
 		catch (Exception e) {
 		}
+
 		while (!_stop) {
 			try {
 				currentTime = System.currentTimeMillis();
 
- 				if ((currentTime - _startedTime) > _timeout) {
+				if ((currentTime - _startedTime) > _timeout) {
 					try {
 						_server.stop(true);
 						_mointorProcess.terminate();
+
 						_behaviour.triggerCleanupEvent(_mointorProcess);
 						_stop = true;
 					}
 					catch (Exception e) {
 					}
 
- 					break;
+					break;
 				}
 
- 				Thread.sleep(1000);
+				Thread.sleep(1000);
 
- 				if (_server.getServerState() == IServer.STATE_STOPPED) {
+				if (_server.getServerState() == IServer.STATE_STOPPED) {
 					Thread.sleep(200);
 					_mointorProcess.terminate();
+
 					_behaviour.triggerCleanupEvent(_mointorProcess);
 					_stop = true;
 				}
@@ -119,10 +122,10 @@ public class PortalDockerServerStateStopThread {
 		}
 	}
 
- 	private static int _pingDelay = 2000;
+	private static int _pingDelay = 2000;
 	private static int _pingInterval = 250;
 
- 	private PortalDockerServerBehavior _behaviour;
+	private PortalDockerServerBehavior _behaviour;
 	private long _defaultTimeout = 2 * 60 * 1000;
 	private IProcess _mointorProcess;
 	private IServer _server;
@@ -130,4 +133,4 @@ public class PortalDockerServerStateStopThread {
 	private boolean _stop = false;
 	private long _timeout = 0;
 
- } 
+}

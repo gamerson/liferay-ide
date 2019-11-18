@@ -1,3 +1,17 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
 package com.liferay.ide.gradle.ui.portal.docker;
 
 import com.github.dockerjava.api.DockerClient;
@@ -5,7 +19,9 @@ import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.command.ListImagesCmd;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Image;
+
 import com.google.common.collect.Lists;
+
 import com.liferay.blade.gradle.tooling.ProjectInfo;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
@@ -37,7 +53,16 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 
+/**
+ * @author Simon Jiang
+ */
 public class DockerServerSettingComposite extends Composite implements ModifyListener {
+
+	public static void setFieldValue(Text field, String value) {
+		if ((field != null) && !field.isDisposed()) {
+			field.setText((value != null) ? value : StringPool.EMPTY);
+		}
+	}
 
 	public DockerServerSettingComposite(Composite parent, IWizardHandle wizard) {
 		super(parent, SWT.NONE);
@@ -48,141 +73,48 @@ public class DockerServerSettingComposite extends Composite implements ModifyLis
 		wizard.setDescription(Msgs.dockerContainerDescription);
 		wizard.setImageDescriptor(LiferayGradleUI.getImageDescriptor(LiferayGradleUI.IMG_WIZ_RUNTIME));
 
-		project = LiferayWorkspaceUtil.getWorkspaceProject();
-		toolingModel = LiferayGradleCore.getToolingModel(ProjectInfo.class, project);
+		_project = LiferayWorkspaceUtil.getWorkspaceProject();
+
+		_toolingModel = LiferayGradleCore.getToolingModel(ProjectInfo.class, _project);
 
 		_dockerClient = LiferayDockerClient.getDockerClient();
 
 		createControl(parent);
-		
+
 		validate();
 	}
-	
+
+	@Override
+	public void dispose() {
+		_nameField.removeModifyListener(this);
+		super.dispose();
+	}
+
+	public boolean isComplete() {
+		return _complete;
+	}
+
 	@Override
 	public void modifyText(ModifyEvent e) {
 		Object source = e.getSource();
 
 		if (source.equals(_nameField)) {
 			validate();
-			
+
 			PortalDockerServer portalDockerServer = getPortalDockerServer();
 
 			if (portalDockerServer != null) {
-				
 				IRuntime runtime = getServer().getRuntime();
-				PortalDockerRuntime dockerRuntime = (PortalDockerRuntime)runtime.loadAdapter(PortalDockerRuntime.class, null);
-				
+
+				PortalDockerRuntime dockerRuntime = (PortalDockerRuntime)runtime.loadAdapter(
+					PortalDockerRuntime.class, null);
+
 				portalDockerServer.setContainerName(_nameField.getText());
-				portalDockerServer.setImageId(dockerRuntime.getImageId());				
+				portalDockerServer.setImageId(dockerRuntime.getImageId());
 			}
 		}
 	}
-	
-	@Override
-	public void dispose () {
-		_nameField.removeModifyListener(this);
-		super.dispose();
-	}
-	
-	public static void setFieldValue(Text field, String value) {
-		if ((field != null) && !field.isDisposed()) {
-			field.setText((value != null) ? value : StringPool.EMPTY);
-		}
-	}
-	
-	private void _updateFields() {
-		setFieldValue(_nameField, toolingModel.getDockerContainerId());
-	}
-	
-	protected Text createTextField(String labelText) {
-		return createTextField(labelText, SWT.NONE);
-	}
 
-	protected Text createTextField(String labelText, int style) {
-		createLabel(labelText);
-
-		Text text = new Text(this, SWT.BORDER | style);
-
-		text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		return text;
-	}
-	
-	private IServerWorkingCopy _serverWC;
-	
-	protected Layout createLayout() {
-		return new GridLayout(1, false);
-	}
-
-	protected PortalDockerServer getPortalDockerServer() {
-		return (PortalDockerServer)getServer().loadAdapter(PortalDockerServer.class, null);
-	}
-	
-	protected IServerWorkingCopy getServer() {
-		return _serverWC;
-	}	
-	
-	protected void init() {
-		_updateFields();
-	}
-	
-	private DockerClient _dockerClient = null;
-	
-	protected void validate() {
-		_isComplete = true;
-		
-		String containerName = _nameField.getText();
-		
-		if ( CoreUtil.isNullOrEmpty(containerName) ) {
-			_wizard.setMessage("Container name can not be empty.", IMessageProvider.ERROR);
-			_wizard.update();
-			_isComplete = false;
-			return;
-		}
-
-		IRuntime runtime = getServer().getRuntime();
-		PortalDockerRuntime portalDockerRuntime = (PortalDockerRuntime)runtime.loadAdapter(PortalDockerRuntime.class, null);
-		
-		ListImagesCmd listImagesCmd = _dockerClient.listImagesCmd();
-		
-		listImagesCmd.withShowAll(true);
-		listImagesCmd.withImageNameFilter(portalDockerRuntime.getImageTag());
-
-		List<Image> imageList = listImagesCmd.exec();
-
-		if (ListUtil.isEmpty(imageList)) {
-			_wizard.setMessage(portalDockerRuntime.getImageTag() + " is not existed", IMessageProvider.ERROR);
-			_wizard.update();
-			_isComplete = false;
-			return;
-		}
-
-		ListContainersCmd listContainersCmd = _dockerClient.listContainersCmd();
-		listContainersCmd.withNameFilter(Lists.newArrayList(_nameField.getText()));
-		listContainersCmd.withLimit(1);
-		List<Container> containers = listContainersCmd.exec();
-		
-		if (ListUtil.isNotEmpty(containers) ) {
-			_wizard.setMessage("Container name is existed, Please change it to another.", IMessageProvider.ERROR);
-			_wizard.update();
-			_isComplete = false;
-			return;
-		}
-		
-		_wizard.setMessage(null, IMessageProvider.NONE);
-		_wizard.update();
-	}	
-	
-	public boolean isComplete() {
-		return _isComplete;
-	}	
-	
-	private boolean _isComplete;
-	
-	private GridData _createLayoutData() {
-		return new GridData(GridData.FILL_BOTH);
-	}
-	
 	public void setServer(IServerWorkingCopy newServer) {
 		if (newServer == null) {
 			_serverWC = null;
@@ -200,23 +132,6 @@ public class DockerServerSettingComposite extends Composite implements ModifyLis
 		}
 	}
 
-	protected Label createLabel(String text) {
-		Label label = new Label(this, SWT.NONE);
-
-		label.setText(text);
-
-		GridDataFactory.generate(label, 1, 1);
-
-		return label;
-	}
-	
-	private void _createFields() {
-		
-		_nameField = createTextField(Msgs.dockerContainerName);
-		
-		_nameField.addModifyListener(this);
-	}	
-	
 	protected void createControl(final Composite parent) {
 		setLayout(createLayout());
 		setLayoutData(_createLayoutData());
@@ -227,19 +142,130 @@ public class DockerServerSettingComposite extends Composite implements ModifyLis
 		Dialog.applyDialogFont(this);
 	}
 
-	private ProjectInfo toolingModel;
-	private IProject project;
-	private final IWizardHandle _wizard;
+	protected Label createLabel(String text) {
+		Label label = new Label(this, SWT.NONE);
+
+		label.setText(text);
+
+		GridDataFactory.generate(label, 1, 1);
+
+		return label;
+	}
+
+	protected Layout createLayout() {
+		return new GridLayout(1, false);
+	}
+
+	protected Text createTextField(String labelText) {
+		return createTextField(labelText, SWT.NONE);
+	}
+
+	protected Text createTextField(String labelText, int style) {
+		createLabel(labelText);
+
+		Text text = new Text(this, SWT.BORDER | style);
+
+		text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		return text;
+	}
+
+	protected PortalDockerServer getPortalDockerServer() {
+		return (PortalDockerServer)getServer().loadAdapter(PortalDockerServer.class, null);
+	}
+
+	protected IServerWorkingCopy getServer() {
+		return _serverWC;
+	}
+
+	protected void init() {
+		_updateFields();
+	}
+
+	protected void validate() {
+		_complete = true;
+
+		String containerName = _nameField.getText();
+
+		if (CoreUtil.isNullOrEmpty(containerName)) {
+			_wizard.setMessage("Container name can not be empty.", IMessageProvider.ERROR);
+			_wizard.update();
+			_complete = false;
+
+			return;
+		}
+
+		IRuntime runtime = getServer().getRuntime();
+
+		PortalDockerRuntime portalDockerRuntime = (PortalDockerRuntime)runtime.loadAdapter(
+			PortalDockerRuntime.class, null);
+
+		ListImagesCmd listImagesCmd = _dockerClient.listImagesCmd();
+
+		listImagesCmd.withShowAll(true);
+		listImagesCmd.withImageNameFilter(portalDockerRuntime.getImageTag());
+
+		List<Image> imageList = listImagesCmd.exec();
+
+		if (ListUtil.isEmpty(imageList)) {
+			_wizard.setMessage(portalDockerRuntime.getImageTag() + " is not existed", IMessageProvider.ERROR);
+			_wizard.update();
+			_complete = false;
+
+			return;
+		}
+
+		ListContainersCmd listContainersCmd = _dockerClient.listContainersCmd();
+
+		listContainersCmd.withNameFilter(Lists.newArrayList(_nameField.getText()));
+		listContainersCmd.withLimit(1);
+
+		List<Container> containers = listContainersCmd.exec();
+
+		if (ListUtil.isNotEmpty(containers)) {
+			_wizard.setMessage("Container name is existed, Please change it to another.", IMessageProvider.ERROR);
+			_wizard.update();
+			_complete = false;
+
+			return;
+		}
+
+		_wizard.setMessage(null, IMessageProvider.NONE);
+		_wizard.update();
+	}
+
+	private void _createFields() {
+		_nameField = createTextField(Msgs.dockerContainerName);
+
+		_nameField.addModifyListener(this);
+	}
+
+	private GridData _createLayoutData() {
+		return new GridData(GridData.FILL_BOTH);
+	}
+
+	private void _updateFields() {
+		setFieldValue(_nameField, _toolingModel.getDockerContainerId());
+	}
+
+	private boolean _complete;
+	private DockerClient _dockerClient = null;
 	private Text _nameField;
+	private IProject _project;
+	private IServerWorkingCopy _serverWC;
+	private ProjectInfo _toolingModel;
+	private final IWizardHandle _wizard;
+
 	private static class Msgs extends NLS {
 
-		public static String dockerContainerTitle;
 		public static String dockerContainerDescription;
 		public static String dockerContainerName;
+		public static String dockerContainerTitle;
 
 		static {
 			initializeMessages(DockerServerSettingComposite.class.getName(), Msgs.class);
 		}
 
 	}
+
 }

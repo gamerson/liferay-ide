@@ -17,7 +17,6 @@ package com.liferay.ide.gradle.core;
 import aQute.bnd.osgi.Jar;
 
 import com.liferay.blade.gradle.tooling.DefaultModel;
-import com.liferay.blade.gradle.tooling.ProjectInfo;
 import com.liferay.ide.core.BaseLiferayProject;
 import com.liferay.ide.core.Event;
 import com.liferay.ide.core.EventListener;
@@ -39,6 +38,7 @@ import com.liferay.ide.server.core.portal.PortalBundle;
 
 import java.io.File;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,6 +62,7 @@ import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+
 import org.gradle.tooling.model.GradleProject;
 
 /**
@@ -154,7 +155,7 @@ public class LiferayGradleProject
 			if (projectModel == null) {
 				return null;
 			}
-			
+
 			final String projectPath = projectModel.getPath();
 
 			if (cleanBuild) {
@@ -212,6 +213,7 @@ public class LiferayGradleProject
 		String[] fileNames = buildFolder.list();
 
 		// find the only file
+
 		if ((fileNames != null) && (fileNames.length == 1)) {
 			File outputFile = new File(buildFolder, fileNames[0]);
 
@@ -237,12 +239,12 @@ public class LiferayGradleProject
 				}
 
 				Set<String> pluginClassNames = model.getPluginClassNames();
-				
+
 				GradleProject gradleModel = LiferayGradleCore.getToolingModel(GradleProject.class, gradleProject);
-				
-				 Map<String, Set<File>> projectOutputFilesMap = model.getProjectOutputFiles();
-				
-				 Set<File> outputFiles = projectOutputFilesMap.get(gradleModel.getPath());
+
+				Map<String, Set<File>> projectOutputFilesMap = model.getProjectOutputFiles();
+
+				Set<File> outputFiles = projectOutputFilesMap.get(gradleModel.getPath());
 
 				if (ListUtil.isNotEmpty(outputFiles)) {
 

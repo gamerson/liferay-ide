@@ -20,6 +20,7 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

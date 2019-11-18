@@ -1,7 +1,22 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
 package com.liferay.ide.server.core.portal.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.StopContainerCmd;
+
 import com.liferay.ide.server.core.ILiferayServerBehavior;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.portal.PortalServerBehavior;
@@ -26,7 +41,11 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServer.IOperationListener;
 
-public class PortalDockerServerBehavior extends PortalServerBehavior implements ILiferayServerBehavior, IJavaLaunchConfigurationConstants{
+/**
+ * @author Simon Jiang
+ */
+public class PortalDockerServerBehavior
+	extends PortalServerBehavior implements IJavaLaunchConfigurationConstants, ILiferayServerBehavior {
 
 	public static final String ATTR_STOP = "stop-server";
 
@@ -56,7 +75,6 @@ public class PortalDockerServerBehavior extends PortalServerBehavior implements 
 		setProcess(null);
 
 		if (_processListener != null) {
-			
 			DebugPlugin debugPlugin = DebugPlugin.getDefault();
 
 			debugPlugin.removeDebugEventListener(_processListener);
@@ -67,7 +85,6 @@ public class PortalDockerServerBehavior extends PortalServerBehavior implements 
 		setServerState(IServer.STATE_STOPPED);
 
 		_watchProjects.clear();
-	
 	}
 
 	@Override
@@ -181,7 +198,7 @@ public class PortalDockerServerBehavior extends PortalServerBehavior implements 
 
 	@Override
 	public void stop(boolean force) {
-		if (force) {	
+		if (force) {
 			try {
 				_executStopCommand();
 
@@ -269,7 +286,7 @@ public class PortalDockerServerBehavior extends PortalServerBehavior implements 
 		return buf.toString();
 	}
 
-	protected void setProcess(IProcess newProcess){
+	protected void setProcess(IProcess newProcess) {
 		if ((_process != null) && !_process.isTerminated()) {
 			try {
 				_process.terminate();
@@ -310,13 +327,14 @@ public class PortalDockerServerBehavior extends PortalServerBehavior implements 
 		try {
 			DockerClient dockerClient = LiferayDockerClient.getDockerClient();
 
-			PortalDockerServer dockerServer = (PortalDockerServer)getServer().loadAdapter(PortalDockerServer.class, null);
+			PortalDockerServer dockerServer = (PortalDockerServer)getServer().loadAdapter(
+				PortalDockerServer.class, null);
 
 			StopContainerCmd stopContainerCmd = dockerClient.stopContainerCmd(dockerServer.getContainerId());
 
 			stopContainerCmd.exec();
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
