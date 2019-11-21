@@ -14,7 +14,7 @@
 
 package com.liferay.ide.gradle.core;
 
-import com.liferay.blade.gradle.tooling.DefaultModel;
+import com.liferay.blade.gradle.tooling.ProjectInfo;
 import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
@@ -109,16 +109,16 @@ public class LiferayProjectConfigurator implements ProjectConfigurator {
 					return;
 				}
 
-				final DefaultModel customModel = LiferayGradleCore.getToolingModel(DefaultModel.class, project);
+				final ProjectInfo projectInfo = LiferayGradleCore.getToolingModel(ProjectInfo.class, project);
 
-				if (customModel == null) {
+				if (projectInfo == null) {
 					throw new CoreException(
 						LiferayGradleCore.createErrorStatus("Unable to get read gradle configuration"));
 				}
 
-				Set<String> pluginClassNames = customModel.getPluginClassNames();
+				Set<String> pluginClassNames = projectInfo.getPluginClassNames();
 
-				if (customModel.isLiferayProject() || pluginClassNames.contains("org.gradle.api.plugins.WarPlugin") ||
+				if (projectInfo.isLiferayProject() || pluginClassNames.contains("org.gradle.api.plugins.WarPlugin") ||
 					pluginClassNames.contains("com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin")) {
 
 					LiferayNature.addLiferayNature(project, monitor);

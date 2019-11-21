@@ -53,6 +53,34 @@ public class PortalDockerServerBehavior
 		_watchProjects = new LinkedHashSet<>();
 	}
 
+	@Override
+	public void addProcessListener(IProcess newProcess) {
+		if ((_processListener != null) || (_process == null)) {
+			return;
+		}
+
+		_processListener = new IDebugEventSetListener() {
+
+			@Override
+			public void handleDebugEvents(DebugEvent[] events) {
+				if (events != null) {
+					for (DebugEvent event : events) {
+						if ((_process != null) && _process.equals(event.getSource()) &&
+							(event.getKind() == DebugEvent.TERMINATE)) {
+
+							cleanup();
+						}
+					}
+				}
+			}
+
+		};
+
+		DebugPlugin debugPlugin = DebugPlugin.getDefault();
+
+		debugPlugin.addDebugEventListener(_processListener);
+	}
+
 	public void cleanup() {
 		if (startedThread != null) {
 			startedThread.stop();
