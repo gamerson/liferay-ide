@@ -236,13 +236,11 @@ public class PortalDockerServerMonitorProcess implements IProcess {
 										sleep(500);
 									}
 									catch (Exception e) {
-										e.printStackTrace();
 									}
 								}
 								while (!debugPortStarted);
 							}
 							catch (Exception e) {
-								e.printStackTrace();
 							}
 						}
 
