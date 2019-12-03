@@ -55,7 +55,7 @@ public class PortalDockerServerBehavior
 
 	@Override
 	public void addProcessListener(IProcess newProcess) {
-		if ((_processListener != null) || (_process == null)) {
+		if ((_processListener != null) || (newProcess == null)) {
 			return;
 		}
 
@@ -65,7 +65,7 @@ public class PortalDockerServerBehavior
 			public void handleDebugEvents(DebugEvent[] events) {
 				if (events != null) {
 					for (DebugEvent event : events) {
-						if ((_process != null) && _process.equals(event.getSource()) &&
+						if ((newProcess != null) && newProcess.equals(event.getSource()) &&
 							(event.getKind() == DebugEvent.TERMINATE)) {
 
 							cleanup();
