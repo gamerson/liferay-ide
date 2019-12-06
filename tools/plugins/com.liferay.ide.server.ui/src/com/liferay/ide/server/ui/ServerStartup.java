@@ -17,8 +17,6 @@ package com.liferay.ide.server.ui;
 import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,9 +29,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Date;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -143,18 +139,6 @@ public class ServerStartup implements IStartup {
 		};
 	}
 
-	private SDK _createSDKfromMemento(IMemento memento) {
-		SDK sdk = new SDK();
-
-		sdk.setName(memento.getString("name"));
-
-		IPath location = Path.fromPortableString(memento.getString("location"));
-
-		sdk.setLocation(location.makeAbsolute());
-
-		return sdk;
-	}
-
 	private boolean _hasGlobalSettings() {
 		File globalSettingsDir = LiferayCore.GLOBAL_SETTINGS_PATH.toFile();
 
@@ -210,34 +194,6 @@ public class ServerStartup implements IStartup {
 						}
 						catch (Exception e) {
 							LiferayServerUI.logError("Unable to load runtime from memento", e);
-						}
-					}
-				}
-			}
-		}
-		catch (IOException ioe) {
-		}
-	}
-
-	private void _importGlobalSDKs(File sdksFile) {
-		try (InputStream inputStream = new FileInputStream(sdksFile)) {
-			SDKManager manager = SDKManager.getInstance();
-
-			IMemento sdksMemento = XMLMemento.loadMemento(inputStream);
-
-			if (sdksMemento != null) {
-				IMemento[] sdks = sdksMemento.getChildren("sdk");
-
-				if (ListUtil.isNotEmpty(sdks)) {
-					for (IMemento sdkMemento : sdks) {
-						SDK newSDK = _createSDKfromMemento(sdkMemento);
-
-						if (newSDK != null) {
-							SDK existingSDK = manager.getSDK(newSDK.getName());
-
-							if (existingSDK == null) {
-								manager.addSDK(newSDK);
-							}
 						}
 					}
 				}
@@ -303,12 +259,6 @@ public class ServerStartup implements IStartup {
 		File settingsDir = LiferayCore.GLOBAL_SETTINGS_PATH.toFile();
 
 		if (FileUtil.exists(settingsDir)) {
-			File sdks = new File(settingsDir, "sdks.xml");
-
-			if (FileUtil.exists(sdks)) {
-				_importGlobalSDKs(sdks);
-			}
-
 			File runtimes = new File(settingsDir, "runtimes.xml");
 
 			if (FileUtil.exists(runtimes)) {

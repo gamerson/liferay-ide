@@ -28,7 +28,6 @@ import com.liferay.ide.portlet.core.PortletCore;
 import com.liferay.ide.portlet.core.dd.LiferayDisplayDescriptorHelper;
 import com.liferay.ide.portlet.core.dd.PortletDescriptorHelper;
 import com.liferay.ide.project.core.IPluginWizardFragmentProperties;
-import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 import com.liferay.ide.server.util.ServerUtil;
 
@@ -818,20 +817,20 @@ public class NewPortletClassDataModelProvider
 				categories = portal.getPortletCategories();
 
 				for (IProject workspaceProject : CoreUtil.getAllProjects()) {
-					if (ProjectUtil.isPortletProject(workspaceProject)) {
-						LiferayDisplayDescriptorHelper liferayDisplayDH = new LiferayDisplayDescriptorHelper(
-							workspaceProject);
+					//					if (ProjectUtil.isPortletProject(workspaceProject)) {
+					LiferayDisplayDescriptorHelper liferayDisplayDH = new LiferayDisplayDescriptorHelper(
+						workspaceProject);
 
-						String[] portletCategories = liferayDisplayDH.getAllPortletCategories();
+					String[] portletCategories = liferayDisplayDH.getAllPortletCategories();
 
-						if (ListUtil.isNotEmpty(portletCategories)) {
-							for (String portletCategory : portletCategories) {
-								if (_findExistingCategory(portletCategory) == null) {
-									categories.put(portletCategory, portletCategory);
-								}
+					if (ListUtil.isNotEmpty(portletCategories)) {
+						for (String portletCategory : portletCategories) {
+							if (_findExistingCategory(portletCategory) == null) {
+								categories.put(portletCategory, portletCategory);
 							}
 						}
 					}
+					//					}
 				}
 			}
 		}

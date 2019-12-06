@@ -100,6 +100,7 @@ Export-Package: com.liferay.ide.core,
 Bundle-ClassPath: .,
  lib/freemarker-2.3.17-patched.jar,
  lib/commons-configuration-1.6.jar,
+ lib/commons-compress-1.19.jar,
  lib/org.apache.httpcomponents.httpclient_4.2.1.jar,
  lib/org.apache.httpcomponents.httpcore_4.2.1.jar,
  lib/org.apache.httpcomponents.httpmime_4.2.1.jar

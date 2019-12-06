@@ -646,30 +646,6 @@
 		</classpathContainerInitializer>
 	</extension>
 	<extension
-		point="com.liferay.ide.core.liferayProjectProviders"
-	>
-		<liferayProjectProvider
-			class="com.liferay.ide.project.core.PluginsSDKProjectProvider"
-			default="true"
-			displayName="Ant (liferay-plugins-sdk)"
-			id="com.liferay.ide.project.core.runtimeProjectProvider"
-			priority="normal"
-			projectType="plugin"
-			shortName="ant"
-		>
-		</liferayProjectProvider>
-	</extension>
-	<extension
-		id="LiferayProjectValidator"
-		name="%liferay.project.validator.name"
-		point="org.eclipse.wst.common.project.facet.core.validators"
-	>
-		<validator
-			class="com.liferay.ide.project.core.PluginsSDKProjectRuntimeValidator"
-		>
-		</validator>
-	</extension>
-	<extension
 		id="LiferayProjectMarker"
 		name="%liferay.project.problem.name"
 		point="org.eclipse.core.resources.markers"

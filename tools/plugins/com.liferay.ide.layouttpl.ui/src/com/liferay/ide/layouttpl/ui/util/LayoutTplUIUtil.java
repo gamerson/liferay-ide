@@ -18,8 +18,6 @@ import com.liferay.ide.layouttpl.core.model.PortletColumnElement;
 import com.liferay.ide.layouttpl.core.model.PortletLayoutElement;
 import com.liferay.ide.layouttpl.ui.parts.PortletLayoutEditPart;
 import com.liferay.ide.layouttpl.ui.parts.PortletRowLayoutEditPart;
-import com.liferay.ide.project.core.facet.IPluginFacetConstants;
-import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.util.List;
 
@@ -102,7 +100,10 @@ public class LayoutTplUIUtil {
 	}
 
 	public static boolean isLayoutTplProject(IProject project) {
-		return ProjectUtil.hasFacet(project, IPluginFacetConstants.LIFERAY_LAYOUTTPL_PROJECT_FACET);
+		//		return ProjectUtil.hasFacet(project, IPluginFacetConstants.LIFERAY_LAYOUTTPL_PROJECT_FACET);
+		//TODO
+
+		return true;
 	}
 
 }

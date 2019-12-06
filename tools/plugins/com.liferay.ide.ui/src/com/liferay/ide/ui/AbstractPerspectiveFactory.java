@@ -73,8 +73,6 @@ public abstract class AbstractPerspectiveFactory implements IPerspectiveFactory 
 	public static final String ID_NEW_PLUGIN_PROJECT_WIZARD_EXISTING_SOURCE =
 		"com.liferay.ide.eclipse.project.ui.newProjectWizardExistingSource";
 
-	public static final String ID_NEW_PORTLET_WIZARD = "com.liferay.ide.eclipse.portlet.ui.wizard.portlet";
-
 	public static final String ID_NEW_SERVICE_BUILDER_WIZARD =
 		"com.liferay.ide.eclipse.portlet.ui.wizard.servicebuilder";
 
@@ -111,16 +109,8 @@ public abstract class AbstractPerspectiveFactory implements IPerspectiveFactory 
 		layout.addNewWizardShortcut(ID_NEW_JSF_MODULE_WIZARD);
 		layout.addNewWizardShortcut(ID_NEW_MODULE_FRAGMENT_PROJECT_WIZARD);
 		layout.addNewWizardShortcut(ID_NEW_WORKSPACE_PROJECT_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_PLUGIN_PROJECT_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_PLUGIN_PROJECT_WIZARD_EXISTING_SOURCE);
 		layout.addNewWizardShortcut(ID_NEW_COMPONENT_WIZARD);
 		layout.addNewWizardShortcut(ID_NEW_MODULE_FRAGMENT_FILES_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_PORTLET_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_JSF_PORTLET_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_VAADIN_PORTLET_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_HOOK_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_SERVICE_BUILDER_WIZARD);
-		layout.addNewWizardShortcut(ID_NEW_LAYOUT_TEMPLATE_WIZARD);
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewPackageCreationWizard");
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewClassCreationWizard");
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewInterfaceCreationWizard");

@@ -69,7 +69,7 @@ public class LiferayHookXmlTests extends XmlSearchTestsBase
     {
         if( project == null )
         {
-            project = super.getProject( "hooks", "Liferay-Hook-Xml-Test-hook" );
+            project = super.getProject( "Liferay-Hook-Xml-Test-hook" );
             deleteOtherProjects( project );
         }
 

@@ -15,21 +15,14 @@
 package com.liferay.ide.maven.core;
 
 import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.IWebProject;
-import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.hook.core.dd.HookDescriptorHelper;
-import com.liferay.ide.hook.core.util.HookUtil;
-import com.liferay.ide.project.core.facet.IPluginFacetConstants;
-import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,13 +63,7 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.ComponentUtilities;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 import org.osgi.framework.Version;
@@ -147,10 +134,6 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 		monitor.worked(25);
 
 		MavenProblemInfo installProblem = null;
-
-		if (_shouldInstallNewLiferayFacet(facetedProject)) {
-			installProblem = _installNewLiferayFacet(facetedProject, request, monitor);
-		}
 
 		if (_shouldAddLiferayNature(mavenProject, facetedProject)) {
 			LiferayNature.addLiferayNature(project, monitor);
@@ -237,33 +220,6 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 					// add a link to our m2e-liferay/theme-resources folder into deployment assembly
 
 					WTPProjectsUtil.insertLinkBefore(project, themeFolder, warPath, _rootPath, monitor);
-				}
-			}
-		}
-
-		if ((project != null) && ProjectUtil.isHookProject(project)) {
-			HookDescriptorHelper hookDescriptor = new HookDescriptorHelper(project);
-
-			String customJSPFolder = hookDescriptor.getCustomJSPFolder(null);
-
-			if (customJSPFolder != null) {
-				IWebProject webproject = LiferayCore.create(IWebProject.class, project);
-
-				if ((webproject != null) && (webproject.getDefaultDocrootFolder() != null)) {
-					IFolder docFolder = webproject.getDefaultDocrootFolder();
-					IPath newPath = Path.fromOSString(customJSPFolder);
-
-					IPath fullPath = docFolder.getFullPath();
-
-					IPath pathValue = fullPath.append(newPath);
-
-					boolean disableCustomJspValidation = LiferayMavenCore.getPreferenceBoolean(
-						LiferayMavenCore.PREF_DISABLE_CUSTOM_JSP_VALIDATION);
-
-					if (disableCustomJspValidation) {
-						HookUtil.configureJSPSyntaxValidationExclude(
-							project, project.getFolder(pathValue.makeRelativeTo(project.getFullPath())), true);
-					}
 				}
 			}
 		}
@@ -457,115 +413,6 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 		return warnings;
 	}
 
-	private IProjectFacetVersion _getLiferayProjectFacet(IFacetedProject facetedProject) {
-		IProjectFacetVersion retval = null;
-
-		if (facetedProject != null) {
-			for (IProjectFacetVersion fv : facetedProject.getProjectFacets()) {
-				IProjectFacet projectFacet = fv.getProjectFacet();
-
-				String id = projectFacet.getId();
-
-				if (id.contains("liferay.")) {
-					retval = fv;
-
-					break;
-				}
-			}
-		}
-
-		return retval;
-	}
-
-	private Action _getNewLiferayFacetInstallAction(String pluginType) {
-		Action retval = null;
-
-		IProjectFacetVersion newFacet = null;
-
-		IDataModelProvider dataModel = null;
-
-		if (ILiferayMavenConstants.PORTLET_PLUGIN_TYPE.equals(pluginType)) {
-			newFacet = IPluginFacetConstants.LIFERAY_PORTLET_PROJECT_FACET.getDefaultVersion();
-			dataModel = new MavenPortletPluginFacetInstallProvider();
-		}
-		else if (ILiferayMavenConstants.HOOK_PLUGIN_TYPE.equals(pluginType)) {
-			newFacet = IPluginFacetConstants.LIFERAY_HOOK_PROJECT_FACET.getDefaultVersion();
-			dataModel = new MavenHookPluginFacetInstallProvider();
-		}
-		else if (ILiferayMavenConstants.EXT_PLUGIN_TYPE.equals(pluginType)) {
-			newFacet = IPluginFacetConstants.LIFERAY_EXT_PROJECT_FACET.getDefaultVersion();
-			dataModel = new MavenExtPluginFacetInstallProvider();
-		}
-		else if (ILiferayMavenConstants.LAYOUTTPL_PLUGIN_TYPE.equals(pluginType)) {
-			newFacet = IPluginFacetConstants.LIFERAY_LAYOUTTPL_PROJECT_FACET.getDefaultVersion();
-			dataModel = new MavenLayoutTplPluginFacetInstallProvider();
-		}
-		else if (ILiferayMavenConstants.THEME_PLUGIN_TYPE.equals(pluginType)) {
-			newFacet = IPluginFacetConstants.LIFERAY_THEME_PROJECT_FACET.getDefaultVersion();
-			dataModel = new MavenThemePluginFacetInstallProvider();
-		}
-		else if (ILiferayMavenConstants.WEB_PLUGIN_TYPE.equals(pluginType)) {
-			newFacet = IPluginFacetConstants.LIFERAY_WEB_PROJECT_FACET.getDefaultVersion();
-			dataModel = new MavenWebPluginFacetInstallProvider();
-		}
-
-		if (newFacet != null) {
-			IDataModel config = DataModelFactory.createDataModel(dataModel);
-
-			retval = new Action(Action.Type.INSTALL, newFacet, config);
-		}
-
-		return retval;
-	}
-
-	// Copied from
-	// org.eclipse.m2e.wtp.AbstractProjectConfiguratorDelegate#configureDeployedName()
-
-	private MavenProblemInfo _installNewLiferayFacet(
-			IFacetedProject facetedProject, ProjectConfigurationRequest request, IProgressMonitor monitor)
-		throws CoreException {
-
-		MavenProblemInfo retval = null;
-
-		String pluginType = MavenUtil.getLiferayMavenPluginType(request.getMavenProject());
-
-		if (pluginType == null) {
-			pluginType = ILiferayMavenConstants.DEFAULT_PLUGIN_TYPE;
-		}
-
-		Plugin liferayMavenPlugin = MavenUtil.getPlugin(
-			request.getMavenProjectFacade(), ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_KEY, monitor);
-		Action action = _getNewLiferayFacetInstallAction(pluginType);
-
-		if (action != null) {
-			try {
-				facetedProject.modify(Collections.singleton(action), monitor);
-			}
-			catch (Exception e) {
-				try {
-					SourceLocation location = SourceLocationHelper.findLocation(
-						liferayMavenPlugin, SourceLocationHelper.CONFIGURATION);
-
-					Throwable cause = e.getCause();
-
-					String problemMsg = NLS.bind(
-						Msgs.facetInstallError, pluginType, (cause != null) ? cause.getMessage() : e.getMessage());
-
-					retval = new MavenProblemInfo(location, e);
-
-					retval.setMessage(problemMsg);
-				}
-				catch (Exception e1) {
-				}
-
-				LiferayMavenCore.logError(
-					"Unable to install liferay facet " + action.getProjectFacetVersion(), e.getCause());
-			}
-		}
-
-		return retval;
-	}
-
 	private void _removeLiferayMavenMarkers(IProject project) throws CoreException {
 		this._mavenMarkerManager.deleteMarkers(
 			project, ILiferayMavenConstants.LIFERAY_MAVEN_MARKER_CONFIGURATION_WARNING_ID);
@@ -625,14 +472,6 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 		}
 
 		return configureAsLiferayPlugin;
-	}
-
-	private boolean _shouldInstallNewLiferayFacet(IFacetedProject facetedProject) {
-		if (_getLiferayProjectFacet(facetedProject) == null) {
-			return true;
-		}
-
-		return false;
 	}
 
 	private IFolder _warSourceDirectory(IProject project, MavenProject mavenProject) {

@@ -14,7 +14,9 @@
 
 package com.liferay.ide.core.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -31,6 +33,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.osgi.util.NLS;
@@ -42,6 +48,28 @@ import org.eclipse.osgi.util.NLS;
  *         Komissarchik</a>
  */
 public final class ZipUtil {
+
+	public static void decompressTarGz(File file, String outputDir) throws IOException {
+		try (TarArchiveInputStream tarIn = new TarArchiveInputStream(
+				new GzipCompressorInputStream(new BufferedInputStream(new FileInputStream(file))))) {
+
+			_createDirectory(outputDir, null);
+			TarArchiveEntry entry = null;
+
+			while ((entry = tarIn.getNextTarEntry()) != null) {
+				if (entry.isDirectory()) {
+					_createDirectory(outputDir, entry.getName());
+				}
+				else {
+					try (OutputStream out = new FileOutputStream(
+							new File(outputDir + File.separator + entry.getName()))) {
+
+						_writeFile(tarIn, out);
+					}
+				}
+			}
+		}
+	}
 
 	public static String getFirstZipEntryName(File zipFile) throws Exception {
 		ZipFile zip = new ZipFile(zipFile);
@@ -91,7 +119,22 @@ public final class ZipUtil {
 	}
 
 	public static void unzip(File file, File destdir, IProgressMonitor monitor) throws IOException {
-		unzip(file, null, destdir, monitor);
+		if (!file.exists()) {
+			return;
+		}
+
+		try {
+			String fileExt = file.getName();
+
+			if (fileExt.endsWith(".zip")) {
+				unzip(file, null, destdir, monitor);
+			}
+			else if (fileExt.endsWith(".tar.gz")) {
+				decompressTarGz(file, destdir.getAbsolutePath());
+			}
+		}
+		catch (Exception e) {
+		}
 	}
 
 	public static void unzip(File file, File destDir, PathFilter pathFilter) throws IOException {
@@ -298,6 +341,24 @@ public final class ZipUtil {
 		}
 	}
 
+	private static void _createDirectory(String outputDir, String subdir) {
+		File file = new File(outputDir);
+
+		if (!((subdir == null) || CoreUtil.isNullOrEmpty(subdir.trim()))) {
+			file = new File(outputDir + File.separator + subdir);
+		}
+
+		if (!file.exists()) {
+			File parentFile = file.getParentFile();
+
+			if (!parentFile.exists()) {
+				parentFile.mkdirs();
+			}
+
+			file.mkdirs();
+		}
+	}
+
 	private static void _delete(File f) throws IOException {
 		if (f.isDirectory()) {
 			for (File child : f.listFiles()) {
@@ -317,6 +378,15 @@ public final class ZipUtil {
 			String msg = "Could not create dir: " + dir.getPath();
 
 			throw new IOException(msg);
+		}
+	}
+
+	private static void _writeFile(InputStream in, OutputStream out) throws IOException {
+		int length;
+		byte[] b = new byte[_BUFFERSIZE];
+
+		while ((length = in.read(b)) != -1) {
+			out.write(b, 0, length);
 		}
 	}
 
@@ -374,6 +444,8 @@ public final class ZipUtil {
 
 	private ZipUtil() {
 	}
+
+	private static final int _BUFFERSIZE = 1024 * 100;
 
 	private static final class Resources extends NLS {
 

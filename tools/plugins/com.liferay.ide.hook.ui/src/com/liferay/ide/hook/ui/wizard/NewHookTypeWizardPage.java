@@ -18,7 +18,6 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.hook.core.operation.INewHookDataModelProperties;
 import com.liferay.ide.hook.ui.HookUI;
-import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.wizard.LiferayDataModelWizardPage;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -211,7 +210,9 @@ public class NewHookTypeWizardPage extends LiferayDataModelWizardPage implements
 	protected boolean isProjectValid(IProject project) {
 		IFile liferayHookXml = project.getFile("src/main/webapp/WEB-INF/liferay-hook.xml");
 
-		if (ProjectUtil.isHookProject(project) || ProjectUtil.isPortletProject(project) || liferayHookXml.exists()) {
+		//TODO
+
+		if (liferayHookXml.exists()) {
 			return true;
 		}
 
