@@ -14,16 +14,7 @@
 
 package com.liferay.ide.project.core;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.project.core.descriptor.IDescriptorOperation;
-import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
-import com.liferay.ide.project.core.modules.IComponentTemplate;
-import com.liferay.ide.project.core.modules.LiferayComponentTemplateReader;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -31,8 +22,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -41,8 +30,15 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-
 import org.osgi.framework.BundleContext;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.project.core.descriptor.IDescriptorOperation;
+import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
+import com.liferay.ide.project.core.modules.IComponentTemplate;
+import com.liferay.ide.project.core.modules.LiferayComponentTemplateReader;
 
 /**
  * The activator class controls the plugin life cycle
@@ -293,25 +289,11 @@ public class ProjectCore extends Plugin {
 		return status;
 	}
 
-	public ProjectCore() {
-		_pluginPackageResourceListener = new PluginPackageResourceListener();
-		_sdkBuildPropertiesResourceListener = new SDKBuildPropertiesResourceListener();
-		_sdkProjectDeleteListener = new SDKProjectDeleteListener();
-	}
-
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
 		_plugin = this;
-
-		IWorkspace workspace = CoreUtil.getWorkspace();
-
-		workspace.addResourceChangeListener(_pluginPackageResourceListener, IResourceChangeEvent.POST_CHANGE);
-
-		workspace.addResourceChangeListener(_sdkBuildPropertiesResourceListener, IResourceChangeEvent.POST_CHANGE);
-
-		workspace.addResourceChangeListener(_sdkProjectDeleteListener, IResourceChangeEvent.PRE_DELETE);
 	}
 
 	@Override
@@ -319,20 +301,6 @@ public class ProjectCore extends Plugin {
 		_plugin = null;
 
 		super.stop(context);
-
-		IWorkspace workspace = CoreUtil.getWorkspace();
-
-		if (_pluginPackageResourceListener != null) {
-			workspace.removeResourceChangeListener(_pluginPackageResourceListener);
-		}
-
-		if (_sdkBuildPropertiesResourceListener != null) {
-			workspace.removeResourceChangeListener(_sdkBuildPropertiesResourceListener);
-		}
-
-		if (_sdkProjectDeleteListener != null) {
-			workspace.removeResourceChangeListener(_sdkProjectDeleteListener);
-		}
 	}
 
 	private static LiferayDescriptorHelper[] _getDescriptorHelpers(
@@ -365,9 +333,5 @@ public class ProjectCore extends Plugin {
 
 	private static LiferayComponentTemplateReader _componentTemplateReader;
 	private static ProjectCore _plugin;
-	private static PluginPackageResourceListener _pluginPackageResourceListener;
 	private static IPortletFramework[] _portletFrameworks;
-	private static SDKBuildPropertiesResourceListener _sdkBuildPropertiesResourceListener;
-	private static SDKProjectDeleteListener _sdkProjectDeleteListener;
-
 }

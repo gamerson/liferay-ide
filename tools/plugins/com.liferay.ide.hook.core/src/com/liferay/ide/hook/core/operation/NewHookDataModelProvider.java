@@ -14,18 +14,6 @@
 
 package com.liferay.ide.hook.core.operation;
 
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.IWebProject;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.hook.core.HookCore;
-import com.liferay.ide.hook.core.dd.HookDescriptorHelper;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +22,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -48,7 +35,14 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.internal.operation.ArtifactEditOperationDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
-import org.osgi.framework.Version;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.IWebProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.hook.core.HookCore;
+import com.liferay.ide.hook.core.dd.HookDescriptorHelper;
 
 /**
  * @author Gregory Amerson
@@ -238,21 +232,6 @@ public class NewHookDataModelProvider
 	@Override
 	public IStatus validate(String propertyName) {
 		boolean is70 = false;
-
-		try {
-			SDK sdk = SDKUtil.getWorkspaceSDK();
-
-			if (sdk != null) {
-				Version version = Version.parseVersion(sdk.getVersion());
-				Version sdk70 = ILiferayConstants.V700;
-
-				if (CoreUtil.compareVersions(version, sdk70) >= 0) {
-					is70 = true;
-				}
-			}
-		}
-		catch (CoreException ce) {
-		}
 
 		if (CUSTOM_JSPS_FOLDER.equals(propertyName) && getBooleanProperty(CREATE_CUSTOM_JSPS)) {
 			String jspFolder = getStringProperty(CUSTOM_JSPS_FOLDER);

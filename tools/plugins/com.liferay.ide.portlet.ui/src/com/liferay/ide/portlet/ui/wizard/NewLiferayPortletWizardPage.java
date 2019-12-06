@@ -354,7 +354,7 @@ public class NewLiferayPortletWizardPage
 	}
 
 	protected boolean isProjectValid(IProject project) {
-		return ProjectUtil.isPortletProject(project);
+		return true; /* ProjectUtil.isPortletProject(project); */
 	}
 
 	protected Button addToControlPanelButton;

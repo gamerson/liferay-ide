@@ -14,16 +14,13 @@
 
 package com.liferay.ide.portlet.ui.navigator.actions;
 
-import com.liferay.ide.portlet.ui.navigator.PortletResourcesRootNode;
-import com.liferay.ide.portlet.ui.navigator.PortletsNode;
-import com.liferay.ide.portlet.ui.wizard.NewPortletWizard;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.actions.BaseSelectionListenerAction;
+
+import com.liferay.ide.portlet.ui.navigator.PortletResourcesRootNode;
+import com.liferay.ide.portlet.ui.navigator.PortletsNode;
 
 /**
  * @author Kamesh Sampath
@@ -52,14 +49,14 @@ public class NewPortletAction extends BaseSelectionListenerAction {
 
 				IProject currentProject = parent.getProject();
 
-				NewPortletWizard newPortletWizard = new NewPortletWizard(currentProject);
-
-				Display display = Display.getDefault();
-
-				WizardDialog wizardDialog = new WizardDialog(display.getActiveShell(), newPortletWizard);
-
-				wizardDialog.create();
-				wizardDialog.open();
+//				NewPortletWizard newPortletWizard = new NewPortletWizard(currentProject);
+//
+//				Display display = Display.getDefault();
+//
+//				WizardDialog wizardDialog = new WizardDialog(display.getActiveShell(), newPortletWizard);
+//
+//				wizardDialog.create();
+//				wizardDialog.open();
 			}
 		}
 	}

@@ -100,15 +100,7 @@ public class ThemeCore extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		_plugin = null;
 		super.stop(context);
-
-		if (_themeDiffResourceListener != null) {
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-			workspace.removeResourceChangeListener(_themeDiffResourceListener);
-		}
 	}
 
 	private static ThemeCore _plugin;
-	private static ThemeDiffResourceListener _themeDiffResourceListener;
-
 }

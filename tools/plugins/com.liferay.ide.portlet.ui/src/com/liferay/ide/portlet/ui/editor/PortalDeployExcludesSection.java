@@ -14,40 +14,17 @@
 
 package com.liferay.ide.portlet.ui.editor;
 
-import com.liferay.ide.core.model.IBaseModel;
-import com.liferay.ide.core.model.IModelChangedEvent;
-import com.liferay.ide.core.model.IModelChangedListener;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.portlet.core.IPluginPackageModel;
-import com.liferay.ide.portlet.core.PluginPackageModel;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.ui.form.DefaultContentProvider;
-import com.liferay.ide.ui.form.FormLayoutFactory;
-import com.liferay.ide.ui.form.IDEFormEditor;
-import com.liferay.ide.ui.form.IDEFormPage;
-import com.liferay.ide.ui.form.TablePart;
-import com.liferay.ide.ui.form.TableSection;
-import com.liferay.ide.ui.wizard.ExternalFileSelectionDialog;
-
 import java.io.File;
-
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -55,7 +32,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -66,13 +42,27 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+
+import com.liferay.ide.core.model.IBaseModel;
+import com.liferay.ide.core.model.IModelChangedEvent;
+import com.liferay.ide.core.model.IModelChangedListener;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.portlet.core.IPluginPackageModel;
+import com.liferay.ide.portlet.core.PluginPackageModel;
+import com.liferay.ide.ui.form.DefaultContentProvider;
+import com.liferay.ide.ui.form.FormLayoutFactory;
+import com.liferay.ide.ui.form.IDEFormEditor;
+import com.liferay.ide.ui.form.IDEFormPage;
+import com.liferay.ide.ui.form.TablePart;
+import com.liferay.ide.ui.form.TableSection;
 
 /**
  * @author Gregory Amerson
@@ -425,51 +415,51 @@ public class PortalDeployExcludesSection
 		IProject project = getProject();
 
 		IFolder docroot = CoreUtil.getDefaultDocrootFolder(project);
-
-		if ((docroot == null) || ProjectUtil.isMavenProject(project) || ProjectUtil.isExtProject(project)) {
-			TablePart tablePart = getTablePart();
-
-			tablePart.setButtonEnabled(_ADD_INDEX, false);
-
-			return;
-		}
-
-		SDK sdk = SDKUtil.getSDK(project);
-
-		IPath sdkLocation = sdk.getLocation();
-
-		String type;
-
-		if (ProjectUtil.isPortletProject(project)) {
-			type = "portlets";
-		}
-		else if (ProjectUtil.isHookProject(project)) {
-			type = "hooks";
-		}
-		else if (ProjectUtil.isWebProject(project)) {
-			type = "webs";
-		}
-		else {
-			type = StringPool.EMPTY;
-		}
-
-		IPath path = sdkLocation.append(type);
-
-		IPath excludeJarPath = path.append(docroot.getFullPath());
-
-		if (excludeJarPath != null) {
-			for (String excludeJar : excludeJars) {
-				if (excludeJar.startsWith("**/WEB-INF/lib/")) {
-					excludeJar = excludeJar.substring(excludeJar.lastIndexOf("/"));
-				}
-
-				File jarFile = new File(FileUtil.getFile(excludeJarPath.append("WEB-INF/lib")), excludeJar.trim());
-
-				if (jarFile.isFile() && jarFile.exists()) {
-					_fJars.add(jarFile);
-				}
-			}
-		}
+//
+//		if ((docroot == null) || ProjectUtil.isMavenProject(project) || ProjectUtil.isExtProject(project)) {
+//			TablePart tablePart = getTablePart();
+//
+//			tablePart.setButtonEnabled(_ADD_INDEX, false);
+//
+//			return;
+//		}
+//
+//		SDK sdk = SDKUtil.getSDK(project);
+//
+//		IPath sdkLocation = sdk.getLocation();
+//
+//		String type;
+//
+//		if (ProjectUtil.isPortletProject(project)) {
+//			type = "portlets";
+//		}
+//		else if (ProjectUtil.isHookProject(project)) {
+//			type = "hooks";
+//		}
+//		else if (ProjectUtil.isWebProject(project)) {
+//			type = "webs";
+//		}
+//		else {
+//			type = StringPool.EMPTY;
+//		}
+//
+//		IPath path = sdkLocation.append(type);
+//
+//		IPath excludeJarPath = path.append(docroot.getFullPath());
+//
+//		if (excludeJarPath != null) {
+//			for (String excludeJar : excludeJars) {
+//				if (excludeJar.startsWith("**/WEB-INF/lib/")) {
+//					excludeJar = excludeJar.substring(excludeJar.lastIndexOf("/"));
+//				}
+//
+//				File jarFile = new File(FileUtil.getFile(excludeJarPath.append("WEB-INF/lib")), excludeJar.trim());
+//
+//				if (jarFile.isFile() && jarFile.exists()) {
+//					_fJars.add(jarFile);
+//				}
+//			}
+//		}
 	}
 
 	/* (non-Javadoc)
@@ -542,61 +532,61 @@ public class PortalDeployExcludesSection
 		IProject project = getProject();
 
 		IFolder docroot = CoreUtil.getDefaultDocrootFolder(project);
-
-		SDK sdk = SDKUtil.getSDK(project);
-
-		IPath sdkLocation = sdk.getLocation();
-
-		String type;
-
-		if (ProjectUtil.isPortletProject(project)) {
-			type = "portlets";
-		}
-		else if (ProjectUtil.isHookProject(project)) {
-			type = "hooks";
-		}
-		else if (ProjectUtil.isWebProject(project)) {
-			type = "webs";
-		}
-		else {
-			type = StringPool.EMPTY;
-		}
-
-		IPath path = sdkLocation.append(type);
-
-		IPath serviceJarPath = path.append(docroot.getFullPath());
-
-		if (serviceJarPath != null) {
-			Shell shell = getPage().getShell();
-			PortalJarViewerFilter filter = new PortalJarViewerFilter(
-				serviceJarPath.toFile(), new String[] {"WEB-INF", "WEB-INF/lib"}, excludeJars);
-
-			ExternalFileSelectionDialog dialog = new ExternalFileSelectionDialog(shell, filter, true, false);
-
-			dialog.setInput(serviceJarPath.toFile());
-
-			dialog.create();
-
-			if (dialog.open() == Window.OK) {
-				Object[] selectedFiles = dialog.getResult();
-
-				try {
-					for (Object o : selectedFiles) {
-						File jar = (File)o;
-
-						if (jar.exists()) {
-							model.addPortalDeployExcludeJar(jar.getName());
-						}
-					}
-				}
-				catch (Exception e) {
-				}
-			}
-		}
-		else {
-			MessageDialog.openInformation(
-				getPage().getShell(), Msgs.liferayPluginPackageEditor, Msgs.notDeterminePortalDirectory);
-		}
+//
+//		SDK sdk = SDKUtil.getSDK(project);
+//
+//		IPath sdkLocation = sdk.getLocation();
+//
+//		String type;
+//
+//		if (ProjectUtil.isPortletProject(project)) {
+//			type = "portlets";
+//		}
+//		else if (ProjectUtil.isHookProject(project)) {
+//			type = "hooks";
+//		}
+//		else if (ProjectUtil.isWebProject(project)) {
+//			type = "webs";
+//		}
+//		else {
+//			type = StringPool.EMPTY;
+//		}
+//
+//		IPath path = sdkLocation.append(type);
+//
+//		IPath serviceJarPath = path.append(docroot.getFullPath());
+//
+//		if (serviceJarPath != null) {
+//			Shell shell = getPage().getShell();
+//			PortalJarViewerFilter filter = new PortalJarViewerFilter(
+//				serviceJarPath.toFile(), new String[] {"WEB-INF", "WEB-INF/lib"}, excludeJars);
+//
+//			ExternalFileSelectionDialog dialog = new ExternalFileSelectionDialog(shell, filter, true, false);
+//
+//			dialog.setInput(serviceJarPath.toFile());
+//
+//			dialog.create();
+//
+//			if (dialog.open() == Window.OK) {
+//				Object[] selectedFiles = dialog.getResult();
+//
+//				try {
+//					for (Object o : selectedFiles) {
+//						File jar = (File)o;
+//
+//						if (jar.exists()) {
+//							model.addPortalDeployExcludeJar(jar.getName());
+//						}
+//					}
+//				}
+//				catch (Exception e) {
+//				}
+//			}
+//		}
+//		else {
+//			MessageDialog.openInformation(
+//				getPage().getShell(), Msgs.liferayPluginPackageEditor, Msgs.notDeterminePortalDirectory);
+//		}
 	}
 
 	private void _handleDown() {

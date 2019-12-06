@@ -343,7 +343,8 @@ public class AddPortletOperation
 	}
 
 	protected boolean shouldGenerateMetaData(IDataModel aModel) {
-		return ProjectUtil.isPortletProject(getTargetProject());
+//		return ProjectUtil.isPortletProject(getTargetProject());
+		return true;
 	}
 
 	protected TemplateContextType portletContextType;

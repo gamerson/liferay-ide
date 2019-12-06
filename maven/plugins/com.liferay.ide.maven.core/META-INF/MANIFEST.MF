@@ -11,7 +11,6 @@ Require-Bundle: biz.aQute.bndlib;bundle-version="[4,5)",
  com.liferay.ide.layouttpl.core,
  com.liferay.ide.project.core,
  com.liferay.ide.server.core,
- com.liferay.ide.theme.core,
  org.apache.commons.io,
  org.eclipse.core.runtime,
  org.eclipse.debug.core,
@@ -38,6 +37,5 @@ Bundle-ClassPath: .,
  lib/maven-portal-support.jar
 Export-Package: com.liferay.ide.maven,
  com.liferay.ide.maven.core,
- com.liferay.ide.maven.core.aether,
- com.liferay.ide.maven.core.model
+ com.liferay.ide.maven.core.aether
 Service-Component: OSGI-INF/com.liferay.ide.maven.core.LiferayMavenLegacyProjectUpdater.xml

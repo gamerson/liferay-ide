@@ -211,7 +211,8 @@ public class NewHookTypeWizardPage extends LiferayDataModelWizardPage implements
 	protected boolean isProjectValid(IProject project) {
 		IFile liferayHookXml = project.getFile("src/main/webapp/WEB-INF/liferay-hook.xml");
 
-		if (ProjectUtil.isHookProject(project) || ProjectUtil.isPortletProject(project) || liferayHookXml.exists()) {
+		//TODO
+		if (liferayHookXml.exists()) {
 			return true;
 		}
 

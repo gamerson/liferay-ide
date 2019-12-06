@@ -14,8 +14,6 @@
 
 package com.liferay.ide.server.ui.portal;
 
-import com.liferay.ide.project.core.util.ProjectUtil;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
@@ -55,9 +53,7 @@ public class BundleModuleArtifactAdapterDelegate extends ModuleArtifactAdapterDe
 		}
 
 		if (project != null) {
-			if (ProjectUtil.is7xServerDeployableProject(project)) {
-				return new WebResource(_getModule(project), project.getProjectRelativePath());
-			}
+			return new WebResource(_getModule(project), project.getProjectRelativePath());
 		}
 
 		return null;

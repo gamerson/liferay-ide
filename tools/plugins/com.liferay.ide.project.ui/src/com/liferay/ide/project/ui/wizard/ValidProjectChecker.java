@@ -14,16 +14,6 @@
 
 package com.liferay.ide.project.ui.wizard;
 
-import com.liferay.ide.core.IBundleProject;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.project.ui.action.NewPluginProjectDropDownAction;
-import com.liferay.ide.ui.util.UIUtil;
-
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -40,6 +30,16 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+
+import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
+import com.liferay.ide.project.core.util.ProjectUtil;
+import com.liferay.ide.project.ui.action.NewPluginProjectDropDownAction;
+import com.liferay.ide.ui.util.UIUtil;
 
 /**
  * @author Cindy Li

@@ -14,6 +14,27 @@
 
 package com.liferay.ide.project.core.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.ServerCore;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.IWorkspaceProject;
 import com.liferay.ide.core.IWorkspaceProjectBuilder;
@@ -23,38 +44,9 @@ import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
 import com.liferay.ide.core.util.WorkspaceConstants;
 import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
 import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.util.ServerUtil;
-
-import java.io.File;
-import java.io.IOException;
-
-import java.nio.file.Files;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.ServerCore;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * @author Andy Wu
@@ -99,34 +91,6 @@ public class LiferayWorkspaceUtil {
 				}
 
 				ServerUtil.addPortalRuntimeAndServer(serverName, bundlesLocation, new NullProgressMonitor());
-
-				IProject pluginsSDK = CoreUtil.getProject(
-					getPluginsSDKDir(FileUtil.toPortableString(project.getLocation())));
-
-				if (FileUtil.exists(pluginsSDK)) {
-					SDK sdk = SDKUtil.createSDKFromLocation(pluginsSDK.getLocation());
-
-					if (sdk != null) {
-						Map<String, String> appServerPropertiesMap = new HashMap<>();
-
-						appServerPropertiesMap.put(
-							"app.server.deploy.dir", FileUtil.toOSString(bundle.getAppServerDeployDir()));
-						appServerPropertiesMap.put("app.server.dir", FileUtil.toOSString(bundle.getAppServerDir()));
-						appServerPropertiesMap.put(
-							"app.server.lib.global.dir", FileUtil.toOSString(bundle.getAppServerLibGlobalDir()));
-						appServerPropertiesMap.put(
-							"app.server.parent.dir", FileUtil.toOSString(bundle.getLiferayHome()));
-						appServerPropertiesMap.put(
-							"app.server.portal.dir", FileUtil.toOSString(bundle.getAppServerPortalDir()));
-						appServerPropertiesMap.put("app.server.type", bundle.getType());
-
-						sdk.addOrUpdateServerProperties(appServerPropertiesMap);
-
-						pluginsSDK.refreshLocal(IResource.DEPTH_INFINITE, null);
-
-						sdk.validate(true);
-					}
-				}
 			}
 		}
 		catch (Exception e) {

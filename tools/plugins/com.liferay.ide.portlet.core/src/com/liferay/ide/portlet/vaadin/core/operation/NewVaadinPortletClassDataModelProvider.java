@@ -14,12 +14,6 @@
 
 package com.liferay.ide.portlet.vaadin.core.operation;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.portlet.core.PortletCore;
-import com.liferay.ide.portlet.core.operation.NewPortletClassDataModelProvider;
-import com.liferay.ide.sdk.core.ISDKConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +26,11 @@ import org.eclipse.jst.j2ee.common.ParamValue;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.portlet.core.PortletCore;
+import com.liferay.ide.portlet.core.operation.NewPortletClassDataModelProvider;
 
 /**
  * @author Henri Sara
@@ -56,9 +55,9 @@ public class NewVaadinPortletClassDataModelProvider
 		else if (DISPLAY_NAME.equals(propertyName) || TITLE.equals(propertyName) || SHORT_TITLE.equals(propertyName)) {
 			return _getPortletName();
 		}
-		else if (CSS_CLASS_WRAPPER.equals(propertyName)) {
-			return _getPortletName().toLowerCase() + ISDKConstants.PORTLET_PLUGIN_PROJECT_SUFFIX;
-		}
+//		else if (CSS_CLASS_WRAPPER.equals(propertyName)) {
+//			return _getPortletName().toLowerCase() + ISDKConstants.PORTLET_PLUGIN_PROJECT_SUFFIX;
+//		}
 		else if (SUPERCLASS.equals(propertyName)) {
 			return QUALIFIED_VAADIN_APPLICATION;
 		}

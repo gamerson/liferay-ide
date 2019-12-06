@@ -262,29 +262,4 @@
 		>
 		</propertyTester>
 	</extension>
-	<extension
-		point="org.eclipse.ui.ide.markerResolution"
-	>
-		<markerResolutionGenerator
-			class="com.liferay.ide.maven.ui.ConfigProblemMarkerResolutionGenerator"
-			markerType="com.liferay.ide.maven.core.configurationProblem"
-		>
-		</markerResolutionGenerator>
-		<markerResolutionGenerator
-			class="com.liferay.ide.maven.ui.MavenConfigProblemMarkerResolutionGenerator"
-			markerType="org.eclipse.m2e.core.maven2Problem.mavenarchiver.error"
-		>
-		</markerResolutionGenerator>
-	</extension>
-	<extension
-		point="org.eclipse.ui.preferencePages"
-	>
-		<page
-			category="com.liferay.ide.ui.preferences.liferay"
-			class="com.liferay.ide.maven.ui.pref.MavenProjectPreferencePage"
-			id="com.liferay.ide.maven.ui.mavenProjectPreferencePage"
-			name="Maven"
-		>
-		</page>
-	</extension>
 </plugin>

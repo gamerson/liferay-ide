@@ -194,28 +194,6 @@
 		</decorator>
 	</extension>
 	<extension
-		point="org.eclipse.ui.newWizards"
-	>
-		<category
-			id="com.liferay.ide.newWizards"
-			name="Liferay"
-		>
-		</category>
-		<wizard
-			category="com.liferay.ide.newWizards"
-			class="com.liferay.ide.kaleo.ui.wizard.NewWorkflowDefinitionWizard"
-			icon="icons/n16/workflow_new_16x16.png"
-			id="com.liferay.ide.kaleo.ui.new.definition"
-			name="Liferay Kaleo Workflow"
-		>
-			<class class="com.liferay.ide.kaleo.ui.wizard.NewWorkflowDefinitionWizard">
-				<parameter name="liferay_extra_artifact" value="true" />
-				<parameter name="menuIndex" value="30" />
-			</class>
-		</wizard>
-	</extension>
-
-	<extension
 		point="com.liferay.ide.kaleo.ui.editorHelpers"
 	>
 

@@ -12,18 +12,10 @@
  * details.
  */
 
-package com.liferay.ide.server.tomcat.core;
-
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileListing;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.core.portal.AbstractPortalBundle;
-import com.liferay.ide.server.tomcat.core.util.LiferayTomcatUtil;
+package com.liferay.ide.server.core.portal;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,13 +36,16 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstall2;
-
 import org.osgi.framework.Version;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileListing;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.server.core.LiferayServerCore;
 
 /**
  * @author Gregory Amerson
@@ -95,8 +90,6 @@ public class PortalTomcatBundle extends AbstractPortalBundle {
 
 			_appServerPortalDir = Stream.of(
 				files
-			).filter(
-				LiferayTomcatUtil::isLiferayPortal
 			).map(
 				File::getName
 			).map(

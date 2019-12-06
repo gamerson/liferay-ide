@@ -18,14 +18,6 @@ package com.liferay.ide.server.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.liferay.ide.core.tests.BaseTests;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ZipUtil;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.server.tomcat.core.ILiferayTomcatRuntime;
-import com.liferay.ide.server.util.LiferayPublishHelper;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +40,14 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.junit.AfterClass;
 import org.junit.Before;
+
+import com.liferay.ide.core.tests.BaseTests;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.util.LiferayPublishHelper;
 
 /**
  * @author Terry Jia
@@ -186,22 +186,22 @@ public abstract class ServerCoreBase extends BaseTests
 
     protected IPath getLiferayRuntimeDir()
     {
-        return ProjectCore.getDefault().getStateLocation().append( "liferay-portal-6.2-ce-ga6/tomcat-7.0.62" );
+        return ProjectCore.getDefault().getStateLocation().append( "liferay-ce-portal-7.1.0-ga1/tomcat-9.0.6" );
     }
 
     protected IPath getLiferayRuntimeZip()
     {
-        return getLiferayBundlesPath().append( "liferay-portal-tomcat-6.2-ce-ga6-20160112152609836.zip" );
+        return getLiferayBundlesPath().append( "liferay-ce-portal-tomcat-7.1.0-ga1-20180703012531655.zip" );
     }
 
     protected String getRuntimeId()
     {
-        return "com.liferay.ide.server.62.tomcat.runtime.70";
+        return "com.liferay.ide.server.portal.runtime";
     }
 
     public String getRuntimeVersion()
     {
-        return "6.2.5";
+        return "7.1.0";
     }
 
     public IServer getServer() throws Exception
@@ -269,8 +269,8 @@ public abstract class ServerCoreBase extends BaseTests
 
         assertNotNull( runtime );
 
-        final ILiferayTomcatRuntime liferayRuntime =
-            (ILiferayTomcatRuntime) ServerCore.findRuntime( runtimeName ).loadAdapter( ILiferayTomcatRuntime.class, npm );
+        final ILiferayRuntime liferayRuntime =
+            (ILiferayRuntime) ServerCore.findRuntime( runtimeName ).loadAdapter( ILiferayRuntime.class, npm );
 
         assertNotNull( liferayRuntime );
 

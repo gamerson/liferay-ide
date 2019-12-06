@@ -14,44 +14,16 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.ILiferayPortal;
-import com.liferay.ide.core.ILiferayProject;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.properties.PortalPropertiesConfiguration;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.core.util.PropertiesUtil;
-import com.liferay.ide.sdk.core.ISDKConstants;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.server.core.ILiferayRuntime;
-import com.liferay.ide.server.core.ILiferayServer;
-import com.liferay.ide.server.core.LiferayServerCore;
-import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
-import com.liferay.ide.server.core.portal.PortalBundle;
-import com.liferay.ide.server.core.portal.PortalBundleFactory;
-import com.liferay.ide.server.core.portal.PortalRuntime;
-import com.liferay.ide.server.core.portal.PortalServer;
-import com.liferay.ide.server.remote.IRemoteServer;
-import com.liferay.ide.server.remote.IServerManagerConnection;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.nio.file.Files;
-
 import java.text.MessageFormat;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -64,7 +36,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -99,13 +70,30 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
-
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.ILiferayPortal;
+import com.liferay.ide.core.ILiferayProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.properties.PortalPropertiesConfiguration;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.PropertiesUtil;
+import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.core.ILiferayServer;
+import com.liferay.ide.server.core.LiferayServerCore;
+import com.liferay.ide.server.core.gogo.GogoBundleDeployer;
+import com.liferay.ide.server.core.portal.PortalBundle;
+import com.liferay.ide.server.core.portal.PortalRuntime;
+import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.remote.IRemoteServer;
+import com.liferay.ide.server.remote.IServerManagerConnection;
 
 /**
  * @author Gregory Amerson
@@ -136,19 +124,6 @@ public class ServerUtil {
 
 		serverWC.setName(serverRuntimeName);
 		serverWC.save(true, monitor);
-	}
-
-	public static Map<String, String> configureAppServerProperties(ILiferayRuntime liferayRuntime) {
-		return getSDKRequiredProperties(liferayRuntime);
-	}
-
-	public static Map<String, String> configureAppServerProperties(IProject project) throws CoreException {
-		try {
-			return getSDKRequiredProperties(getLiferayRuntime(project));
-		}
-		catch (CoreException ce) {
-			throw new CoreException(LiferayServerCore.createErrorStatus(ce));
-		}
 	}
 
 	public static GogoBundleDeployer createBundleDeployer(PortalRuntime portalRuntime, IServer server)
@@ -667,40 +642,6 @@ public class ServerUtil {
 		return bundles;
 	}
 
-	public static PortalBundle getPortalBundle(IProject project) throws CoreException {
-		IPath projectLocation = project.getLocation();
-
-		SDK sdk = SDKUtil.getSDKFromProjectDir(projectLocation.toFile());
-
-		if (sdk == null) {
-			return null;
-		}
-
-		IStatus status = sdk.validate();
-
-		if (!status.isOK()) {
-			return null;
-		}
-
-		Map<String, Object> appServerProperties = sdk.getBuildProperties();
-
-		String appServerType = (String)appServerProperties.get("app.server.type");
-
-		PortalBundleFactory factory = LiferayServerCore.getPortalBundleFactories(appServerType);
-
-		if (factory != null) {
-			IPath path = factory.canCreateFromPath(appServerProperties);
-
-			if (path != null) {
-				PortalBundle bundle = factory.create(path);
-
-				return bundle;
-			}
-		}
-
-		return null;
-	}
-
 	public static IPath getPortalDir(IJavaProject project) {
 		return getPortalDir(project.getProject());
 	}
@@ -852,45 +793,6 @@ public class ServerUtil {
 		}
 
 		return retval;
-	}
-
-	public static Map<String, String> getSDKRequiredProperties(ILiferayRuntime appServer) {
-		Map<String, String> properties = new HashMap<>();
-
-		String type = appServer.getAppServerType();
-
-		IPath dir = appServer.getAppServerDir();
-
-		IPath deployDir = appServer.getAppServerDeployDir();
-
-		IPath libGlobalDir = appServer.getAppServerLibGlobalDir();
-
-		String parentDir = new File(
-			dir.toOSString()
-		).getParent();
-
-		IPath portalDir = appServer.getAppServerPortalDir();
-
-		properties.put(ISDKConstants.PROPERTY_APP_SERVER_TYPE, type);
-
-		String appServerDirKey = getAppServerPropertyKey(ISDKConstants.PROPERTY_APP_SERVER_DIR, appServer);
-		String appServerDeployDirKey = getAppServerPropertyKey(ISDKConstants.PROPERTY_APP_SERVER_DEPLOY_DIR, appServer);
-		String appServerLibGlobalDirKey = getAppServerPropertyKey(
-			ISDKConstants.PROPERTY_APP_SERVER_LIB_GLOBAL_DIR, appServer);
-		String appServerPortalDirKey = getAppServerPropertyKey(ISDKConstants.PROPERTY_APP_SERVER_PORTAL_DIR, appServer);
-
-		properties.put(appServerDirKey, dir.toOSString());
-		properties.put(appServerDeployDirKey, deployDir.toOSString());
-		properties.put(appServerLibGlobalDirKey, libGlobalDir.toOSString());
-
-		/**
-		 * IDE-1268 need to always specify app.server.parent.dir, even though it
-		 * is only useful in 6.1.2/6.2.0 or greater
-		 */
-		properties.put(ISDKConstants.PROPERTY_APP_SERVER_PARENT_DIR, parentDir);
-		properties.put(appServerPortalDirKey, portalDir.toOSString());
-
-		return properties;
 	}
 
 	public static IServer getServer(String name) {

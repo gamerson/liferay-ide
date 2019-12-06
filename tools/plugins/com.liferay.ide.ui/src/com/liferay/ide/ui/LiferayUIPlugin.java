@@ -14,22 +14,12 @@
 
 package com.liferay.ide.ui;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.ui.templates.ServiceClassNameResolver;
-import com.liferay.ide.ui.util.UIUtil;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-
 import java.lang.management.ManagementFactory;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,13 +34,9 @@ import javax.management.ObjectName;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -83,13 +69,17 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextFileDocumentProvider;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.IDocumentProvider;
-
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.prefs.BackingStoreException;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.ui.templates.ServiceClassNameResolver;
+import com.liferay.ide.ui.util.UIUtil;
 
 /**
  * The activator class controls the plugin life cycle
@@ -157,8 +147,6 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 	@Override
 	public void earlyStartup() {
 		_registerMBeans();
-
-		_lookupLiferay7SDKDir();
 
 		_applyWorkspaceBadge();
 
@@ -390,37 +378,6 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 			}
 		}
 		catch (BackingStoreException bse) {
-		}
-	}
-
-	private void _lookupLiferay7SDKDir() {
-		String liferay7SDKdir = System.getProperty("liferay7.sdk.dir");
-
-		if ((liferay7SDKdir != null) && liferay7SDKdir.startsWith("\"")) {
-			liferay7SDKdir = liferay7SDKdir.substring(1);
-		}
-
-		if ((liferay7SDKdir != null) && liferay7SDKdir.endsWith("\"")) {
-			liferay7SDKdir = liferay7SDKdir.substring(0, liferay7SDKdir.length() - 1);
-		}
-
-		if (liferay7SDKdir != null) {
-			SDK sdk = SDKUtil.createSDKFromLocation(new Path(liferay7SDKdir));
-
-			if (sdk != null) {
-				new WorkspaceJob(
-					"Opening Liferay 7 Plugins SDK Project"
-				) {
-
-					@Override
-					public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-						SDKUtil.openAsProject(sdk);
-
-						return Status.OK_STATUS;
-					}
-
-				}.schedule();
-			}
 		}
 	}
 

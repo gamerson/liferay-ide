@@ -14,13 +14,6 @@
 
 package com.liferay.ide.project.core;
 
-import com.liferay.ide.core.Event;
-import com.liferay.ide.core.EventListener;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.ListenerRegistry;
-import com.liferay.ide.core.workspace.ProjectDeletedEvent;
-import com.liferay.ide.project.core.util.ProjectUtil;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +23,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
+
+import com.liferay.ide.core.Event;
+import com.liferay.ide.core.EventListener;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.ListenerRegistry;
+import com.liferay.ide.core.workspace.ProjectDeletedEvent;
 
 /**
  * @author Gregory Amerson
@@ -71,10 +70,6 @@ public class BundleFactoryDelegate extends ProjectModuleFactoryDelegate implemen
 
 	@Override
 	protected IModule[] createModules(IProject project) {
-		if (!ProjectUtil.is7xServerDeployableProject(project)) {
-			return new IModule[0];
-		}
-
 		return new IModule[] {createSimpleModule(project)};
 	}
 

@@ -22,6 +22,8 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.PublishOperation;
 
+import com.liferay.ide.server.core.portal.LiferayPublishOperation;
+
 /**
  * @author Gregory Amerson
  * @author Simon Jiang

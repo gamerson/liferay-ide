@@ -18,12 +18,6 @@ package com.liferay.ide.ui.tests;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.ReflectionUtil;
-import com.liferay.ide.core.util.StringUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKManager;
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +48,10 @@ import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMText;
 import org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart;
 import org.w3c.dom.Node;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.ReflectionUtil;
+import com.liferay.ide.core.util.StringUtil;
 
 /**
  * Some methods are modified from eclipse wst sse tests
@@ -139,12 +137,6 @@ public class UITestsUtils
 
         for( IProject proj : projects )
         {
-            SDK sdk = SDKManager.getInstance().getDefaultSDK();
-
-            if( proj.getName().equals( sdk.getName() ) )
-            {
-                return;
-            }
             if( !proj.getName().equals( project.getName() ) )
             {
                 proj.delete( true, true, new NullProgressMonitor() );

@@ -14,22 +14,20 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.theme.core.ThemeCSSBuilder;
-
 import java.util.Set;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.osgi.util.NLS;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
 
 /**
  * @author Gregory Amerson
@@ -46,12 +44,13 @@ public class ThemeMergeBuildParticipant extends ThemePluginBuildParticipant {
 
 		Set<IProject> retval = super.build(kind, monitor);
 
-		try {
-			ThemeCSSBuilder.ensureLookAndFeelFileExists(getMavenProjectFacade().getProject());
-		}
-		catch (CoreException ce) {
-			LiferayMavenCore.logError("Unable to ensure look and feel file exists", ce);
-		}
+		//TODO
+//		try {
+//			ThemeCSSBuilder.ensureLookAndFeelFileExists(getMavenProjectFacade().getProject());
+//		}
+//		catch (CoreException ce) {
+//			LiferayMavenCore.logError("Unable to ensure look and feel file exists", ce);
+//		}
 
 		sub.done();
 

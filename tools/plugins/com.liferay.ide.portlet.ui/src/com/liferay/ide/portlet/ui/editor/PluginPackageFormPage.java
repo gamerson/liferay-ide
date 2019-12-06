@@ -14,12 +14,6 @@
 
 package com.liferay.ide.portlet.ui.editor;
 
-import com.liferay.ide.portlet.ui.PortletUIPlugin;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.ui.form.FormLayoutFactory;
-import com.liferay.ide.ui.form.IDEFormPage;
-
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -28,6 +22,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+
+import com.liferay.ide.portlet.ui.PortletUIPlugin;
+import com.liferay.ide.ui.form.FormLayoutFactory;
+import com.liferay.ide.ui.form.IDEFormPage;
 
 /**
  * @author Gregory Amerson
@@ -83,40 +81,40 @@ public class PluginPackageFormPage extends IDEFormPage {
 		PluginPackageGeneralSection generalSection = new PluginPackageGeneralSection(this, left);
 
 		managedForm.addPart(generalSection);
-
-		IProject project = getFormEditor().getCommonProject();
-
-		if (SDKUtil.isSDKProject(project)) {
-			PortalJarsSection jarsSection = new PortalJarsSection(this, right, _getPortalSectionLabels());
-
-			managedForm.addPart(jarsSection);
-
-			PortalDeployExcludesSection excludesSection = new PortalDeployExcludesSection(
-				this, right, _getPortalSectionLabels());
-
-			managedForm.addPart(excludesSection);
-
-			PortalTldsSection tldsSection = new PortalTldsSection(this, right, _getPortalSectionLabels());
-
-			managedForm.addPart(tldsSection);
-
-			RequiredDeploymentContextsSection contextsSection = new RequiredDeploymentContextsSection(
-				this, right, _getContextsSectionLabels());
-
-			managedForm.addPart(contextsSection);
-		}
+//
+//		IProject project = getFormEditor().getCommonProject();
+//
+//		if (SDKUtil.isSDKProject(project)) {
+//			PortalJarsSection jarsSection = new PortalJarsSection(this, right, _getPortalSectionLabels());
+//
+//			managedForm.addPart(jarsSection);
+//
+//			PortalDeployExcludesSection excludesSection = new PortalDeployExcludesSection(
+//				this, right, _getPortalSectionLabels());
+//
+//			managedForm.addPart(excludesSection);
+//
+//			PortalTldsSection tldsSection = new PortalTldsSection(this, right, _getPortalSectionLabels());
+//
+//			managedForm.addPart(tldsSection);
+//
+//			RequiredDeploymentContextsSection contextsSection = new RequiredDeploymentContextsSection(
+//				this, right, _getContextsSectionLabels());
+//
+//			managedForm.addPart(contextsSection);
+//		}
 	}
 
 	protected ScrolledForm form;
 	protected FormToolkit toolkit;
 
-	private String[] _getContextsSectionLabels() {
-		return new String[] {Msgs.add, Msgs.remove, Msgs.up, Msgs.down};
-	}
-
-	private String[] _getPortalSectionLabels() {
-		return new String[] {Msgs.add, Msgs.remove};
-	}
+//	private String[] _getContextsSectionLabels() {
+//		return new String[] {Msgs.add, Msgs.remove, Msgs.up, Msgs.down};
+//	}
+//
+//	private String[] _getPortalSectionLabels() {
+//		return new String[] {Msgs.add, Msgs.remove};
+//	}
 
 	private static class Msgs extends NLS {
 

@@ -14,7 +14,8 @@ Require-Bundle: com.liferay.ide.core,
  org.eclipse.core.runtime,
  org.eclipse.sapphire.modeling;bundle-version="[9,10)",
  org.eclipse.sapphire.modeling.xml;bundle-version="[9,10)",
- org.junit
+ org.junit,
+ org.eclipse.sapphire.platform
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.hook.core.tests

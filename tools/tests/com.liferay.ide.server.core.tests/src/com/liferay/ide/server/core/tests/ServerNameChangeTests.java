@@ -18,13 +18,6 @@ package com.liferay.ide.server.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.liferay.ide.core.util.ZipUtil;
-import com.liferay.ide.project.core.ProjectCore;
-import com.liferay.ide.server.core.portal.PortalRuntime;
-import com.liferay.ide.server.core.portal.PortalServer;
-import com.liferay.ide.server.tomcat.core.LiferayTomcatRuntime;
-import com.liferay.ide.server.util.ServerUtil;
-
 import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
@@ -37,7 +30,15 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.project.core.ProjectCore;
+import com.liferay.ide.server.core.ILiferayRuntime;
+import com.liferay.ide.server.core.portal.PortalRuntime;
+import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.util.ServerUtil;
 
 /**
  * @author Simon Jiang
@@ -203,8 +204,8 @@ public class ServerNameChangeTests extends ServerCoreBase
         }
 
         assertNotNull( findRuntime );
-        final LiferayTomcatRuntime liferayRuntime =
-            (LiferayTomcatRuntime) ServerCore.findRuntime( runtimeName ).loadAdapter( LiferayTomcatRuntime.class, npm );
+        final ILiferayRuntime liferayRuntime =
+            (ILiferayRuntime	) ServerCore.findRuntime( runtimeName ).loadAdapter( ILiferayRuntime.class, npm );
 
         assertNotNull( liferayRuntime );
         
@@ -219,8 +220,6 @@ public class ServerNameChangeTests extends ServerCoreBase
 
         setupRuntime( getLiferayTomcatRuntimeZip(), getLiferayTomcatRuntimeDir(), getTomcatRuntimeName(), getLiferayTomcatUnzipRuntimeDir(),getRuntimeId() );
         setupRuntime( getLiferayWildflyRuntimeZip(), getLiferayWildflyRuntimeDir(), getWildflyRuntimeName(), getLiferayWildflyUnzipRuntimeDir(), getRuntimeId() );
-        setup62Runtime( getLiferayTomcat62RuntimeZip(), getLiferayTomcat62RuntimeDir(), getTomcat62RuntimeName(), getLiferayTomcat62UnzipRuntimeDir(), get62RuntimeId() );
-        setup62Runtime( getLiferayTomcat62RuntimeZip(), getLiferayTomcat62RuntimeDir(), getTomcat62DumyRuntimeName(), getLiferayTomcat62DumyUnzipRuntimeDir(), get62RuntimeId() );
     }
 
     @Test
@@ -247,6 +246,7 @@ public class ServerNameChangeTests extends ServerCoreBase
         assertEquals( "Liferay CE GA5 Wildfly at localhost", newServer.getName() );
     }
 
+    @Ignore
     @Test
     public void testPortalServiceDelegate62Name() throws Exception 
     {

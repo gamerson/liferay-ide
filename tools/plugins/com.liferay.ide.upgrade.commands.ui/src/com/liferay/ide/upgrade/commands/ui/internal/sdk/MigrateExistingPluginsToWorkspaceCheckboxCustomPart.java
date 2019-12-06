@@ -123,7 +123,8 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 					Path sdkLocation = sdkLocationPath.content();
 
 					if (sdkLocation != null) {
-						IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
+						//IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
+						IStatus status = org.eclipse.core.runtime.Status.OK_STATUS;
 
 						if (status.isOK()) {
 							if (SapphireUtil.exists(sdkLocation)) {
@@ -154,8 +155,9 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 		Path sdkLocation = sdkLocationPath.content();
 
 		if (sdkLocation != null) {
-			IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
-
+			//IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
+			IStatus status = org.eclipse.core.runtime.Status.OK_STATUS;
+			
 			if (status.isOK()) {
 				Table table = checkBoxViewer.getTable();
 
@@ -183,7 +185,9 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 
 	private IProject[] _getPluginSDKProjects() {
 		if (_pluginSDKProjects == null) {
-			_pluginSDKProjects = ProjectUtil.getAllPluginsSDKProjects();
+			
+			//TODO
+			//_pluginSDKProjects = ProjectUtil.getAllPluginsSDKProjects();
 		}
 
 		return _pluginSDKProjects;
@@ -259,23 +263,24 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 			Collection<File> liferayProjectDirs = new ArrayList<>();
 
 			if (dirSelected && directory.isDirectory()) {
-				if (!ProjectUtil.collectSDKProjectsFromDirectory(
-						eclipseProjectFiles, liferayProjectDirs, directory, null, true, new NullProgressMonitor())) {
-
-					return null;
-				}
-
-				_selectedProjects = new ProjectRecord[eclipseProjectFiles.size() + liferayProjectDirs.size()];
-
-				int index = 0;
-
-				for (File eclipseProjectFile : eclipseProjectFiles) {
-					_selectedProjects[index++] = new ProjectRecord(eclipseProjectFile);
-				}
-
-				for (File liferayProjectDir : liferayProjectDirs) {
-					_selectedProjects[index++] = new ProjectRecord(liferayProjectDir);
-				}
+				//TODO
+//				if (!ProjectUtil.collectSDKProjectsFromDirectory(
+//						eclipseProjectFiles, liferayProjectDirs, directory, null, true, new NullProgressMonitor())) {
+//
+//					return null;
+//				}
+//
+//				_selectedProjects = new ProjectRecord[eclipseProjectFiles.size() + liferayProjectDirs.size()];
+//
+//				int index = 0;
+//
+//				for (File eclipseProjectFile : eclipseProjectFiles) {
+//					_selectedProjects[index++] = new ProjectRecord(eclipseProjectFile);
+//				}
+//
+//				for (File liferayProjectDir : liferayProjectDirs) {
+//					_selectedProjects[index++] = new ProjectRecord(liferayProjectDir);
+//				}
 			}
 		}
 		catch (Exception e) {

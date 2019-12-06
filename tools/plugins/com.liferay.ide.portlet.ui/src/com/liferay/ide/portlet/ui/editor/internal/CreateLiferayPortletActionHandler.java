@@ -14,15 +14,12 @@
 
 package com.liferay.ide.portlet.ui.editor.internal;
 
-import com.liferay.ide.portlet.ui.editor.PortletXmlEditor;
-import com.liferay.ide.portlet.ui.wizard.NewPortletWizard;
-
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.sapphire.ui.Presentation;
 import org.eclipse.sapphire.ui.SapphireActionHandler;
 import org.eclipse.sapphire.ui.SapphirePart;
-import org.eclipse.sapphire.ui.forms.swt.SwtPresentation;
+
+import com.liferay.ide.portlet.ui.editor.PortletXmlEditor;
 
 /**
  * @author Kamesh Sampath
@@ -48,12 +45,12 @@ public class CreateLiferayPortletActionHandler extends SapphireActionHandler {
 			currentProject = portletXmlEditor.getProject();
 		}
 
-		NewPortletWizard newPortletWizard = new NewPortletWizard(currentProject);
-
-		WizardDialog wizardDialog = new WizardDialog(((SwtPresentation)context).shell(), newPortletWizard);
-
-		wizardDialog.create();
-		wizardDialog.open();
+//		NewPortletWizard newPortletWizard = new NewPortletWizard(currentProject);
+//
+//		WizardDialog wizardDialog = new WizardDialog(((SwtPresentation)context).shell(), newPortletWizard);
+//
+//		wizardDialog.create();
+//		wizardDialog.open();
 
 		return null;
 	}

@@ -818,7 +818,7 @@ public class NewPortletClassDataModelProvider
 				categories = portal.getPortletCategories();
 
 				for (IProject workspaceProject : CoreUtil.getAllProjects()) {
-					if (ProjectUtil.isPortletProject(workspaceProject)) {
+//					if (ProjectUtil.isPortletProject(workspaceProject)) {
 						LiferayDisplayDescriptorHelper liferayDisplayDH = new LiferayDisplayDescriptorHelper(
 							workspaceProject);
 
@@ -831,7 +831,7 @@ public class NewPortletClassDataModelProvider
 								}
 							}
 						}
-					}
+//					}
 				}
 			}
 		}

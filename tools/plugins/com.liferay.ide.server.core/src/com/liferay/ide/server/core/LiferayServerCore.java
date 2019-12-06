@@ -14,31 +14,13 @@
 
 package com.liferay.ide.server.core;
 
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.sdk.core.ISDKListener;
-import com.liferay.ide.sdk.core.SDKManager;
-import com.liferay.ide.server.core.portal.AbstractPortalBundleFactory;
-import com.liferay.ide.server.core.portal.PortalBundle;
-import com.liferay.ide.server.core.portal.PortalBundleFactory;
-import com.liferay.ide.server.remote.IRemoteServer;
-import com.liferay.ide.server.remote.IServerManagerConnection;
-import com.liferay.ide.server.remote.ServerManagerConnection;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.lang.reflect.Method;
-
 import java.net.URL;
-
 import java.nio.file.Files;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,10 +53,21 @@ import org.eclipse.wst.server.core.internal.Base;
 import org.eclipse.wst.server.core.internal.IMemento;
 import org.eclipse.wst.server.core.internal.XMLMemento;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.BackingStoreException;
+
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.server.core.portal.AbstractPortalBundleFactory;
+import com.liferay.ide.server.core.portal.PortalBundle;
+import com.liferay.ide.server.core.portal.PortalBundleFactory;
+import com.liferay.ide.server.remote.IRemoteServer;
+import com.liferay.ide.server.remote.IServerManagerConnection;
+import com.liferay.ide.server.remote.ServerManagerConnection;
 
 /**
  * @author Gregory Amerson
@@ -616,10 +609,6 @@ public class LiferayServerCore extends Plugin {
 		_plugin = null;
 		super.stop(context);
 
-		SDKManager sdkManagerInstance = SDKManager.getInstance();
-
-		sdkManagerInstance.removeSDKListener(_sdkListener);
-
 		ServerCore.removeRuntimeLifecycleListener(_runtimeLifecycleListener);
 		ServerCore.removeServerLifecycleListener(_serverLifecycleListener);
 
@@ -857,7 +846,6 @@ public class LiferayServerCore extends Plugin {
 	private static ILiferayRuntimeStub[] _runtimeStubs;
 
 	private IRuntimeLifecycleListener _runtimeLifecycleListener;
-	private ISDKListener _sdkListener;
 	private IServerLifecycleListener _serverLifecycleListener;
 
 }

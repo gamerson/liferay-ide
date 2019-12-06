@@ -14,15 +14,6 @@
 
 package com.liferay.ide.service.ui.wizard;
 
-import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.project.ui.wizard.LiferayDataModelWizardPage;
-import com.liferay.ide.sdk.core.SDKUtil;
-import com.liferay.ide.service.core.operation.INewServiceBuilderDataModelProperties;
-import com.liferay.ide.service.ui.ServiceUI;
-import com.liferay.ide.ui.util.SWTUtil;
-import com.liferay.ide.ui.util.UIUtil;
-
 import java.net.URL;
 
 import org.eclipse.core.resources.IProject;
@@ -53,8 +44,14 @@ import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-
 import org.osgi.framework.Bundle;
+
+import com.liferay.ide.core.util.StringPool;
+import com.liferay.ide.project.ui.wizard.LiferayDataModelWizardPage;
+import com.liferay.ide.service.core.operation.INewServiceBuilderDataModelProperties;
+import com.liferay.ide.service.ui.ServiceUI;
+import com.liferay.ide.ui.util.SWTUtil;
+import com.liferay.ide.ui.util.UIUtil;
 
 /**
  * @author Gregory Amerson
@@ -322,14 +319,14 @@ public class NewServiceBuilderWizardPage
 	}
 
 	protected boolean isProjectValid(IProject project) {
-		if ((ProjectUtil.isPortletProject(project) || ProjectUtil.isHookProject(project) ||
-			 ProjectUtil.isExtProject(project)) &&
-			SDKUtil.isSDKProject(project)) {
+//		if ((ProjectUtil.isPortletProject(project) || ProjectUtil.isHookProject(project) ||
+//			 ProjectUtil.isExtProject(project)) &&
+//			SDKUtil.isSDKProject(project)) {
+//
+//			return true;
+//		}
 
-			return true;
-		}
-
-		return false;
+		return true;
 	}
 
 	protected void setShellImage() {

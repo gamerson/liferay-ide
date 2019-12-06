@@ -278,7 +278,7 @@ public class NewPortletOptionsWizardPage
 	}
 
 	protected boolean isProjectValid(IProject project) {
-		return ProjectUtil.isPortletProject(project);
+		return true;/* ProjectUtil.isPortletProject(project); */
 	}
 
 	@Override

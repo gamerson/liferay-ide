@@ -14,9 +14,6 @@
 
 package com.liferay.ide.portlet.ui;
 
-import com.liferay.ide.portlet.ui.jsf.JSFPortletTemplateContextTypeIds;
-import com.liferay.ide.portlet.ui.template.PortletTemplateContextTypeIds;
-
 import java.io.IOException;
 
 import org.eclipse.core.runtime.ILog;
@@ -28,8 +25,9 @@ import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-
 import org.osgi.framework.BundleContext;
+
+import com.liferay.ide.portlet.ui.template.PortletTemplateContextTypeIds;
 
 /**
  * The activator class controls the plugin life cycle
@@ -85,7 +83,7 @@ public class PortletUIPlugin extends AbstractUIPlugin {
 			ContributionContextTypeRegistry registry = new ContributionContextTypeRegistry();
 
 			registry.addContextType(PortletTemplateContextTypeIds.NEW);
-			registry.addContextType(JSFPortletTemplateContextTypeIds.NEW);
+//			registry.addContextType(JSFPortletTemplateContextTypeIds.NEW);
 
 			_fContextTypeRegistry = registry;
 		}
