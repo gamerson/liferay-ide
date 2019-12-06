@@ -64,7 +64,7 @@ public class LiferayDisplayXmlTests extends XmlSearchTestsBase
     {
         if( project == null )
         {
-            project = super.getProject( "portlets", "Portlet-Xml-Test-portlet" );
+            project = super.getProject("Portlet-Xml-Test-portlet" );
             deleteOtherProjects( project );
         }
 

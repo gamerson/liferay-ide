@@ -39,15 +39,6 @@
 		point="com.liferay.ide.core.liferayProjectProviders"
 	>
 		<liferayProjectProvider
-			class="com.liferay.ide.maven.core.NewMavenPluginProjectProvider"
-			displayName="Maven (liferay-maven-plugin)"
-			id="com.liferay.ide.maven.core.mavenProjectProvider"
-			priority="high"
-			projectType="plugin"
-			shortName="maven"
-		>
-		</liferayProjectProvider>
-		<liferayProjectProvider
 			class="com.liferay.ide.maven.core.NewMavenJSFModuleProjectProvider"
 			displayName="Maven"
 			id="com.liferay.ide.maven.core.mavenJSFModuleProjectProvider"
@@ -108,10 +99,6 @@
 		</persistent>
 		<super type="org.eclipse.m2e.core.maven2Problem.wtp.configuration">
 		</super>
-	</extension>
-	<extension point="org.eclipse.core.runtime.preferences">
-		<initializer class="com.liferay.ide.maven.core.pref.ProjectMavenPreferenceInitializer" />
-		<initializer class="com.liferay.ide.maven.core.pref.MavenArchetypePreferenceInitializer" />
 	</extension>
 	<extension point="com.liferay.ide.core.liferayProjectImporters">
 		<liferayProjectImporter

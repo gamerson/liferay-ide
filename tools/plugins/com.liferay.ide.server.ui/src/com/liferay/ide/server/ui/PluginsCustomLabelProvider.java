@@ -17,7 +17,6 @@ package com.liferay.ide.server.ui;
 import com.liferay.ide.project.core.util.ProjectUtil;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -39,6 +38,7 @@ public class PluginsCustomLabelProvider extends LabelProvider {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public Image getImage(Object element) {
 		if (element instanceof PluginsContent) {
 			ImageDescriptor imageDescriptor = LiferayServerUI.imageDescriptorFromPlugin(
@@ -72,11 +72,12 @@ public class PluginsCustomLabelProvider extends LabelProvider {
 							imageKey = id.substring(id.indexOf('.') + 1, id.length());
 						}
 					}
-					else {
-						IPath projectLocation = project.getLocation();
+					//					else {
+					//						IPath projectLocation = project.getLocation();
 
-						imageKey = ProjectUtil.getLiferayPluginType(projectLocation.toOSString());
-					}
+					//
+					//						imageKey = ProjectUtil.getLiferayPluginType(projectLocation.toOSString());
+					//					}
 
 					LiferayServerUI serverUIPlugin = LiferayServerUI.getDefault();
 

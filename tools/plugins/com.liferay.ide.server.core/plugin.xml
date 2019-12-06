@@ -1490,19 +1490,6 @@
 		point="org.eclipse.wst.server.core.serverTypes"
 	>
 		<serverType
-			behaviourClass="com.liferay.ide.server.remote.RemoteServerBehavior"
-			class="com.liferay.ide.server.remote.RemoteServer"
-			description="%server.type.description"
-			hasConfiguration="true"
-			id="com.liferay.ide.eclipse.server.remote"
-			launchConfigId="com.liferay.ide.server.remote.launchConfigurationType"
-			name="%server.type.name"
-			runtime="true"
-			runtimeTypeId="com.liferay.ide.eclipse.server.runtime.stub"
-			supportsRemoteHosts="true"
-		>
-		</serverType>
-		<serverType
 			behaviourClass="com.liferay.ide.server.core.portal.PortalServerBehavior"
 			class="com.liferay.ide.server.core.portal.PortalServerDelegate"
 			description="Liferay 7.x"
@@ -1700,6 +1687,15 @@
 		<portalBundle
 			class="com.liferay.ide.server.core.portal.PortalJBossEapBundleFactory"
 			type="jboss"
+		>
+		</portalBundle>
+	</extension>
+	<extension
+		point="com.liferay.ide.server.core.portalBundles"
+	>
+		<portalBundle
+			class="com.liferay.ide.server.core.portal.PortalTomcatBundleFactory"
+			type="tomcat"
 		>
 		</portalBundle>
 	</extension>

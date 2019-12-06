@@ -15,9 +15,7 @@
 package com.liferay.ide.service.ui.wizard;
 
 import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.wizard.LiferayDataModelWizardPage;
-import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.service.core.operation.INewServiceBuilderDataModelProperties;
 import com.liferay.ide.service.ui.ServiceUI;
 import com.liferay.ide.ui.util.SWTUtil;
@@ -322,14 +320,14 @@ public class NewServiceBuilderWizardPage
 	}
 
 	protected boolean isProjectValid(IProject project) {
-		if ((ProjectUtil.isPortletProject(project) || ProjectUtil.isHookProject(project) ||
-			 ProjectUtil.isExtProject(project)) &&
-			SDKUtil.isSDKProject(project)) {
+		//		if ((ProjectUtil.isPortletProject(project) || ProjectUtil.isHookProject(project) ||
+		//			 ProjectUtil.isExtProject(project)) &&
+		//			SDKUtil.isSDKProject(project)) {
+		//
+		//			return true;
+		//		}
 
-			return true;
-		}
-
-		return false;
+		return true;
 	}
 
 	protected void setShellImage() {

@@ -19,7 +19,6 @@ import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
 import com.liferay.ide.portlet.ui.PortletUIPlugin;
-import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.wizard.LiferayDataModelWizardPage;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -354,7 +353,7 @@ public class NewLiferayPortletWizardPage
 	}
 
 	protected boolean isProjectValid(IProject project) {
-		return ProjectUtil.isPortletProject(project);
+		return true; /* ProjectUtil.isPortletProject(project); */
 	}
 
 	protected Button addToControlPanelButton;

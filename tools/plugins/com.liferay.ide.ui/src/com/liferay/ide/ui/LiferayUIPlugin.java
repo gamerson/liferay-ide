@@ -16,8 +16,6 @@ package com.liferay.ide.ui;
 
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.ui.templates.ServiceClassNameResolver;
 import com.liferay.ide.ui.util.UIUtil;
 
@@ -44,13 +42,9 @@ import javax.management.ObjectName;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -157,8 +151,6 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 	@Override
 	public void earlyStartup() {
 		_registerMBeans();
-
-		_lookupLiferay7SDKDir();
 
 		_applyWorkspaceBadge();
 
@@ -390,37 +382,6 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 			}
 		}
 		catch (BackingStoreException bse) {
-		}
-	}
-
-	private void _lookupLiferay7SDKDir() {
-		String liferay7SDKdir = System.getProperty("liferay7.sdk.dir");
-
-		if ((liferay7SDKdir != null) && liferay7SDKdir.startsWith("\"")) {
-			liferay7SDKdir = liferay7SDKdir.substring(1);
-		}
-
-		if ((liferay7SDKdir != null) && liferay7SDKdir.endsWith("\"")) {
-			liferay7SDKdir = liferay7SDKdir.substring(0, liferay7SDKdir.length() - 1);
-		}
-
-		if (liferay7SDKdir != null) {
-			SDK sdk = SDKUtil.createSDKFromLocation(new Path(liferay7SDKdir));
-
-			if (sdk != null) {
-				new WorkspaceJob(
-					"Opening Liferay 7 Plugins SDK Project"
-				) {
-
-					@Override
-					public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-						SDKUtil.openAsProject(sdk);
-
-						return Status.OK_STATUS;
-					}
-
-				}.schedule();
-			}
 		}
 	}
 

@@ -8,7 +8,6 @@ Bundle-Vendor: %bundle.vendor
 Require-Bundle: biz.aQute.bndlib;bundle-version="[4,5)",
  com.liferay.ide.core,
  com.liferay.ide.project.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  com.liferay.ide.ui,
  org.apache.commons.io,
@@ -52,7 +51,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.project.ui,
  com.liferay.ide.project.ui.action,
- com.liferay.ide.project.ui.action.sdk,
  com.liferay.ide.project.ui.dialog,
  com.liferay.ide.project.ui.handlers,
  com.liferay.ide.project.ui.modules,

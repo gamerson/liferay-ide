@@ -19,8 +19,6 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringPool;
-import com.liferay.ide.sdk.core.ISDKListener;
-import com.liferay.ide.sdk.core.SDKManager;
 import com.liferay.ide.server.core.portal.AbstractPortalBundleFactory;
 import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.core.portal.PortalBundleFactory;
@@ -616,10 +614,6 @@ public class LiferayServerCore extends Plugin {
 		_plugin = null;
 		super.stop(context);
 
-		SDKManager sdkManagerInstance = SDKManager.getInstance();
-
-		sdkManagerInstance.removeSDKListener(_sdkListener);
-
 		ServerCore.removeRuntimeLifecycleListener(_runtimeLifecycleListener);
 		ServerCore.removeServerLifecycleListener(_serverLifecycleListener);
 
@@ -857,7 +851,6 @@ public class LiferayServerCore extends Plugin {
 	private static ILiferayRuntimeStub[] _runtimeStubs;
 
 	private IRuntimeLifecycleListener _runtimeLifecycleListener;
-	private ISDKListener _sdkListener;
 	private IServerLifecycleListener _serverLifecycleListener;
 
 }

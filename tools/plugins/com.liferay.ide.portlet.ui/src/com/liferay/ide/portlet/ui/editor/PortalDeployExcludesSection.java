@@ -18,21 +18,17 @@ import com.liferay.ide.core.model.IBaseModel;
 import com.liferay.ide.core.model.IModelChangedEvent;
 import com.liferay.ide.core.model.IModelChangedListener;
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.portlet.core.IPluginPackageModel;
 import com.liferay.ide.portlet.core.PluginPackageModel;
 import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.sdk.core.SDK;
-import com.liferay.ide.sdk.core.SDKUtil;
 import com.liferay.ide.ui.form.DefaultContentProvider;
 import com.liferay.ide.ui.form.FormLayoutFactory;
 import com.liferay.ide.ui.form.IDEFormEditor;
 import com.liferay.ide.ui.form.IDEFormPage;
 import com.liferay.ide.ui.form.TablePart;
 import com.liferay.ide.ui.form.TableSection;
-import com.liferay.ide.ui.wizard.ExternalFileSelectionDialog;
 
 import java.io.File;
 
@@ -41,13 +37,11 @@ import java.util.Vector;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -55,7 +49,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -66,7 +59,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
@@ -197,114 +189,9 @@ public class PortalDeployExcludesSection
 
 			return;
 		}
-
-		/**
-		 
-		 if (event.getChangedProperty() == IPluginBase.P_IMPORT_ORDER) {
-		 refresh();
-		 updateButtons();
-		 
-		 return;
-		 }
-		 
-		 Object[] changedObjects = event.getChangedObjects();
-		 
-		 if (changedObjects[0] instanceof IPluginImport) {
-		 int index = 0;
-		 
-		 for (Object changeObject : changedObjects) {
-		 IPluginImport iimport = (IPluginImport)changeObject;
-		 
-		 if (event.getChangeType() == IModelChangedEvent.INSERT) {
-		 ImportObject iobj = new ImportObject(iimport);
-		 
-		 if (fImports == null) {
-		 
-		 // createImportObjects method will find new addition
-		 
-		 createImportObjects();
-		 }
-		 else {
-		 int insertIndex = getImportInsertIndex();
-		 
-		 if (insertIndex < 0) {
-		 
-		 // Add Button
-		 
-		 fImports.add(iobj);
-		 }
-		 else {
-		 
-		 // DND
-		 
-		 fImports.add(insertIndex, iobj);
-		 }
-		 }
-		 }
-		 else {
-		 ImportObject iobj = findImportObject(iimport);
-		 
-		 if (iobj != null) {
-		 if (event.getChangeType() == IModelChangedEvent.REMOVE) {
-		 if (fImports == null) {
-		 
-		 // createImportObjects method will not include the removed import
-		 
-		 createImportObjects();
-		 }
-		 else fImports.remove(iobj);
-		 Table table = fImportViewer.getTable();
-		 
-		 index = table.getSelectionIndex();
-		 fImportViewer.remove(iobj);
-		 }
-		 else {
-		 fImportViewer.update(iobj, null);
-		 }
-		 }
-		 }
-		 }
-		 
-		 if (event.getChangeType() == IModelChangedEvent.INSERT) {
-		 if (changedObjects.length > 0) {
-		 
-		 // Refresh the viewer
-		 
-		 fImportViewer.refresh();
-		 
-		 // Get the last import added to the viewer
-		 
-		 IPluginImport lastImport = (IPluginImport)changedObjects[changedObjects.length - 1];
-		 
-		 //Find the corresponding bundle object for the plugin import
-		 ImportObject lastImportObject = findImportObject(lastImport);
-		 
-		 if (lastImportObject != null) {
-		 fImportViewer.setSelection(new StructuredSelection(lastImportObject));
-		 }
-		 
-		 fImportViewer.getTable().setFocus();
-		 }
-		 }
-		 else if (event.getChangeType() == IModelChangedEvent.REMOVE) {
-		 Table table = fImportViewer.getTable();
-		 
-		 table.setSelection(index < table.getItemCount() ? index : table.getItemCount() - 1);
-		 }
-		 }
-		 else {
-		 fImportViewer.update(((IStructuredSelection)fImportViewer.getSelection()).toArray(), null);
-		 }
-		 
-		 */
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-
-		// if (fSortAction.equals(event.getSource()) && IAction.RESULT.equals(event.getProperty())) {
-		// updateUpDownButtons();
-		// }
-
 	}
 
 	public void refresh() {
@@ -312,8 +199,6 @@ public class PortalDeployExcludesSection
 		_fViewer.refresh();
 		super.refresh();
 	}
-
-	// private Action fSortAction;
 
 	public void setFocus() {
 		if (_fViewer != null) {
@@ -324,32 +209,10 @@ public class PortalDeployExcludesSection
 	}
 
 	public boolean setFormInput(Object object) {
-		//		if (object instanceof IPluginImport) {
-		//			ImportObject iobj = new ImportObject((IPluginImport) object);
-
-		//			fImportViewer.setSelection(new StructuredSelection(iobj), true);
-		//			return true;
-		//		}
-
 		return false;
 	}
 
 	public void swap(int index1, int index2) {
-
-		// Table table = getTablePart().getTableViewer().getTable();
-
-		//		IPluginImport dep1 = ((ImportObject) table.getItem(index1).getData()).getImport();
-		//		IPluginImport dep2 = ((ImportObject) table.getItem(index2).getData()).getImport();
-		//
-		//		try {
-		//			IPluginModelBase model = (IPluginModelBase) getPage().getModel();
-
-		//			IPluginBase pluginBase = model.getPluginBase();
-
-		//			pluginBase.swap(dep1, dep2);
-		//		} catch (CoreException e) {
-		//			PDEPlugin.logException(e);
-		//		}
 	}
 
 	public class PortalJarsContentProvider extends DefaultContentProvider implements IStructuredContentProvider {
@@ -418,57 +281,17 @@ public class PortalDeployExcludesSection
 
 	protected void createJarsArray() {
 		_fJars = new Vector<>();
-		PluginPackageModel model = (PluginPackageModel)getPage().getModel();
-
-		String[] excludeJars = model.getPortalDeloyExcludesJars();
 
 		IProject project = getProject();
 
 		IFolder docroot = CoreUtil.getDefaultDocrootFolder(project);
 
-		if ((docroot == null) || ProjectUtil.isMavenProject(project) || ProjectUtil.isExtProject(project)) {
+		if ((docroot == null) || ProjectUtil.isMavenProject(project)) {
 			TablePart tablePart = getTablePart();
 
 			tablePart.setButtonEnabled(_ADD_INDEX, false);
 
 			return;
-		}
-
-		SDK sdk = SDKUtil.getSDK(project);
-
-		IPath sdkLocation = sdk.getLocation();
-
-		String type;
-
-		if (ProjectUtil.isPortletProject(project)) {
-			type = "portlets";
-		}
-		else if (ProjectUtil.isHookProject(project)) {
-			type = "hooks";
-		}
-		else if (ProjectUtil.isWebProject(project)) {
-			type = "webs";
-		}
-		else {
-			type = StringPool.EMPTY;
-		}
-
-		IPath path = sdkLocation.append(type);
-
-		IPath excludeJarPath = path.append(docroot.getFullPath());
-
-		if (excludeJarPath != null) {
-			for (String excludeJar : excludeJars) {
-				if (excludeJar.startsWith("**/WEB-INF/lib/")) {
-					excludeJar = excludeJar.substring(excludeJar.lastIndexOf("/"));
-				}
-
-				File jarFile = new File(FileUtil.getFile(excludeJarPath.append("WEB-INF/lib")), excludeJar.trim());
-
-				if (jarFile.isFile() && jarFile.exists()) {
-					_fJars.add(jarFile);
-				}
-			}
 		}
 	}
 
@@ -535,6 +358,7 @@ public class PortalDeployExcludesSection
 	}
 
 	private void _handleAdd() {
+		/*
 		PluginPackageModel model = (PluginPackageModel)getPage().getModel();
 
 		String[] excludeJars = model.getPortalDeloyExcludesJars();
@@ -597,6 +421,8 @@ public class PortalDeployExcludesSection
 			MessageDialog.openInformation(
 				getPage().getShell(), Msgs.liferayPluginPackageEditor, Msgs.notDeterminePortalDirectory);
 		}
+
+		*/
 	}
 
 	private void _handleDown() {
@@ -740,8 +566,8 @@ public class PortalDeployExcludesSection
 
 		public static String add;
 		public static String excludeJars;
-		public static String liferayPluginPackageEditor;
-		public static String notDeterminePortalDirectory;
+		//		public static String liferayPluginPackageEditor;
+		//		public static String notDeterminePortalDirectory;
 		public static String portalDeployExcludeJars;
 		public static String remove;
 
