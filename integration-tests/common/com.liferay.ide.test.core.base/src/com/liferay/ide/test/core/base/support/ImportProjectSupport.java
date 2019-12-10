@@ -74,6 +74,11 @@ public class ImportProjectSupport extends ProjectSupport {
 		return _projectFile;
 	}
 
+	public IProject getProject() {
+		return project;
+	}
+
+	
 	protected IProject project;
 
 	private File _projectFile;

@@ -18,6 +18,7 @@ import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 import com.liferay.ide.test.project.core.base.NewModuleOpBase;
 
 import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.m2e.tests.common.JobHelpers;
 import org.eclipse.m2e.tests.common.JobHelpers.IJobMatcher;
@@ -39,7 +40,7 @@ public abstract class NewModuleMavenBase extends NewModuleOpBase<NewLiferayModul
 	}
 
 	@Override
-	protected void waitForBuildAndValidation() {
+	protected void waitForBuildAndValidation(ISchedulingRule rule) {
 		JobHelpers.waitForJobs(BuildJobMatcher.INSTANCE, 5 * 60 * 1000);
 	}
 

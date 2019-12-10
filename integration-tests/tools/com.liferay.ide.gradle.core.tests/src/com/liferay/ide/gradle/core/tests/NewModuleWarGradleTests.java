@@ -35,13 +35,13 @@ public class NewModuleWarGradleTests extends NewModuleGradleBase {
 	public void createLayoutTemplate() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("layout-template");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Ignore("ignore to wait new Spring MVC Portlet Wizard")
@@ -49,13 +49,13 @@ public class NewModuleWarGradleTests extends NewModuleGradleBase {
 	public void createSpringMvcPortlet() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("spring-mvc-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Ignore("ignore as IDE-4188")
@@ -63,43 +63,43 @@ public class NewModuleWarGradleTests extends NewModuleGradleBase {
 	public void createTheme() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("theme");
 
-		IProject themeProject = createOrImportAndBuild(op, project.getName());
+		IProject themeProject = createOrImportAndBuild(op, projectSupport.getName());
 
 		IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, themeProject);
 
 		Assert.assertNotNull(bundleProject);
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
 	public void createWarHook() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("war-hook");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
 	public void createWarMvcPortlet() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("war-mvc-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Override

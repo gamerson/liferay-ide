@@ -38,11 +38,11 @@ public class NewJSFGradleTests extends NewJSFGradleBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("alloy");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -51,11 +51,11 @@ public class NewJSFGradleTests extends NewJSFGradleBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("icefaces");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -64,11 +64,11 @@ public class NewJSFGradleTests extends NewJSFGradleBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("primefaces");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -77,11 +77,11 @@ public class NewJSFGradleTests extends NewJSFGradleBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("richfaces");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -101,16 +101,16 @@ public class NewJSFGradleTests extends NewJSFGradleBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("richfaces");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		IProject existedProject = createOrImportAndBuild(op, project.getName());
+		IProject existedProject = createOrImportAndBuild(op, projectSupport.getName());
 
 		Assert.assertNotNull(existedProject);
 
 		NewLiferayJSFModuleProjectOp newProjectNameop = NewLiferayJSFModuleProjectOp.TYPE.instantiate();
 
 		newProjectNameop.setProjectProvider("gradle-jsf");
-		newProjectNameop.setProjectName(project.getName());
+		newProjectNameop.setProjectName(projectSupport.getName());
 
 		Value<String> projectName = newProjectNameop.getProjectName();
 

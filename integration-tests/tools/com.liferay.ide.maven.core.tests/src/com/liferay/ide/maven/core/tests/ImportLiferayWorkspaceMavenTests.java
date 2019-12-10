@@ -23,6 +23,7 @@ import com.liferay.ide.project.core.workspace.ImportLiferayWorkspaceOp;
 import com.liferay.ide.test.core.base.support.ImportProjectSupport;
 import com.liferay.ide.test.project.core.base.ProjectOpBase;
 
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.m2e.tests.common.JobHelpers;
 import org.eclipse.sapphire.modeling.Status;
 
@@ -141,7 +142,7 @@ public class ImportLiferayWorkspaceMavenTests extends ProjectOpBase<ImportLifera
 	}
 
 	@Override
-	protected void waitForBuildAndValidation() {
+	protected void waitForBuildAndValidation(ISchedulingRule rule) {
 		JobHelpers.waitForJobs(
 			job -> {
 				Object property = job.getProperty(ILiferayProjectProvider.LIFERAY_PROJECT_JOB);

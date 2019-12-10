@@ -31,13 +31,13 @@ public class NewModuleNpmGradleTests extends NewModuleGradleBase {
 	public void createNpmAngularPortlet() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("npm-angular-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Ignore("Re-enable NPM Tests")
@@ -45,13 +45,13 @@ public class NewModuleNpmGradleTests extends NewModuleGradleBase {
 	public void createNpmReactPortlet() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("npm-react-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Ignore("Re-enable NPM Tests")
@@ -59,13 +59,13 @@ public class NewModuleNpmGradleTests extends NewModuleGradleBase {
 	public void createNpmVuejsPortlet() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("npm-vuejs-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Override

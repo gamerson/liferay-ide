@@ -14,22 +14,21 @@
 
 package com.liferay.ide.test.project.core.base;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.test.core.base.BaseTests;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
-
 import org.junit.AfterClass;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.test.core.base.BaseTests;
 
 /**
  * @author Terry Jia
@@ -66,7 +65,7 @@ public class ProjectBase extends BaseTests {
 			failTest(ce);
 		}
 
-		waitForBuildAndValidation();
+		waitForBuildAndValidation(project);	
 
 		try {
 			project.build(IncrementalProjectBuilder.FULL_BUILD, npm);
@@ -75,7 +74,7 @@ public class ProjectBase extends BaseTests {
 			failTest(ce);
 		}
 
-		waitForBuildAndValidation();
+		waitForBuildAndValidation(project);
 	}
 
 	protected void verifyProject(String projectName) {
@@ -85,9 +84,7 @@ public class ProjectBase extends BaseTests {
 	protected void verifyProjectFiles(String projectName) {
 	}
 
-	protected void waitForBuildAndValidation() {
-		IWorkspaceRoot root = null;
-
+	protected void waitForBuildAndValidation(ISchedulingRule rule) {
 		IJobManager manager = Job.getJobManager();
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -104,7 +101,7 @@ public class ProjectBase extends BaseTests {
 
 			Thread.sleep(200);
 
-			manager.beginRule(root = workspace.getRoot(), null);
+			manager.beginRule(rule, null);
 		}
 		catch (InterruptedException ie) {
 			failTest(ie);
@@ -116,8 +113,8 @@ public class ProjectBase extends BaseTests {
 			failTest(oce);
 		}
 		finally {
-			if (root != null) {
-				manager.endRule(root);
+			if (rule != null) {
+				manager.endRule(rule);
 			}
 		}
 	}

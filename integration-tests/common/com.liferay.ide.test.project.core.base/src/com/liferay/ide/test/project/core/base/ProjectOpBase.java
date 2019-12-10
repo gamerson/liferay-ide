@@ -32,7 +32,7 @@ import org.junit.Rule;
 public abstract class ProjectOpBase<T extends ExecutableElement> extends ProjectBase {
 
 	@Rule
-	public ProjectSupport project = new ProjectSupport();
+	public ProjectSupport projectSupport = new ProjectSupport();
 
 	protected IProject createOrImport(T op, String projectName) {
 		Status status = op.execute(ProgressMonitorBridge.create(npm));
@@ -40,9 +40,11 @@ public abstract class ProjectOpBase<T extends ExecutableElement> extends Project
 		Assert.assertNotNull(status);
 		Assert.assertTrue(status.message(), status.ok());
 
-		waitForBuildAndValidation();
+		IProject project = project(projectName);
+		
+		waitForBuildAndValidation(project);
 
-		return project(projectName);
+		return project;
 	}
 
 	protected IProject createOrImportAndBuild(T op, String projectName) {

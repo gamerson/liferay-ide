@@ -30,13 +30,13 @@ public class NewModuleWarMavenTests extends NewModuleMavenBase {
 	public void createLayoutTemplate() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("layout-template");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Ignore("ignore to wait new Spring MVC Portlet Wizard")
@@ -44,39 +44,39 @@ public class NewModuleWarMavenTests extends NewModuleMavenBase {
 	public void createSpringMvcPortlet() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("spring-mvc-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
 	public void createWarHook() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("war-hook");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
 	public void createWarMvcPortlet() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 		op.setProjectProvider(provider());
 		op.setProjectTemplateName("war-mvc-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Override

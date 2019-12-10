@@ -34,11 +34,11 @@ public class NewJSFMavenTests extends NewJSFMavenBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("alloy");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -47,11 +47,11 @@ public class NewJSFMavenTests extends NewJSFMavenBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("icefaces");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -60,11 +60,11 @@ public class NewJSFMavenTests extends NewJSFMavenBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("jsf");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -73,11 +73,11 @@ public class NewJSFMavenTests extends NewJSFMavenBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("primefaces");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test
@@ -86,11 +86,11 @@ public class NewJSFMavenTests extends NewJSFMavenBase {
 
 		op.setProjectProvider(provider());
 		op.setTemplateName("richfaces");
-		op.setProjectName(project.getName());
+		op.setProjectName(projectSupport.getName());
 
-		createOrImportAndBuild(op, project.getName());
+		createOrImportAndBuild(op, projectSupport.getName());
 
-		deleteProject(project.getName());
+		deleteProject(projectSupport.getName());
 	}
 
 	@Test

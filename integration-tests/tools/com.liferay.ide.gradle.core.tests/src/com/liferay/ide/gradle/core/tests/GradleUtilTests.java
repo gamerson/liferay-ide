@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.IJobManager;
-
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ public class GradleUtilTests extends ProjectBase {
 
 		GradleUtil.synchronizeProject(ips.getIPath(), npm);
 
-		waitForBuildAndValidation();
+		waitForBuildAndValidation(ips.getProject());
 
 		assertNotLiferayProject(ips.getName());
 
@@ -67,7 +67,7 @@ public class GradleUtilTests extends ProjectBase {
 
 		GradleUtil.synchronizeProject(ips.getIPath(), npm);
 
-		waitForBuildAndValidation();
+		waitForBuildAndValidation(ips.getProject());
 
 		assertNotLiferayProject(ips.getName());
 
