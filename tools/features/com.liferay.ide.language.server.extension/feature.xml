@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+	id="com.liferay.ide.language.server.extension"
+	label="Liferay IDE Language Server Extension"
+	provider-name="Liferay, Inc."
+	version="3.7.1.qualifier"
+>
+
+	<description url="http://www.liferay.com/community/liferay-projects/liferay-ide/overview">
+	  Liferay IDE is the official set of Eclipse plugins for supporting Liferay Portal development platform.
+	</description>
+
+	<copyright url="http://www.liferay.com/products/liferay-portal/lgpl">
+	  /**
+* Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later
+* version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty
+* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+* the GNU Lesser General Public License for more details.
+*/
+	</copyright>
+
+	<license url="http://www.gnu.org/licenses/lgpl-2.1.html">
+	  Liferay IDE is free software distributed under the terms of the Lesser GNU Public License. See URL for full license text.  http://www.gnu.org/licenses/lgpl-2.1.html
+	</license>
+
+	<includes
+		id="org.eclipse.tm4e.feature"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="org.eclipse.lsp4e"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="org.eclipse.lsp4e.debug"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="org.eclipse.lsp4j"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="org.eclipse.lsp4j.jsonrpc"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="org.eclipse.lsp4j.debug"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="org.eclipse.lsp4j.jsonrpc.debug"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="org.eclipse.xtext.xbase.lib"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+
+	<plugin
+		download-size="0"
+		id="com.liferay.ide.lsp.ui"
+		install-size="0"
+		unpack="false"
+		version="0.0.0"
+	/>
+</feature>
