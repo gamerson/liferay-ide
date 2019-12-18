@@ -4,11 +4,23 @@ package com.liferay.ide.portlet.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.InputStream;
+import java.util.Arrays;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.sapphire.ElementHandle;
+import org.eclipse.sapphire.ElementList;
+import org.eclipse.sapphire.modeling.ResourceStoreException;
+import org.eclipse.sapphire.modeling.xml.RootXmlResource;
+import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
+import org.junit.Test;
+
 import com.liferay.ide.core.ILiferayConstants;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.portlet.core.lfportlet.model.AssetRendererFactory;
-import com.liferay.ide.portlet.core.lfportlet.model.CronTriggerValueTrigger;
 import com.liferay.ide.portlet.core.lfportlet.model.CronTrigger;
+import com.liferay.ide.portlet.core.lfportlet.model.CronTriggerValueTrigger;
 import com.liferay.ide.portlet.core.lfportlet.model.CustomUserAttribute;
 import com.liferay.ide.portlet.core.lfportlet.model.CutomUserAttributeName;
 import com.liferay.ide.portlet.core.lfportlet.model.ICronTrigger;
@@ -21,33 +33,14 @@ import com.liferay.ide.portlet.core.lfportlet.model.PortletStyleElement;
 import com.liferay.ide.portlet.core.lfportlet.model.PropertyCronTrigger;
 import com.liferay.ide.portlet.core.lfportlet.model.PropertySimpleTrigger;
 import com.liferay.ide.portlet.core.lfportlet.model.SchedulerEntry;
-import com.liferay.ide.portlet.core.lfportlet.model.SimpleTriggerValueTrigger;
 import com.liferay.ide.portlet.core.lfportlet.model.SimpleTrigger;
+import com.liferay.ide.portlet.core.lfportlet.model.SimpleTriggerValueTrigger;
 import com.liferay.ide.portlet.core.lfportlet.model.SocialActivityInterpreterClass;
 import com.liferay.ide.portlet.core.lfportlet.model.StagedModelDataHandlerClass;
 import com.liferay.ide.portlet.core.lfportlet.model.TrashHandler;
 import com.liferay.ide.portlet.core.lfportlet.model.internal.NumberValueValidationService;
 import com.liferay.ide.portlet.core.model.SecurityRoleRef;
-import com.liferay.ide.project.core.model.NewLiferayPluginProjectOp;
-import com.liferay.ide.project.core.model.PluginType;
 import com.liferay.ide.project.core.tests.XmlTestsBase;
-
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.sapphire.ElementHandle;
-import org.eclipse.sapphire.ElementList;
-import org.eclipse.sapphire.PossibleValuesService;
-import org.eclipse.sapphire.modeling.Path;
-import org.eclipse.sapphire.modeling.ResourceStoreException;
-import org.eclipse.sapphire.modeling.xml.RootXmlResource;
-import org.eclipse.sapphire.modeling.xml.XmlResourceStore;
-import org.eclipse.sapphire.services.RelativePathService;
-import org.eclipse.sapphire.services.ValidationService;
-import org.junit.Test;
 
 /**
  * @author Simon Jiang
@@ -101,62 +94,6 @@ public class LiferayPortletXmlTest extends XmlTestsBase
     }
 
     @Test
-    public void testIconRelativePathService() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
-
-        NewLiferayPluginProjectOp newProjectOp = NewLiferayPluginProjectOp.TYPE.instantiate();
-
-        newProjectOp.setProjectName( "test-path" );
-        newProjectOp.setPluginType( PluginType.portlet );
-        newProjectOp.setIncludeSampleCode( true );
-        newProjectOp.setPortletFramework( "mvc" );
-        newProjectOp.setPortletName( "testPortlet" );
-        final IProject testProject = createAntProject( newProjectOp );
-
-        LiferayPortletXml liferayPortletApp = op( testProject );
-
-        for( LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets() )
-        {
-            final RelativePathService pathService = liferayPortlet.getIcon().service( RelativePathService.class );
-            List<Path> iconPaths = pathService.roots();
-            assertEquals( true, iconPaths.size() > 0 );
-        }
-
-    }
-
-    @Test
-    public void testLiferayScriptPossibleValuesService() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
-
-        NewLiferayPluginProjectOp newProjectOp = NewLiferayPluginProjectOp.TYPE.instantiate();
-        newProjectOp.setProjectName( "test-script" );
-        newProjectOp.setPluginType( PluginType.portlet );
-        newProjectOp.setIncludeSampleCode( true );
-        newProjectOp.setPortletFramework( "mvc" );
-        newProjectOp.setPortletName( "testPortlet" );
-        final IProject testProject = createAntProject( newProjectOp );
-
-        LiferayPortletXml liferayPortletApp = op( testProject );
-
-        for( LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets() )
-        {
-            ElementList<PortletStyleElement> portletCsses = liferayPortlet.getHeaderPortletCsses();
-            {
-                for( PortletStyleElement portletCss : portletCsses )
-                {
-                    final PossibleValuesService scriptService =
-                        portletCss.getValue().service( PossibleValuesService.class );
-                    assertEquals( true, scriptService.values().contains( "/css/main.css" ) );
-                }
-            }
-        }
-    }
-
-    @Test
     public void testNumberValidationService() throws Exception
     {
         if( shouldSkipBundleTests() )
@@ -181,39 +118,6 @@ public class LiferayPortletXmlTest extends XmlTestsBase
 
         cronTriggerValue.setCronTriggerValue( "150" );
         assertEquals( true, "ok".equals( vs.validation().message() ) );
-
-    }
-
-    @Test
-    public void testPortletNameValidationService() throws Exception
-    {
-        if( shouldSkipBundleTests() )
-            return;
-
-        NewLiferayPluginProjectOp newProjectOp = NewLiferayPluginProjectOp.TYPE.instantiate();
-        newProjectOp.setProjectName( "test-validation" );
-        newProjectOp.setPluginType( PluginType.portlet );
-        newProjectOp.setIncludeSampleCode( true );
-        newProjectOp.setPortletFramework( "mvc" );
-        newProjectOp.setPortletName( "testPortlet" );
-        final IProject testProject = createAntProject( newProjectOp );
-
-        LiferayPortletXml liferayPortletApp = op( testProject );
-
-        for( LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets() )
-        {
-            final ValidationService vs = liferayPortlet.getPortletName().service( ValidationService.class );
-            assertEquals( "ok", vs.validation().message() );
-            assertEquals( "ok", liferayPortlet.getPortletName().validation().message() );
-        }
-
-        for( LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets() )
-        {
-            liferayPortlet.setPortletName( "test1" );
-            final ValidationService vs = liferayPortlet.getPortletName().service( ValidationService.class );
-            assertEquals( false, "ok".equals( vs.validation().message() ) );
-            assertEquals( false, "ok".equals( liferayPortlet.getPortletName().validation().message() ) );
-        }
 
     }
 

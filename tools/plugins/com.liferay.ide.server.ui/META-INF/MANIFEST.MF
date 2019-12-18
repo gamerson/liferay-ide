@@ -7,7 +7,6 @@ Bundle-Activator: com.liferay.ide.server.ui.LiferayServerUI
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.liferay.ide.core,
  com.liferay.ide.project.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  com.liferay.ide.ui,
  org.apache.commons.lang,

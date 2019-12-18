@@ -76,7 +76,8 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
 				if (projectRecord != null) {
 					IPath location = projectRecord.getProjectLocation();
 
-					String suffix = ProjectUtil.getLiferayPluginType(location.toPortableString());
+					//TODO
+					String suffix = "";
 
 					return getImageRegistry().get(suffix);
 				}

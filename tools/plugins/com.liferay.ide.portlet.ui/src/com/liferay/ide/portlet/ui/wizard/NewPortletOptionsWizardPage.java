@@ -15,7 +15,6 @@
 package com.liferay.ide.portlet.ui.wizard;
 
 import com.liferay.ide.portlet.core.operation.INewPortletClassDataModelProperties;
-import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.wizard.LiferayDataModelWizardPage;
 import com.liferay.ide.ui.util.SWTUtil;
 
@@ -278,7 +277,7 @@ public class NewPortletOptionsWizardPage
 	}
 
 	protected boolean isProjectValid(IProject project) {
-		return ProjectUtil.isPortletProject(project);
+		return true;
 	}
 
 	@Override

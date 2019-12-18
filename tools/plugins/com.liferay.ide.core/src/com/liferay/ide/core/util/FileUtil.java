@@ -50,6 +50,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -67,6 +71,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.osgi.util.NLS;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -626,6 +632,34 @@ public class FileUtil {
 			if (projectName.equals(expectedProjectName)) {
 				return wsFile;
 			}
+		}
+
+		return null;
+	}
+
+	public static String getXmlTagValue(File file, String xpathValue) {
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+			DocumentBuilder builder = factory.newDocumentBuilder();
+
+			Document doc = builder.parse(file);
+
+			XPathFactory xPathFactory = XPathFactory.newInstance();
+
+			XPath xPath = xPathFactory.newXPath();
+
+			XPathExpression expr = xPath.compile(xpathValue);
+
+			NodeList nl = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
+
+			if (nl.getLength() > 0) {
+				Node item = nl.item(0);
+
+				return item.getTextContent();
+			}
+		}
+		catch (Exception e) {
 		}
 
 		return null;

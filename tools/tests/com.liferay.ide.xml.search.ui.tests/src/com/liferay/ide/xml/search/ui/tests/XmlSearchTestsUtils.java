@@ -19,13 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import com.liferay.ide.core.util.ReflectionUtil;
-import com.liferay.ide.ui.tests.UITestsUtils;
-import com.liferay.ide.xml.search.ui.editor.CompoundRegion;
-import com.liferay.ide.xml.search.ui.editor.InfoRegion;
-import com.liferay.ide.xml.search.ui.editor.MarkerRegion;
-import com.liferay.ide.xml.search.ui.editor.TemporaryRegion;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +52,13 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.liferay.ide.core.util.ReflectionUtil;
+import com.liferay.ide.ui.tests.UITestsUtils;
+import com.liferay.ide.xml.search.ui.editor.CompoundRegion;
+import com.liferay.ide.xml.search.ui.editor.InfoRegion;
+import com.liferay.ide.xml.search.ui.editor.MarkerRegion;
+import com.liferay.ide.xml.search.ui.editor.TemporaryRegion;
 
 /**
  * Some methods are modified from eclipse wst sse tests

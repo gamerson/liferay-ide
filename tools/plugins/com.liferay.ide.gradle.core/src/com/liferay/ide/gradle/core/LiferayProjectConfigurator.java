@@ -107,6 +107,14 @@ public class LiferayProjectConfigurator implements ProjectConfigurator {
 					return;
 				}
 
+				boolean lifeayJsfProject = ProjectUtil.isLifeayJsfProject(project);
+
+				if (lifeayJsfProject) {
+					LiferayNature.addLiferayNature(project, monitor);
+
+					return;
+				}
+
 				final CustomModel customModel = LiferayGradleCore.getToolingModel(CustomModel.class, project);
 
 				if (customModel == null) {
@@ -114,7 +122,8 @@ public class LiferayProjectConfigurator implements ProjectConfigurator {
 						LiferayGradleCore.createErrorStatus("Unable to get read gradle configuration"));
 				}
 
-				if (customModel.isLiferayModule() || customModel.hasPlugin("org.gradle.api.plugins.WarPlugin") ||
+				if (customModel.isLiferayModule() ||
+					(customModel.hasPlugin("org.gradle.api.plugins.WarPlugin") && !lifeayJsfProject) ||
 					customModel.hasPlugin("com.liferay.gradle.plugins.theme.builder.ThemeBuilderPlugin")) {
 
 					LiferayNature.addLiferayNature(project, monitor);

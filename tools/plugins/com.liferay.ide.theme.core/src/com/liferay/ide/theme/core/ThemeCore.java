@@ -14,8 +14,6 @@
 
 package com.liferay.ide.theme.core;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
@@ -100,15 +98,8 @@ public class ThemeCore extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		_plugin = null;
 		super.stop(context);
-
-		if (_themeDiffResourceListener != null) {
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-			workspace.removeResourceChangeListener(_themeDiffResourceListener);
-		}
 	}
 
 	private static ThemeCore _plugin;
-	private static ThemeDiffResourceListener _themeDiffResourceListener;
 
 }

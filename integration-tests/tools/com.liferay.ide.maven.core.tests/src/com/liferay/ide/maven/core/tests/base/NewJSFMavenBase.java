@@ -14,13 +14,20 @@
 
 package com.liferay.ide.maven.core.tests.base;
 
+import com.liferay.ide.core.IBundleProject;
+import com.liferay.ide.core.LiferayCore;
 import com.liferay.ide.project.core.jsf.NewLiferayJSFModuleProjectOp;
 import com.liferay.ide.test.project.core.base.NewModuleOpBase;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.m2e.tests.common.JobHelpers;
 import org.eclipse.m2e.tests.common.JobHelpers.IJobMatcher;
+
+import org.junit.Assert;
 
 /**
  * @author Terry Jia
@@ -31,6 +38,26 @@ public abstract class NewJSFMavenBase extends NewModuleOpBase<NewLiferayJSFModul
 	@Override
 	protected String provider() {
 		return "maven-jsf";
+	}
+
+	@Override
+	protected void verifyProject(IProject project) {
+		IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
+
+		Assert.assertNotNull(bundleProject);
+
+		IPath outputBundle;
+
+		try {
+			outputBundle = bundleProject.getOutputBundle(true, npm);
+
+			assertFileExists(outputBundle);
+
+			assertFileSuffix(outputBundle, shape());
+		}
+		catch (CoreException ce) {
+			failTest(ce);
+		}
 	}
 
 	protected void verifyProjectFiles(String projectName) {

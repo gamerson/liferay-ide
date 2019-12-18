@@ -57,7 +57,7 @@ public class LiferayLayoutTplXmlTests extends XmlSearchTestsBase
     {
         if( project == null )
         {
-            project = super.getProject( "layouttpl", "Liferay-Layout-Templates-Xml-Test-layouttpl" );
+            project = super.getProject( "Liferay-Layout-Templates-Xml-Test-layouttpl" );
             XmlSearchTestsUtils.deleteOtherProjects( project );
         }
 

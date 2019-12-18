@@ -17,12 +17,6 @@ package com.liferay.ide.project.core.tests.workspace;
 
 import static org.junit.Assert.assertTrue;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.PropertiesUtil;
-import com.liferay.ide.core.util.WorkspaceConstants;
-import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
-import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
-
 import java.io.File;
 import java.util.Properties;
 
@@ -30,13 +24,27 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
+import org.junit.Before;
 import org.junit.Test;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.PropertiesUtil;
+import com.liferay.ide.core.util.WorkspaceConstants;
+import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
+import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
 /**
  * @author Andy Wu
  */
 public class LiferayWorkspaceUtilTests
 {
+	@Before
+	public void clearWorkspace() throws Exception {
+		for (IProject project : CoreUtil.getAllProjects()) {
+			project.delete(true, new NullProgressMonitor());
+		}
+	}
+	
     @Test
     public void testLiferayWorkspaceUtil() throws Exception
     {

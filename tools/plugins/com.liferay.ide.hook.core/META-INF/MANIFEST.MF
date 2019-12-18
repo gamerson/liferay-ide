@@ -7,7 +7,6 @@ Bundle-Activator: com.liferay.ide.hook.core.HookCore
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.liferay.ide.core,
  com.liferay.ide.project.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  org.apache.commons.lang,
  org.eclipse.core.commands,

@@ -6,7 +6,6 @@ Bundle-Version: 3.7.1.qualifier
 Bundle-Activator: com.liferay.ide.ui.LiferayUIPlugin
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.liferay.ide.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  org.apache.commons.lang,
  org.eclipse.debug.ui,

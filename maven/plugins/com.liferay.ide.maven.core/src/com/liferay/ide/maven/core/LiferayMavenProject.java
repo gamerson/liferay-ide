@@ -23,7 +23,6 @@ import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.core.workspace.ProjectChangedEvent;
-import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.server.remote.IRemoteServerPublisher;
 
 import java.util.ArrayList;
@@ -133,7 +132,7 @@ public abstract class LiferayMavenProject extends BaseLiferayProject implements 
 	public String getProperty(String key, String defaultValue) {
 		String retval = defaultValue;
 
-		if (("theme.type".equals(key) || "theme.parent".equals(key)) && ProjectUtil.isThemeProject(getProject())) {
+		if ("theme.type".equals(key) || "theme.parent".equals(key)) {
 			IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade(getProject());
 
 			if (projectFacade != null) {

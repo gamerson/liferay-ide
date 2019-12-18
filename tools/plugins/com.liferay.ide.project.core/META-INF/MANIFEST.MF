@@ -7,7 +7,6 @@ Bundle-Activator: com.liferay.ide.project.core.ProjectCore
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: biz.aQute.bndlib;bundle-version="[4,5)",
  com.liferay.ide.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  org.apache.ant,
  org.apache.commons.io,
@@ -39,7 +38,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.project.core,
  com.liferay.ide.project.core.descriptor,
- com.liferay.ide.project.core.facet,
  com.liferay.ide.project.core.jobs,
  com.liferay.ide.project.core.jsf,
  com.liferay.ide.project.core.library,

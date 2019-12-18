@@ -19,12 +19,10 @@ import com.liferay.ide.core.ILiferayProject;
 import com.liferay.ide.core.LiferayNature;
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.SapphireContentAccessor;
-import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.maven.core.aether.AetherUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.descriptor.UpdateDescriptorVersionOperation;
-import com.liferay.ide.project.core.model.NewLiferayProfile;
-import com.liferay.ide.project.core.model.ProfileLocation;
+import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.core.util.SearchFilesVisitor;
 import com.liferay.ide.server.util.ComponentUtil;
 
@@ -33,7 +31,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -246,11 +243,16 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 				if (MavenUtil.isMavenProject(project)) {
 					boolean hasLiferayNature = LiferayNature.hasNature(project);
 					boolean hasLiferayFacet = ComponentUtil.hasLiferayFacet(project);
+					boolean liferayJsf = ProjectUtil.isLifeayJsfProject(project);
+					boolean liferayHook = ProjectUtil.isLifeayHookProject(project);
+					boolean liferayMvc = ProjectUtil.isLifeayMvcProject(project);
+					boolean liferayLayout = ProjectUtil.isLifeayLayoutProject(project);
 
 					if ((hasLiferayNature ||
 						 MavenUtil.hasDependency(project, "com.liferay.portal", "com.liferay.portal.kernel") ||
 						 MavenUtil.hasDependency(project, "com.liferay.faces", "com.liferay.faces.bridge.ext")) &&
-						hasLiferayFacet && ((type == null) || type.isAssignableFrom(FacetedMavenBundleProject.class))) {
+						(liferayJsf || hasLiferayFacet || liferayHook || liferayMvc || liferayLayout) &&
+						((type == null) || type.isAssignableFrom(FacetedMavenBundleProject.class))) {
 
 						return new FacetedMavenBundleProject(project);
 					}
@@ -282,96 +284,6 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 		}
 
 		return null;
-	}
-
-	protected String getNewLiferayProfilesPluginVersion(
-		String[] activeProfiles, List<NewLiferayProfile> newLiferayProfiles, String archetypeVersion) {
-
-		org.osgi.framework.Version minVersion = new org.osgi.framework.Version(archetypeVersion.substring(0, 3));
-
-		try {
-			IMaven maven = MavenPlugin.getMaven();
-
-			Settings settings = maven.getSettings();
-
-			List<Profile> profiles = settings.getProfiles();
-
-			org.osgi.framework.Version minNewVersion = new org.osgi.framework.Version(archetypeVersion.substring(0, 3));
-
-			org.osgi.framework.Version minExistedVersion = new org.osgi.framework.Version(
-				archetypeVersion.substring(0, 3));
-
-			for (String activeProfile : activeProfiles) {
-				for (NewLiferayProfile newProfile : newLiferayProfiles) {
-					if (StringUtil.equals(activeProfile, get(newProfile.getId()))) {
-						String liferayVersion = get(newProfile.getLiferayVersion());
-
-						org.osgi.framework.Version shortLiferayVersion = new org.osgi.framework.Version(
-							liferayVersion.substring(0, 3));
-
-						org.osgi.framework.Version shortPluginVersion = new org.osgi.framework.Version(
-							archetypeVersion.substring(0, 3));
-
-						if (shortLiferayVersion.compareTo(shortPluginVersion) < 0) {
-							minNewVersion = shortLiferayVersion;
-						}
-						else {
-							minNewVersion = shortPluginVersion;
-						}
-					}
-				}
-
-				minVersion = (minVersion.compareTo(minNewVersion) < 0) ? minVersion : minNewVersion;
-
-				for (Profile existProfile : profiles) {
-					if (activeProfile.equals(existProfile.getId())) {
-						Properties properties = existProfile.getProperties();
-
-						String liferayVersion = properties.getProperty("liferay.version");
-						String pluginVersion = properties.getProperty("liferay.maven.plugin.version");
-
-						if ((pluginVersion != null) && (liferayVersion != null)) {
-							org.osgi.framework.Version shortLiferayVersion = new org.osgi.framework.Version(
-								liferayVersion.substring(0, 3));
-
-							org.osgi.framework.Version shortPluginVersion = new org.osgi.framework.Version(
-								pluginVersion.substring(0, 3));
-
-							if (shortLiferayVersion.compareTo(shortPluginVersion) < 0) {
-								minExistedVersion = shortLiferayVersion;
-							}
-							else {
-								shortLiferayVersion = shortPluginVersion;
-							}
-						}
-					}
-				}
-
-				minVersion = (minVersion.compareTo(minExistedVersion) < 0) ? minVersion : minExistedVersion;
-			}
-		}
-		catch (Exception e) {
-		}
-
-		return minVersion.toString();
-	}
-
-	protected List<NewLiferayProfile> getNewProfilesToSave(
-		String[] activeProfiles, List<NewLiferayProfile> newLiferayProfiles, ProfileLocation location) {
-
-		List<NewLiferayProfile> profilesToSave = new ArrayList<>();
-
-		for (String activeProfile : activeProfiles) {
-			for (NewLiferayProfile newProfile : newLiferayProfiles) {
-				if (StringUtil.equals(activeProfile, get(newProfile.getId())) &&
-					location.equals(get(newProfile.getProfileLocation()))) {
-
-					profilesToSave.add(newProfile);
-				}
-			}
-		}
-
-		return profilesToSave;
 	}
 
 	protected void updateDtdVersion(IProject project, String dtdVersion, String archetypeVesion) {

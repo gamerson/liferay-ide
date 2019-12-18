@@ -17,6 +17,9 @@ package com.liferay.ide.maven.core.tests;
 import com.liferay.ide.maven.core.tests.base.NewModuleMavenBase;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 
+import org.eclipse.sapphire.modeling.Status;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -30,11 +33,13 @@ public class NewModuleNpmMavenTests extends NewModuleMavenBase {
 
 		op.setProjectName(project.getName());
 		op.setProjectProvider(provider());
+		op.setLiferayVersion("7.2");
+
 		op.setProjectTemplateName("npm-angular-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		Status validation = op.validation();
 
-		deleteProject(project.getName());
+		Assert.assertEquals("Can only create npm portlet for 7.1", _errorMessage, validation.message());
 	}
 
 	@Test
@@ -43,29 +48,37 @@ public class NewModuleNpmMavenTests extends NewModuleMavenBase {
 
 		op.setProjectName(project.getName());
 		op.setProjectProvider(provider());
+		op.setLiferayVersion("7.2");
+
 		op.setProjectTemplateName("npm-react-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		Status validation = op.validation();
 
-		deleteProject(project.getName());
+		Assert.assertEquals("Can only create npm portlet for 7.1", _errorMessage, validation.message());
 	}
 
 	@Test
-	public void createNpmVuejsPortlet() {
+	public void createNpmVuejsPortletForPortal72() {
 		NewLiferayModuleProjectOp op = NewLiferayModuleProjectOp.TYPE.instantiate();
 
 		op.setProjectName(project.getName());
 		op.setProjectProvider(provider());
+		op.setLiferayVersion("7.2");
+
 		op.setProjectTemplateName("npm-vuejs-portlet");
 
-		createOrImportAndBuild(op, project.getName());
+		Status validation = op.validation();
 
-		deleteProject(project.getName());
+		Assert.assertEquals("Can only create npm portlet for 7.1", _errorMessage, validation.message());
 	}
 
 	@Override
 	protected String shape() {
 		return "jar";
 	}
+
+	private static String _errorMessage = new String(
+		"NPM portlet project templates generated from this tool are not supported for specified Liferay version. See " +
+			"LPS-97950 for full details.");
 
 }

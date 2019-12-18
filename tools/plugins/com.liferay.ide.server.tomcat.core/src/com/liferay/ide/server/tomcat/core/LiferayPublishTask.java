@@ -14,6 +14,8 @@
 
 package com.liferay.ide.server.tomcat.core;
 
+import com.liferay.ide.server.core.portal.LiferayPublishOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 

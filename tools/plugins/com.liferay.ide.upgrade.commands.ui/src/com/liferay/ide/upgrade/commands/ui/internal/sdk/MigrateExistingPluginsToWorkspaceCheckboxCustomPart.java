@@ -18,7 +18,6 @@ import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.SapphireUtil;
 import com.liferay.ide.project.core.ProjectRecord;
 import com.liferay.ide.project.core.model.ProjectNamedItem;
-import com.liferay.ide.project.core.util.ProjectImportUtil;
 import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.project.ui.wizard.ProjectsCheckboxCustomPart;
@@ -123,7 +122,8 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 					Path sdkLocation = sdkLocationPath.content();
 
 					if (sdkLocation != null) {
-						IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
+						//IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
+						IStatus status = org.eclipse.core.runtime.Status.OK_STATUS;
 
 						if (status.isOK()) {
 							if (SapphireUtil.exists(sdkLocation)) {
@@ -154,7 +154,8 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 		Path sdkLocation = sdkLocationPath.content();
 
 		if (sdkLocation != null) {
-			IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
+			//IStatus status = ProjectImportUtil.validateSDKPath(sdkLocation.toPortableString());
+			IStatus status = org.eclipse.core.runtime.Status.OK_STATUS;
 
 			if (status.isOK()) {
 				Table table = checkBoxViewer.getTable();
@@ -183,7 +184,9 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 
 	private IProject[] _getPluginSDKProjects() {
 		if (_pluginSDKProjects == null) {
-			_pluginSDKProjects = ProjectUtil.getAllPluginsSDKProjects();
+
+			//TODO
+			//_pluginSDKProjects = ProjectUtil.getAllPluginsSDKProjects();
 		}
 
 		return _pluginSDKProjects;
@@ -259,6 +262,8 @@ public class MigrateExistingPluginsToWorkspaceCheckboxCustomPart extends Project
 			Collection<File> liferayProjectDirs = new ArrayList<>();
 
 			if (dirSelected && directory.isDirectory()) {
+				//TODO
+
 				if (!ProjectUtil.collectSDKProjectsFromDirectory(
 						eclipseProjectFiles, liferayProjectDirs, directory, null, true, new NullProgressMonitor())) {
 

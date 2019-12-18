@@ -834,7 +834,7 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
 	}
 
 	protected boolean isProjectValid(IProject project) {
-		if (super.isProjectValid(project) && ProjectUtil.isPortletProject(project)) {
+		if (super.isProjectValid(project)/* && ProjectUtil.isPortletProject(project) */) {
 			return true;
 		}
 

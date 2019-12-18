@@ -1,0 +1,10 @@
+!SESSION 2019-12-16 12:14:43.967 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.8.0_222
+java.vendor=Amazon.com Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Framework arguments:  -eclipse.keyring /tmp/tycho1747416323825980060secure_storage
+Command-line arguments:  -eclipse.keyring /tmp/tycho1747416323825980060secure_storage
+
+!ENTRY org.eclipse.equinox.p2.repository 2 0 2019-12-16 12:14:43.967
+!MESSAGE Server returned lastModified <= 0 for https://github.com/ianbrandt/m2e-maven-dependency-plugin/raw/gh-pages/0.0.4/content.jar

@@ -28,7 +28,6 @@ import com.liferay.ide.project.core.IPluginWizardFragmentProperties;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.descriptor.AddNewPortletOperation;
 import com.liferay.ide.project.core.descriptor.RemoveAllPortletsOperation;
-import com.liferay.ide.project.core.util.ProjectUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -343,7 +342,9 @@ public class AddPortletOperation
 	}
 
 	protected boolean shouldGenerateMetaData(IDataModel aModel) {
-		return ProjectUtil.isPortletProject(getTargetProject());
+		//		return ProjectUtil.isPortletProject(getTargetProject());
+
+		return true;
 	}
 
 	protected TemplateContextType portletContextType;

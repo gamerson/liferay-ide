@@ -7,7 +7,6 @@ Bundle-Activator: com.liferay.ide.layouttpl.core.LayoutTplCore
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.liferay.ide.core,
  com.liferay.ide.project.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  org.apache.commons.collections,
  org.eclipse.core.runtime,
@@ -24,7 +23,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.layouttpl.core,
  com.liferay.ide.layouttpl.core.descriptor,
- com.liferay.ide.layouttpl.core.facet,
  com.liferay.ide.layouttpl.core.model,
  com.liferay.ide.layouttpl.core.operation,
  com.liferay.ide.layouttpl.core.util
