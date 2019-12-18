@@ -14,8 +14,8 @@
 
 package com.liferay.ide.gradle.core;
 
-import com.liferay.ide.project.core.util.LiferayWorkspaceUtil;
-import com.liferay.ide.server.core.portal.docker.IDockerPublisher;
+import com.liferay.ide.core.workspace.LiferayWorkspaceUtil;
+import com.liferay.ide.server.core.portal.docker.IDockerSupporter;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -25,9 +25,9 @@ import org.eclipse.wst.server.core.IServer;
 /**
  * @author Simon Jiang
  */
-public class LiferayGradleDockerDeployer implements IDockerPublisher {
+public class LiferayGradleDockerSupporter implements IDockerSupporter {
 
-	public LiferayGradleDockerDeployer() {
+	public LiferayGradleDockerSupporter() {
 	}
 
 	@Override
@@ -53,6 +53,18 @@ public class LiferayGradleDockerDeployer implements IDockerPublisher {
 		catch (Exception e) {
 			LiferayGradleCore.logError(e);
 		}
+	}
+
+	@Override
+	public void startDockerContainer(String dockerContainerId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopDockerContainer(String dockerContainerId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

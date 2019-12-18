@@ -32,10 +32,26 @@ import org.junit.Test;
 public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 	String expectedBuildGradle =
-			"dependencies {\n"+
-		"	compileOnly group: \"org.osgi\", name: \"org.osgi.core\"\n"+
-		"	compileOnly group: \"org.osgi\", name: \"org.osgi.service.component.annotations\"\n"+
-	"}";
+		"dependencies {\n" + 
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.asset.taglib\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.comment.taglib\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.frontend.taglib\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.frontend.taglib.dynamic.section\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.frontend.taglib.form.navigator\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.frontend.taglib.util\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.journal.taglib\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.layout.taglib\"\n" +
+		"	compileOnly group: \"com.liferay\", name: \"com.liferay.site.taglib\"\n" +
+		"	compileOnly group: \"com.liferay.portal\", name: \"com.liferay.portal.kernel\"\n" +
+		"	compileOnly group: \"com.liferay.portal\", name: \"com.liferay.util.taglib\"\n" +
+		"	compileOnly group: \"javax.portlet\", name: \"portlet-api\"\n" +
+		"	compileOnly group: \"javax.servlet\", name: \"javax.servlet-api\"\n" +
+		"	compileOnly group: \"jstl\", name: \"jstl\"\n" +
+		"	compileOnly group: \"org.osgi\", name: \"org.osgi.service.component.annotations\"\n" +
+		"\n" +
+		"	cssBuilder group: \"com.liferay\", name: \"com.liferay.css.builder\", version: \"3.0.0\"\n" +
+		"}\n";
+
 
 	@Test
 	public void checkDependenciesVersionForExt() {
@@ -163,7 +179,7 @@ public class NewLiferayWorkspaceWizardGradleTests extends SwtbotBase {
 
 		viewAction.project.openFile(project.getName(), "modules", projectName, "build.gradle");
 
-		validationAction.assertDoesNotContains("version", editorAction.getContent());
+		validationAction.assertEquals(expectedBuildGradle, editorAction.getContent());
 
 		editorAction.close();
 
