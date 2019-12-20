@@ -190,7 +190,7 @@ public class NewComponentWizardMavenTests extends SwtbotBase {
 
 		Assert.assertTrue(
 			viewAction.project.visibleFileTry(
-				project.getName(), "src/main/java", packageName + " 1.0.0",
+				project.getName(), "src/main/java", packageName + " 1.0.0↔[1.0,2)",
 				project.getCapitalName() + "Portlet.java [Component]"));
 
 		viewAction.project.closeAndDelete(project.getName());
@@ -271,7 +271,7 @@ public class NewComponentWizardMavenTests extends SwtbotBase {
 
 		Assert.assertTrue(
 			viewAction.project.visibleFileTry(
-				project.getName(), "src/main/java", packageName,
+				project.getName(), "src/main/java", project.getName(),
 				project.getCapitalName() + "Portlet.java [Component]"));
 
 		viewAction.project.closeAndDelete(project.getName());
