@@ -20,6 +20,7 @@
 					<baseDir>${baseDir}</baseDir>
 					<autoFix>${autoFix}</autoFix>
 					<processorThreadCount>5</processorThreadCount>
+					<throwException>true</throwException>
 				</configuration>
 			</plugin>
 		</plugins>
