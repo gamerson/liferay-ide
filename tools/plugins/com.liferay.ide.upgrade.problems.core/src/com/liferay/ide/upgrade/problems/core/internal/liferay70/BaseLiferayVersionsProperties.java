@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 
@@ -48,7 +49,7 @@ public abstract class BaseLiferayVersionsProperties extends PropertiesFileMigrat
 	public List<UpgradeProblem> analyze(File file) {
 		List<UpgradeProblem> problems = new ArrayList<>();
 
-		if ("liferay-plugin-package.properties".equals(file.getName())) {
+		if (Objects.equals("liferay-plugin-package.properties", file.getName())) {
 			PropertiesFileChecker propertiesFileChecker = new PropertiesFileChecker(file);
 
 			List<PropertiesFileChecker.KeyInfo> keys = propertiesFileChecker.getInfos("liferay-versions");

@@ -26,6 +26,7 @@ import com.liferay.portal.osgi.util.test.OSGiServiceUtil;
 import java.lang.reflect.Method;
 
 import java.util.Dictionary;
+import java.util.Objects;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -67,11 +68,8 @@ public class ConfigurationDDMFormDeclarationUtilTest {
 		Bundle bundle = null;
 
 		for (Bundle installedBundle : _bundleContext.getBundles()) {
-			if ("com.liferay.configuration.admin.web".equals(
-					installedBundle.getSymbolicName())) {
-
+			if (Objects.equals("com.liferay.configuration.admin.web", installedBundle.getSymbolicName())) {
 				bundle = installedBundle;
-
 				break;
 			}
 		}

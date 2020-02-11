@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -287,7 +288,7 @@ public class LayeredModulePathFactory {
 				boolean hasBase = false;
 
 				for (String layerName : layerNames) {
-					if ("base".equals(layerName)) {
+					if (Objects.equals("base", layerName)) {
 						hasBase = true;
 					}
 

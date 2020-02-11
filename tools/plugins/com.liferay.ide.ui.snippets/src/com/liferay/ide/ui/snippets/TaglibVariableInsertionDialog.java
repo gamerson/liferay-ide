@@ -19,6 +19,7 @@ import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.core.util.StringUtil;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -182,7 +183,7 @@ public class TaglibVariableInsertionDialog extends VariableInsertionDialog {
 		text = StringUtils.replace(text, "\r\n", "\n");
 		text = StringUtils.replace(text, "\r", "\n");
 
-		if (!"\n".equals(systemEOL) && (systemEOL != null)) {
+		if (!Objects.equals("\n", systemEOL) && (systemEOL != null)) {
 			text = StringUtils.replace(text, "\n", systemEOL);
 		}
 

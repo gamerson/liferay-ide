@@ -34,6 +34,7 @@ import java.io.File;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
@@ -72,7 +73,7 @@ public class NewLiferayPluginProjectOpMethods {
 
 		NewLiferayProjectProvider<NewLiferayPluginProjectOp> projectProvider = _getter.get(op.getProjectProvider());
 
-		if ("maven".equals(projectProvider.getShortName())) {
+		if (Objects.equals("maven", projectProvider.getShortName())) {
 			retval = true;
 		}
 
@@ -267,7 +268,7 @@ public class NewLiferayPluginProjectOpMethods {
 
 		NewLiferayProjectProvider<NewLiferayPluginProjectOp> provider = _getter.get(op.getProjectProvider());
 
-		if ((projectName != null) && "ant".equals(provider.getShortName())) {
+		if ((projectName != null) && Objects.equals("ant", provider.getShortName())) {
 			suffix = getPluginTypeSuffix(_getter.get(op.getPluginType()));
 
 			if (suffix != null) {
@@ -289,7 +290,7 @@ public class NewLiferayPluginProjectOpMethods {
 
 		NewLiferayProjectProvider<NewLiferayPluginProjectOp> provider = _getter.get(op.getProjectProvider());
 
-		if ("maven".equals(provider.getShortName()) && (type.equals("web") || type.equals("theme"))) {
+		if (Objects.equals("maven", provider.getShortName()) && (type.equals("web") || type.equals("theme"))) {
 			return true;
 		}
 
@@ -321,11 +322,11 @@ public class NewLiferayPluginProjectOpMethods {
 			greaterThan700 = true;
 		}
 
-		if ((greaterThan700 && "web".equals(type)) || "theme".equals(type)) {
+		if ((greaterThan700 && Objects.equals("web", type)) || Objects.equals("theme", type)) {
 			retval = true;
 		}
 
-		if (greaterThan700 && "ext".equals(type)) {
+		if (greaterThan700 && Objects.equals("ext", type)) {
 			IPath sdkLocation = sdk.getLocation();
 
 			IPath extFolder = sdkLocation.append("ext");
@@ -336,7 +337,7 @@ public class NewLiferayPluginProjectOpMethods {
 				return true;
 			}
 		}
-		else if (!greaterThan700 && "ext".equals(type)) {
+		else if (!greaterThan700 && Objects.equals("ext", type)) {
 			return true;
 		}
 

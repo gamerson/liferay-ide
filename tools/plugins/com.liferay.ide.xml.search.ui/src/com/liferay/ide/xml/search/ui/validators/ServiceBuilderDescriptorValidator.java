@@ -17,6 +17,8 @@ package com.liferay.ide.xml.search.ui.validators;
 import com.liferay.ide.project.core.ValidationPreferences;
 import com.liferay.ide.xml.search.ui.util.ValidatorUtil;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.JavaConventions;
@@ -57,18 +59,18 @@ public class ServiceBuilderDescriptorValidator extends LiferayBaseValidator {
 
 			String parentNodeName = parentNode.getNodeName();
 
-			if (parentNodeName.equals("namespace")) {
-				String nodeValue = DOMUtils.getNodeValue(node);
-
-				if (!ValidatorUtil.isValidNamespace(nodeValue)) {
-					validationMsg = getMessageText(ValidationPreferences.ValidationType.SYNTAX_INVALID, node);
-				}
+			if (parentNodeName.equals("namespace") && !ValidatorUtil.isValidNamespace(DOMUtils.getNodeValue(node))) {
+				validationMsg = getMessageText(ValidationPreferences.ValidationType.SYNTAX_INVALID, node);
 			}
 		}
 		else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
-			Element element = ((Attr)node).getOwnerElement();
+			Attr attr = (Attr)node;
 
-			if ("package-path".equals(node.getNodeName()) && "service-builder".equals(element.getNodeName())) {
+			Element element = attr.getOwnerElement();
+
+			if (Objects.equals("package-path", node.getNodeName()) &&
+				Objects.equals("service-builder", element.getNodeName())) {
+
 				String nodeValue = DOMUtils.getNodeValue(node);
 
 				if (nodeValue != null) {

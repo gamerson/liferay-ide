@@ -16,6 +16,7 @@ package com.liferay.ide.kaleo.ui.diagram;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.ui.SapphireActionHandler;
@@ -51,22 +52,22 @@ public class KaleoNodeAddActionHandlerFactory extends SapphireActionHandlerFacto
 
 		Value<String> nodeId = diagramNode.getId();
 
-		if ("state".equals(nodeId.content())) {
+		if (Objects.equals("state", nodeId.content())) {
 			retval = new StateNodeAddActionHandler(nodeTemplate);
 		}
-		else if ("task".equals(nodeId.content())) {
+		else if (Objects.equals("task", nodeId.content())) {
 			retval = new TaskNodeAddActionHandler(nodeTemplate);
 		}
-		else if ("condition".equals(nodeId.content())) {
+		else if (Objects.equals("condition", nodeId.content())) {
 			retval = new ConditionNodeAddActionHandler(nodeTemplate);
 		}
-		else if ("fork".equals(nodeId.content())) {
+		else if (Objects.equals("fork", nodeId.content())) {
 			retval = new ForkNodeAddActionHandler(nodeTemplate);
 		}
-		else if ("join".equals(nodeId.content())) {
+		else if (Objects.equals("join", nodeId.content())) {
 			retval = new JoinNodeAddActionHandler(nodeTemplate);
 		}
-		else if ("join-xor".equals(nodeId.content())) {
+		else if (Objects.equals("join-xor", nodeId.content())) {
 			retval = new JoinXorNodeAddActionHandler(nodeTemplate);
 		}
 

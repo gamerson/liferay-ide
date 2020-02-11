@@ -77,7 +77,6 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 /**
  * @author Kuo Zhang
- * @see org.eclipse.m2e.editor.xml.internal.MarkerHoverControl.
  */
 @SuppressWarnings("restriction")
 public class LiferayCustomXmlHoverControl
@@ -167,11 +166,13 @@ public class LiferayCustomXmlHoverControl
 
 	protected void createContent(Composite parent) {
 		_parent = parent;
+
 		GridLayout layout = new GridLayout(1, false);
 
 		layout.verticalSpacing = 0;
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
+
 		parent.setLayout(layout);
 	}
 
@@ -231,9 +232,11 @@ public class LiferayCustomXmlHoverControl
 					}
 				}
 				else if (reg instanceof InfoRegion) {
-					String text;
+					String text = null;
 
-					if ((text = ((InfoRegion)reg).getInfo()) != null) {
+					InfoRegion infoRegion = (InfoRegion)reg;
+
+					if ((text = infoRegion.getInfo()) != null) {
 						_setInformation(composite, text);
 					}
 				}
@@ -381,12 +384,14 @@ public class LiferayCustomXmlHoverControl
 
 		if (multiFix) {
 			new Label(parent, SWT.NONE); // spacer to fill image cell
+
 			parent = new Composite(parent, SWT.NONE); // indented composite for
 
 			GridLayout layout = new GridLayout(2, false);
 
 			layout.marginWidth = 0;
 			layout.marginHeight = 0;
+
 			parent.setLayout(layout);
 		}
 
@@ -397,10 +402,14 @@ public class LiferayCustomXmlHoverControl
 		Image image = null;
 
 		if (proposal instanceof ICompletionProposal) {
-			image = ((ICompletionProposal)proposal).getImage();
+			ICompletionProposal completionProposal = (ICompletionProposal)proposal;
+
+			image = completionProposal.getImage();
 		}
 		else if (proposal instanceof IMarkerResolution2) {
-			image = ((IMarkerResolution2)proposal).getImage();
+			IMarkerResolution2 markerResolution = (IMarkerResolution2)proposal;
+
+			image = markerResolution.getImage();
 		}
 
 		if (image != null) {
@@ -533,7 +542,9 @@ public class LiferayCustomXmlHoverControl
 		control.setFont(font);
 
 		if (control instanceof Composite) {
-			Control[] children = ((Composite)control).getChildren();
+			Composite composite = (Composite)control;
+
+			Control[] children = composite.getChildren();
 
 			for (Control child : children) {
 				_setColorAndFont(child, foreground, background, font);
@@ -586,7 +597,9 @@ public class LiferayCustomXmlHoverControl
 		}
 
 		if (presenter instanceof IInformationPresenterExtension) {
-			content = ((IInformationPresenterExtension)presenter).updatePresentation(
+			IInformationPresenterExtension informationPresenterExtension = presenter;
+
+			content = informationPresenterExtension.updatePresentation(
 				styledText, content, presentation, maxWidth, maxHeight);
 		}
 

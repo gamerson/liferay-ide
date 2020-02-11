@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -352,7 +353,7 @@ public class NewMavenPluginProjectProvider
 			try {
 				Model result = maven.readModel(pomFile);
 
-				if (!"pom".equals(result.getPackaging())) {
+				if (!Objects.equals("pom", result.getPackaging())) {
 					retval = LiferayMavenCore.createErrorStatus(
 						"\"" + pomFile.getParent() + "\" contains a non-parent maven project.");
 				}

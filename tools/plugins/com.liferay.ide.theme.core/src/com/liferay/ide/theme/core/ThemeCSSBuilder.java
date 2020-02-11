@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IContainer;
@@ -271,7 +272,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder {
 						IPath fullResourcePath = resource.getFullPath();
 
 						for (String segment : fullResourcePath.segments()) {
-							if ("_diffs".equals(segment)) {
+							if (Objects.equals("_diffs", segment)) {
 
 								// IDE-110 IDE-648
 
@@ -295,7 +296,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder {
 									}
 								}
 							}
-							else if ("build.xml".equals(segment)) {
+							else if (Objects.equals("build.xml", segment)) {
 								IPath relPath = resource.getProjectRelativePath();
 
 								if ((relPath != null) && (relPath.segmentCount() == 1)) {

@@ -28,6 +28,7 @@ import org.eclipse.wst.sse.ui.internal.reconcile.TemporaryAnnotation;
 /**
  * @author Kuo Zhang
  */
+@SuppressWarnings("restriction")
 public class CompoundRegion implements IRegion {
 
 	public CompoundRegion(ITextViewer textViewer, int textOffset) {
@@ -52,16 +53,16 @@ public class CompoundRegion implements IRegion {
 			// if MarkerRegion and TemporaryRegion represent the same problem,
 			// keep the MarkerRegion
 
-			if ((region instanceof TemporaryRegion) && (r instanceof MarkerRegion)) {
-				if (_compareRegions((MarkerRegion)r, (TemporaryRegion)region)) {
-					return;
-				}
+			if ((region instanceof TemporaryRegion) && (r instanceof MarkerRegion) &&
+				_compareRegions((MarkerRegion)r, (TemporaryRegion)region)) {
+
+				return;
 			}
 
-			if ((region instanceof MarkerRegion) && (r instanceof TemporaryRegion)) {
-				if (_compareRegions((MarkerRegion)region, (TemporaryRegion)r)) {
-					it.remove();
-				}
+			if ((region instanceof MarkerRegion) && (r instanceof TemporaryRegion) &&
+				_compareRegions((MarkerRegion)region, (TemporaryRegion)r)) {
+
+				it.remove();
 			}
 		}
 

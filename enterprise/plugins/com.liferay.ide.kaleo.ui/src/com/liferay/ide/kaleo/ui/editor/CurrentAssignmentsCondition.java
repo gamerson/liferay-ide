@@ -16,6 +16,8 @@ package com.liferay.ide.kaleo.ui.editor;
 
 import com.liferay.ide.kaleo.core.model.Assignable;
 
+import java.util.Objects;
+
 import org.eclipse.sapphire.Element;
 import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.Listener;
@@ -59,16 +61,16 @@ public class CurrentAssignmentsCondition extends SapphireCondition {
 		}
 
 		if (hasUser) {
-			retval = "user".equals(_parameter) || "creator".equals(_parameter);
+			retval = Objects.equals("user", _parameter) || Objects.equals("creator", _parameter);
 		}
 		else if (hasScript) {
-			retval = "script".equals(_parameter);
+			retval = Objects.equals("script", _parameter);
 		}
 		else if (hasRoles) {
-			retval = "role".equals(_parameter) || "roles".equals(_parameter);
+			retval = Objects.equals("role", _parameter) || Objects.equals("roles", _parameter);
 		}
 		else if (hasResourceActions) {
-			retval = "resources".equals(_parameter);
+			retval = Objects.equals("resources", _parameter);
 		}
 
 		return retval;

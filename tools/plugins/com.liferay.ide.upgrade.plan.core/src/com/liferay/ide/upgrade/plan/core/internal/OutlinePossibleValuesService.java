@@ -19,6 +19,7 @@ import com.liferay.ide.upgrade.plan.core.UpgradePlanCorePlugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Platform;
@@ -38,7 +39,7 @@ public class OutlinePossibleValuesService extends PossibleValuesService implemen
 
 		List<String> outlineList = UpgradePlanCorePlugin.defaultUpgradePlanOutlines;
 
-		if (!"".equals(outlines)) {
+		if (!Objects.equals("", outlines)) {
 			outlineList = Arrays.asList(outlines.split(","));
 		}
 

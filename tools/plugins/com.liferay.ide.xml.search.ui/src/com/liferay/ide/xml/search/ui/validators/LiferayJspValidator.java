@@ -179,7 +179,9 @@ public class LiferayJspValidator extends LiferayBaseValidator {
 		String extension = file.getFileExtension();
 
 		if ((validator instanceof XMLReferencesBatchValidator) && extension.equals("jsp")) {
-			Validator.V2 parent = ((XMLReferencesBatchValidator)validator).getParent();
+			XMLReferencesBatchValidator xmlReferencesBatchValidator = (XMLReferencesBatchValidator)validator;
+
+			Validator.V2 parent = xmlReferencesBatchValidator.getParent();
 
 			parent.setMarkerId(XMLSearchConstants.LIFERAY_JSP_MARKER_ID);
 		}

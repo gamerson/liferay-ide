@@ -209,14 +209,12 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 		LocalizedMessage message = createMessage(
 			startOffset, length, messageText, severity, node.getStructuredDocument());
 
-		if (message != null) {
-			if (batchMode) {
-				message.setTargetObject(file);
-				message.setAttribute(MARKER_QUERY_ID, querySpecificationId);
-				message.setAttribute(XMLSearchConstants.LIFERAY_PLUGIN_VALIDATION_TYPE, liferayPluginValidationType);
+		if ((message != null) && batchMode) {
+			message.setTargetObject(file);
+			message.setAttribute(MARKER_QUERY_ID, querySpecificationId);
+			message.setAttribute(XMLSearchConstants.LIFERAY_PLUGIN_VALIDATION_TYPE, liferayPluginValidationType);
 
-				reporter.addMessage(validator, message);
-			}
+			reporter.addMessage(validator, message);
 		}
 	}
 
@@ -300,7 +298,9 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 				return NLS.bind(MESSAGE_METHOD_NOT_FOUND, textContent);
 			case TYPE_HIERARCHY_INCORRECT:
 				if ((referenceTo != null) && (referenceTo.getType() == IXMLReferenceTo.ToType.JAVA) && (file != null)) {
-					IType[] superTypes = ((IXMLReferenceToJava)referenceTo).getExtends(node, file);
+					IXMLReferenceToJava xmlReferenceToJava = (IXMLReferenceToJava)referenceTo;
+
+					IType[] superTypes = xmlReferenceToJava.getExtends(node, file);
 
 					if (ListUtil.isNotEmpty(superTypes)) {
 						StringBuilder sb = new StringBuilder();
@@ -356,11 +356,10 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 			return null;
 		}
 
-		IResource resource = querySpecification.getResource(node, file);
+		ReferencedFileVisitor referencedFileVisitor = new ReferencedFileVisitor();
 
-		IXMLSearchRequestor requestor = querySpecification.getRequestor();
-
-		return new ReferencedFileVisitor().getReferencedFile(requestor, resource);
+		return referencedFileVisitor.getReferencedFile(
+			querySpecification.getRequestor(), querySpecification.getResource(node, file));
 	}
 
 	protected IScopeContext[] getScopeContexts(IProject project) {
@@ -388,11 +387,11 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 	}
 
 	protected int getStartOffset(IDOMNode node) {
-		int nodeType = node.getNodeType();
-
-		switch (nodeType) {
+		switch (node.getNodeType()) {
 			case Node.ATTRIBUTE_NODE:
-				return ((IDOMAttr)node).getValueRegionStartOffset();
+				IDOMAttr domAttr = (IDOMAttr)node;
+
+				return domAttr.getValueRegionStartOffset();
 		}
 
 		return node.getStartOffset();

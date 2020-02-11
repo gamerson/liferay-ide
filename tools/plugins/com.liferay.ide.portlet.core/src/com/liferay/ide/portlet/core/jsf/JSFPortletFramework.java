@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -96,7 +97,7 @@ public class JSFPortletFramework
 		ILibraryProvider noOpProvider = null;
 
 		for (ILibraryProvider provider : providers) {
-			if ("jsf-no-op-library-provider".equals(provider.getId())) {
+			if (Objects.equals("jsf-no-op-library-provider", provider.getId())) {
 				noOpProvider = provider;
 
 				break;
@@ -195,7 +196,9 @@ public class JSFPortletFramework
 
 	@Override
 	public boolean supports(ILiferayProjectProvider provider) {
-		if ((provider != null) && ("ant".equals(provider.getShortName()) || "maven".equals(provider.getShortName()))) {
+		if ((provider != null) &&
+			(Objects.equals("ant", provider.getShortName()) || Objects.equals("maven", provider.getShortName()))) {
+
 			return true;
 		}
 

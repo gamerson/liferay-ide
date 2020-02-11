@@ -17,6 +17,8 @@ package com.liferay.ide.xml.search.ui.validators;
 import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.project.core.ValidationPreferences;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.osgi.util.NLS;
@@ -52,7 +54,7 @@ public class PortletDescriptorValidator extends LiferayBaseValidator {
 
 		Node parentNode = node.getParentNode();
 
-		if ("resource-bundle".equals(parentNode.getNodeName())) {
+		if (Objects.equals("resource-bundle", parentNode.getNodeName())) {
 			String validationMsg = null;
 
 			String nodeValue = DOMUtils.getNodeValue(node);

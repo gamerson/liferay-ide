@@ -90,8 +90,6 @@ public class AddResourceBundleFileMarkerResolution extends AbstractResourceBundl
 				CoreUtil.makeFolders(folder);
 			}
 
-			IFile resourceBundle = folder.getFile(_resourceBundleName + ".properties");
-
 			String resourceKey = getResourceKey(marker);
 
 			if (CoreUtil.isNullOrEmpty(resourceKey)) {
@@ -107,6 +105,8 @@ public class AddResourceBundleFileMarkerResolution extends AbstractResourceBundl
 			byte[] lineBytes = resourcePropertyLine.getBytes();
 
 			int resourcePropertyLineOffset = lineBytes.length;
+
+			IFile resourceBundle = folder.getFile(_resourceBundleName + ".properties");
 
 			if (!resourceBundle.exists()) {
 				IFolder parent = (IFolder)resourceBundle.getParent();

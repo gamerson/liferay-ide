@@ -30,6 +30,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -534,7 +535,7 @@ public class SDKProjectConvertWizardPage
 			boolean hasDocroot = false;
 
 			for (File content : contents) {
-				if ("build.xml".equals(content.getName()) ||
+				if (Objects.equals("build.xml", content.getName()) ||
 					FileUtil.nameEndsWith(file, ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX)) {
 
 					hasBuildXml = true;

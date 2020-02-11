@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -70,7 +71,7 @@ public class PortalPublishTask extends PublishTaskDelegate {
 
 					IModuleResource moduleResource = deltas[0].getModuleResource();
 
-					if (".classpath".equals(moduleResource.getName())) {
+					if (Objects.equals(".classpath", moduleResource.getName())) {
 						continue;
 					}
 				}
@@ -78,7 +79,7 @@ public class PortalPublishTask extends PublishTaskDelegate {
 				for (IModuleResourceDelta delta : deltas) {
 					IModuleResource resource = delta.getModuleResource();
 
-					IFile resourceFile = (IFile)resource.getAdapter(IFile.class);
+					IFile resourceFile = resource.getAdapter(IFile.class);
 
 					if (resourceFile != null) {
 						String resourceFileName = resourceFile.getName();

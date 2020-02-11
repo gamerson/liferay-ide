@@ -19,6 +19,8 @@ import com.liferay.ide.kaleo.core.KaleoCore;
 import com.liferay.ide.kaleo.ui.util.UploadWorkflowFileJob;
 import com.liferay.ide.ui.util.UIUtil;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -73,7 +75,7 @@ public class WorkflowDropAdapterAssistant extends CommonDropAdapterAssistant {
 										IViewPart serversView = UIUtil.showView(
 											"org.eclipse.wst.server.ui.ServersView");
 
-										CommonViewer viewer = (CommonViewer)serversView.getAdapter(CommonViewer.class);
+										CommonViewer viewer = serversView.getAdapter(CommonViewer.class);
 
 										viewer.refresh(true);
 									}
@@ -111,7 +113,7 @@ public class WorkflowDropAdapterAssistant extends CommonDropAdapterAssistant {
 
 							IContentType contentType = file.getContentDescription().getContentType();
 
-							if ("com.liferay.ide.kaleo.core.workflowdefinitioncontent".equals(contentType.getId())) {
+							if (Objects.equals("com.liferay.ide.kaleo.core.workflowdefinitioncontent", contentType.getId())) {
 								return Status.OK_STATUS;
 							}
 						}

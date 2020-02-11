@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 
@@ -192,7 +193,7 @@ public class PluginsSDKProjectProvider
 
 				IProject layoutProject = ProjectUtil.getProject(projectName);
 
-				if (!"6.2.0".equals(LiferayDescriptorHelper.getDescriptorVersion(layoutProject))) {
+				if (!Objects.equals("6.2.0", LiferayDescriptorHelper.getDescriptorVersion(layoutProject))) {
 					IPath projectPath = newSDKProjectPath.append(projectName + pluginTypeSuffix);
 
 					IPath fileWap = FileUtil.pathAppend(projectPath, "docroot", "blank_columns.wap.tpl");

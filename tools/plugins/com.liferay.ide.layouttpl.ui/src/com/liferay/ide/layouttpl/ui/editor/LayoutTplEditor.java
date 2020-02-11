@@ -26,6 +26,8 @@ import com.liferay.ide.project.core.descriptor.LiferayDescriptorHelper;
 
 import java.lang.reflect.Method;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -178,7 +180,7 @@ public class LayoutTplEditor extends SapphireEditor implements IExecutableExtens
 
 	@Override
 	protected IEditorPart createPage(String pageDefinitionId) {
-		if ("preview".equals(pageDefinitionId)) {
+		if (Objects.equals("preview", pageDefinitionId)) {
 			if (_previewPage == null) {
 				Element element = getModelElement();
 
@@ -202,7 +204,7 @@ public class LayoutTplEditor extends SapphireEditor implements IExecutableExtens
 
 	@Override
 	protected DefinitionLoader.Reference<EditorPageDef> getDefinition(String pageDefinitionId) {
-		if ("preview".equals(pageDefinitionId)) {
+		if (Objects.equals("preview", pageDefinitionId)) {
 			if (_definition == null) {
 				DefinitionLoader definitionLoader = DefinitionLoader.sdef(LayoutTplEditor.class);
 

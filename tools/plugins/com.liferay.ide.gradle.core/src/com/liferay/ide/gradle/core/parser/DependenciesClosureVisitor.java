@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,8 +58,9 @@ public class DependenciesClosureVisitor extends CodeVisitorSupport {
 
 		Set<Artifact> dependencyArtifacts = _dependencyArtifactsToLineNumbers.keySet();
 
-		Optional<Artifact> optional = dependencyArtifacts.stream(
-		).filter(
+		Stream<Artifact> stream = dependencyArtifacts.stream();
+
+		Optional<Artifact> optional = stream.filter(
 			dependency -> StringUtil.equals(dependency.getConfiguration(), artifact.getConfiguration())
 		).filter(
 			dependency -> StringUtil.equals(dependency.getGroupId(), artifact.getGroupId())
@@ -76,7 +78,7 @@ public class DependenciesClosureVisitor extends CodeVisitorSupport {
 	}
 
 	public List<Artifact> getDependencies(String configuration) {
-		if ("*".equals(configuration)) {
+		if (Objects.equals("*", configuration)) {
 			return _dependencyArtifacts;
 		}
 
@@ -170,13 +172,13 @@ public class DependenciesClosureVisitor extends CodeVisitorSupport {
 
 				String value = valueExpression.getText();
 
-				if ("group".equals(key)) {
+				if (Objects.equals("group", key)) {
 					artifact.setGroupId(value);
 				}
-				else if ("name".equals(key)) {
+				else if (Objects.equals("name", key)) {
 					artifact.setArtifactId(value);
 				}
-				else if ("version".equals(key)) {
+				else if (Objects.equals("version", key)) {
 					artifact.setVersion(value);
 				}
 			}
@@ -202,7 +204,7 @@ public class DependenciesClosureVisitor extends CodeVisitorSupport {
 	public void visitMethodCallExpression(MethodCallExpression methodCallExpression) {
 		String methodString = methodCallExpression.getMethodAsString();
 
-		if ("dependencies".equals(methodString)) {
+		if (Objects.equals("dependencies", methodString)) {
 			_dependenciesClosure = true;
 
 			if (_dependenciesLineNumber == -1) {
@@ -213,7 +215,7 @@ public class DependenciesClosureVisitor extends CodeVisitorSupport {
 
 			_dependenciesClosure = false;
 		}
-		else if (_buildscript && "buildscript".equals(methodString)) {
+		else if (_buildscript && Objects.equals("buildscript", methodString)) {
 			super.visitMethodCallExpression(methodCallExpression);
 		}
 		else if (_dependenciesClosure && _dependencyStatement) {

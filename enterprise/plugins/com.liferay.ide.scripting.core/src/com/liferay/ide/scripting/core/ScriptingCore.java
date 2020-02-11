@@ -48,15 +48,17 @@ public class ScriptingCore extends Plugin {
 	}
 
 	public static URL getPluginEntry(String path) {
-		Bundle bundle = getDefault().getBundle();
+		ScriptingCore scriptingCore = getDefault();
 
-		URL pluginEntry = bundle.getEntry(path);
+		Bundle bundle = scriptingCore.getBundle();
 
-		return pluginEntry;
+		return bundle.getEntry(path);
 	}
 
 	public static void logError(String msg, Throwable e) {
-		ILog log = getDefault().getLog();
+		ScriptingCore scriptingCore = getDefault();
+
+		ILog log = scriptingCore.getLog();
 
 		log.log(createErrorStatus(msg, e));
 	}

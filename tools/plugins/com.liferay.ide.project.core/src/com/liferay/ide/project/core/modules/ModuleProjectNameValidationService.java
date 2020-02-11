@@ -25,6 +25,8 @@ import com.liferay.ide.project.core.util.ValidationUtil;
 
 import java.io.File;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -110,7 +112,7 @@ public class ModuleProjectNameValidationService extends ValidationService implem
 				PropertyDef def = SapphireUtil.getPropertyDef(event);
 
 				if (!def.equals(BaseModuleOp.PROP_FINAL_PROJECT_NAME) && !def.equals(BaseModuleOp.PROP_PROJECT_NAMES) &&
-					!"ProjectName".equals(def.name()) && !def.equals(ProjectName.PROP_PROJECT_NAME)) {
+					!Objects.equals("ProjectName", def.name()) && !def.equals(ProjectName.PROP_PROJECT_NAME)) {
 
 					refresh();
 				}

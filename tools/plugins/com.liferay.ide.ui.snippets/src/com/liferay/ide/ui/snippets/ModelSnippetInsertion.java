@@ -17,6 +17,8 @@ package com.liferay.ide.ui.snippets;
 import com.liferay.ide.core.util.StringPool;
 import com.liferay.ide.ui.snippets.wizard.AbstractModelWizard;
 
+import java.util.Objects;
+
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -55,7 +57,7 @@ public abstract class ModelSnippetInsertion extends AbstractSnippetInsertion {
 		text = StringUtils.replace(text, "\r\n", "\n");
 		text = StringUtils.replace(text, "\r", "\n");
 
-		if (!"\n".equals(systemEOL) && (systemEOL != null)) {
+		if (!Objects.equals("\n", systemEOL) && (systemEOL != null)) {
 			text = StringUtils.replace(text, "\n", systemEOL);
 		}
 

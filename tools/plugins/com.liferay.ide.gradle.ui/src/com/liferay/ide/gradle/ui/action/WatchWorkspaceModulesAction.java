@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Adapters;
@@ -73,7 +74,7 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 
 		ISelection selection = selectionProvider.getSelection();
 
-		if ("watch".equals(_action) && (selection instanceof TreeSelection)) {
+		if (Objects.equals("watch", _action) && (selection instanceof TreeSelection)) {
 			TreePath treePath = ((TreeSelection)selection).getPaths()[0];
 
 			IServer server = (IServer)treePath.getFirstSegment();
@@ -114,8 +115,9 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 
 		List<?> selections = getStructuredSelection().toList();
 
-		Set<IProject> selectionProjects = selections.stream(
-		).map(
+		Stream<?> stream = selections.stream();
+
+		Set<IProject> selectionProjects = stream.map(
 			selectedItem -> Adapters.adapt(selectedItem, IProject.class)
 		).filter(
 			Objects::nonNull
@@ -123,7 +125,7 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 			Collectors.toSet()
 		);
 
-		if ("stop".equals(_action)) {
+		if (Objects.equals("stop", _action)) {
 			if (selectionProjects.contains(LiferayWorkspaceUtil.getWorkspaceProject())) {
 				IWorkspaceProject liferayGradleWorkspaceProject = LiferayWorkspaceUtil.getGradleWorkspaceProject();
 
@@ -141,7 +143,7 @@ public class WatchWorkspaceModulesAction extends SelectionProviderAction {
 				projectsToWatch.removeAll(selectionProjects);
 			}
 		}
-		else if ("watch".equals(_action)) {
+		else if (Objects.equals("watch", _action)) {
 			projectsToWatch.addAll(selectionProjects);
 		}
 

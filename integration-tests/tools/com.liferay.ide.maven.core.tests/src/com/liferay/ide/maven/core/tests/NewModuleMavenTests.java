@@ -17,6 +17,8 @@ package com.liferay.ide.maven.core.tests;
 import com.liferay.ide.maven.core.tests.base.NewModuleMavenBase;
 import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
 
+import java.util.Objects;
+
 import org.eclipse.sapphire.Value;
 
 import org.junit.Ignore;
@@ -60,7 +62,7 @@ public class NewModuleMavenTests extends NewModuleMavenBase {
 
 		Value<String> version = op.getLiferayVersion();
 
-		if ("7.2".equals(version.getDefaultContent())) {
+		if (Objects.equals("7.2", version.getDefaultContent())) {
 			return;
 		}
 
@@ -79,7 +81,7 @@ public class NewModuleMavenTests extends NewModuleMavenBase {
 
 		Value<String> version = op.getLiferayVersion();
 
-		if ("7.2".equals(version.getDefaultContent())) {
+		if (Objects.equals("7.2", version.getDefaultContent())) {
 			return;
 		}
 
@@ -98,7 +100,7 @@ public class NewModuleMavenTests extends NewModuleMavenBase {
 
 		Value<String> version = op.getLiferayVersion();
 
-		if ("7.2".equals(version.getDefaultContent())) {
+		if (Objects.equals("7.2", version.getDefaultContent())) {
 			return;
 		}
 
@@ -130,7 +132,7 @@ public class NewModuleMavenTests extends NewModuleMavenBase {
 
 		Value<String> version = op.getLiferayVersion();
 
-		if ("7.2".equals(version.getDefaultContent())) {
+		if (Objects.equals("7.2", version.getDefaultContent())) {
 			return;
 		}
 

@@ -96,7 +96,9 @@ public class Eclipse extends BasePageObject {
 	}
 
 	public String getPerspectiveLabel() {
-		SWTBotPerspective botActivePerspective = ((SWTWorkbenchBot)bot).activePerspective();
+		SWTWorkbenchBot swtWorkbenchBot = (SWTWorkbenchBot)bot;
+
+		SWTBotPerspective botActivePerspective = swtWorkbenchBot.activePerspective();
 
 		return botActivePerspective.getLabel();
 	}

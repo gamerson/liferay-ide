@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -148,13 +149,12 @@ public class NewPortletClassDataModelProvider
 
 					return "/html/" + property.replaceAll(_PORTLET_SUFFIX_PATTERN, "");
 				}
-				else {
-					String tempStr = portletName.toString();
 
-					String property = tempStr.toLowerCase();
+				String tempStr = portletName.toString();
 
-					return "/html/" + property.replaceAll(_PORTLET_SUFFIX_PATTERN, "");
-				}
+				String property = tempStr.toLowerCase();
+
+				return "/html/" + property.replaceAll(_PORTLET_SUFFIX_PATTERN, "");
 			}
 			else if (ICON_FILE.equals(propertyName)) {
 				return "/icon.png";
@@ -637,7 +637,7 @@ public class NewPortletClassDataModelProvider
 
 				validPath = path.isValidPath(val);
 
-				if ("properties".equals(path.getFileExtension())) {
+				if (Objects.equals("properties", path.getFileExtension())) {
 					validFileName = true;
 				}
 			}

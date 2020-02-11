@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.Path;
 
@@ -92,7 +93,7 @@ public class DeprecatedMethodsMigrator extends JavaFileMigrator {
 						for (FileSearchResult searchResult : searchResults) {
 							int makerType = UpgradeProblem.MARKER_ERROR;
 
-							if ("7.0".equals(_tempMethod.getString("deprecatedVersion"))) {
+							if (Objects.equals("7.0", _tempMethod.getString("deprecatedVersion"))) {
 								makerType = UpgradeProblem.MARKER_WARNING;
 							}
 

@@ -24,6 +24,7 @@ import com.liferay.ide.project.core.util.ProjectUtil;
 import com.liferay.ide.project.ui.action.NewPluginProjectDropDownAction;
 import com.liferay.ide.ui.util.UIUtil;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -186,7 +187,7 @@ public class ValidProjectChecker {
 	}
 
 	protected void init() {
-		if ("com.liferay.ide.eclipse.portlet.jsf.ui.wizard.portlet".equals(wizardId)) {
+		if (Objects.equals("com.liferay.ide.eclipse.portlet.jsf.ui.wizard.portlet", wizardId)) {
 			setJsfPortlet(true);
 		}
 

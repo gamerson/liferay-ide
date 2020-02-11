@@ -464,7 +464,7 @@ public class LiferayUIPlugin extends AbstractUIPlugin implements IStartup {
 			if (next instanceof TemplateContextType) {
 				TemplateContextType contextType = (TemplateContextType)next;
 
-				if ("java".equals(contextType.getId())) {
+				if (Objects.equals("java", contextType.getId())) {
 					contextType.addResolver(new ServiceClassNameResolver());
 				}
 			}

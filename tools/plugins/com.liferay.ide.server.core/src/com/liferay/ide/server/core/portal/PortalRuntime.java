@@ -27,6 +27,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IPath;
@@ -221,7 +222,7 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if ("location".equals(evt.getPropertyName())) {
+		if (Objects.equals("location", evt.getPropertyName())) {
 			_portalBundle = null;
 
 			if (evt.getNewValue() != null) {

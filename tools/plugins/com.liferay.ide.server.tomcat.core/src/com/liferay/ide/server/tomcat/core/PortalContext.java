@@ -15,6 +15,7 @@
 package com.liferay.ide.server.tomcat.core;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @author Seiphon Wang
@@ -30,7 +31,7 @@ public class PortalContext {
 
 		baseName = baseName.replaceAll("/", "#");
 
-		if (baseName.startsWith("##") || "".equals(baseName)) {
+		if (baseName.startsWith("##") || Objects.equals("", baseName)) {
 			baseName = "ROOT" + baseName;
 		}
 
@@ -56,7 +57,7 @@ public class PortalContext {
 
 		_path = "/" + path.replaceAll("#", "/");
 
-		if ("ROOT".equals(path)) {
+		if (Objects.equals("ROOT", path)) {
 			_path = "";
 		}
 

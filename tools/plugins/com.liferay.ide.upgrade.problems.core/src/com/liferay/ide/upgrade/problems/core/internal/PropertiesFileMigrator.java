@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
+import java.util.Objects;
 
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -62,10 +63,10 @@ public abstract class PropertiesFileMigrator implements FileMigrator {
 			if (ListUtil.isNotEmpty(results)) {
 				String fileName = "BREAKING_CHANGES.markdown";
 
-				if ("7.0".equals(version)) {
+				if (Objects.equals("7.0", version)) {
 					fileName = "liferay70/" + fileName;
 				}
-				else if ("7.1".equals(version)) {
+				else if (Objects.equals("7.1", version)) {
 					fileName = "liferay71/" + fileName;
 				}
 

@@ -71,15 +71,12 @@ public abstract class BaseLiferayDescriptorVersion extends XMLFileMigrator imple
 			IDOMDocumentType domDocumentType = (IDOMDocumentType)domDocument.getDoctype();
 
 			if (domDocumentType != null) {
-				String publicId = domDocumentType.getPublicId();
-
-				String newPublicId = _getNewDoctTypeSetting(publicId, _version, _publicPattern);
+				String newPublicId = _getNewDoctTypeSetting(domDocumentType.getPublicId(), _version, _publicPattern);
 
 				domDocumentType.setPublicId(newPublicId);
 
-				String systemId = domDocumentType.getSystemId();
-
-				String newSystemId = _getNewDoctTypeSetting(systemId, _version.replaceAll("\\.", "_"), _systemPattern);
+				String newSystemId = _getNewDoctTypeSetting(
+					domDocumentType.getSystemId(), _version.replaceAll("\\.", "_"), _systemPattern);
 
 				domDocumentType.setSystemId(newSystemId);
 

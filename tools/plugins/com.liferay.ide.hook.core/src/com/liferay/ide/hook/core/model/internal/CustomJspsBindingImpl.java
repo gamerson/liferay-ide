@@ -25,6 +25,7 @@ import com.liferay.ide.hook.core.util.HookUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -145,7 +146,7 @@ public class CustomJspsBindingImpl extends HookListBindingImpl {
 		IResource[] members = folder.members(IResource.FOLDER | IResource.FILE);
 
 		for (IResource member : members) {
-			if ((member instanceof IFile) && "jsp".equals(member.getFileExtension())) {
+			if ((member instanceof IFile) && Objects.equals("jsp", member.getFileExtension())) {
 				jspFiles.add((IFile)member);
 			}
 			else if (member instanceof IFolder) {

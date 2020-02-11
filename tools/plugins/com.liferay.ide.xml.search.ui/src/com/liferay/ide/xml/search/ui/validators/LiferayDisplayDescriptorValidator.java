@@ -16,6 +16,8 @@ package com.liferay.ide.xml.search.ui.validators;
 
 import com.liferay.ide.project.core.ValidationPreferences;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.sse.core.internal.validate.ValidationMessage;
@@ -47,10 +49,12 @@ public class LiferayDisplayDescriptorValidator extends LiferayBaseValidator {
 			return true;
 		}
 
-		Element element = ((Attr)node).getOwnerElement();
+		Attr attr = (Attr)node;
 
-		if ((node.getNodeType() == Node.ATTRIBUTE_NODE) && "name".equals(node.getNodeName()) &&
-			"category".equals(element.getNodeName())) {
+		Element element = attr.getOwnerElement();
+
+		if ((node.getNodeType() == Node.ATTRIBUTE_NODE) && Objects.equals("name", node.getNodeName()) &&
+			Objects.equals("category", element.getNodeName())) {
 
 			String nodeValue = node.getNodeValue();
 

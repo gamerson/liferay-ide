@@ -23,6 +23,7 @@ import com.liferay.ide.project.core.descriptor.RemoveSampleElementsOperation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -170,7 +171,7 @@ public class ServiceBuilderDescriptorHelper extends LiferayDescriptorHelper {
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Node node = nodes.item(i);
 
-				if ("entity".equals(node.getNodeName()) && (node instanceof Element)) {
+				if (Objects.equals("entity", node.getNodeName()) && (node instanceof Element)) {
 					if (entityName.equals(((Element)node).getAttribute("name"))) {
 						entityElement = (Element)node;
 					}
@@ -441,7 +442,7 @@ public class ServiceBuilderDescriptorHelper extends LiferayDescriptorHelper {
 			for (int i = 0; i < nodes.getLength(); i++) {
 				node = nodes.item(i);
 
-				if ("entity".equals(node.getNodeName())) {
+				if (Objects.equals("entity", node.getNodeName())) {
 					String entityName = ((Element)node).getAttribute("name");
 
 					if (!CoreUtil.isNullOrEmpty(entityName)) {

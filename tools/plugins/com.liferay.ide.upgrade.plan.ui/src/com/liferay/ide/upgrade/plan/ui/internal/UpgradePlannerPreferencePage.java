@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -191,7 +192,7 @@ public class UpgradePlannerPreferencePage extends PreferencePage implements IWor
 	public void init(IWorkbench workbench) {
 		String outlines = _preferenceStore.getString("outlines");
 
-		if ("".equals(outlines)) {
+		if (Objects.equals("", outlines)) {
 			_outlines.addAll(UpgradePlanCorePlugin.defaultUpgradePlanOutlines);
 		}
 		else {

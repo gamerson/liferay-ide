@@ -23,6 +23,8 @@ import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.core.workspace.LiferayWorkspaceUtil;
 import com.liferay.ide.project.core.ProjectCore;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.sapphire.Element;
@@ -126,7 +128,7 @@ public class ModuleProjectNameListener
 
 							newLocationBase = PathBridge.create(workspaceLocation.append(warsNames[0]));
 						}
-						else if ("war-core-ext".equals(projectTemplateName)) {
+						else if (Objects.equals("war-core-ext", projectTemplateName)) {
 							String extName = LiferayWorkspaceUtil.getExtDir(liferayWorkspaceProject);
 
 							newLocationBase = PathBridge.create(workspaceLocation.append(extName));

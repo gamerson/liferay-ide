@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -244,7 +245,7 @@ public abstract class PluginFacetInstall implements IDelegate, IPluginProjectDat
 
 					IAdapterManager adapterManager = Platform.getAdapterManager();
 
-					return (IDataModel)adapterManager.getAdapter(config, IDataModel.class);
+					return adapterManager.getAdapter(config, IDataModel.class);
 				}
 			}
 		}
@@ -379,7 +380,7 @@ public abstract class PluginFacetInstall implements IDelegate, IPluginProjectDat
 
 					oldOutputFolder.delete(true, null);
 
-					if (ListUtil.isEmpty(outputParent.members()) && "build".equals(outputParent.getName())) {
+					if (ListUtil.isEmpty(outputParent.members()) && Objects.equals("build", outputParent.getName())) {
 						outputParent.delete(true, null);
 					}
 				}

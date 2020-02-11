@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -1369,7 +1370,7 @@ public class ProjectUtil {
 			boolean hasDocroot = false;
 
 			for (File content : contents) {
-				if ("build.xml".equals(content.getName())) {
+				if (Objects.equals("build.xml", content.getName())) {
 					hasBuildXml = true;
 
 					continue;
@@ -1657,8 +1658,8 @@ public class ProjectUtil {
 						for (IClasspathAttribute attr : attrs) {
 							IClasspathAttribute newAttr = null;
 
-							if ("owner.project.facets".equals(attr.getName()) &&
-								"liferay.plugin".equals(attr.getValue())) {
+							if (Objects.equals("owner.project.facets", attr.getName()) &&
+								Objects.equals("liferay.plugin", attr.getValue())) {
 
 								newAttr = JavaCore.newClasspathAttribute(attr.getName(), "liferay.ext");
 								fixedAttr = true;

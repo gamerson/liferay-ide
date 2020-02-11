@@ -18,6 +18,8 @@ import com.liferay.ide.core.util.CoreUtil;
 import com.liferay.ide.core.util.SapphireContentAccessor;
 import com.liferay.ide.core.util.SapphireUtil;
 
+import java.util.Objects;
+
 import org.eclipse.sapphire.FilteredListener;
 import org.eclipse.sapphire.Listener;
 import org.eclipse.sapphire.PropertyContentEvent;
@@ -50,7 +52,7 @@ public class ServiceNameValidataionService extends ValidationService implements 
 
 		String projectTemplate = get(op.getProjectTemplateName());
 
-		if ("service".equals(projectTemplate) || "service-wrapper".equals(projectTemplate)) {
+		if (Objects.equals("service", projectTemplate) || Objects.equals("service-wrapper", projectTemplate)) {
 			String serviceName = get(op.getServiceName());
 
 			if (CoreUtil.isNullOrEmpty(serviceName)) {

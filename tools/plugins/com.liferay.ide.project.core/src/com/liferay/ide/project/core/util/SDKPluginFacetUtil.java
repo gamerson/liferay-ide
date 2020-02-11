@@ -27,6 +27,7 @@ import java.io.File;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -85,7 +86,7 @@ public class SDKPluginFacetUtil {
 
 		IAdapterManager adapterManager = Platform.getAdapterManager();
 
-		IDataModel dm = (IDataModel)adapterManager.getAdapter(config, IDataModel.class);
+		IDataModel dm = adapterManager.getAdapter(config, IDataModel.class);
 
 		if (dm == null) {
 			return;
@@ -373,22 +374,22 @@ public class SDKPluginFacetUtil {
 	public static IPreset getLiferayPresetForProject(String pluginType) {
 		IPreset preset = null;
 
-		if ("portlet".equals(pluginType) || "servicebuilder".equals(pluginType)) {
+		if (Objects.equals("portlet", pluginType) || "servicebuilder".equals(pluginType)) {
 			preset = ProjectFacetsManager.getPreset(IPluginFacetConstants.LIFERAY_PORTLET_PRESET);
 		}
-		else if ("hook".equals(pluginType)) {
+		else if (Objects.equals("hook", pluginType)) {
 			preset = ProjectFacetsManager.getPreset(IPluginFacetConstants.LIFERAY_HOOK_PRESET);
 		}
-		else if ("ext".equals(pluginType)) {
+		else if (Objects.equals("ext", pluginType)) {
 			preset = ProjectFacetsManager.getPreset(IPluginFacetConstants.LIFERAY_EXT_PRESET);
 		}
-		else if ("layouttpl".equals(pluginType)) {
+		else if (Objects.equals("layouttpl", pluginType)) {
 			preset = ProjectFacetsManager.getPreset(IPluginFacetConstants.LIFERAY_LAYOUTTPL_PRESET);
 		}
-		else if ("theme".equals(pluginType)) {
+		else if (Objects.equals("theme", pluginType)) {
 			preset = ProjectFacetsManager.getPreset(IPluginFacetConstants.LIFERAY_THEME_PRESET);
 		}
-		else if ("web".equals(pluginType)) {
+		else if (Objects.equals("web", pluginType)) {
 			preset = ProjectFacetsManager.getPreset(IPluginFacetConstants.LIFERAY_WEB_PRESET);
 		}
 
@@ -398,22 +399,22 @@ public class SDKPluginFacetUtil {
 	public static IFacetedProjectTemplate getLiferayTemplateForProject(String pluginType) {
 		IFacetedProjectTemplate template = null;
 
-		if ("portlet".equals(pluginType) || "servicebuilder".equals(pluginType)) {
+		if (Objects.equals("portlet", pluginType) || Objects.equals("servicebuilder", pluginType)) {
 			template = ProjectFacetsManager.getTemplate(IPluginFacetConstants.LIFERAY_PORTLET_FACET_TEMPLATE_ID);
 		}
-		else if ("hook".equals(pluginType)) {
+		else if (Objects.equals("hook", pluginType)) {
 			template = ProjectFacetsManager.getTemplate(IPluginFacetConstants.LIFERAY_HOOK_FACET_TEMPLATE_ID);
 		}
-		else if ("ext".equals(pluginType)) {
+		else if (Objects.equals("ext", pluginType)) {
 			template = ProjectFacetsManager.getTemplate(IPluginFacetConstants.LIFERAY_EXT_FACET_TEMPLATE_ID);
 		}
-		else if ("layouttpl".equals(pluginType)) {
+		else if (Objects.equals("layouttpl", pluginType)) {
 			template = ProjectFacetsManager.getTemplate(IPluginFacetConstants.LIFERAY_LAYOUTTPL_FACET_TEMPLATE_ID);
 		}
-		else if ("theme".equals(pluginType)) {
+		else if (Objects.equals("theme", pluginType)) {
 			template = ProjectFacetsManager.getTemplate(IPluginFacetConstants.LIFERAY_THEME_FACET_TEMPLATE_ID);
 		}
-		else if ("web".equals(pluginType)) {
+		else if (Objects.equals("web", pluginType)) {
 			template = ProjectFacetsManager.getTemplate(IPluginFacetConstants.LIFERAY_WEB_FACET_TEMPLATE_ID);
 		}
 

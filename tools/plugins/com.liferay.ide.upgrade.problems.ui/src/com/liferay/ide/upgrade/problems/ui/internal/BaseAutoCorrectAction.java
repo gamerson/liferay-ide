@@ -22,6 +22,7 @@ import java.io.File;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -65,8 +66,9 @@ public class BaseAutoCorrectAction extends SelectionProviderAction implements Up
 				AutoFileMigrator.class,
 				"(&(auto.correct=" + autoCorrectContext + ")(version=" + upgradeProblem.getVersion() + "))");
 
-			serviceReferences.stream(
-			).map(
+			Stream<ServiceReference<AutoFileMigrator>> stream = serviceReferences.stream();
+
+			stream.map(
 				bundleContext::getService
 			).forEach(
 				autoFileMigrator -> {

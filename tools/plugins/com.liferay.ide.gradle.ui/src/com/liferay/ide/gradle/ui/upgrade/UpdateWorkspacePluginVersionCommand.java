@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -202,8 +203,9 @@ public class UpdateWorkspacePluginVersionCommand implements UpgradeCommand, Upgr
 
 			List<Artifact> dependencies = gradleDependencyUpdater.getDependencies(true, "classpath");
 
-			dependencies.stream(
-			).filter(
+			Stream<Artifact> stream = dependencies.stream();
+
+			stream.filter(
 				artifact -> _WORKSPACE_PLUGIN_GROUP_ID.equals(artifact.getGroupId())
 			).filter(
 				artifact -> _WORKSPACE_PLUGIN_ARTIFACT_ID.equals(artifact.getArtifactId())

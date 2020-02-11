@@ -30,6 +30,7 @@ import java.io.File;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -118,13 +119,13 @@ public class ConfigureBundleURLCommand implements UpgradeCommand, UpgradePreview
 
 			String targetVersion = upgradePlan.getTargetVersion();
 
-			if ("7.0".equals(targetVersion)) {
+			if (Objects.equals("7.0", targetVersion)) {
 				bundleUrl = WorkspaceConstants.BUNDLE_URL_CE_7_0;
 			}
-			else if ("7.1".equals(targetVersion)) {
+			else if (Objects.equals("7.1", targetVersion)) {
 				bundleUrl = WorkspaceConstants.BUNDLE_URL_CE_7_1;
 			}
-			else if ("7.2".equals(targetVersion)) {
+			else if (Objects.equals("7.2", targetVersion)) {
 				bundleUrl = WorkspaceConstants.BUNDLE_URL_CE_7_2;
 			}
 

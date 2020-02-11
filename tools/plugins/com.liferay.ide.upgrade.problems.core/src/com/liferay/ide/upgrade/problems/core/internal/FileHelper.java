@@ -48,10 +48,8 @@ public class FileHelper {
 			public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
 				File file = path.toFile();
 
-				if (file.isFile()) {
-					if (FileUtil.nameEndsWith(file, ext)) {
-						files.add(file);
-					}
+				if (file.isFile() && FileUtil.nameEndsWith(file, ext)) {
+					files.add(file);
 				}
 
 				return super.visitFile(path, attrs);

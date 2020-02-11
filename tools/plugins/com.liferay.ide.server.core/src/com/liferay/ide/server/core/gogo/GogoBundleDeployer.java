@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 
@@ -143,7 +145,7 @@ public class GogoBundleDeployer {
 			return -1;
 		}
 
-		if ("No matching bundles found".equals(result)) {
+		if (Objects.equals("No matching bundles found", result)) {
 			return -1;
 		}
 
@@ -161,7 +163,7 @@ public class GogoBundleDeployer {
 	public int getBundleState(String bsn) throws IOException {
 		String result = run("lb -s " + bsn, true);
 
-		if ("No matching bundles found".equals(result)) {
+		if (Objects.equals("No matching bundles found", result)) {
 			return -1;
 		}
 
@@ -244,7 +246,7 @@ public class GogoBundleDeployer {
 
 				retval = result.trim();
 
-				if ("".equals(retval)) {
+				if (Objects.equals("", retval)) {
 					retval = null;
 				}
 			}
@@ -315,22 +317,22 @@ public class GogoBundleDeployer {
 	}
 
 	private static int _getState(String state) {
-		if ("Active".equals(state)) {
+		if (Objects.equals("Active", state)) {
 			return Bundle.ACTIVE;
 		}
-		else if ("Starting".equals(state)) {
+		else if (Objects.equals("Starting", state)) {
 			return Bundle.STARTING;
 		}
-		else if ("Resolved".equals(state)) {
+		else if (Objects.equals("Resolved", state)) {
 			return Bundle.RESOLVED;
 		}
-		else if ("Stopping".equals(state)) {
+		else if (Objects.equals("Stopping", state)) {
 			return Bundle.STOPPING;
 		}
-		else if ("Installed".equals(state)) {
+		else if (Objects.equals("Installed", state)) {
 			return Bundle.INSTALLED;
 		}
-		else if ("Uninstalled".equals(state)) {
+		else if (Objects.equals("Uninstalled", state)) {
 			return Bundle.UNINSTALLED;
 		}
 

@@ -20,6 +20,7 @@ import com.liferay.ide.service.core.util.ServiceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -66,7 +67,7 @@ public class ServiceMethodHyperlinkDetector extends AbstractHyperlinkDetector {
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
 		IHyperlink[] retval = null;
 
-		ITextEditor textEditor = (ITextEditor)getAdapter(ITextEditor.class);
+		ITextEditor textEditor = getAdapter(ITextEditor.class);
 
 		if (textEditor == null) {
 			return retval;
@@ -311,7 +312,7 @@ public class ServiceMethodHyperlinkDetector extends AbstractHyperlinkDetector {
 		try {
 			String word = document.get(wordRegion.getOffset(), wordRegion.getLength());
 
-			return "inheritDoc".equals(word);
+			return Objects.equals("inheritDoc", word);
 		}
 		catch (BadLocationException ble) {
 			return false;

@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -420,7 +421,7 @@ public class LiferayGradleProject
 			IFolder[] sourceFolders = getSourceFolders();
 
 			for (IFolder folder : sourceFolders) {
-				if ("resources".equals(folder.getName())) {
+				if (Objects.equals("resources", folder.getName())) {
 					return folder;
 				}
 			}

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -60,10 +61,9 @@ public class RemoveDependencyVersionCommand implements UpgradeCommand {
 			return Status.CANCEL_STATUS;
 		}
 
-		buildGradleFiles.stream(
-		).forEach(
-			this::_removeDependencyVersion
-		);
+		Stream<File> stream = buildGradleFiles.stream();
+
+		stream.forEach(this::_removeDependencyVersion);
 
 		GradleUtil.refreshProject(LiferayWorkspaceUtil.getWorkspaceProject());
 
@@ -104,8 +104,9 @@ public class RemoveDependencyVersionCommand implements UpgradeCommand {
 
 			List<Artifact> dependencies = gradleDependencyUpdater.getDependencies("*");
 
-			List<Artifact> dependenciesWithoutVersion = dependencies.stream(
-			).map(
+			Stream<Artifact> stream = dependencies.stream();
+
+			List<Artifact> dependenciesWithoutVersion = stream.map(
 				artifact -> {
 					artifact.setVersion(null);
 

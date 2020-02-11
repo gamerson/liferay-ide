@@ -22,6 +22,7 @@ import com.liferay.ide.portlet.ui.PortletUIPlugin;
 import com.liferay.ide.ui.util.UIUtil;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -87,7 +88,7 @@ public class BuildLangHandler extends AbstractHandler {
 		if (project == null) {
 			IEditorInput activeInput = HandlerUtil.getActiveEditorInput(event);
 
-			IFile file = (IFile)activeInput.getAdapter(IFile.class);
+			IFile file = activeInput.getAdapter(IFile.class);
 
 			if (file != null) {
 				project = file.getProject();
@@ -140,7 +141,7 @@ public class BuildLangHandler extends AbstractHandler {
 
 		String charset = langFile.getCharset(true);
 
-		if (!"UTF-8".equals(charset)) {
+		if (!Objects.equals("UTF-8", charset)) {
 			String dialogMessage = NLS.bind(Msgs.languageFileCharacterSet, charset);
 
 			Shell shell = UIUtil.getActiveShell();

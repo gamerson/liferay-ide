@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -479,13 +480,13 @@ public class ModuleTraverser {
 			IFolder resFolder = null;
 			String targetPath = StringPool.EMPTY;
 
-			if ("/".equals(path)) {
+			if (Objects.equals("/", path)) {
 				resFolder = dependentProject.getFolder(srcPath.append("META-INF/resources"));
 			}
-			else if ("/META-INF".equals(path)) {
+			else if (Objects.equals("/META-INF", path)) {
 				resFolder = dependentProject.getFolder(srcPath.append("resources"));
 			}
-			else if ("/META-INF/resources".equals(path)) {
+			else if (Objects.equals("/META-INF/resources", path)) {
 				resFolder = dependentProject.getFolder(srcPath);
 			}
 			else if (path.startsWith("/META-INF/resources/")) {

@@ -28,6 +28,7 @@ import com.liferay.ide.server.remote.IRemoteServerPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.maven.model.Plugin;
@@ -133,13 +134,15 @@ public abstract class LiferayMavenProject extends BaseLiferayProject implements 
 	public String getProperty(String key, String defaultValue) {
 		String retval = defaultValue;
 
-		if (("theme.type".equals(key) || "theme.parent".equals(key)) && ProjectUtil.isThemeProject(getProject())) {
+		if ((Objects.equals("theme.type", key) || Objects.equals("theme.parent", key)) &&
+			ProjectUtil.isThemeProject(getProject())) {
+
 			IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade(getProject());
 
 			if (projectFacade != null) {
 				MavenProject mavenProject = projectFacade.getMavenProject();
 
-				if ("theme.type".equals(key)) {
+				if (Objects.equals("theme.type", key)) {
 					retval = MavenUtil.getLiferayMavenPluginConfig(
 						mavenProject, ILiferayMavenConstants.PLUGIN_CONFIG_THEME_TYPE);
 				}

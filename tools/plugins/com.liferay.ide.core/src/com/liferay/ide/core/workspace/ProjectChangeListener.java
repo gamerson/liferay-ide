@@ -59,7 +59,7 @@ public final class ProjectChangeListener implements IResourceChangeListener {
 
 		if (delta != null) {
 			try {
-				_visitDelta(delta);
+				_acceptDelta(delta);
 			}
 			catch (CoreException ce) {
 				LiferayCore.logError("Failed to detect project changes", ce);
@@ -68,6 +68,24 @@ public final class ProjectChangeListener implements IResourceChangeListener {
 	}
 
 	private ProjectChangeListener() {
+	}
+
+	private void _acceptDelta(IResourceDelta delta) throws CoreException {
+		delta.accept(
+			new IResourceDeltaVisitor() {
+
+				@Override
+				public boolean visit(IResourceDelta delta) throws CoreException {
+					try {
+						return _visitDelta(delta);
+					}
+					catch (Exception e) {
+						throw new CoreException(
+							new Status(IStatus.WARNING, LiferayCore.PLUGIN_ID, "ProjectChangeListener failed", e));
+					}
+				}
+
+			});
 	}
 
 	private void _collectAffectedFilePaths(Set<IPath> paths, IProject project, IResourceDelta[] resourceDeltas) {
@@ -90,7 +108,7 @@ public final class ProjectChangeListener implements IResourceChangeListener {
 		return result;
 	}
 
-	private boolean _doVisitDelta(IResourceDelta delta) throws Exception {
+	private boolean _visitDelta(IResourceDelta delta) throws Exception {
 		IResource resource = delta.getResource();
 
 		if (resource instanceof IProject) {
@@ -133,24 +151,6 @@ public final class ProjectChangeListener implements IResourceChangeListener {
 		}
 
 		return resource instanceof IWorkspaceRoot; // don't traverse deeper than the project level
-	}
-
-	private void _visitDelta(IResourceDelta delta) throws CoreException {
-		delta.accept(
-			new IResourceDeltaVisitor() {
-
-				@Override
-				public boolean visit(IResourceDelta delta) throws CoreException {
-					try {
-						return _doVisitDelta(delta);
-					}
-					catch (Exception e) {
-						throw new CoreException(
-							new Status(IStatus.WARNING, LiferayCore.PLUGIN_ID, "ProjectChangeListener failed", e));
-					}
-				}
-
-			});
 	}
 
 }

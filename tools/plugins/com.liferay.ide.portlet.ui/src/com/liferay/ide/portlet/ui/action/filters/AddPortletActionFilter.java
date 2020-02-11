@@ -14,6 +14,8 @@
 
 package com.liferay.ide.portlet.ui.action.filters;
 
+import java.util.Objects;
+
 import org.eclipse.sapphire.ui.SapphireAction;
 import org.eclipse.sapphire.ui.SapphireActionHandler;
 import org.eclipse.sapphire.ui.SapphireActionHandlerFilter;
@@ -43,7 +45,9 @@ public class AddPortletActionFilter extends SapphireActionHandlerFilter {
 
 		SapphireAction action = handler.getAction();
 
-		if ("Sapphire.Add.IPortlet".equals(handler.getId()) && "Sapphire.Add".equals(action.getId())) {
+		if (Objects.equals("Sapphire.Add.IPortlet", handler.getId()) &&
+			Objects.equals("Sapphire.Add", action.getId())) {
+
 			return false;
 		}
 

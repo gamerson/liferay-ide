@@ -151,9 +151,6 @@ public abstract class JSPTagMigrator extends AbstractFileMigrator<JSPFile> imple
 					}
 					else if (ListUtil.isNotEmpty(_newTagNames)) {
 						String tagName = element.getTagName();
-						NamedNodeMap attributes = element.getAttributes();
-						NodeList childNodes = element.getChildNodes();
-						String nodeValue = element.getNodeValue();
 
 						String newTagName = "";
 
@@ -173,15 +170,21 @@ public abstract class JSPTagMigrator extends AbstractFileMigrator<JSPFile> imple
 
 						Element newNode = document.createElement(newTagName);
 
+						String nodeValue = element.getNodeValue();
+
 						if (nodeValue != null) {
 							newNode.setNodeValue(nodeValue);
 						}
+
+						NamedNodeMap attributes = element.getAttributes();
 
 						for (int i = 0; i < attributes.getLength(); i++) {
 							Node attribute = attributes.item(i);
 
 							newNode.setAttribute(attribute.getNodeName(), attribute.getNodeValue());
 						}
+
+						NodeList childNodes = element.getChildNodes();
 
 						for (int i = 0; i < childNodes.getLength(); i++) {
 							Node childNode = childNodes.item(i);

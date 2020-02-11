@@ -33,6 +33,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,7 +83,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 	public <T> List<T> getData(String key, Class<T> type, Object... params) {
 		List<T> retval = null;
 
-		if ("profileIds".equals(key)) {
+		if (Objects.equals("profileIds", key)) {
 			List<T> profileIds = new ArrayList<>();
 
 			try {
@@ -144,7 +145,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 
 			retval = profileIds;
 		}
-		else if ("liferayVersions".equals(key)) {
+		else if (Objects.equals("liferayVersions", key)) {
 			List<T> possibleVersions = new ArrayList<>();
 
 			RepositorySystem system = AetherUtil.newRepositorySystem();
@@ -172,7 +173,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 				for (Version version : versions) {
 					String val = version.toString();
 
-					if (!"6.2.0".equals(val) && !val.contains("7.0.0")) {
+					if (!Objects.equals("6.2.0", val) && !val.contains("7.0.0")) {
 						possibleVersions.add(type.cast(val));
 					}
 				}
@@ -182,7 +183,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 			catch (VersionRangeResolutionException vrre) {
 			}
 		}
-		else if ("parentVersion".equals(key)) {
+		else if (Objects.equals("parentVersion", key)) {
 			List<T> version = new ArrayList<>();
 
 			File locationDir = (File)params[0];
@@ -204,7 +205,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 				}
 			}
 		}
-		else if ("parentGroupId".equals(key)) {
+		else if (Objects.equals("parentGroupId", key)) {
 			List<T> groupId = new ArrayList<>();
 
 			File locationDir = (File)params[0];
@@ -226,7 +227,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 				}
 			}
 		}
-		else if ("archetypeGAV".equals(key)) {
+		else if (Objects.equals("archetypeGAV", key)) {
 			String frameworkType = (String)params[0];
 
 			String value = LiferayMavenCore.getPreferenceString("archetype-gav-" + frameworkType, "");

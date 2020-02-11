@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.tools.ant.Project;
@@ -708,22 +709,22 @@ public class SDK {
 	}
 
 	public String getPluginFolder(String type) {
-		if ("ext".equals(type)) {
+		if (Objects.equals("ext", type)) {
 			return ISDKConstants.EXT_PLUGIN_PROJECT_FOLDER;
 		}
-		else if ("portlet".equals(type)) {
+		else if (Objects.equals("portlet", type)) {
 			return ISDKConstants.PORTLET_PLUGIN_PROJECT_FOLDER;
 		}
-		else if ("hook".equals(type)) {
+		else if (Objects.equals("hook", type)) {
 			return ISDKConstants.HOOK_PLUGIN_PROJECT_FOLDER;
 		}
-		else if ("layouttpl".equals(type)) {
+		else if (Objects.equals("layouttpl", type)) {
 			return ISDKConstants.LAYOUTTPL_PLUGIN_PROJECT_FOLDER;
 		}
-		else if ("theme".equals(type)) {
+		else if (Objects.equals("theme", type)) {
 			return ISDKConstants.THEME_PLUGIN_PROJECT_FOLDER;
 		}
-		else if ("web".equals(type)) {
+		else if (Objects.equals("web", type)) {
 			return ISDKConstants.WEB_PLUGIN_PROJECT_FOLDER;
 		}
 		else {
@@ -1057,22 +1058,22 @@ public class SDK {
 	}
 
 	private String _getPluginSuffix(String type) {
-		if ("ext".equals(type)) {
+		if (Objects.equals("ext", type)) {
 			return ISDKConstants.EXT_PLUGIN_PROJECT_SUFFIX;
 		}
-		else if ("portlet".equals(type)) {
+		else if (Objects.equals("portlet", type)) {
 			return ISDKConstants.PORTLET_PLUGIN_PROJECT_SUFFIX;
 		}
-		else if ("hook".equals(type)) {
+		else if (Objects.equals("hook", type)) {
 			return ISDKConstants.HOOK_PLUGIN_PROJECT_SUFFIX;
 		}
-		else if ("layouttpl".equals(type)) {
+		else if (Objects.equals("layouttpl", type)) {
 			return ISDKConstants.LAYOUTTPL_PLUGIN_PROJECT_SUFFIX;
 		}
-		else if ("theme".equals(type)) {
+		else if (Objects.equals("theme", type)) {
 			return ISDKConstants.THEME_PLUGIN_PROJECT_SUFFIX;
 		}
-		else if ("web".equals(type)) {
+		else if (Objects.equals("web", type)) {
 			return ISDKConstants.WEB_PLUGIN_PROJECT_SUFFIX;
 		}
 		else {

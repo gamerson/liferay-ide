@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
@@ -137,7 +138,7 @@ public class GradleUtil {
 	}
 
 	public static boolean isBuildFile(IFile buildFile) {
-		if (FileUtil.exists(buildFile) && "build.gradle".equals(buildFile.getName()) &&
+		if (FileUtil.exists(buildFile) && Objects.equals("build.gradle", buildFile.getName()) &&
 			(buildFile.getParent() instanceof IProject)) {
 
 			return true;
@@ -190,7 +191,7 @@ public class GradleUtil {
 						version = Version.parseVersion(dependencyVersion);
 					}
 
-					if ("com.liferay".equals(group) && "com.liferay.gradle.plugins".equals(name) &&
+					if (Objects.equals("com.liferay", group) && Objects.equals("com.liferay.gradle.plugins", name) &&
 						(CoreUtil.compareVersions(version, new Version("3.11.0")) >= 0)) {
 
 						watchable = true;
@@ -198,7 +199,8 @@ public class GradleUtil {
 						break;
 					}
 
-					if ("com.liferay".equals(group) && "com.liferay.gradle.plugins.workspace".equals(name) &&
+					if (Objects.equals("com.liferay", group) &&
+						Objects.equals("com.liferay.gradle.plugins.workspace", name) &&
 						(CoreUtil.compareVersions(version, new Version("1.9.2")) >= 0)) {
 
 						watchable = true;

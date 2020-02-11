@@ -45,6 +45,7 @@ import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -397,7 +398,7 @@ public class LiferayTomcatUtil {
 
 						path = fileName.substring(0, fileName.length() - ".xml".length());
 
-						if ("ROOT".equals(path)) {
+						if (Objects.equals("ROOT", path)) {
 							path = StringPool.EMPTY;
 						}
 

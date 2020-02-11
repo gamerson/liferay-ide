@@ -16,6 +16,8 @@ package com.liferay.ide.project.core.workspace;
 
 import com.liferay.ide.core.util.SapphireContentAccessor;
 
+import java.util.Objects;
+
 import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.services.ValidationService;
 
@@ -32,7 +34,7 @@ public class WorkspaceProjectProviderValidationService extends ValidationService
 			return Status.createErrorStatus("Create workspace project failure, project provider can not be null.");
 		}
 
-		if ("maven-liferay-workspace".equals(projectProvider.getShortName())) {
+		if (Objects.equals("maven-liferay-workspace", projectProvider.getShortName())) {
 			return Status.createWarningStatus("Maven Liferay Workspace would not support Target Platform.");
 		}
 

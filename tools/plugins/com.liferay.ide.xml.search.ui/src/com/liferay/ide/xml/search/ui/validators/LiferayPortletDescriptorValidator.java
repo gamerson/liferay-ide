@@ -16,6 +16,8 @@ package com.liferay.ide.xml.search.ui.validators;
 
 import com.liferay.ide.project.core.ValidationPreferences;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.sse.core.internal.validate.ValidationMessage;
@@ -48,7 +50,7 @@ public class LiferayPortletDescriptorValidator extends LiferayBaseValidator {
 
 		Node parentNode = node.getParentNode();
 
-		if ("control-panel-entry-weight".equals(parentNode.getNodeName())) {
+		if (Objects.equals("control-panel-entry-weight", parentNode.getNodeName())) {
 			String validationMsg = null;
 
 			String nodeValue = DOMUtils.getNodeValue(node);

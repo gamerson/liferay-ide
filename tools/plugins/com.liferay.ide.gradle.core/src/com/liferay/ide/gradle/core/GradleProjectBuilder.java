@@ -90,11 +90,12 @@ public class GradleProjectBuilder extends AbstractProjectBuilder implements Arti
 
 		List<Artifact> dependencies = dependencyUpdater.getDependencies(true, "classpath");
 
-		Optional<Artifact> optional = dependencies.stream(
+		Stream<Artifact> stream = dependencies.stream();
+
+		Optional<Artifact> optional = stream.filter(
+			artifact -> Objects.equals("com.liferay", artifact.getGroupId())
 		).filter(
-			artifact -> "com.liferay".equals(artifact.getGroupId())
-		).filter(
-			artifact -> "com.liferay.gradle.plugins.wsdd.builder".equals(artifact.getArtifactId())
+			artifact -> Objects.equals("com.liferay.gradle.plugins.wsdd.builder", artifact.getArtifactId())
 		).findAny();
 
 		if (optional.isPresent()) {

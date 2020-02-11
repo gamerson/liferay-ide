@@ -135,7 +135,9 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 					boolean start = false;
 
 					while ((line = bufferedReader.readLine()) != null) {
-						if ("compileOnly - Dependency management for the compileOnly configuration".equals(line)) {
+						if (Objects.equals(
+								line, "compileOnly - Dependency management for the compileOnly configuration")) {
+
 							start = true;
 
 							continue;
@@ -159,8 +161,9 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 						new String("Please check liferay target platform dependencies.")));
 			}
 
-			_targetPlatformArtifacts = list.stream(
-			).map(
+			Stream<String> stream = list.stream();
+
+			_targetPlatformArtifacts = stream.map(
 				s -> {
 					int i1 = s.indexOf(":");
 					int i2 = s.indexOf(" ");
@@ -235,7 +238,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 			).filter(
 				Objects::nonNull
 			).filter(
-				bundleProject -> "war".equals(bundleProject.getBundleShape())
+				bundleProject -> Objects.equals("war", bundleProject.getBundleShape())
 			).count();
 
 			if (warCount == 0) {
@@ -289,7 +292,9 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 
 				IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, project);
 
-				if (!isWatchable() || ((bundleProject != null) && "war".equals(bundleProject.getBundleShape()))) {
+				if (!isWatchable() ||
+					((bundleProject != null) && Objects.equals("war", bundleProject.getBundleShape()))) {
+
 					taskName = "deploy";
 				}
 

@@ -23,6 +23,8 @@ import com.liferay.ide.project.core.modules.NewLiferayComponentOp;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.ui.util.UIUtil;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -86,7 +88,7 @@ public class NewLiferayComponentWizard
 			if (_initialProject != null) {
 				final IBundleProject bundleProject = LiferayCore.create(IBundleProject.class, _initialProject);
 
-				if ((bundleProject != null) && "jar".equals(bundleProject.getBundleShape()) &&
+				if ((bundleProject != null) && Objects.equals("jar", bundleProject.getBundleShape()) &&
 					!bundleProject.isFragmentBundle()) {
 
 					element().setProjectName(_initialProject.getName());

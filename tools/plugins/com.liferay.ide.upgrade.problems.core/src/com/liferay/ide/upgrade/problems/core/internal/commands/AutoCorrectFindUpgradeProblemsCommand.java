@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -74,10 +75,9 @@ public class AutoCorrectFindUpgradeProblemsCommand implements UpgradeCommand, Up
 			return Status.OK_STATUS;
 		}
 
-		autoCorrectableUpgradeProblems.stream(
-		).forEach(
-			this::_autoCorrectProblem
-		);
+		Stream<UpgradeProblem> stream = autoCorrectableUpgradeProblems.stream();
+
+		stream.forEach(this::_autoCorrectProblem);
 
 		refreshProjects(autoCorrectableUpgradeProblems, progressMonitor);
 
@@ -127,8 +127,9 @@ public class AutoCorrectFindUpgradeProblemsCommand implements UpgradeCommand, Up
 
 			File file = upgradeProblem.getResource();
 
-			serviceReferences.stream(
-			).map(
+			Stream<ServiceReference<AutoFileMigrator>> stream = serviceReferences.stream();
+
+			stream.map(
 				bundleContext::getService
 			).forEach(
 				autoFileMigrator -> {
@@ -154,8 +155,9 @@ public class AutoCorrectFindUpgradeProblemsCommand implements UpgradeCommand, Up
 		Collection<UpgradeProblem> ignoredProblems = upgradePlan.getIgnoredProblems();
 
 		if ((ignoredProblems == null) || ignoredProblems.isEmpty()) {
-			Set<UpgradeProblem> ignoredProblemSet = upgradeProblems.stream(
-			).filter(
+			Stream<UpgradeProblem> stream = upgradeProblems.stream();
+
+			Set<UpgradeProblem> ignoredProblemSet = stream.filter(
 				problem -> UpgradeProblem.STATUS_IGNORE == problem.getStatus()
 			).collect(
 				Collectors.toSet()
@@ -181,14 +183,15 @@ public class AutoCorrectFindUpgradeProblemsCommand implements UpgradeCommand, Up
 		List<IProject> projects = _resourceSelection.selectProjects(
 			"Select projects to search for upgrade problems.", true, ResourceSelection.JAVA_PROJECTS);
 
-		List<String> upgradeVersions = upgradePlan.getUpgradeVersions();
-
 		if (projects.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		return projects.stream(
-		).map(
+		Stream<IProject> stream = projects.stream();
+
+		List<String> upgradeVersions = upgradePlan.getUpgradeVersions();
+
+		return stream.map(
 			FileUtil::getFile
 		).map(
 			projectFile -> _fileMigration.findUpgradeProblems(

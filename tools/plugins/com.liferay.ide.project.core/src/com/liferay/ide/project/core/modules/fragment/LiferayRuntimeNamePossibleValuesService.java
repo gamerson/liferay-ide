@@ -17,6 +17,7 @@ package com.liferay.ide.project.core.modules.fragment;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.server.core.LiferayServerCore;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.sapphire.PossibleValuesService;
@@ -39,7 +40,7 @@ public class LiferayRuntimeNamePossibleValuesService
 
 	@Override
 	public Status problem(Value<?> value) {
-		if ("<None>".equals(value.content())) {
+		if (Objects.equals("<None>", value.content())) {
 			return Status.createOkStatus();
 		}
 

@@ -121,18 +121,14 @@ public class UIUtil {
 	public static void refreshCommonView(String viewId) {
 		try {
 			async(
-				new Runnable() {
+				() -> {
+					IViewPart viewPart = showView(viewId);
 
-					public void run() {
-						IViewPart viewPart = showView(viewId);
+					if (viewPart != null) {
+						CommonViewer viewer = viewPart.getAdapter(CommonViewer.class);
 
-						if (viewPart != null) {
-							CommonViewer viewer = (CommonViewer)viewPart.getAdapter(CommonViewer.class);
-
-							viewer.refresh(true);
-						}
+						viewer.refresh(true);
 					}
-
 				});
 		}
 		catch (Exception e) {

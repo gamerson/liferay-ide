@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -359,7 +360,7 @@ public class MavenUtil {
 
 		retval = v.getMajorVersion() + "." + v.getMinorVersion() + "." + v.getIncrementalVersion();
 
-		if ("0.0.0".equals(retval)) {
+		if (Objects.equals("0.0.0", retval)) {
 			retval = v.getQualifier();
 		}
 

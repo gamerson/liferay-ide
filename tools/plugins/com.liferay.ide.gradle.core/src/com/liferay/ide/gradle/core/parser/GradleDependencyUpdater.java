@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -91,6 +92,7 @@ public class GradleDependencyUpdater {
 		return _insertDependency(_toGradleDependencyString(artifact));
 	}
 
+	@SuppressWarnings("deprecation")
 	public void updateDependencies(boolean buildscript, List<Artifact> artifacts) throws IOException {
 		DependenciesClosureVisitor dependenciesClosureVisitor = new DependenciesClosureVisitor(buildscript);
 
@@ -118,6 +120,7 @@ public class GradleDependencyUpdater {
 		FileUtils.writeLines(_file, _gradleFileContents);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void updateDependency(boolean buildscript, Artifact oldArtifact, Artifact newArtifact) throws IOException {
 		DependenciesClosureVisitor dependenciesClosureVisitor = new DependenciesClosureVisitor(buildscript);
 
@@ -174,6 +177,7 @@ public class GradleDependencyUpdater {
 		FileUtils.writeLines(_file, _gradleFileContents);
 	}
 
+	@SuppressWarnings("deprecation")
 	private DependenciesClosureVisitor _insertDependency(String dependency) throws IOException {
 		DependenciesClosureVisitor visitor = new DependenciesClosureVisitor();
 
@@ -183,8 +187,9 @@ public class GradleDependencyUpdater {
 
 		String d = dependency.trim();
 
-		boolean exist = _gradleFileContents.stream(
-		).map(
+		Stream<String> stream = _gradleFileContents.stream();
+
+		boolean exist = stream.map(
 			line -> line.trim()
 		).filter(
 			line -> line.equals(d)

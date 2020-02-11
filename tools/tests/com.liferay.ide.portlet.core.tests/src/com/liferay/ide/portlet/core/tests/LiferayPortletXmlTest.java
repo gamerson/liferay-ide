@@ -35,6 +35,7 @@ import com.liferay.ide.project.core.tests.XmlTestsBase;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -176,11 +177,11 @@ public class LiferayPortletXmlTest extends XmlTestsBase
         NumberValueValidationService vs =
             cronTriggerValue.getCronTriggerValue().service( NumberValueValidationService.class );
 
-        cronTriggerValue.setCronTriggerValue( "-1" );
-        assertEquals( false, "ok".equals( vs.validation().message() ) );
+        cronTriggerValue.setCronTriggerValue("-1");
+        assertEquals(false, Objects.equals("ok", vs.validation().message()));
 
-        cronTriggerValue.setCronTriggerValue( "150" );
-        assertEquals( true, "ok".equals( vs.validation().message() ) );
+        cronTriggerValue.setCronTriggerValue("150");
+        assertEquals(true, Objects.equals("ok", vs.validation().message()));
 
     }
 
@@ -200,21 +201,18 @@ public class LiferayPortletXmlTest extends XmlTestsBase
 
         LiferayPortletXml liferayPortletApp = op( testProject );
 
-        for( LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets() )
-        {
+        for (LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets()) {
             final ValidationService vs = liferayPortlet.getPortletName().service( ValidationService.class );
-            assertEquals( "ok", vs.validation().message() );
-            assertEquals( "ok", liferayPortlet.getPortletName().validation().message() );
+            assertEquals("ok", vs.validation().message());
+            assertEquals("ok", liferayPortlet.getPortletName().validation().message());
         }
 
-        for( LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets() )
-        {
+        for (LiferayPortlet liferayPortlet : liferayPortletApp.getPortlets()) {
             liferayPortlet.setPortletName( "test1" );
             final ValidationService vs = liferayPortlet.getPortletName().service( ValidationService.class );
-            assertEquals( false, "ok".equals( vs.validation().message() ) );
-            assertEquals( false, "ok".equals( liferayPortlet.getPortletName().validation().message() ) );
+            assertEquals(false, Objects.equals("ok", vs.validation().message()));
+            assertEquals(false, Objects.equals("ok", liferayPortlet.getPortletName().validation().message()));
         }
-
     }
 
     @Test

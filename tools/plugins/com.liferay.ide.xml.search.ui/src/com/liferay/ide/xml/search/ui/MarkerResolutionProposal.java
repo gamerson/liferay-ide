@@ -53,10 +53,8 @@ public class MarkerResolutionProposal implements ICompletionProposal {
 
 		MarkerResolutionProposal other = (MarkerResolutionProposal)obj;
 
-		if (_resolution == null) {
-			if (other._resolution != null) {
-				return false;
-			}
+		if ((_resolution == null) && (other._resolution != null)) {
+			return false;
 		}
 		else if (!_resolution.equals(other._resolution)) {
 			return false;
@@ -67,7 +65,9 @@ public class MarkerResolutionProposal implements ICompletionProposal {
 
 	public String getAdditionalProposalInfo() {
 		if (_resolution instanceof IMarkerResolution2) {
-			return ((IMarkerResolution2)_resolution).getDescription();
+			IMarkerResolution2 markerResolution = (IMarkerResolution2)_resolution;
+
+			return markerResolution.getDescription();
 		}
 
 		String problemDesc = _marker.getAttribute(IMarker.MESSAGE, null);
@@ -89,7 +89,9 @@ public class MarkerResolutionProposal implements ICompletionProposal {
 
 	public Image getImage() {
 		if (_resolution instanceof IMarkerResolution2) {
-			return ((IMarkerResolution2)_resolution).getImage();
+			IMarkerResolution2 markerResolution = (IMarkerResolution2)_resolution;
+
+			return markerResolution.getImage();
 		}
 
 		return null;
@@ -103,6 +105,7 @@ public class MarkerResolutionProposal implements ICompletionProposal {
 	public int hashCode() {
 		int prime = 31;
 		int result = 1;
+
 		result = prime * result + ((_resolution == null) ? 0 : _resolution.hashCode());
 
 		return result;

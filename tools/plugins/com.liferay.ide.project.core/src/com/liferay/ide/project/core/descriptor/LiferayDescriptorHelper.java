@@ -29,6 +29,7 @@ import java.text.MessageFormat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.internal.content.ContentTypeManager;
 import org.eclipse.core.resources.IFile;
@@ -80,7 +81,7 @@ public abstract class LiferayDescriptorHelper {
 			LiferayCore.logError("Could not get liferay runtime.", e);
 		}
 
-		if ("0.0.0".equals(retval)) {
+		if (Objects.equals("0.0.0", retval)) {
 			retval = defaultValue;
 		}
 

@@ -28,6 +28,7 @@ import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 
@@ -766,7 +767,7 @@ public class BuildHelper {
 		IPath diffsRelativePath = null;
 
 		for (int i = 0; i < diffsPath.segmentCount(); i++) {
-			if ("_diffs".equals(diffsPath.segment(i))) {
+			if (Objects.equals("_diffs", diffsPath.segment(i))) {
 				diffsRelativePath = diffsPath.removeFirstSegments(i + 1);
 
 				break;

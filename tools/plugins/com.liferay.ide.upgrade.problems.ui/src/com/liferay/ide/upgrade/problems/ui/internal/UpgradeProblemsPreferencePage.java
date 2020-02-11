@@ -24,12 +24,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.Adapters;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -52,7 +52,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -67,9 +66,7 @@ public class UpgradeProblemsPreferencePage extends PreferencePage implements IWo
 
 		Bundle bundle = FrameworkUtil.getBundle(UpgradeProblemsPreferencePage.class);
 
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		_serviceTracker = new ServiceTracker<>(bundleContext, UpgradePlanner.class, null);
+		_serviceTracker = new ServiceTracker<>(bundle.getBundleContext(), UpgradePlanner.class, null);
 
 		_serviceTracker.open();
 	}
@@ -164,11 +161,7 @@ public class UpgradeProblemsPreferencePage extends PreferencePage implements IWo
 
 							_ignoredProblemsTableViewer.setInput(_ignoreProblems.toArray(new UpgradeProblem[0]));
 
-							UIUtil.async(
-								() -> {
-									_browser.setText("");
-								},
-								50);
+							UIUtil.async(() -> _browser.setText(""), 50);
 						}
 						catch (Exception e) {
 							UpgradeProblemsUIPlugin.logError(e);
@@ -181,6 +174,7 @@ public class UpgradeProblemsPreferencePage extends PreferencePage implements IWo
 		setButtonLayoutData(_removeButton);
 
 		label = new Label(pageComposite, SWT.LEFT);
+
 		gridData = new GridData();
 
 		gridData.horizontalAlignment = GridData.FILL;
@@ -223,14 +217,7 @@ public class UpgradeProblemsPreferencePage extends PreferencePage implements IWo
 
 		_ignoredProblemsTableViewer.setInput(_ignoreProblems.toArray(new UpgradeProblem[0]));
 
-		_ignoredProblemsTableViewer.addSelectionChangedListener(
-			event -> {
-				UIUtil.async(
-					() -> {
-						_updateForm(event);
-					},
-					50);
-			});
+		_ignoredProblemsTableViewer.addSelectionChangedListener(event -> UIUtil.async(() -> _updateForm(event), 50));
 
 		return pageComposite;
 	}
@@ -263,15 +250,17 @@ public class UpgradeProblemsPreferencePage extends PreferencePage implements IWo
 
 		Collection<UpgradeProblem> upgradeProblems = upgradePlan.getUpgradeProblems();
 
-		upgradeProblems.stream(
-		).filter(
+		Stream<UpgradeProblem> upgradeProblemStream = upgradeProblems.stream();
+
+		upgradeProblemStream.filter(
 			_restoreProblems::contains
 		).forEach(
 			upgradeProblem -> upgradeProblem.setStatus(UpgradeProblem.STATUS_NOT_RESOLVED)
 		);
 
-		Set<UpgradeProblem> ignoredProblemSet = upgradeProblems.stream(
-		).filter(
+		upgradeProblemStream = upgradeProblems.stream();
+
+		Set<UpgradeProblem> ignoredProblemSet = upgradeProblemStream.filter(
 			problem -> UpgradeProblem.STATUS_IGNORE == problem.getStatus()
 		).collect(
 			Collectors.toSet()
@@ -357,9 +346,7 @@ public class UpgradeProblemsPreferencePage extends PreferencePage implements IWo
 		sb.append(problem.getSummary());
 		sb.append("<br/><br/>");
 
-		String autoCorrectContext = problem.getAutoCorrectContext();
-
-		if (CoreUtil.isNotNullOrEmpty(autoCorrectContext)) {
+		if (CoreUtil.isNotNullOrEmpty(problem.getAutoCorrectContext())) {
 			sb.append("<a href='autoCorrect'>Correct this problem automatically</a><br/><br/>");
 		}
 
@@ -405,9 +392,8 @@ public class UpgradeProblemsPreferencePage extends PreferencePage implements IWo
 	}
 
 	private void _updateForm(SelectionChangedEvent selectionChangedEvent) {
-		ISelection selection = selectionChangedEvent.getSelection();
-
-		IStructuredSelection structuredSelection = Adapters.adapt(selection, IStructuredSelection.class);
+		IStructuredSelection structuredSelection = Adapters.adapt(
+			selectionChangedEvent.getSelection(), IStructuredSelection.class);
 
 		if (structuredSelection == null) {
 			return;

@@ -27,6 +27,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.http.HttpEntity;
@@ -96,7 +97,7 @@ public class NewMavenJSFModuleProjectProvider
 
 	@Override
 	public <T> List<T> getData(String key, Class<T> type, Object... params) {
-		if ("archetypeGAV".equals(key) && type.equals(String.class) && (params.length == 1)) {
+		if (Objects.equals("archetypeGAV", key) && type.equals(String.class) && (params.length == 1)) {
 			List<T> retval = new ArrayList<>();
 
 			String templateName = params[0].toString();

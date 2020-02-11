@@ -33,6 +33,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -184,7 +186,9 @@ public class PluginsSDKBundleProject extends FlexibleProject implements IBundleP
 	public String getProperty(String key, String defaultValue) {
 		String retval = defaultValue;
 
-		if (("theme.type".equals(key) || "theme.parent".equals(key)) && ProjectUtil.isThemeProject(getProject())) {
+		if ((Objects.equals("theme.type", key) || Objects.equals("theme.parent", key)) &&
+			ProjectUtil.isThemeProject(getProject())) {
+
 			IFile buildXml = getProject().getFile("build.xml");
 
 			try (InputStream inputStream = buildXml.getContents()) {

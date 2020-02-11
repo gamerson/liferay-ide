@@ -16,6 +16,8 @@ package com.liferay.ide.ui.snippets;
 
 import com.liferay.ide.core.util.CoreUtil;
 
+import java.util.Objects;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -86,7 +88,7 @@ public abstract class AbstractSnippetInsertion extends DefaultSnippetInsertion {
 			content = StringUtils.replace(content, "\r\n", "\n");
 			content = StringUtils.replace(content, "\r", "\n");
 
-			if (!"\n".equals(systemEOL) && (systemEOL != null)) {
+			if (!Objects.equals("\n", systemEOL) && (systemEOL != null)) {
 				content = StringUtils.replace(content, "\n", systemEOL);
 			}
 

@@ -40,6 +40,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -234,7 +235,7 @@ public class LiferayPropertiesSourceViewerConfiguration extends PropertiesFileSo
 	private String _getPropertiesEntry(IEditorInput input) {
 		String retval = null;
 
-		if ("system-ext.properties".equals(input.getName())) {
+		if (Objects.equals("system-ext.properties", input.getName())) {
 			retval = "system.properties";
 		}
 		else {

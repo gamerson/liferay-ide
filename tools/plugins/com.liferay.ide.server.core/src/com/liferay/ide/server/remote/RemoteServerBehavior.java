@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -158,10 +159,10 @@ public class RemoteServerBehavior
 
 			String serverState = retval.toString();
 
-			if ("STARTED".equals(serverState)) {
+			if (Objects.equals("STARTED", serverState)) {
 				return IServer.STATE_STARTED;
 			}
-			else if ("STOPPED".equals(serverState)) {
+			else if (Objects.equals("STOPPED", serverState)) {
 				return IServer.STATE_STOPPED;
 			}
 		}

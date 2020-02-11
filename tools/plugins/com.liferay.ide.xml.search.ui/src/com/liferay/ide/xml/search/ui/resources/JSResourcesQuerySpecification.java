@@ -22,11 +22,6 @@ import org.eclipse.wst.xml.search.core.resource.IURIResolver;
  */
 public class JSResourcesQuerySpecification extends AbstractWebResourcesQuerySpecification {
 
-	/**
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.xml.search.core.resource.IURIResolverProvider#
-	 * getURIResolver (IFile, Object)
-	 */
 	public IURIResolver getURIResolver(IFile file, Object selectedNode) {
 		return JSResourceURIResolver.INSTANCE;
 	}

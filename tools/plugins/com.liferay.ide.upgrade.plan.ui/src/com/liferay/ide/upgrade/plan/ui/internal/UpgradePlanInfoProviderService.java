@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -66,7 +67,7 @@ public class UpgradePlanInfoProviderService implements UpgradeInfoProvider {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					_doUpgradeStepDetail(upgradeStep, deferred);
+					_upgradeStepDetail(upgradeStep, deferred);
 
 					Promise<String> promise = deferred.getPromise();
 
@@ -96,7 +97,7 @@ public class UpgradePlanInfoProviderService implements UpgradeInfoProvider {
 	@Override
 	public String getLabel(Object element) {
 		if (element instanceof UpgradeStep) {
-			return _doUpgradeStepLabel((UpgradeStep)element);
+			return _upgradeStepLabel((UpgradeStep)element);
 		}
 
 		return null;
@@ -105,29 +106,6 @@ public class UpgradePlanInfoProviderService implements UpgradeInfoProvider {
 	@Override
 	public boolean provides(Object element) {
 		return element instanceof UpgradeStep;
-	}
-
-	private void _doUpgradeStepDetail(UpgradeStep upgradeStep, Deferred<String> deferred) {
-		String detail = "about:blank";
-
-		String url = upgradeStep.getUrl();
-
-		if (CoreUtil.isNotNullOrEmpty(url)) {
-			try {
-				detail = _renderKBMainContent(url);
-			}
-			catch (Throwable t) {
-				deferred.fail(t);
-
-				return;
-			}
-		}
-
-		deferred.resolve(detail);
-	}
-
-	private String _doUpgradeStepLabel(UpgradeStep upgradeStep) {
-		return upgradeStep.getTitle();
 	}
 
 	private String _renderKBMainContent(String upgradeStepUrl) throws ClientProtocolException, IOException {
@@ -198,7 +176,7 @@ public class UpgradePlanInfoProviderService implements UpgradeInfoProvider {
 		String prefix = protocol + "://" + authority;
 
 		for (Element element : mainContent.getAllElements()) {
-			if ("a".equals(element.tagName())) {
+			if (Objects.equals("a", element.tagName())) {
 				String href = element.attr("href");
 
 				if (href.startsWith("/")) {
@@ -212,6 +190,29 @@ public class UpgradePlanInfoProviderService implements UpgradeInfoProvider {
 		sb.append("</html>");
 
 		return sb.toString();
+	}
+
+	private void _upgradeStepDetail(UpgradeStep upgradeStep, Deferred<String> deferred) {
+		String detail = "about:blank";
+
+		String url = upgradeStep.getUrl();
+
+		if (CoreUtil.isNotNullOrEmpty(url)) {
+			try {
+				detail = _renderKBMainContent(url);
+			}
+			catch (Throwable t) {
+				deferred.fail(t);
+
+				return;
+			}
+		}
+
+		deferred.resolve(detail);
+	}
+
+	private String _upgradeStepLabel(UpgradeStep upgradeStep) {
+		return upgradeStep.getTitle();
 	}
 
 	private final PromiseFactory _promiseFactory;

@@ -19,6 +19,8 @@ import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.project.core.ValidationPreferences;
 import com.liferay.ide.xml.search.ui.LiferayXMLSearchUI;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.osgi.util.NLS;
@@ -58,7 +60,7 @@ public class LiferayHookDescriptorValidator extends LiferayBaseValidator {
 
 			String parentNodeName = parentNode.getNodeName();
 
-			if ("service-type".equals(parentNodeName)) {
+			if (Objects.equals("service-type", parentNodeName)) {
 				ValidationInfo valInfo = _validateServiceType(node, file);
 
 				if (valInfo != null) {
@@ -70,7 +72,7 @@ public class LiferayHookDescriptorValidator extends LiferayBaseValidator {
 
 				return;
 			}
-			else if ("service-impl".equals(parentNodeName)) {
+			else if (Objects.equals("service-impl", parentNodeName)) {
 				ValidationInfo valInfo = _validateServiceImpl(node, file);
 
 				if (valInfo != null) {
@@ -97,33 +99,32 @@ public class LiferayHookDescriptorValidator extends LiferayBaseValidator {
 
 		int severity = getServerity(ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 
-		if (severity != ValidationMessage.IGNORE) {
-			if (node.getNodeType() == Node.TEXT_NODE) {
-				String validationMsg = null;
+		if ((severity != ValidationMessage.IGNORE) && (node.getNodeType() == Node.TEXT_NODE)) {
+			String validationMsg = null;
 
-				String nodeValue = DOMUtils.getNodeValue(node);
+			String nodeValue = DOMUtils.getNodeValue(node);
 
-				if (CoreUtil.isNotNullOrEmpty(nodeValue)) {
-					Node parentNode = node.getParentNode();
+			if (CoreUtil.isNotNullOrEmpty(nodeValue)) {
+				Node parentNode = node.getParentNode();
 
-					String parentNodeName = parentNode.getNodeName();
+				String parentNodeName = parentNode.getNodeName();
 
-					if ("portal-properties".equals(parentNodeName) || "language-properties".equals(parentNodeName)) {
-						if (!nodeValue.endsWith(".properties")) {
-							validationMsg = NLS.bind(MESSAGE_PROPERTIES_NOT_END_WITH_PROPERTIES, nodeValue);
-						}
-					}
+				if ((Objects.equals("portal-properties", parentNodeName) ||
+					 Objects.equals("language-properties", parentNodeName)) &&
+					!nodeValue.endsWith(".properties")) {
 
-					if (validationMsg != null) {
-						String liferayPluginValidationType = getLiferayPluginValidationType(
-							ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
+					validationMsg = NLS.bind(MESSAGE_PROPERTIES_NOT_END_WITH_PROPERTIES, nodeValue);
+				}
 
-						addMessage(
-							node, file, validator, reporter, batchMode, validationMsg, severity,
-							liferayPluginValidationType);
+				if (validationMsg != null) {
+					String liferayPluginValidationType = getLiferayPluginValidationType(
+						ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 
-						return false;
-					}
+					addMessage(
+						node, file, validator, reporter, batchMode, validationMsg, severity,
+						liferayPluginValidationType);
+
+					return false;
 				}
 			}
 		}
@@ -157,7 +158,7 @@ public class LiferayHookDescriptorValidator extends LiferayBaseValidator {
 		for (int i = 0; i < siblingNodes.getLength(); i++) {
 			Node siblingNode = siblingNodes.item(i);
 
-			if ("service-type".equals(siblingNode.getNodeName())) {
+			if (Objects.equals("service-type", siblingNode.getNodeName())) {
 				serviceTypeNode = (IDOMNode)siblingNode;
 
 				break;

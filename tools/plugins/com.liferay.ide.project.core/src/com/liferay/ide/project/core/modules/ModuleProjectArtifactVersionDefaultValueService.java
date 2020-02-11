@@ -17,6 +17,8 @@ package com.liferay.ide.project.core.modules;
 import com.liferay.ide.core.util.SapphireContentAccessor;
 import com.liferay.ide.core.util.SapphireUtil;
 
+import java.util.Objects;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.sapphire.DefaultValueService;
 import org.eclipse.sapphire.FilteredListener;
@@ -48,7 +50,7 @@ public class ModuleProjectArtifactVersionDefaultValueService
 
 		String data = NewLiferayModuleProjectOpMethods.getMavenParentPomVersion(op, projectName, parentProjectOsPath);
 
-		if (!"".equals(data)) {
+		if (!Objects.equals("", data)) {
 			return data;
 		}
 

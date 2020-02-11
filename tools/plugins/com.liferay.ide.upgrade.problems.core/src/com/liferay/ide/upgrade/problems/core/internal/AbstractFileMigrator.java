@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.Path;
 
@@ -78,13 +79,13 @@ public abstract class AbstractFileMigrator<T extends SourceFile> implements File
 		if (ListUtil.isNotEmpty(searchResults)) {
 			String fileName = "BREAKING_CHANGES.markdown";
 
-			if ("7.0".equals(version)) {
+			if (Objects.equals("7.0", version)) {
 				fileName = "liferay70/" + fileName;
 			}
-			else if ("7.1".equals(version)) {
+			else if (Objects.equals("7.1", version)) {
 				fileName = "liferay71/" + fileName;
 			}
-			else if ("7.2".equals(version)) {
+			else if (Objects.equals("7.2", version)) {
 				fileName = "liferay72/" + fileName;
 			}
 

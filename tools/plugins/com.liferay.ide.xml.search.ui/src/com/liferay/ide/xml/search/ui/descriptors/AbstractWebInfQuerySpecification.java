@@ -16,6 +16,8 @@ package com.liferay.ide.xml.search.ui.descriptors;
 
 import com.liferay.ide.core.util.CoreUtil;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -28,19 +30,13 @@ import org.eclipse.wst.xml.search.core.queryspecifications.requestor.IXMLSearchR
  */
 public abstract class AbstractWebInfQuerySpecification implements IResourceProvider, IXMLSearchRequestorProvider {
 
-	/**
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.xml.search.core.queryspecifications.container.
-	 * IResourceProvider#getResource(Object,
-	 * IResource)
-	 */
 	public IResource getResource(Object selectedNode, IResource resource) {
 
 		// Search WEB-INF folder.
 
 		IContainer folder = resource.getParent();
 
-		if ("WEB-INF".equals(folder.getName())) {
+		if (Objects.equals("WEB-INF", folder.getName())) {
 			return folder;
 		}
 

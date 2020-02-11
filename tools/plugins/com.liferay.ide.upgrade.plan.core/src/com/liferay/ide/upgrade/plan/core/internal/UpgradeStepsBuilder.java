@@ -24,6 +24,7 @@ import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -124,11 +125,11 @@ public class UpgradeStepsBuilder {
 				}
 
 				if (titleNextElement != null) {
-					if ("p".equals(titleNextElement.nodeName())) {
+					if (Objects.equals("p", titleNextElement.nodeName())) {
 						titleNextElement = titleNextElement.nextElementSibling();
 					}
 
-					if ((titleNextElement != null) && "ol".equals(titleNextElement.nodeName())) {
+					if ((titleNextElement != null) && Objects.equals("ol", titleNextElement.nodeName())) {
 						_loopChildren(upgradeSteps, upgradeStep, titleNextElement);
 					}
 				}

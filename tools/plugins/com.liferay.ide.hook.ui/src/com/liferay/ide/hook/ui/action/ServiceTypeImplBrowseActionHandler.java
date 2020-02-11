@@ -20,6 +20,8 @@ import com.liferay.ide.core.util.StringUtil;
 import com.liferay.ide.hook.core.model.ServiceWrapper;
 import com.liferay.ide.hook.ui.HookUI;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
@@ -65,7 +67,7 @@ public final class ServiceTypeImplBrowseActionHandler extends BrowseActionHandle
 
 			TypeSelectionExtension extension = null;
 
-			if ("type".equals(_kind)) {
+			if (Objects.equals("type", _kind)) {
 				scope = SearchEngine.createJavaSearchScope(new IJavaProject[] {JavaCore.create(project)});
 
 				extension = new TypeSelectionExtension() {
@@ -89,7 +91,7 @@ public final class ServiceTypeImplBrowseActionHandler extends BrowseActionHandle
 
 				};
 			}
-			else if ("impl".equals(_kind)) {
+			else if (Objects.equals("impl", _kind)) {
 				String serviceType = _getServiceType(element);
 
 				if (serviceType != null) {
@@ -144,10 +146,10 @@ public final class ServiceTypeImplBrowseActionHandler extends BrowseActionHandle
 
 		_kind = def.getParam("kind");
 
-		if ("type".equals(_kind)) {
+		if (Objects.equals("type", _kind)) {
 			_browseDialogStyle = IJavaElementSearchConstants.CONSIDER_INTERFACES;
 		}
-		else if ("impl".equals(_kind)) {
+		else if (Objects.equals("impl", _kind)) {
 			_browseDialogStyle = IJavaElementSearchConstants.CONSIDER_CLASSES;
 		}
 	}

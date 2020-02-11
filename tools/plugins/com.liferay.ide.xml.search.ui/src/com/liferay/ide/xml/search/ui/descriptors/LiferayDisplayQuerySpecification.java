@@ -18,15 +18,11 @@ import org.eclipse.wst.xml.search.core.queryspecifications.requestor.IXMLSearchR
 
 /**
  * Query specification to search liferay-display.xml descriptors.
+ *
  * @author Gregory Amerson
  */
 public class LiferayDisplayQuerySpecification extends AbstractWebInfQuerySpecification {
 
-	/**
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.xml.search.core.resource.IResourceRequestorProvider#
-	 * getRequestor()
-	 */
 	public IXMLSearchRequestor getRequestor() {
 		return LiferayDisplaySearchRequestor.instance;
 	}

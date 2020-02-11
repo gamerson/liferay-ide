@@ -22,6 +22,8 @@ import com.liferay.ide.project.ui.BaseProjectWizard;
 import com.liferay.ide.project.ui.ProjectUI;
 import com.liferay.ide.ui.util.UIUtil;
 
+import java.util.Objects;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -82,8 +84,9 @@ public class NewModuleExtWizard extends BaseProjectWizard<NewModuleExtOp> {
 		IConfigurationElement[] configurationElements = extension.getConfigurationElements();
 
 		for (IConfigurationElement configurationElement : configurationElements) {
-			if ("wizard".equals(configurationElement.getName()) &&
-				"com.liferay.ide.project.ui.newModuleExtFilesWizard".equals(configurationElement.getAttribute("id"))) {
+			if (Objects.equals("wizard", configurationElement.getName()) &&
+				Objects.equals(
+					configurationElement.getAttribute("id"), "com.liferay.ide.project.ui.newModuleExtFilesWizard")) {
 
 				UIUtil.async(
 					() -> {

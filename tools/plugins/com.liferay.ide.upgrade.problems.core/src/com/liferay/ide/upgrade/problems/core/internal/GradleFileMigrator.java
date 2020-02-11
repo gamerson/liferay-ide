@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -64,10 +66,10 @@ public abstract class GradleFileMigrator implements FileMigrator {
 			if (results != null) {
 				String fileName = "BREAKING_CHANGES.markdown";
 
-				if ("7.0".equals(version)) {
+				if (Objects.equals("7.0", version)) {
 					fileName = "liferay70/" + fileName;
 				}
-				else if ("7.1".equals(version)) {
+				else if (Objects.equals("7.1", version)) {
 					fileName = "liferay71/" + fileName;
 				}
 
@@ -90,18 +92,15 @@ public abstract class GradleFileMigrator implements FileMigrator {
 	public List<Artifact> findArtifactsbyArtifactId(
 		GradleDependencyUpdater gradleDependencyUpdater, String artifactId) {
 
-		List<Artifact> artifacts = new ArrayList<>();
-
 		List<Artifact> dependencies = gradleDependencyUpdater.getDependencies("*");
 
-		artifacts = dependencies.stream(
-		).filter(
+		Stream<Artifact> stream = dependencies.stream();
+
+		return stream.filter(
 			artifact -> artifactId.equals(artifact.getArtifactId())
 		).collect(
 			Collectors.toList()
 		);
-
-		return artifacts;
 	}
 
 	public List<FileSearchResult> findDependencies(File file, String artifactId) {
@@ -127,8 +126,9 @@ public abstract class GradleFileMigrator implements FileMigrator {
 
 		List<Artifact> dependencies = gradleDependencyUpdater.getDependencies("*");
 
-		List<Artifact> artifacts = dependencies.stream(
-		).filter(
+		Stream<Artifact> stream = dependencies.stream();
+
+		List<Artifact> artifacts = stream.filter(
 			artifact -> artifactId.equals(artifact.getArtifactId())
 		).collect(
 			Collectors.toList()

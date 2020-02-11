@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.sapphire.Element;
 import org.eclipse.sapphire.ElementType;
@@ -28,7 +29,6 @@ import org.eclipse.sapphire.modeling.annotations.Label;
 import org.eclipse.sapphire.modeling.annotations.Service;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -88,9 +88,7 @@ public interface UpgradePlanDetailsOp extends Element {
 		public UpgradePlanInitialValueService() {
 			Bundle bundle = FrameworkUtil.getBundle(UpgradePlanDetailsOp.class);
 
-			BundleContext bundleContext = bundle.getBundleContext();
-
-			_serviceTracker = new ServiceTracker<>(bundleContext, UpgradePlanner.class, null);
+			_serviceTracker = new ServiceTracker<>(bundle.getBundleContext(), UpgradePlanner.class, null);
 
 			_serviceTracker.open();
 		}
@@ -154,9 +152,10 @@ public interface UpgradePlanDetailsOp extends Element {
 			List<UpgradeStep> upgradeSteps, List<UpgradeStep> allUpgradeSteps, boolean statusCompleted) {
 
 			if (statusCompleted) {
+				Stream<UpgradeStep> stream = upgradeSteps.stream();
+
 				allUpgradeSteps.addAll(
-					upgradeSteps.stream(
-					).filter(
+					stream.filter(
 						UpgradeStep::completed
 					).collect(
 						Collectors.toList()

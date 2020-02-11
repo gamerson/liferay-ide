@@ -36,7 +36,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -49,9 +48,7 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 	public UpgradeProblemsContentProvider() {
 		Bundle bundle = FrameworkUtil.getBundle(UpgradeProblemsContentProvider.class);
 
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		_upgradePlannerServiceTracker = new ServiceTracker<>(bundleContext, UpgradePlanner.class, null);
+		_upgradePlannerServiceTracker = new ServiceTracker<>(bundle.getBundleContext(), UpgradePlanner.class, null);
 
 		_upgradePlannerServiceTracker.open();
 	}

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -191,7 +192,7 @@ public class PortalServerBehavior
 	public void launchServer(ILaunch launch, String mode, IProgressMonitor monitor) throws CoreException {
 		ILaunchConfiguration launchConfiguration = launch.getLaunchConfiguration();
 
-		if ("true".equals(launchConfiguration.getAttribute(ATTR_STOP, "false"))) {
+		if (Objects.equals("true", launchConfiguration.getAttribute(ATTR_STOP, "false"))) {
 			return;
 		}
 
@@ -223,7 +224,7 @@ public class PortalServerBehavior
 
 				String folderName = appServerPortalDir.substring(appServerPortalDir.lastIndexOf("/"));
 
-				if (!("/ROOT".equals(folderName) || "/ROOT.war".equals(folderName))) {
+				if (!(Objects.equals("/ROOT", folderName) || Objects.equals("/ROOT.war", folderName))) {
 					url += folderName;
 				}
 			}
@@ -644,7 +645,7 @@ public class PortalServerBehavior
 
 				IModuleResource moduleResource = deltas[0].getModuleResource();
 
-				if (".classpath".equals(moduleResource.getName())) {
+				if (Objects.equals(".classpath", moduleResource.getName())) {
 					setModulePublishState2(module, IServer.PUBLISH_STATE_NONE);
 				}
 			}

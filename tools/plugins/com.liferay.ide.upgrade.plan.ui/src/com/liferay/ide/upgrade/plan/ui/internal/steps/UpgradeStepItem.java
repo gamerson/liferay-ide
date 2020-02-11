@@ -54,7 +54,6 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -82,9 +81,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 
 		Bundle bundle = FrameworkUtil.getBundle(UpgradeStepItem.class);
 
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		_serviceTracker = new ServiceTracker<>(bundleContext, UpgradePlanner.class, null);
+		_serviceTracker = new ServiceTracker<>(bundle.getBundleContext(), UpgradePlanner.class, null);
 
 		_serviceTracker.open();
 
@@ -124,9 +121,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 		List<UpgradeStep> children = _upgradeStep.getChildren();
 
 		if (children.isEmpty()) {
-			String commandId = _upgradeStep.getCommandId();
-
-			if (CoreUtil.isNotNullOrEmpty(commandId)) {
+			if (CoreUtil.isNotNullOrEmpty(_upgradeStep.getCommandId())) {
 				if (_previewable()) {
 					Image stepPreviewImage = UpgradePlanUIPlugin.getImage(UpgradePlanUIPlugin.STEP_PERVIEW_IMAGE);
 

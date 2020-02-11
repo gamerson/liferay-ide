@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -370,7 +371,7 @@ public class JavaFileJDT extends WorkspaceFile implements JavaFile {
 					}
 
 					if (((methodName.equals(methodNameValue)) ||
-						("*".equals(methodName))) &&
+						(Objects.equals("*", methodName))) &&
 
 						// if typeHint is not null it must match the type hint and
 						// ignore the expression
@@ -388,8 +389,9 @@ public class JavaFileJDT extends WorkspaceFile implements JavaFile {
 						boolean argumentsMatch = false;
 
 						if (methodParamTypes != null) {
-							Expression[] argExpressions = ((List<Expression>)node.arguments()).toArray(
-								new Expression[0]);
+							List<Expression> expressions = node.arguments();
+
+							Expression[] argExpressions = expressions.toArray(new Expression[0]);
 
 							if (argExpressions.length == methodParamTypes.length) {
 

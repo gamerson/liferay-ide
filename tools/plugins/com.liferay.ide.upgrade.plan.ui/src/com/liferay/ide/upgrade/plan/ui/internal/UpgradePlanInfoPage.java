@@ -36,7 +36,6 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.Page;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.tracker.ServiceTracker;
@@ -52,9 +51,8 @@ public class UpgradePlanInfoPage extends Page implements ISelectionChangedListen
 
 		Bundle bundle = FrameworkUtil.getBundle(UpgradePlanInfoPage.class);
 
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		_upgradeInfoProviderServiceTracker = new ServiceTracker<>(bundleContext, UpgradeInfoProvider.class, null);
+		_upgradeInfoProviderServiceTracker = new ServiceTracker<>(
+			bundle.getBundleContext(), UpgradeInfoProvider.class, null);
 
 		_upgradeInfoProviderServiceTracker.open();
 	}

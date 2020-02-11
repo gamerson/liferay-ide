@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -288,8 +289,7 @@ public abstract class ServerCoreBase extends BaseTests
         assertEquals( "Expected the deploy folder to exist:" + deployPath.toOSString(), true, deployFolder.exists() );
     }
 
-    protected void setupServer() throws Exception
-    {
+    protected void setupServer() throws Exception {
         final NullProgressMonitor npm = new NullProgressMonitor();
 
         final IServerWorkingCopy serverWC = createServerForRuntime( "6.2.0", runtime );
@@ -301,40 +301,39 @@ public abstract class ServerCoreBase extends BaseTests
         assertNotNull( server );
     }
 
-    protected boolean shouldSkipBundleTests()
-    {
-        return "true".equals( skipBundleTests );
+    protected boolean shouldSkipBundleTests() {
+        return Objects.equals("true",  skipBundleTests );
     }
 
-    protected boolean shouldSkipServerTests()
-    {
-        return "true".equals( skipServerTests );
+    protected boolean shouldSkipServerTests() {
+        return Objects.equals("true",  skipServerTests );
     }
 
-    public void startServer() throws Exception
-    {
+    public void startServer() throws Exception {
         server = getServer();
-        if( server.getServerState() == IServer.STATE_STARTED )
-        {
+
+        if( server.getServerState() == IServer.STATE_STARTED ) {
             return;
         }
 
         copyFileToServer( server, "", "files", "portal-setup-wizard.properties" );
 
         server.start( "run", new NullProgressMonitor() );
+
         long timeoutExpiredMs = System.currentTimeMillis() + 120000;
-        while( true )
-        {
+
+        while (true) {
             Thread.sleep( 500 );
-            if( server.getServerState() == IServer.STATE_STARTED )
-            {
+
+            if( server.getServerState() == IServer.STATE_STARTED ) {
                 break;
             }
-            if( System.currentTimeMillis() >= timeoutExpiredMs )
-            {
+
+            if( System.currentTimeMillis() >= timeoutExpiredMs ) {
                 break;
             }
         }
+
         Thread.sleep( 10000 );
     }
 }
