@@ -74,7 +74,6 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -477,8 +476,8 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 		return retval;
 	}
 
-	private Action _getNewLiferayFacetInstallAction(String pluginType) {
-		Action retval = null;
+	private IFacetedProject.Action _getNewLiferayFacetInstallAction(String pluginType) {
+		IFacetedProject.Action retval = null;
 
 		IProjectFacetVersion newFacet = null;
 
@@ -512,7 +511,7 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 		if (newFacet != null) {
 			IDataModel config = DataModelFactory.createDataModel(dataModel);
 
-			retval = new Action(Action.Type.INSTALL, newFacet, config);
+			retval = new IFacetedProject.Action(IFacetedProject.Action.Type.INSTALL, newFacet, config);
 		}
 
 		return retval;
@@ -535,7 +534,7 @@ public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator
 
 		Plugin liferayMavenPlugin = MavenUtil.getPlugin(
 			request.getMavenProjectFacade(), ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_KEY, monitor);
-		Action action = _getNewLiferayFacetInstallAction(pluginType);
+		IFacetedProject.Action action = _getNewLiferayFacetInstallAction(pluginType);
 
 		if (action != null) {
 			try {

@@ -50,7 +50,7 @@ public class LocaleBundleValidationService extends ValidationService implements 
 	public Status compute() {
 		Element modelElement = context(Element.class);
 
-		if (!modelElement.disposed() && modelElement instanceof SupportedLocales) {
+		if (!modelElement.disposed() && (modelElement instanceof SupportedLocales)) {
 			IProject project = modelElement.adapt(IProject.class);
 			Portlet portlet = modelElement.nearest(Portlet.class);
 
@@ -91,12 +91,11 @@ public class LocaleBundleValidationService extends ValidationService implements 
 						if (FileUtil.exists(resourceBundleFile)) {
 							return Status.createOkStatus();
 						}
-						else {
-							Object[] objects = {locale, bundleName, localeString};
 
-							return Status.createWarningStatus(
-								Resources.bind(StringEscapeUtils.unescapeJava(Resources.noResourceBundle), objects));
-						}
+						Object[] objects = {locale, bundleName, localeString};
+
+						return Status.createWarningStatus(
+							Resources.bind(StringEscapeUtils.unescapeJava(Resources.noResourceBundle), objects));
 					}
 				}
 			}

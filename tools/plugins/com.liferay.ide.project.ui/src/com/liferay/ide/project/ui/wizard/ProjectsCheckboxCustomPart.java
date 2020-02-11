@@ -36,7 +36,6 @@ import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelP
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
@@ -126,7 +125,7 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
 		private static final String _GREY_COLOR = "sdk import projects";
 
 		private final ColorRegistry _color_registry = JFaceResources.getColorRegistry();
-		private final Styler _greyed_styler;
+		private final StyledString.Styler _greyed_styler;
 
 	}
 
@@ -134,7 +133,7 @@ public abstract class ProjectsCheckboxCustomPart extends AbstractCheckboxCustomP
 	protected void checkAndUpdateCheckboxElement() {
 		List<ProjectCheckboxElement> checkboxElementList = getInitItemsList();
 
-		checkboxElements = checkboxElementList.toArray(new ProjectCheckboxElement[checkboxElementList.size()]);
+		checkboxElements = checkboxElementList.toArray(new ProjectCheckboxElement[0]);
 
 		UIUtil.async(
 			new Runnable() {

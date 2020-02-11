@@ -211,7 +211,7 @@ public class LayeredModulePathFactory {
 		}
 
 		if (foundLayers) {
-			return layeredPath.toArray(new File[layeredPath.size()]);
+			return layeredPath.toArray(new File[0]);
 		}
 
 		return modulePath;

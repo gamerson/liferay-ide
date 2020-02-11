@@ -333,7 +333,7 @@ public abstract class IDEFormEditor extends FormEditor implements IInputContextL
 			}
 		}
 
-		return (IFormPage[])formPages.toArray(new IFormPage[formPages.size()]);
+		return (IFormPage[])formPages.toArray(new IFormPage[0]);
 	}
 
 	public ISelection getSelection() {
@@ -586,7 +586,7 @@ public abstract class IDEFormEditor extends FormEditor implements IInputContextL
 		fInputContextManager.addInputContextListener(this);
 		updateTitle();
 
-		if ((getPageCount() == 1) && getContainer() instanceof CTabFolder) {
+		if ((getPageCount() == 1) && (getContainer() instanceof CTabFolder)) {
 			((CTabFolder)getContainer()).setTabHeight(0);
 		}
 	}

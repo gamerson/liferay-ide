@@ -224,7 +224,7 @@ public abstract class JavaImportsMigrator extends AbstractFileMigrator<JavaFile>
 		catch (Exception e) {
 		}
 
-		return lines.toArray(new String[lines.size()]);
+		return lines.toArray(new String[0]);
 	}
 
 	private void _clearCache(File file) {

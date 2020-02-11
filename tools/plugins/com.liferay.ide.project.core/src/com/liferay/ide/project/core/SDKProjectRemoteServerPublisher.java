@@ -107,7 +107,7 @@ public class SDKProjectRemoteServerPublisher extends AbstractRemoteServerPublish
 			if (webproject != null) {
 				IResource propsRes = webproject.findDocrootResource(pluginPropertiesPath);
 
-				if (propsRes instanceof IFile && propsRes.exists()) {
+				if ((propsRes instanceof IFile) && propsRes.exists()) {
 					try (InputStream is = ((IFile)propsRes).getContents()) {
 						PropertiesConfiguration pluginPackageProperties = new PropertiesConfiguration();
 

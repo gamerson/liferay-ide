@@ -89,11 +89,10 @@ public class ProjectImportUtil {
 		if (contents == null) {
 			return false;
 		}
-		else {
-			for (File file : contents) {
-				if (!binaryProjectFiles.contains(file) && isValidLiferayPlugin(file)) {
-					binaryProjectFiles.add(file);
-				}
+
+		for (File file : contents) {
+			if (!binaryProjectFiles.contains(file) && isValidLiferayPlugin(file)) {
+				binaryProjectFiles.add(file);
 			}
 		}
 
@@ -437,14 +436,12 @@ public class ProjectImportUtil {
 			if (!valid) {
 				return valid;
 			}
-			else {
 
-				// check if its a valid web Archieve
+			// check if its a valid web Archieve
 
-				JarEntry jar = pluginBinary.getJarEntry(getConfigFileLocation(ILiferayConstants.WEB_XML_FILE));
+			JarEntry jar = pluginBinary.getJarEntry(getConfigFileLocation(ILiferayConstants.WEB_XML_FILE));
 
-				valid = valid || (jar != null);
-			}
+			valid = valid || (jar != null);
 		}
 		catch (IOException ioe) {
 			valid = false;

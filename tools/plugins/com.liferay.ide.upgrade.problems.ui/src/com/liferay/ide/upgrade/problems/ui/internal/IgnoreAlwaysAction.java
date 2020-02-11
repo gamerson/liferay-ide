@@ -83,7 +83,7 @@ public class IgnoreAlwaysAction extends SelectionProviderAction implements Upgra
 
 		Viewer viewer = (Viewer)getSelectionProvider();
 
-		UIUtil.async(() -> viewer.refresh());
+		UIUtil.async(viewer::refresh);
 	}
 
 	private final ServiceTracker<UpgradePlanner, UpgradePlanner> _serviceTracker;

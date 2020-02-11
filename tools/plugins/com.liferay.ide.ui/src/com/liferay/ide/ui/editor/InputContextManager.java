@@ -134,7 +134,7 @@ public abstract class InputContextManager implements IResourceChangeListener {
 			}
 		}
 
-		return (InputContext[])result.toArray(new InputContext[result.size()]);
+		return (InputContext[])result.toArray(new InputContext[0]);
 	}
 
 	public abstract IBaseModel getModel();

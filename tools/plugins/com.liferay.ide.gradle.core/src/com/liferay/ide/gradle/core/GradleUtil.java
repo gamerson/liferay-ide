@@ -138,7 +138,7 @@ public class GradleUtil {
 
 	public static boolean isBuildFile(IFile buildFile) {
 		if (FileUtil.exists(buildFile) && "build.gradle".equals(buildFile.getName()) &&
-			buildFile.getParent() instanceof IProject) {
+			(buildFile.getParent() instanceof IProject)) {
 
 			return true;
 		}
@@ -296,22 +296,21 @@ public class GradleUtil {
 
 				return outputStream.toString();
 			}
-			else {
-				gradleBuild.withConnection(
-					connection -> {
-						connection.newBuild(
-						).addArguments(
-							arguments
-						).forTasks(
-							tasks
-						).withCancellationToken(
-							cancellationTokenSource.token()
-						).run();
 
-						return null;
-					},
-					monitor);
-			}
+			gradleBuild.withConnection(
+				connection -> {
+					connection.newBuild(
+					).addArguments(
+						arguments
+					).forTasks(
+						tasks
+					).withCancellationToken(
+						cancellationTokenSource.token()
+					).run();
+
+					return null;
+				},
+				monitor);
 		}
 		catch (Exception e) {
 			LiferayGradleCore.logError(e);

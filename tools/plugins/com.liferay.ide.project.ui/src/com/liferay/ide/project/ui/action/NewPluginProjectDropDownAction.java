@@ -61,7 +61,7 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
 			}
 		}
 
-		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[containers.size()]);
+		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[0]);
 
 		Arrays.sort(actions);
 
@@ -77,7 +77,7 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
 
 		if (ListUtil.isNotEmpty(actions)) {
 			for (Action action : actions) {
-				if (action instanceof NewWizardAction && wizardId.equals(action.getId())) {
+				if ((action instanceof NewWizardAction) && wizardId.equals(action.getId())) {
 					return action;
 				}
 			}
@@ -109,7 +109,7 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
 			}
 		}
 
-		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[containers.size()]);
+		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[0]);
 
 		Arrays.sort(actions);
 
@@ -131,7 +131,7 @@ public class NewPluginProjectDropDownAction extends Action implements IMenuCreat
 			}
 		}
 
-		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[containers.size()]);
+		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[0]);
 
 		Arrays.sort(actions);
 

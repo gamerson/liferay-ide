@@ -99,9 +99,8 @@ public class JarEntrySelectionDialog extends ElementTreeSelectionDialog {
 			if (entry.isDirectory()) {
 				return _imgFolder;
 			}
-			else {
-				return _imgFile;
-			}
+
+			return _imgFile;
 		}
 
 		@Override

@@ -61,7 +61,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -80,15 +80,14 @@ public abstract class PluginFacetInstall implements IDelegate, IPluginProjectDat
 		if (!(config instanceof IDataModel)) {
 			return;
 		}
-		else {
-			model = (IDataModel)config;
 
-			masterModel = (IDataModel)model.getProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM);
+		model = (IDataModel)config;
 
-			this.project = project;
+		masterModel = (IDataModel)model.getProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM);
 
-			this.monitor = monitor;
-		}
+		this.project = project;
+
+		this.monitor = monitor;
 
 		/**
 		 *  IDE-195 If the user has the plugins sdk in the workspace,
@@ -238,7 +237,7 @@ public abstract class PluginFacetInstall implements IDelegate, IPluginProjectDat
 			IProjectFacet projectFacet = pfv.getProjectFacet();
 
 			if (StringUtil.equals(projectFacet.getId(), facetId)) {
-				Action action = fp.getProjectFacetAction(pfv.getProjectFacet());
+				IFacetedProject.Action action = fp.getProjectFacetAction(pfv.getProjectFacet());
 
 				if (action != null) {
 					Object config = action.getConfig();

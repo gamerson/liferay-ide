@@ -256,9 +256,8 @@ public class NewPortletWizard
 
 			return false;
 		}
-		else {
-			return true;
-		}
+
+		return true;
 	}
 
 	protected void setupWizard() {

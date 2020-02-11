@@ -105,9 +105,8 @@ public class PluginPackageEditor extends IDEFormEditor implements IModelChangedL
 		if (editorInput instanceof FileEditorInput) {
 			return ((FileEditorInput)editorInput).getFile();
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	public IPath getPortalDir() {

@@ -118,7 +118,7 @@ public class PluginsCustomContentProvider extends AbstractNavigatorContentProvid
 				return _pluginsContentNode;
 			}
 		}
-		else if (anObject instanceof PluginsContent && anObject.equals(_pluginsContentNode)) {
+		else if ((anObject instanceof PluginsContent) && anObject.equals(_pluginsContentNode)) {
 			return _pluginsContentNode.getParent();
 		}
 

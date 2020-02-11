@@ -126,11 +126,10 @@ public class NewJSFPortletClassWizardPage
 				JSF_PORTLET_CLASS
 			};
 		}
-		else {
-			validationPropertyNames.add(IArtifactEditOperationDataModelProperties.PROJECT_NAME);
-			validationPropertyNames.add(INewJavaClassDataModelProperties.SOURCE_FOLDER);
-			validationPropertyNames.add(JSF_PORTLET_CLASS);
-		}
+
+		validationPropertyNames.add(IArtifactEditOperationDataModelProperties.PROJECT_NAME);
+		validationPropertyNames.add(INewJavaClassDataModelProperties.SOURCE_FOLDER);
+		validationPropertyNames.add(JSF_PORTLET_CLASS);
 
 		return validationPropertyNames.toArray(new String[0]);
 	}

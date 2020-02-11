@@ -111,13 +111,12 @@ public abstract class AbstractServerRunningAction implements IObjectActionDelega
 
 			return site.getShell();
 		}
-		else {
-			IWorkbench workbench = PlatformUI.getWorkbench();
 
-			IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
+		IWorkbench workbench = PlatformUI.getWorkbench();
 
-			return activeWorkbenchWindow.getShell();
-		}
+		IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
+
+		return activeWorkbenchWindow.getShell();
 	}
 
 	protected abstract int getRequiredServerState();

@@ -126,9 +126,8 @@ public class DefaultMaven2OsgiConverter {
 			if (Character.isLetterOrDigit(artifactId.charAt(0))) {
 				return _getBundleSymbolicName(groupId, artifactId);
 			}
-			else {
-				return _getBundleSymbolicName(groupId, artifactId.substring(1));
-			}
+
+			return _getBundleSymbolicName(groupId, artifactId.substring(1));
 		}
 
 		return _getBundleSymbolicName(artifact.getGroupId(), artifact.getArtifactId());

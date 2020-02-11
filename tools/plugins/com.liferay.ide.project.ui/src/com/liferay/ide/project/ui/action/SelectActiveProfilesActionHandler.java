@@ -27,7 +27,6 @@ import org.eclipse.sapphire.Element;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.ui.Presentation;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
-import org.eclipse.sapphire.ui.def.DefinitionLoader.Reference;
 import org.eclipse.sapphire.ui.forms.DialogDef;
 import org.eclipse.sapphire.ui.forms.PropertyEditorActionHandler;
 import org.eclipse.sapphire.ui.forms.swt.SapphireDialog;
@@ -110,7 +109,7 @@ public class SelectActiveProfilesActionHandler extends PropertyEditorActionHandl
 
 	private static class CustomSapphireDialog extends SapphireDialog {
 
-		public CustomSapphireDialog(Shell shell, Element element, Reference<DialogDef> definition) {
+		public CustomSapphireDialog(Shell shell, Element element, DefinitionLoader.Reference<DialogDef> definition) {
 			super(shell, element, definition);
 		}
 

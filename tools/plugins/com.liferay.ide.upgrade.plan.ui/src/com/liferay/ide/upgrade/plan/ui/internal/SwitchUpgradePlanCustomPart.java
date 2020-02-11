@@ -343,7 +343,7 @@ public class SwitchUpgradePlanCustomPart extends FormComponentPart implements Up
 						return;
 					}
 
-					_tableViewer.setInput(loadUpgradePlans.toArray(new UpgradePlan[loadUpgradePlans.size()]));
+					_tableViewer.setInput(loadUpgradePlans.toArray(new UpgradePlan[0]));
 
 					Stream.of(
 						upgradePlanTable.getColumns()

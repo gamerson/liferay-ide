@@ -21,7 +21,6 @@ import java.util.function.Function;
 
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Image;
 
 import org.osgi.framework.Bundle;
@@ -56,7 +55,7 @@ public class UpgradePlanLabelProvider extends BundleImageLabelProvider implement
 		if (element instanceof UpgradeStep) {
 			UpgradeStep upgradeStep = (UpgradeStep)element;
 
-			Styler styler = null;
+			StyledString.Styler styler = null;
 
 			if (upgradeStep.completed() || !upgradeStep.enabled()) {
 				styler = StyledString.QUALIFIER_STYLER;

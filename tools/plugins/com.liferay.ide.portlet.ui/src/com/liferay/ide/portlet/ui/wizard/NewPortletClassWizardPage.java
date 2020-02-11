@@ -604,12 +604,11 @@ public class NewPortletClassWizardPage extends NewJavaClassWizardPage implements
 				INewJavaClassDataModelProperties.CLASS_NAME, INewJavaClassDataModelProperties.SUPERCLASS
 			};
 		}
-		else {
-			validationPropertyNames.add(CREATE_NEW_PORTLET_CLASS);
-			validationPropertyNames.add(USE_DEFAULT_PORTLET_CLASS);
 
-			Collections.addAll(validationPropertyNames, super.getValidationPropertyNames());
-		}
+		validationPropertyNames.add(CREATE_NEW_PORTLET_CLASS);
+		validationPropertyNames.add(USE_DEFAULT_PORTLET_CLASS);
+
+		Collections.addAll(validationPropertyNames, super.getValidationPropertyNames());
 
 		return validationPropertyNames.toArray(new String[0]);
 	}

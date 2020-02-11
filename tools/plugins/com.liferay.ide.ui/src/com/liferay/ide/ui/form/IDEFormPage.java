@@ -545,7 +545,7 @@ public abstract class IDEFormPage extends FormPage {
 		while (parent != null) {
 			Object data = parent.getData("part");
 
-			if ((data != null) && data instanceof AbstractFormPart) {
+			if ((data != null) && (data instanceof AbstractFormPart)) {
 				targetPart = (AbstractFormPart)data;
 
 				break;

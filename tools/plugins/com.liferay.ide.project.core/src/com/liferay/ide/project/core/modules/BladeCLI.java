@@ -153,9 +153,8 @@ public class BladeCLI {
 
 			return bladeFile;
 		}
-		else {
-			return _bladeJarCacheFile;
-		}
+
+		return _bladeJarCacheFile;
 	}
 
 	/**

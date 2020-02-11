@@ -324,18 +324,17 @@ public class CoreUtil {
 			if (isLiferayProject(project)) {
 				return project;
 			}
-			else {
-				IProject[] projects = getAllProjects();
 
-				for (IProject proj : projects) {
-					IPath location = proj.getLocation();
+			IProject[] projects = getAllProjects();
 
-					if ((location != null) && (project != null) && isLiferayProject(proj)) {
-						IPath projectLocation = project.getLocation();
+			for (IProject proj : projects) {
+				IPath location = proj.getLocation();
 
-						if (projectLocation.isPrefixOf(location)) {
-							return proj;
-						}
+				if ((location != null) && (project != null) && isLiferayProject(proj)) {
+					IPath projectLocation = project.getLocation();
+
+					if (projectLocation.isPrefixOf(location)) {
+						return proj;
 					}
 				}
 			}
@@ -438,7 +437,7 @@ public class CoreUtil {
 				container = getWorkspaceRoot().getFolder(entry.getPath());
 			}
 
-			if (!folders.contains(container) && container instanceof IFolder) {
+			if (!folders.contains(container) && (container instanceof IFolder)) {
 				folders.add((IFolder)container);
 			}
 		}

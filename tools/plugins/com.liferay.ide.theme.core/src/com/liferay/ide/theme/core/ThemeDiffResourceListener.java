@@ -146,7 +146,7 @@ public class ThemeDiffResourceListener implements IResourceChangeListener {
 
 					String name = id;
 
-					if (propsRes instanceof IFile && propsRes.exists()) {
+					if ((propsRes instanceof IFile) && propsRes.exists()) {
 						Properties props = new Properties();
 
 						try (InputStream inputStream = ((IFile)propsRes).getContents()) {

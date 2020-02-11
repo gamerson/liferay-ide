@@ -100,7 +100,7 @@ public abstract class PluginClasspathContainer implements IClasspathContainer {
 			}
 		}
 
-		classpathEntries = entries.toArray(new IClasspathEntry[entries.size()]);
+		classpathEntries = entries.toArray(new IClasspathEntry[0]);
 
 		return classpathEntries;
 	}

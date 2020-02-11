@@ -92,13 +92,12 @@ public abstract class OpenPortalURLHandler extends AbstractHandler {
 
 			return site.getShell();
 		}
-		else {
-			IWorkbench workbnech = PlatformUI.getWorkbench();
 
-			IWorkbenchWindow activeWorkbenchWindow = workbnech.getActiveWorkbenchWindow();
+		IWorkbench workbnech = PlatformUI.getWorkbench();
 
-			return activeWorkbenchWindow.getShell();
-		}
+		IWorkbenchWindow activeWorkbenchWindow = workbnech.getActiveWorkbenchWindow();
+
+		return activeWorkbenchWindow.getShell();
 	}
 
 	protected ILiferayServer getLiferayServer(Object selected) {

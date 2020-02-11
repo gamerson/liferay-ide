@@ -42,9 +42,8 @@ public class ViewVisibleCondition implements ICondition {
 		if (_visible) {
 			return "wait for view " + _identifier + " is visible failed"; //$NON-NLS-1$
 		}
-		else {
-			return "wait for view " + _identifier + " is not visible failed"; //$NON-NLS-1$
-		}
+
+		return "wait for view " + _identifier + " is not visible failed"; //$NON-NLS-1$
 	}
 
 	public void init(SWTBot bot) {
@@ -99,9 +98,8 @@ public class ViewVisibleCondition implements ICondition {
 						if (view.getWidget() instanceof Control) {
 							return ((Control)view.getWidget()).isVisible();
 						}
-						else {
-							return false;
-						}
+
+						return false;
 					}
 
 				});

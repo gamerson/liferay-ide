@@ -63,7 +63,7 @@ public class ProjectRecord {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ProjectRecord && (project != null)) {
+		if ((obj instanceof ProjectRecord) && (project != null)) {
 			return project.equals(((ProjectRecord)obj).project);
 		}
 

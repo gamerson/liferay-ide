@@ -117,7 +117,7 @@ public class RemoteJSPBreakpointProvider extends JavaStratumBreakpointProvider {
 
 				IPath storagePath = storage.getFullPath();
 
-				if (input instanceof IStorageEditorInput && (storage != null) && (storage.getFullPath() != null)) {
+				if ((input instanceof IStorageEditorInput) && (storage != null) && (storage.getFullPath() != null)) {
 					id = storagePath.toString();
 				}
 

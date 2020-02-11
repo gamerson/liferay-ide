@@ -332,9 +332,8 @@ public class NewHookDataModelProvider
 
 				return HookCore.createErrorStatus(Msgs.pathUnderSourceFolder);
 			}
-			else {
-				return HookCore.createWarnStatus(Msgs.appendedToDefaultLocation);
-			}
+
+			return HookCore.createWarnStatus(Msgs.appendedToDefaultLocation);
 		}
 		else if (PORTAL_PROPERTIES_ACTION_ITEMS.equals(propertyName) && getBooleanProperty(CREATE_PORTAL_PROPERTIES)) {
 
@@ -348,9 +347,8 @@ public class NewHookDataModelProvider
 			if (actionItemsStatus.isOK() || propertyOverridesStatus.isOK()) {
 				return Status.OK_STATUS;
 			}
-			else {
-				return HookCore.createErrorStatus(Msgs.specifyOneEventActionProperty);
-			}
+
+			return HookCore.createErrorStatus(Msgs.specifyOneEventActionProperty);
 		}
 		else if (SERVICES_ITEMS.equals(propertyName) && getBooleanProperty(CREATE_SERVICES)) {
 			IStatus itemsStatus = validateListItems(SERVICES_ITEMS);
@@ -358,9 +356,8 @@ public class NewHookDataModelProvider
 			if (itemsStatus.isOK()) {
 				return Status.OK_STATUS;
 			}
-			else {
-				return HookCore.createErrorStatus(Msgs.specifyOneService);
-			}
+
+			return HookCore.createErrorStatus(Msgs.specifyOneService);
 		}
 		else if (CONTENT_FOLDER.equals(propertyName) && getBooleanProperty(CREATE_LANGUAGE_PROPERTIES)) {
 			String contentFolder = getStringProperty(CONTENT_FOLDER);
@@ -386,9 +383,8 @@ public class NewHookDataModelProvider
 
 				return HookCore.createErrorStatus(Msgs.pathUnderSourceFolder);
 			}
-			else {
-				return HookCore.createWarnStatus(Msgs.appendedToDefaultLocation);
-			}
+
+			return HookCore.createWarnStatus(Msgs.appendedToDefaultLocation);
 		}
 		else if (LANGUAGE_PROPERTIES_ITEMS.equals(propertyName) && getBooleanProperty(CREATE_LANGUAGE_PROPERTIES)) {
 			Object propertiesItems = getProperty(LANGUAGE_PROPERTIES_ITEMS);
@@ -466,16 +462,15 @@ public class NewHookDataModelProvider
 				if (sourcefolder != null) {
 					return aJavaProject.getPackageFragmentRoot(sourcefolder);
 				}
-				else {
-					ILiferayProject liferayProject = LiferayCore.create(ILiferayProject.class, project);
 
-					IFolder[] sourceFolders = liferayProject.getSourceFolders();
+				ILiferayProject liferayProject = LiferayCore.create(ILiferayProject.class, project);
 
-					if (ListUtil.isNotEmpty(sourceFolders)) {
-						sourcefolder = sourceFolders[0];
+				IFolder[] sourceFolders = liferayProject.getSourceFolders();
 
-						return aJavaProject.getPackageFragmentRoot(sourcefolder);
-					}
+				if (ListUtil.isNotEmpty(sourceFolders)) {
+					sourcefolder = sourceFolders[0];
+
+					return aJavaProject.getPackageFragmentRoot(sourcefolder);
 				}
 			}
 		}

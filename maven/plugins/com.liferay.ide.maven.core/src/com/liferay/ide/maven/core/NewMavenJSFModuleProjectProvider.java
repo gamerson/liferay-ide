@@ -312,7 +312,7 @@ public class NewMavenJSFModuleProjectProvider
 
 					Object docs = jsonResponse.get("docs");
 
-					if ((docs != null) && docs instanceof JSONArray) {
+					if ((docs != null) && (docs instanceof JSONArray)) {
 						JSONArray jsonDocs = (JSONArray)docs;
 
 						for (int i = 0; i < jsonDocs.length(); i++) {

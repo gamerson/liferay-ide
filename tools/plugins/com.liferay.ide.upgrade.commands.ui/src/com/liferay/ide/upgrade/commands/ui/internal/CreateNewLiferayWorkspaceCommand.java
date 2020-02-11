@@ -113,9 +113,8 @@ public class CreateNewLiferayWorkspaceCommand implements SapphireContentAccessor
 
 			return Status.OK_STATUS;
 		}
-		else {
-			return UpgradeCommandsUIPlugin.createErrorStatus("New Liferay Workspace was not created.");
-		}
+
+		return UpgradeCommandsUIPlugin.createErrorStatus("New Liferay Workspace was not created.");
 	}
 
 	@Reference

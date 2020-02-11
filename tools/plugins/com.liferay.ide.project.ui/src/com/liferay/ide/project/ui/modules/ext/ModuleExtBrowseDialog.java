@@ -157,60 +157,59 @@ public class ModuleExtBrowseDialog extends AbstractElementListSelectionDialog im
 
 			return;
 		}
-		else {
-			if (_job == null) {
-				_job = new Job("Reading target platform configuration") {
+
+		if (_job == null) {
+			_job = new Job("Reading target platform configuration") {
+
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					Object[] elements = _getElements();
+
+					UIUtil.async(
+						() -> {
+							if (!composite.isDisposed()) {
+								setListElements(elements);
+							}
+						});
+
+					return Status.OK_STATUS;
+				}
+
+			};
+
+			_job.addJobChangeListener(
+				new JobChangeAdapter() {
 
 					@Override
-					protected IStatus run(IProgressMonitor monitor) {
-						Object[] elements = _getElements();
-
+					public void done(IJobChangeEvent event) {
 						UIUtil.async(
 							() -> {
 								if (!composite.isDisposed()) {
-									setListElements(elements);
+									_customLabel.setText(_defaultMessage);
+									_filterText.setEnabled(true);
+									composite.setCursor(null);
 								}
 							});
-
-						return Status.OK_STATUS;
 					}
 
-				};
+					@Override
+					public void running(IJobChangeEvent event) {
+						UIUtil.async(
+							() -> {
+								if (!composite.isDisposed()) {
+									_customLabel.setText("Refreshing bundle list");
+									composite.setCursor(new Cursor(null, SWT.CURSOR_WAIT));
+								}
+							});
+					}
 
-				_job.addJobChangeListener(
-					new JobChangeAdapter() {
-
-						@Override
-						public void done(IJobChangeEvent event) {
-							UIUtil.async(
-								() -> {
-									if (!composite.isDisposed()) {
-										_customLabel.setText(_defaultMessage);
-										_filterText.setEnabled(true);
-										composite.setCursor(null);
-									}
-								});
-						}
-
-						@Override
-						public void running(IJobChangeEvent event) {
-							UIUtil.async(
-								() -> {
-									if (!composite.isDisposed()) {
-										_customLabel.setText("Refreshing bundle list");
-										composite.setCursor(new Cursor(null, SWT.CURSOR_WAIT));
-									}
-								});
-						}
-
-					});
-			}
-			else if (_job.getState() == Job.RUNNING) {
-				return;
-			}
-
-			_job.schedule();
+				});
 		}
+		else if (_job.getState() == Job.RUNNING) {
+			return;
+		}
+
+		_job.schedule();
 	}
 
 	private static Job _job;

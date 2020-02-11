@@ -107,7 +107,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 			summary.setText("", true, false);
 		}
 
-		_disposables.add(() -> summary.dispose());
+		_disposables.add(summary::dispose);
 
 		_buttonComposite = _formToolkit.createComposite(_parentComposite);
 
@@ -134,7 +134,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 						_formToolkit, _buttonComposite, stepPreviewImage, this, "Click to preview",
 						"Performing " + _upgradeStep.getTitle() + "...", this::_preview, _upgradeStep);
 
-					_disposables.add(() -> previewImageHyperlink.dispose());
+					_disposables.add(previewImageHyperlink::dispose);
 
 					_enables.add(previewImageHyperlink);
 				}
@@ -145,7 +145,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 					_formToolkit, _buttonComposite, stepPerformImage, this, "Click to perform",
 					"Performing " + _upgradeStep.getTitle() + "...", this::_perform, _upgradeStep);
 
-				_disposables.add(() -> performImageHyperlink.dispose());
+				_disposables.add(performImageHyperlink::dispose);
 
 				_enables.add(performImageHyperlink);
 			}
@@ -156,7 +156,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 					_formToolkit, _buttonComposite, stepCompleteImage, this, "Click when complete",
 					"Completing " + _upgradeStep.getTitle() + "...", this::_complete, _upgradeStep);
 
-				_disposables.add(() -> completeImageHyperlink.dispose());
+				_disposables.add(completeImageHyperlink::dispose);
 
 				_enables.add(completeImageHyperlink);
 			}
@@ -170,7 +170,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 
 		_updateEnablementRestart(_upgradeStep, _restartImageHyperlink);
 
-		_disposables.add(() -> _restartImageHyperlink.dispose());
+		_disposables.add(_restartImageHyperlink::dispose);
 
 		Image stepSkipImage = UpgradePlanUIPlugin.getImage(UpgradePlanUIPlugin.STEP_SKIP_IMAGE);
 
@@ -178,7 +178,7 @@ public class UpgradeStepItem implements ServicesLookup, UpgradeItem, UpgradeList
 			_formToolkit, _buttonComposite, stepSkipImage, this, "Skip", "Skipping " + _upgradeStep.getTitle() + "...",
 			this::_skip, _upgradeStep);
 
-		_disposables.add(() -> skipImageHyperlink.dispose());
+		_disposables.add(skipImageHyperlink::dispose);
 
 		_enables.add(skipImageHyperlink);
 

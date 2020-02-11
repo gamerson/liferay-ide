@@ -209,7 +209,7 @@ public class PortletURLHyperlinkDetector extends AbstractHyperlinkDetector {
 		public void acceptSearchMatch(SearchMatch match) throws CoreException {
 			Object element = match.getElement();
 
-			if (element instanceof IMethod && _isActionMethod((IMethod)element)) {
+			if ((element instanceof IMethod) && _isActionMethod((IMethod)element)) {
 				this._results.add((IMethod)element);
 			}
 		}

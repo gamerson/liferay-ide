@@ -183,10 +183,9 @@ public class WatchTaskAction extends AbstractObjectAction {
 		if (ListUtil.isEmpty(childrenGradleProjects)) {
 			return;
 		}
-		else {
-			for (GradleProject childGradleProject : childrenGradleProjects) {
-				_deleteInstallBundleIdFromBuildDirectory(childGradleProject);
-			}
+
+		for (GradleProject childGradleProject : childrenGradleProjects) {
+			_deleteInstallBundleIdFromBuildDirectory(childGradleProject);
 		}
 
 		return;

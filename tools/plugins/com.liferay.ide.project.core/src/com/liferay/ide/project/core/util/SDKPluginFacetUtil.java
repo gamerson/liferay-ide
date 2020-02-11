@@ -42,7 +42,7 @@ import org.eclipse.jst.common.project.facet.core.JavaFacetInstallConfig;
 import org.eclipse.jst.j2ee.web.project.facet.IWebFacetInstallDataModelProperties;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IPreset;
@@ -69,7 +69,7 @@ public class SDKPluginFacetUtil {
 	public static void configureJavaFacet(
 		IFacetedProjectWorkingCopy fpjwc, IProjectFacet requiredFacet, IPreset preset, ProjectRecord projectRecord) {
 
-		Action action = fpjwc.getProjectFacetAction(requiredFacet);
+		IFacetedProject.Action action = fpjwc.getProjectFacetAction(requiredFacet);
 
 		if (action == null) {
 			return;
@@ -298,7 +298,7 @@ public class SDKPluginFacetUtil {
 	public static void configureWebFacet(IFacetedProjectWorkingCopy fpjwc, IProjectFacet requiredFacet, IPreset preset)
 		throws CoreException {
 
-		Action action = fpjwc.getProjectFacetAction(requiredFacet);
+		IFacetedProject.Action action = fpjwc.getProjectFacetAction(requiredFacet);
 
 		if (action != null) {
 			IDataModel dm = (IDataModel)action.getConfig();

@@ -50,7 +50,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.sapphire.Element;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
-import org.eclipse.sapphire.ui.def.DefinitionLoader.Reference;
 import org.eclipse.sapphire.ui.forms.DialogDef;
 import org.eclipse.sapphire.ui.forms.swt.SapphireDialog;
 import org.eclipse.swt.SWT;
@@ -242,7 +241,8 @@ public class LiferayProjectPropertyPage
 
 									DefinitionLoader sdefLoader = loader.sdef(dialogId);
 
-									Reference<DialogDef> dialogRef = sdefLoader.dialog("ConfigureLiferaySDK");
+									DefinitionLoader.Reference<DialogDef> dialogRef = sdefLoader.dialog(
+										"ConfigureLiferaySDK");
 
 									SapphireDialog dialog = new SapphireDialog(UIUtil.getActiveShell(), op, dialogRef);
 

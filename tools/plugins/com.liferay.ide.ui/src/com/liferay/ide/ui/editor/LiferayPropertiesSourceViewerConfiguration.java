@@ -117,7 +117,7 @@ public class LiferayPropertiesSourceViewerConfiguration extends PropertiesFileSo
 
 			Object adapter = input.getAdapter(IFile.class);
 
-			if (adapter instanceof IFile && _isHookProject(((IFile)adapter).getProject())) {
+			if ((adapter instanceof IFile) && _isHookProject(((IFile)adapter).getProject())) {
 				ILiferayProject liferayProject = LiferayCore.create(
 					ILiferayProject.class, ((IFile)adapter).getProject());
 
@@ -192,7 +192,7 @@ public class LiferayPropertiesSourceViewerConfiguration extends PropertiesFileSo
 		else {
 			File file = input.getAdapter(File.class);
 
-			if ((file == null) && input instanceof FileStoreEditorInput) {
+			if ((file == null) && (input instanceof FileStoreEditorInput)) {
 				FileStoreEditorInput fInput = (FileStoreEditorInput)input;
 
 				URI uri = fInput.getURI();

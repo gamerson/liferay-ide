@@ -129,9 +129,8 @@ public class FileMigrationService implements FileMigration {
 
 						return versions.contains(version);
 					}
-					else {
-						return true;
-					}
+
+					return true;
 				}
 			).collect(
 				Collectors.toList()

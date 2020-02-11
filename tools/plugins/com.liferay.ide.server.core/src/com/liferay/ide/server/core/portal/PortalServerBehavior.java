@@ -416,8 +416,7 @@ public class PortalServerBehavior
 			launch.setAttribute(
 				ATTR_VM_ARGUMENTS,
 				_mergeArguments(
-					StringUtil.merge(parsedExistingVMArgs.toArray(new String[parsedExistingVMArgs.size()]), " "),
-					configVMArgs, null));
+					StringUtil.merge(parsedExistingVMArgs.toArray(new String[0]), " "), configVMArgs, null));
 		}
 		else {
 			launch.setAttribute(ATTR_VM_ARGUMENTS, _mergeArguments(existingVMArgs, configVMArgs, null));

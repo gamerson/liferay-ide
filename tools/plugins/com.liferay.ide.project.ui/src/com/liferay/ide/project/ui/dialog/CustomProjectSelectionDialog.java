@@ -44,9 +44,8 @@ public class CustomProjectSelectionDialog extends JavaProjectSelectionDialog {
 		if (_projects.contains(project)) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	private List<IProject> _projects;

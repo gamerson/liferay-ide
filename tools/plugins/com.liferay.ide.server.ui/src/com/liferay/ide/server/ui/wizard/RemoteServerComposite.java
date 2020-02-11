@@ -270,9 +270,8 @@ public class RemoteServerComposite extends Composite implements ModifyListener, 
 		if (serverWC != null) {
 			return (RemoteServer)serverWC.loadAdapter(RemoteServer.class, null);
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	protected void initialize() {

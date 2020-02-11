@@ -191,9 +191,8 @@ public class PortletUtil {
 					if (packageFragmentRoot.getKind() == IPackageFragmentRoot.K_SOURCE) {
 						return true;
 					}
-					else {
-						return false;
-					}
+
+					return false;
 				}
 				catch (JavaModelException jme) {
 					return false;

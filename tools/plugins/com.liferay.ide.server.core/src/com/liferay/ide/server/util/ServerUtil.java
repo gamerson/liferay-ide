@@ -567,9 +567,8 @@ public class ServerUtil {
 		if (facetedProject != null) {
 			return (ILiferayRuntime)getRuntimeAdapter(facetedProject.getPrimaryRuntime(), ILiferayRuntime.class);
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	public static ILiferayRuntime getLiferayRuntime(IRuntime runtime) {
@@ -655,17 +654,16 @@ public class ServerUtil {
 			if (FileUtil.exists(moduleOsgiBundle)) {
 				return _copyModuleBundleJar(moduleOsgiBundle, temp);
 			}
-			else {
-				int index = hostOsgiBundle.indexOf("-");
 
-				if (index > 0) {
-					String hostOsgiBundleWithoutVersion = hostOsgiBundle.substring(0, index) + ".jar";
+			int index = hostOsgiBundle.indexOf("-");
 
-					File moduleOsgiBundleWithoutVersion = new File(portalModuleDir, hostOsgiBundleWithoutVersion);
+			if (index > 0) {
+				String hostOsgiBundleWithoutVersion = hostOsgiBundle.substring(0, index) + ".jar";
 
-					if (FileUtil.exists(moduleOsgiBundleWithoutVersion)) {
-						return _copyModuleBundleJar(moduleOsgiBundleWithoutVersion, temp);
-					}
+				File moduleOsgiBundleWithoutVersion = new File(portalModuleDir, hostOsgiBundleWithoutVersion);
+
+				if (FileUtil.exists(moduleOsgiBundleWithoutVersion)) {
+					return _copyModuleBundleJar(moduleOsgiBundleWithoutVersion, temp);
 				}
 			}
 		}
@@ -992,16 +990,16 @@ public class ServerUtil {
 			ISDKConstants.PROPERTY_APP_SERVER_LIB_GLOBAL_DIR, appServer);
 		String appServerPortalDirKey = getAppServerPropertyKey(ISDKConstants.PROPERTY_APP_SERVER_PORTAL_DIR, appServer);
 
-		properties.put(appServerDirKey, dir.toOSString());
 		properties.put(appServerDeployDirKey, deployDir.toOSString());
+		properties.put(appServerDirKey, dir.toOSString());
 		properties.put(appServerLibGlobalDirKey, libGlobalDir.toOSString());
 
 		/**
 		 * IDE-1268 need to always specify app.server.parent.dir, even though it
 		 * is only useful in 6.1.2/6.2.0 or greater
 		 */
-		properties.put(ISDKConstants.PROPERTY_APP_SERVER_PARENT_DIR, parentDir);
 		properties.put(appServerPortalDirKey, portalDir.toOSString());
+		properties.put(ISDKConstants.PROPERTY_APP_SERVER_PARENT_DIR, parentDir);
 
 		return properties;
 	}

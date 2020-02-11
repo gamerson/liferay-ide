@@ -36,7 +36,6 @@ import org.eclipse.sapphire.Event;
 import org.eclipse.sapphire.Listener;
 import org.eclipse.sapphire.ui.SapphireEditor;
 import org.eclipse.sapphire.ui.def.DefinitionLoader;
-import org.eclipse.sapphire.ui.def.DefinitionLoader.Reference;
 import org.eclipse.sapphire.ui.def.EditorPageDef;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
@@ -202,7 +201,7 @@ public class LayoutTplEditor extends SapphireEditor implements IExecutableExtens
 	}
 
 	@Override
-	protected Reference<EditorPageDef> getDefinition(String pageDefinitionId) {
+	protected DefinitionLoader.Reference<EditorPageDef> getDefinition(String pageDefinitionId) {
 		if ("preview".equals(pageDefinitionId)) {
 			if (_definition == null) {
 				DefinitionLoader definitionLoader = DefinitionLoader.sdef(LayoutTplEditor.class);

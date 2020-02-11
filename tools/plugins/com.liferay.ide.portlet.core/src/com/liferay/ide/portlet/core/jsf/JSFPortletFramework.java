@@ -47,7 +47,7 @@ import org.eclipse.jst.common.project.facet.core.libprov.LibraryInstallDelegate;
 import org.eclipse.jst.jsf.core.IJSFCoreConstants;
 import org.eclipse.jst.jsf.core.internal.project.facet.IJSFFacetInstallDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -79,7 +79,7 @@ public class JSFPortletFramework
 			facetedProject.addProjectFacet(jsfFacetVersion);
 		}
 
-		Action action = facetedProject.getProjectFacetAction(jsfFacet);
+		IFacetedProject.Action action = facetedProject.getProjectFacetAction(jsfFacet);
 
 		IDataModel jsfFacetDataModel = (IDataModel)action.getConfig();
 

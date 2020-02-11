@@ -102,7 +102,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 					profileIds.add(type.cast(profile.getId()));
 				}
 
-				if ((params[0] != null) && params[0] instanceof File) {
+				if ((params[0] != null) && (params[0] instanceof File)) {
 					File locationDir = (File)params[0];
 
 					File pomFile = new File(locationDir, IMavenConstants.POM_FILE_NAME);
@@ -388,7 +388,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 
 				editModel = modelManager.getModelForEdit(file);
 
-				if ((editModel != null) && editModel instanceof IDOMModel) {
+				if ((editModel != null) && (editModel instanceof IDOMModel)) {
 					IDOMDocument xmlDocument = ((IDOMModel)editModel).getDocument();
 
 					DocumentTypeImpl docType = (DocumentTypeImpl)xmlDocument.getDoctype();
@@ -435,7 +435,7 @@ public class LiferayMavenProjectProvider extends AbstractLiferayProjectProvider 
 			files.addAll(new SearchFilesVisitor().searchFiles(project, name));
 		}
 
-		return files.toArray(new IFile[files.size()]);
+		return files.toArray(new IFile[0]);
 	}
 
 	private String _getNewDoctTypeSetting(String doctypeSetting, String newValue, Pattern p) {

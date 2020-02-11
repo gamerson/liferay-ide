@@ -41,7 +41,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.sapphire.ElementList;
 import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.eclipse.sapphire.modeling.Status;
-import org.eclipse.sapphire.modeling.Status.Severity;
 import org.eclipse.sapphire.platform.PathBridge;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
 import org.eclipse.sapphire.platform.StatusBridge;
@@ -169,7 +168,7 @@ public class NewModuleFragmentOpMethods {
 			if (retval.ok()) {
 				_updateBuildPrefs(op);
 			}
-			else if ((retval.severity() == Severity.ERROR) && (retval.exception() != null)) {
+			else if ((retval.severity() == Status.Severity.ERROR) && (retval.exception() != null)) {
 				errorStack = retval.exception();
 			}
 		}

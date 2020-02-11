@@ -253,28 +253,27 @@ public class PropertiesUtil {
 				if (i == -1) {
 					continue;
 				}
-				else {
-					i += key.length();
 
-					StringBuilder strBuilder = new StringBuilder();
+				i += key.length();
 
-					for (; i < content.length(); i++) {
-						char ch = content.charAt(i);
+				StringBuilder strBuilder = new StringBuilder();
 
-						if (ch != '"') {
-							strBuilder.append(ch);
-						}
-						else {
-							break;
-						}
+				for (; i < content.length(); i++) {
+					char ch = content.charAt(i);
+
+					if (ch != '"') {
+						strBuilder.append(ch);
 					}
-
-					resourceBundleValue = strBuilder.toString();
-
-					// find the first language config
-
-					break;
+					else {
+						break;
+					}
 				}
+
+				resourceBundleValue = strBuilder.toString();
+
+				// find the first language config
+
+				break;
 			}
 
 			String resourceBundle = resourceBundleValue.replaceAll("(^\\s*)|(\\s*$)", StringPool.BLANK);
@@ -889,7 +888,7 @@ public class PropertiesUtil {
 				LiferayCore.logError(ce);
 			}
 
-			return _resources.toArray(new IFile[_resources.size()]);
+			return _resources.toArray(new IFile[0]);
 		}
 
 		private IResource _entryResource = null;

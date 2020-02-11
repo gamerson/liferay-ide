@@ -14,7 +14,7 @@
 
 package com.liferay.ide.xml.search.ui.validators;
 
-import com.liferay.ide.project.core.ValidationPreferences.ValidationType;
+import com.liferay.ide.project.core.ValidationPreferences;
 import com.liferay.ide.xml.search.ui.util.ValidatorUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -44,7 +44,7 @@ public class ServiceBuilderDescriptorValidator extends LiferayBaseValidator {
 		IXMLReference reference, IDOMNode node, IFile file, IValidator validator, IReporter reporter,
 		boolean batchMode) {
 
-		int severity = getServerity(ValidationType.SYNTAX_INVALID, file);
+		int severity = getServerity(ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 
 		if (severity == ValidationMessage.IGNORE) {
 			return true;
@@ -61,7 +61,7 @@ public class ServiceBuilderDescriptorValidator extends LiferayBaseValidator {
 				String nodeValue = DOMUtils.getNodeValue(node);
 
 				if (!ValidatorUtil.isValidNamespace(nodeValue)) {
-					validationMsg = getMessageText(ValidationType.SYNTAX_INVALID, node);
+					validationMsg = getMessageText(ValidationPreferences.ValidationType.SYNTAX_INVALID, node);
 				}
 			}
 		}
@@ -87,7 +87,8 @@ public class ServiceBuilderDescriptorValidator extends LiferayBaseValidator {
 		}
 
 		if (validationMsg != null) {
-			String liferayPluginValidationType = getLiferayPluginValidationType(ValidationType.SYNTAX_INVALID, file);
+			String liferayPluginValidationType = getLiferayPluginValidationType(
+				ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 
 			addMessage(
 				node, file, validator, reporter, batchMode, validationMsg, severity, liferayPluginValidationType);

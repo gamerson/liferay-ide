@@ -99,9 +99,8 @@ public class ImportLiferayWorkspaceFromInstallerAction implements IIntroAction {
 
 					return Status.OK_STATUS;
 				}
-				else {
-					return StatusBridge.create(op.validation());
-				}
+
+				return StatusBridge.create(op.validation());
 			}
 
 		};

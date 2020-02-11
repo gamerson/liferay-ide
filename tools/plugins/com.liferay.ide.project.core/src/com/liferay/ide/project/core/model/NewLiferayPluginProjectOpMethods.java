@@ -292,53 +292,52 @@ public class NewLiferayPluginProjectOpMethods {
 		if ("maven".equals(provider.getShortName()) && (type.equals("web") || type.equals("theme"))) {
 			return true;
 		}
-		else {
-			SDK sdk = null;
 
-			try {
-				sdk = SDKUtil.getWorkspaceSDK();
+		SDK sdk = null;
+
+		try {
+			sdk = SDKUtil.getWorkspaceSDK();
+		}
+		catch (CoreException ce) {
+		}
+
+		if (sdk == null) {
+			Path sdkLocation = _getter.get(op.getSdkLocation());
+
+			if (sdkLocation != null) {
+				sdk = SDKUtil.createSDKFromLocation(PathBridge.create(sdkLocation));
 			}
-			catch (CoreException ce) {
-			}
+		}
 
-			if (sdk == null) {
-				Path sdkLocation = _getter.get(op.getSdkLocation());
+		if (sdk == null) {
+			return true;
+		}
 
-				if (sdkLocation != null) {
-					sdk = SDKUtil.createSDKFromLocation(PathBridge.create(sdkLocation));
-				}
-			}
+		Version version = Version.parseVersion(sdk.getVersion());
 
-			if (sdk == null) {
+		boolean greaterThan700 = false;
+
+		if (CoreUtil.compareVersions(version, ILiferayConstants.V700) >= 0) {
+			greaterThan700 = true;
+		}
+
+		if ((greaterThan700 && "web".equals(type)) || "theme".equals(type)) {
+			retval = true;
+		}
+
+		if (greaterThan700 && "ext".equals(type)) {
+			IPath sdkLocation = sdk.getLocation();
+
+			IPath extFolder = sdkLocation.append("ext");
+
+			File buildXml = FileUtil.getFile(extFolder.append("build.xml"));
+
+			if (FileUtil.exists(extFolder) && FileUtil.exists(buildXml)) {
 				return true;
 			}
-
-			Version version = Version.parseVersion(sdk.getVersion());
-
-			boolean greaterThan700 = false;
-
-			if (CoreUtil.compareVersions(version, ILiferayConstants.V700) >= 0) {
-				greaterThan700 = true;
-			}
-
-			if ((greaterThan700 && "web".equals(type)) || "theme".equals(type)) {
-				retval = true;
-			}
-
-			if (greaterThan700 && "ext".equals(type)) {
-				IPath sdkLocation = sdk.getLocation();
-
-				IPath extFolder = sdkLocation.append("ext");
-
-				File buildXml = FileUtil.getFile(extFolder.append("build.xml"));
-
-				if (FileUtil.exists(extFolder) && FileUtil.exists(buildXml)) {
-					return true;
-				}
-			}
-			else if (!greaterThan700 && "ext".equals(type)) {
-				return true;
-			}
+		}
+		else if (!greaterThan700 && "ext".equals(type)) {
+			return true;
 		}
 
 		return retval;

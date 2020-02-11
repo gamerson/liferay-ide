@@ -99,7 +99,7 @@ public class SDKProjectsImportWizardPage
 			projectRecords.add(project);
 		}
 
-		return (ProjectRecord[])projectRecords.toArray(new ProjectRecord[projectRecords.size()]);
+		return (ProjectRecord[])projectRecords.toArray(new ProjectRecord[0]);
 	}
 
 	public void updateProjectsList(final String path) {

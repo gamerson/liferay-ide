@@ -14,7 +14,7 @@
 
 package com.liferay.ide.xml.search.ui.validators;
 
-import com.liferay.ide.project.core.ValidationPreferences.ValidationType;
+import com.liferay.ide.project.core.ValidationPreferences;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.osgi.util.NLS;
@@ -41,7 +41,7 @@ public class LiferayDisplayDescriptorValidator extends LiferayBaseValidator {
 		IXMLReference reference, IDOMNode node, IFile file, IValidator validator, IReporter reporter,
 		boolean batchMode) {
 
-		int severity = getServerity(ValidationType.SYNTAX_INVALID, file);
+		int severity = getServerity(ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 
 		if (severity == ValidationMessage.IGNORE) {
 			return true;
@@ -56,7 +56,7 @@ public class LiferayDisplayDescriptorValidator extends LiferayBaseValidator {
 
 			if (nodeValue.matches("\\s*")) {
 				String liferayPluginValidationType = getLiferayPluginValidationType(
-					ValidationType.SYNTAX_INVALID, file);
+					ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 				String validationMsg = MESSAGE_CATEGORY_NAME_CANNOT_BE_EMPTY;
 
 				addMessage(

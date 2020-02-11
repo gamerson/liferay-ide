@@ -75,7 +75,7 @@ public abstract class GradleTaskAction extends AbstractObjectAction {
 
 						monitor.worked(20);
 
-						GradleUtil.runGradleTask(project, gradleTasks.toArray(new String[gradleTasks.size()]), monitor);
+						GradleUtil.runGradleTask(project, gradleTasks.toArray(new String[0]), monitor);
 
 						monitor.worked(80);
 					}
@@ -181,12 +181,11 @@ public abstract class GradleTaskAction extends AbstractObjectAction {
 		if (parentHasTask) {
 			return;
 		}
-		else {
-			DomainObjectSet<? extends GradleProject> childGradleProjects = gradleProject.getChildren();
 
-			for (GradleProject childGradleProject : childGradleProjects) {
-				_fetchModelTasks(childGradleProject, taskName, tasks);
-			}
+		DomainObjectSet<? extends GradleProject> childGradleProjects = gradleProject.getChildren();
+
+		for (GradleProject childGradleProject : childGradleProjects) {
+			_fetchModelTasks(childGradleProject, taskName, tasks);
 		}
 
 		return;

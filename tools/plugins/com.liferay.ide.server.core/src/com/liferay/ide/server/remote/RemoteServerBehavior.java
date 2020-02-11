@@ -81,12 +81,11 @@ public class RemoteServerBehavior
 		if ((status != null) && status.isOK()) {
 			return true;
 		}
-		else {
-			status = SocketUtil.canConnectProxy(getServer().getHost(), getRemoteServer().getHTTPPort());
 
-			if ((status != null) && status.isOK()) {
-				return true;
-			}
+		status = SocketUtil.canConnectProxy(getServer().getHost(), getRemoteServer().getHTTPPort());
+
+		if ((status != null) && status.isOK()) {
+			return true;
 		}
 
 		return false;
@@ -97,9 +96,8 @@ public class RemoteServerBehavior
 		if (currentLaunch != null) {
 			return Status.OK_STATUS;
 		}
-		else {
-			return Status.CANCEL_STATUS;
-		}
+
+		return Status.CANCEL_STATUS;
 	}
 
 	@Override
@@ -778,32 +776,31 @@ public class RemoteServerBehavior
 
 					break;
 				}
-				else {
-					IModuleResource resource = delta.getModuleResource();
 
-					IFile resourceFile = resource.getAdapter(IFile.class);
+				IModuleResource resource = delta.getModuleResource();
 
-					if (resourceFile != null) {
-						IWebProject lrproject = LiferayCore.create(IWebProject.class, resourceFile.getProject());
+				IFile resourceFile = resource.getAdapter(IFile.class);
 
-						if (lrproject != null) {
-							IFolder docrootFolder = lrproject.getDefaultDocrootFolder();
+				if (resourceFile != null) {
+					IWebProject lrproject = LiferayCore.create(IWebProject.class, resourceFile.getProject());
 
-							IPath docrootPath = docrootFolder.getFullPath();
+					if (lrproject != null) {
+						IFolder docrootFolder = lrproject.getDefaultDocrootFolder();
 
-							IPath resourceFullPath = resourceFile.getFullPath();
+						IPath docrootPath = docrootFolder.getFullPath();
 
-							if (lrproject.findDocrootResource(resourceFullPath.makeRelativeTo(docrootPath)) != null) {
-								String resourceName = resource.getName();
+						IPath resourceFullPath = resourceFile.getFullPath();
 
-								if (resourceName.equals("web.xml") ||
-									resourceName.equals(ILiferayConstants.LIFERAY_PLUGIN_PACKAGE_PROPERTIES_FILE)) {
+						if (lrproject.findDocrootResource(resourceFullPath.makeRelativeTo(docrootPath)) != null) {
+							String resourceName = resource.getName();
 
-									break;
-								}
-								else if (resourceName.equals("portlet.xml")) {
-									break;
-								}
+							if (resourceName.equals("web.xml") ||
+								resourceName.equals(ILiferayConstants.LIFERAY_PLUGIN_PACKAGE_PROPERTIES_FILE)) {
+
+								break;
+							}
+							else if (resourceName.equals("portlet.xml")) {
+								break;
 							}
 						}
 					}

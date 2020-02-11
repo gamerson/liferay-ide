@@ -288,7 +288,7 @@ public class CreateDBConnectAction extends AbstractServerRunningAction {
 			}
 		}
 
-		URL[] urls = libUrlList.toArray(new URL[libUrlList.size()]);
+		URL[] urls = libUrlList.toArray(new URL[0]);
 
 		return urls;
 	}

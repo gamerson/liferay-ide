@@ -465,7 +465,7 @@ public class MavenUtil {
 
 	public static boolean isPomFile(IFile pomFile) {
 		if (FileUtil.exists(pomFile) && IMavenConstants.POM_FILE_NAME.equals(pomFile.getName()) &&
-			pomFile.getParent() instanceof IProject) {
+			(pomFile.getParent() instanceof IProject)) {
 
 			return true;
 		}

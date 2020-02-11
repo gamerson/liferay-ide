@@ -155,9 +155,9 @@ public abstract class AbstractResourceBundleActionHandler extends PropertyEditor
 		};
 
 		try {
-			(new ProgressMonitorDialog(
+			new ProgressMonitorDialog(
 				((SwtPresentation)context).shell()
-			)).run(
+			).run(
 				false, false, rbCreationProc
 			);
 
@@ -191,9 +191,8 @@ public abstract class AbstractResourceBundleActionHandler extends PropertyEditor
 			if (FileUtil.exists(resourceBundleFile)) {
 				return true;
 			}
-			else {
-				return false;
-			}
+
+			return false;
 		}
 
 		return false;

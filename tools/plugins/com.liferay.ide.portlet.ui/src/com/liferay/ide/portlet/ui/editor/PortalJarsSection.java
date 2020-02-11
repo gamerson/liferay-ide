@@ -197,11 +197,9 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 	public void propertyChange(PropertyChangeEvent event) {
 
 		/**
-		 
 		 if (fSortAction.equals(event.getSource()) && IAction.RESULT.equals(event.getProperty())) {
 		 updateUpDownButtons();
 		 }
-		 
 		 */
 	}
 
@@ -224,15 +222,11 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 	public boolean setFormInput(Object object) {
 
 		/**
-		 
 		 if (object instanceof IPluginImport) {
 		 ImportObject iobj = new ImportObject((IPluginImport)object);
-		 
 		 fImportViewer.setSelection(new StructuredSelection(iobj), true);
-		 
 		 return true;
 		 }
-		 
 		 */
 		return false;
 	}
@@ -241,21 +235,16 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 
 		/**
 		 Table table = getTablePart().getTableViewer().getTable();
-		 
 		 IPluginImport dep1 = ((ImportObject)table.getItem(index1).getData()).getImport();
 		 IPluginImport dep2 = ((ImportObject)table.getItem(index2).getData()).getImport();
-		 
 		 try {
 		 IPluginModelBase model = (IPluginModelBase)getPage().getModel();
-		 
 		 IPluginBase pluginBase = model.getPluginBase();
-		 
 		 pluginBase.swap(dep1, dep2);
 		 }
 		 catch (CoreException ce) {
 		 PDEPlugin.logException(ce);
 		 }
-		 
 		 */
 	}
 
@@ -562,7 +551,7 @@ public class PortalJarsSection extends TableSection implements IModelChangedList
 			_UP_INDEX, canMove && isEditable() && hasSelection && (table.getSelectionIndex() > 0));
 		tablePart.setButtonEnabled(
 			_DOWN_INDEX,
-			canMove && hasSelection && isEditable() && (table.getSelectionIndex() < table.getItemCount() - 1));
+			canMove && hasSelection && isEditable() && (table.getSelectionIndex() < (table.getItemCount() - 1)));
 	}
 
 	private static final int _ADD_INDEX = 0;

@@ -388,12 +388,10 @@ public class ProjectUtil {
 					}
 					else {
 						javaProject.setRawClasspath(
-							rawClasspaths.toArray(new IClasspathEntry[rawClasspaths.size()]),
-							new NullProgressMonitor());
+							rawClasspaths.toArray(new IClasspathEntry[0]), new NullProgressMonitor());
 
 						javaProject.setRawClasspath(
-							rawClasspaths.toArray(new IClasspathEntry[rawClasspaths.size()]),
-							new NullProgressMonitor());
+							rawClasspaths.toArray(new IClasspathEntry[0]), new NullProgressMonitor());
 
 						IAccessRule[] accessRules = {};
 
@@ -882,7 +880,7 @@ public class ProjectUtil {
 			}
 		}
 
-		return sdkProjects.toArray(new IProject[sdkProjects.size()]);
+		return sdkProjects.toArray(new IProject[0]);
 	}
 
 	public static String getBundleSymbolicNameFromBND(IProject project) {
@@ -1181,27 +1179,21 @@ public class ProjectUtil {
 
 						return true;
 					}
-					else {
 
-						// sdk 6.x project
+					// sdk 6.x project
 
-						return false;
-					}
-				}
-				else {
 					return false;
 				}
-			}
-			else {
 
-				// not sdk project
-
-				return true;
+				return false;
 			}
+
+			// not sdk project
+
+			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	public static boolean isDynamicWebFacet(IProjectFacet facet) {
@@ -1452,12 +1444,11 @@ public class ProjectUtil {
 		if ((resource.getParent() != null) && folder.equals(resource.getParent())) {
 			return true;
 		}
-		else {
-			boolean retval = isParent(folder, resource.getParent());
 
-			if (retval) {
-				return true;
-			}
+		boolean retval = isParent(folder, resource.getParent());
+
+		if (retval) {
+			return true;
 		}
 
 		return false;

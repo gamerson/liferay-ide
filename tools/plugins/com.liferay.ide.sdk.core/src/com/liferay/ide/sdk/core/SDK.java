@@ -296,8 +296,8 @@ public class SDK {
 
 			Map<String, String> properties = new HashMap<>();
 
-			properties.put(ISDKConstants.PROPERTY_EXT_NAME, extName);
 			properties.put(ISDKConstants.PROPERTY_EXT_DISPLAY_NAME, extDisplayName);
+			properties.put(ISDKConstants.PROPERTY_EXT_NAME, extName);
 
 			// create a space for new portlet template to get built
 
@@ -332,8 +332,8 @@ public class SDK {
 		try {
 			Map<String, String> properties = new HashMap<>();
 
-			properties.put(ISDKConstants.PROPERTY_HOOK_NAME, hookName);
 			properties.put(ISDKConstants.PROPERTY_HOOK_DISPLAY_NAME, hookDisplayName);
+			properties.put(ISDKConstants.PROPERTY_HOOK_NAME, hookName);
 
 			// create a space for new portlet template to get built
 
@@ -368,8 +368,8 @@ public class SDK {
 		try {
 			Map<String, String> properties = new HashMap<>();
 
-			properties.put(ISDKConstants.PROPERTY_LAYOUTTPL_NAME, layoutTplName);
 			properties.put(ISDKConstants.PROPERTY_LAYOUTTPL_DISPLAY_NAME, layoutTplDisplayName);
+			properties.put(ISDKConstants.PROPERTY_LAYOUTTPL_NAME, layoutTplName);
 
 			// create a space for new layouttpm template to get built
 
@@ -404,9 +404,9 @@ public class SDK {
 		try {
 			Map<String, String> properties = new HashMap<>();
 
-			properties.put(ISDKConstants.PROPERTY_PORTLET_NAME, portletName);
 			properties.put(ISDKConstants.PROPERTY_PORTLET_DISPLAY_NAME, portletDisplayName);
 			properties.put(ISDKConstants.PROPERTY_PORTLET_FRAMEWORK, portletFramework);
+			properties.put(ISDKConstants.PROPERTY_PORTLET_NAME, portletName);
 
 			// create a space for new portlet template to get built
 
@@ -496,8 +496,8 @@ public class SDK {
 		try {
 			Map<String, String> properties = new HashMap<>();
 
-			properties.put(ISDKConstants.PROPERTY_THEME_NAME, themeName);
 			properties.put(ISDKConstants.PROPERTY_THEME_DISPLAY_NAME, themeDisplayName);
+			properties.put(ISDKConstants.PROPERTY_THEME_NAME, themeName);
 
 			// create a space for new portlet template to get built
 
@@ -532,8 +532,8 @@ public class SDK {
 		try {
 			Map<String, String> properties = new HashMap<>();
 
-			properties.put(ISDKConstants.PROPERTY_WEB_NAME, webName);
 			properties.put(ISDKConstants.PROPERTY_WEB_DISPLAY_NAME, webDisplayName);
+			properties.put(ISDKConstants.PROPERTY_WEB_NAME, webName);
 
 			// create a space for new web template to get built
 

@@ -165,9 +165,8 @@ public class UpgradeProblemsContentProvider extends AbstractNavigatorContentProv
 		if (upgradeProblemsContainer.isNotEmpty()) {
 			return new Object[] {upgradeProblemsContainer};
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	public boolean hasChildren(Object element) {

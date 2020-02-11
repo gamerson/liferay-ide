@@ -67,7 +67,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.ide.IDE.SharedImages;
+import org.eclipse.ui.ide.IDE;
 
 /**
  * @author Gregory Amerson
@@ -269,7 +269,7 @@ public class RequiredDeploymentContextsSection
 		public Image getColumnImage(Object element, int columnIndex) {
 			ISharedImages images = UIUtil.getSharedImages();
 
-			return images.getImage(SharedImages.IMG_OBJ_PROJECT);
+			return images.getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
 		}
 
 		public String getColumnText(Object element, int columnIndex) {
@@ -411,9 +411,8 @@ public class RequiredDeploymentContextsSection
 
 					return true;
 				}
-				else {
-					return false;
-				}
+
+				return false;
 			}
 
 		};
@@ -556,7 +555,7 @@ public class RequiredDeploymentContextsSection
 			_UP_INDEX, canMove && isEditable() && hasSelection && (table.getSelectionIndex() > 0));
 		tablePart.setButtonEnabled(
 			_DOWN_INDEX,
-			canMove && hasSelection && isEditable() && (table.getSelectionIndex() < table.getItemCount() - 1));
+			canMove && hasSelection && isEditable() && (table.getSelectionIndex() < (table.getItemCount() - 1)));
 	}
 
 	private static final int _ADD_INDEX = 0;

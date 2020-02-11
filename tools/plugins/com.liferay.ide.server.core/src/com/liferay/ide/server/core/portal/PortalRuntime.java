@@ -117,9 +117,8 @@ public class PortalRuntime extends RuntimeDelegate implements ILiferayRuntime, P
 		if (portalBundle != null) {
 			return portalBundle.getLiferayHome();
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	public PortalBundle getPortalBundle() {

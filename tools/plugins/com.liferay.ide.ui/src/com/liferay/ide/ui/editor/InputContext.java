@@ -122,7 +122,7 @@ public abstract class InputContext {
 		_fDocumentProvider.removeElementStateListener(_fElementListener);
 		_fDocumentProvider.disconnect(_fEditorInput);
 
-		if ((_fModelListener != null) && _fModel instanceof IModelChangeProvider) {
+		if ((_fModelListener != null) && (_fModel instanceof IModelChangeProvider)) {
 			((IModelChangeProvider)_fModel).removeModelChangedListener(_fModelListener);
 		}
 

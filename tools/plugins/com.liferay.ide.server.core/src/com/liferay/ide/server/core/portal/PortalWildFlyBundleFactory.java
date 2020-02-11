@@ -62,9 +62,8 @@ public class PortalWildFlyBundleFactory extends PortalJBossBundleFactory {
 			if ((vers != null) && (vers.startsWith("10.") || vers.startsWith("11."))) {
 				return true;
 			}
-			else {
-				return super.detectBundleDir(path);
-			}
+
+			return super.detectBundleDir(path);
 		}
 
 		return false;
@@ -135,7 +134,7 @@ public class PortalWildFlyBundleFactory extends PortalJBossBundleFactory {
 			}
 		}
 
-		return list.toArray(new IPath[list.size()]);
+		return list.toArray(new IPath[0]);
 	}
 
 	private static FileFilter _manifestFilter() {

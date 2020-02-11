@@ -183,9 +183,8 @@ public class LiferayWorkspaceUtil {
 			if (CoreUtil.isNotNullOrEmpty(homeDir)) {
 				return projectLocation.append(homeDir);
 			}
-			else {
-				return null;
-			}
+
+			return null;
 		}
 
 		return null;
@@ -388,9 +387,8 @@ public class LiferayWorkspaceUtil {
 			if (FileUtil.exists(pomFile)) {
 				return "maven-liferay-workspace";
 			}
-			else {
-				return "gradle-liferay-workspace";
-			}
+
+			return "gradle-liferay-workspace";
 		}
 
 		return null;

@@ -102,9 +102,8 @@ public class GradleProjectBuilder extends AbstractProjectBuilder implements Arti
 
 			return Status.OK_STATUS;
 		}
-		else {
-			return LiferayGradleCore.createErrorStatus("Could not find wsdd builder plugin in " + _gradleBuildFile);
-		}
+
+		return LiferayGradleCore.createErrorStatus("Could not find wsdd builder plugin in " + _gradleBuildFile);
 	}
 
 	@Override

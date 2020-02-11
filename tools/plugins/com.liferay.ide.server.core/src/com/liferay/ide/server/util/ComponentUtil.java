@@ -149,7 +149,7 @@ public class ComponentUtil {
 			}
 		}
 
-		return sourceFolders.toArray(new IFolder[sourceFolders.size()]);
+		return sourceFolders.toArray(new IFolder[0]);
 	}
 
 	public static boolean hasLiferayFacet(IProject project) {
@@ -272,7 +272,7 @@ public class ComponentUtil {
 			LiferayServerCore.logError(jme);
 		}
 
-		return list.toArray(new IPackageFragmentRoot[list.size()]);
+		return list.toArray(new IPackageFragmentRoot[0]);
 	}
 
 }

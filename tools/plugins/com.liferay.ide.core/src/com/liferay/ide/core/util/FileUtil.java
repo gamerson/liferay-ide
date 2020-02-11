@@ -960,7 +960,7 @@ public class FileUtil {
 			LiferayCore.logError("Could not read file: " + file.getPath());
 		}
 
-		return lines.toArray(new String[lines.size()]);
+		return lines.toArray(new String[0]);
 	}
 
 	public static String[] readMainFestProsFromJar(File systemJarFile, String... names) {

@@ -477,7 +477,7 @@ public abstract class AbstractValidationSettingsPage extends PropertyPreferenceP
 						}
 					}
 
-					projects = (IProject[])projectList.toArray(new IProject[projectList.size()]);
+					projects = (IProject[])projectList.toArray(new IProject[0]);
 				}
 
 				_fValidation.validate(projects, true, false, monitor);

@@ -65,7 +65,7 @@ public class NewPortletDropDownAction extends Action implements IMenuCreator, IW
 			}
 		}
 
-		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[containers.size()]);
+		NewWizardAction[] actions = (NewWizardAction[])containers.toArray(new NewWizardAction[0]);
 
 		Arrays.sort(actions);
 

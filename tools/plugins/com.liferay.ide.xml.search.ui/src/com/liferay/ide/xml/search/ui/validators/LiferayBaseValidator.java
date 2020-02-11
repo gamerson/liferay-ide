@@ -17,7 +17,6 @@ package com.liferay.ide.xml.search.ui.validators;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.ValidationPreferences;
-import com.liferay.ide.project.core.ValidationPreferences.ValidationType;
 import com.liferay.ide.xml.search.ui.LiferayXMLSearchUI;
 import com.liferay.ide.xml.search.ui.XMLSearchConstants;
 
@@ -281,11 +280,13 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 		}
 	}
 
-	protected String getLiferayPluginValidationType(ValidationType validationType, IFile file) {
+	protected String getLiferayPluginValidationType(ValidationPreferences.ValidationType validationType, IFile file) {
 		return ValidationPreferences.getValidationPreferenceKey(file.getName(), validationType);
 	}
 
-	protected String getMessageText(ValidationType validationType, IXMLReferenceTo referenceTo, Node node, IFile file) {
+	protected String getMessageText(
+		ValidationPreferences.ValidationType validationType, IXMLReferenceTo referenceTo, Node node, IFile file) {
+
 		String nodeValue = DOMUtils.getNodeValue(node);
 
 		String textContent = (nodeValue == null) ? "" : nodeValue;
@@ -337,7 +338,7 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 		return null;
 	}
 
-	protected String getMessageText(ValidationType validationType, Node node) {
+	protected String getMessageText(ValidationPreferences.ValidationType validationType, Node node) {
 		return getMessageText(validationType, null, node, null);
 	}
 
@@ -370,12 +371,11 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 		if (eclipsePreferences.getBoolean(ProjectCore.USE_PROJECT_SETTINGS, false)) {
 			return new IScopeContext[] {projectScope, InstanceScope.INSTANCE, DefaultScope.INSTANCE};
 		}
-		else {
-			return new IScopeContext[] {InstanceScope.INSTANCE, DefaultScope.INSTANCE};
-		}
+
+		return new IScopeContext[] {InstanceScope.INSTANCE, DefaultScope.INSTANCE};
 	}
 
-	protected int getServerity(ValidationType validationType, IFile file) {
+	protected int getServerity(ValidationPreferences.ValidationType validationType, IFile file) {
 		String liferayPluginValidationType = getLiferayPluginValidationType(validationType, file);
 
 		// get severity from users' settings
@@ -398,24 +398,24 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 		return node.getStartOffset();
 	}
 
-	protected ValidationType getValidationType(IXMLReferenceTo referenceTo, int nbElements) {
+	protected ValidationPreferences.ValidationType getValidationType(IXMLReferenceTo referenceTo, int nbElements) {
 		switch (referenceTo.getType()) {
 			case XML:
-				return ValidationType.REFERENCE_NOT_FOUND;
+				return ValidationPreferences.ValidationType.REFERENCE_NOT_FOUND;
 			case JAVA:
 				if (nbElements == -1) {
-					return ValidationType.TYPE_HIERARCHY_INCORRECT;
+					return ValidationPreferences.ValidationType.TYPE_HIERARCHY_INCORRECT;
 				}
 
-				return ValidationType.TYPE_NOT_FOUND;
+				return ValidationPreferences.ValidationType.TYPE_NOT_FOUND;
 			case JAVA_METHOD:
-				return ValidationType.METHOD_NOT_FOUND;
+				return ValidationPreferences.ValidationType.METHOD_NOT_FOUND;
 			case RESOURCE:
-				return ValidationType.RESOURCE_NOT_FOUND;
+				return ValidationPreferences.ValidationType.RESOURCE_NOT_FOUND;
 			case PROPERTY:
-				return ValidationType.PROPERTY_NOT_FOUND;
+				return ValidationPreferences.ValidationType.PROPERTY_NOT_FOUND;
 			case STATIC:
-				return ValidationType.STATIC_VALUE_UNDEFINED;
+				return ValidationPreferences.ValidationType.STATIC_VALUE_UNDEFINED;
 			default:
 				return null;
 		}
@@ -459,7 +459,7 @@ public class LiferayBaseValidator implements IXMLReferenceValidator, IXMLReferen
 			}
 
 			if (addMessage) {
-				ValidationType validationType = getValidationType(referenceTo, nbElements);
+				ValidationPreferences.ValidationType validationType = getValidationType(referenceTo, nbElements);
 
 				int severity = getServerity(validationType, file);
 				String liferayPluginValidationType = getLiferayPluginValidationType(validationType, file);

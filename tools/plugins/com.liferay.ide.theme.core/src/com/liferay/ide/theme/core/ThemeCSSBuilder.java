@@ -104,7 +104,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder {
 		IResource res = lrProject.findDocrootResource(
 			new Path("WEB-INF/" + ILiferayConstants.LIFERAY_LOOK_AND_FEEL_XML_FILE));
 
-		if (res instanceof IFile && res.exists()) {
+		if ((res instanceof IFile) && res.exists()) {
 			lookAndFeelFile = (IFile)res;
 		}
 
@@ -121,7 +121,7 @@ public class ThemeCSSBuilder extends IncrementalProjectBuilder {
 
 			String name = id;
 
-			if (propertiesFileRes instanceof IFile && propertiesFileRes.exists()) {
+			if ((propertiesFileRes instanceof IFile) && propertiesFileRes.exists()) {
 				Properties props = new Properties();
 				IFile propsFile = (IFile)propertiesFileRes;
 

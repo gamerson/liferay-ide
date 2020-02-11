@@ -95,7 +95,7 @@ public class ComponentPropertiesCompletionProposalComputer implements IJavaCompl
 
 				int replaceStartPos = invocationOffset - candidate.length();
 
-				for (int i = 0; i < LiferayComponentProperties.CODE_ASSISTANT_RESOURCE.length - 1; i++) {
+				for (int i = 0; i < (LiferayComponentProperties.CODE_ASSISTANT_RESOURCE.length - 1); i++) {
 					final String[] propertyAssist = LiferayComponentProperties.CODE_ASSISTANT_RESOURCE[i];
 
 					final String propertyKey = propertyAssist[0];

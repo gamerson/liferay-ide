@@ -345,7 +345,7 @@ public class ServiceMethodHyperlinkDetector extends AbstractHyperlinkDetector {
 			}
 		}
 
-		return result.toArray(new IJavaElement[result.size()]);
+		return result.toArray(new IJavaElement[0]);
 	}
 
 	private boolean _shouldAddServiceHyperlink(JavaEditor editor) {
@@ -392,7 +392,7 @@ public class ServiceMethodHyperlinkDetector extends AbstractHyperlinkDetector {
 		public void acceptSearchMatch(SearchMatch match) throws CoreException {
 			Object element = match.getElement();
 
-			if (element instanceof IMethod && _matches((IMethod)element)) {
+			if ((element instanceof IMethod) && _matches((IMethod)element)) {
 				_results.add((IMethod)element);
 			}
 		}

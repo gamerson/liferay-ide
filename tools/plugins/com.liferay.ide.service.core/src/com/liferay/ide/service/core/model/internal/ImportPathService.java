@@ -90,9 +90,8 @@ public class ImportPathService extends RelativePathService {
 		if (file == null) {
 			return Collections.emptyList();
 		}
-		else {
-			return Collections.singletonList(new Path(file.getParent()));
-		}
+
+		return Collections.singletonList(new Path(file.getParent()));
 	}
 
 }

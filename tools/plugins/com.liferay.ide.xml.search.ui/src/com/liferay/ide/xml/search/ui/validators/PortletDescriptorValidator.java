@@ -15,7 +15,7 @@
 package com.liferay.ide.xml.search.ui.validators;
 
 import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.project.core.ValidationPreferences.ValidationType;
+import com.liferay.ide.project.core.ValidationPreferences;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
@@ -44,7 +44,7 @@ public class PortletDescriptorValidator extends LiferayBaseValidator {
 		IXMLReference reference, IDOMNode node, IFile file, IValidator validator, IReporter reporter,
 		boolean batchMode) {
 
-		int severity = getServerity(ValidationType.SYNTAX_INVALID, file);
+		int severity = getServerity(ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 
 		if (severity == ValidationMessage.IGNORE) {
 			return true;
@@ -69,7 +69,7 @@ public class PortletDescriptorValidator extends LiferayBaseValidator {
 
 			if (validationMsg != null) {
 				String liferayPluginValidationType = getLiferayPluginValidationType(
-					ValidationType.SYNTAX_INVALID, file);
+					ValidationPreferences.ValidationType.SYNTAX_INVALID, file);
 
 				addMessage(
 					node, file, validator, reporter, batchMode, validationMsg, severity, liferayPluginValidationType);

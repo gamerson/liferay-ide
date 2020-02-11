@@ -165,7 +165,7 @@ public class FormEntry {
 	 * @param listener
 	 */
 	public void setFormEntryListener(IFormEntryListener listener) {
-		if ((_fLabel != null) && _fLabel instanceof Hyperlink) {
+		if ((_fLabel != null) && (_fLabel instanceof Hyperlink)) {
 			if (_fListener != null) {
 				((Hyperlink)_fLabel).removeHyperlinkListener(_fListener);
 			}

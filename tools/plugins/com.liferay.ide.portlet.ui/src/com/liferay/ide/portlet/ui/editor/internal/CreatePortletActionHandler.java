@@ -90,22 +90,21 @@ public class CreatePortletActionHandler extends SapphireActionHandler {
 
 			return portlet;
 		}
-		else {
-			portlets.remove(portlet);
 
-			portlet = null;
+		portlets.remove(portlet);
 
-			try {
-				resource.save();
-			}
-			catch (ResourceStoreException rse) {
+		portlet = null;
 
-				// Log it in PorletUI Plugin
-
-			}
-
-			return null;
+		try {
+			resource.save();
 		}
+		catch (ResourceStoreException rse) {
+
+			// Log it in PorletUI Plugin
+
+		}
+
+		return null;
 	}
 
 }

@@ -75,7 +75,7 @@ public interface NewLiferayWorkspaceOp extends BaseLiferayWorkspaceOp {
 	public void setWorkspaceName(String value);
 
 	@Label(standard = "liferay version")
-	@Listeners(value = TargetLiferayVersionListener.class)
+	@Listeners(TargetLiferayVersionListener.class)
 	@Service(impl = TargetLiferayVersionDefaultValueService.class)
 	@Service(impl = TargetLiferayVersionPossibleValuesService.class)
 	public ValueProperty PROP_LIFERAY_VERSION = new ValueProperty(TYPE, "LiferayVersion");

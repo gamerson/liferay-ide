@@ -112,9 +112,8 @@ public class ExternalFileSelectionDialog extends FilteredElementTreeSelectionDia
 				if (curr.isDirectory()) {
 					return _imgFolder;
 				}
-				else {
-					return _imgFile;
-				}
+
+				return _imgFile;
 			}
 
 			return null;

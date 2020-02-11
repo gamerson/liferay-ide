@@ -654,9 +654,8 @@ public class NewPortletClassDataModelProvider
 			if (validFileName) {
 				return super.validate(propertyName);
 			}
-			else {
-				return PortletCore.createWarningStatus(Msgs.resourceBundleFilePathEndWithProperties);
-			}
+
+			return PortletCore.createWarningStatus(Msgs.resourceBundleFilePathEndWithProperties);
 		}
 		else if (CREATE_JSPS_FOLDER.equals(propertyName)) {
 			if (!getBooleanProperty(CREATE_JSPS)) {
@@ -860,9 +859,8 @@ public class NewPortletClassDataModelProvider
 		if (portal != null) {
 			return portal.getPortletEntryCategories();
 		}
-		else {
-			return null;
-		}
+
+		return null;
 	}
 
 	protected Object getInitParams() {

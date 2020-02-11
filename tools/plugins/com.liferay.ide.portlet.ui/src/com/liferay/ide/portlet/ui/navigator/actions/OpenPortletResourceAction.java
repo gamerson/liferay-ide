@@ -73,7 +73,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction imple
 			if (FileUtil.exists(file)) {
 				editorPart = openEditor(file);
 
-				if ((editorPart != null) && selectedNode instanceof PortletNode) {
+				if ((editorPart != null) && (selectedNode instanceof PortletNode)) {
 					selectAndRevealItem(editorPart);
 					openPortletJavaClass(file);
 				}
@@ -294,7 +294,7 @@ public class OpenPortletResourceAction extends BaseSelectionListenerAction imple
 				initEditorPart();
 			}
 
-			if ((editorPart != null) && selectedNode instanceof PortletNode) {
+			if ((editorPart != null) && (selectedNode instanceof PortletNode)) {
 				selectAndRevealItem(editorPart);
 			}
 

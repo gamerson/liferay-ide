@@ -40,7 +40,7 @@ public class AlloyJSPFileConfiguration implements ITernFileConfiguration {
 
 		IProject project = ((IFile)file).getProject();
 
-		if (file instanceof IFile && ProjectUtil.isPortletProject(project)) {
+		if ((file instanceof IFile) && ProjectUtil.isPortletProject(project)) {
 			return _tags;
 		}
 

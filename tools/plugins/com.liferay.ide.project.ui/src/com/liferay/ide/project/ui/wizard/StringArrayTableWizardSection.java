@@ -726,9 +726,8 @@ public class StringArrayTableWizardSection extends Composite {
 			if (ListUtil.isNotEmpty(array)) {
 				return array[0];
 			}
-			else {
-				return super.getText(element);
-			}
+
+			return super.getText(element);
 		}
 
 	}

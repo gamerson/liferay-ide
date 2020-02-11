@@ -124,7 +124,7 @@ public abstract class LiferayDataModelWizardPage extends DataModelWizardPage {
 	protected IJavaElement getInitialJavaElement(ISelection selection) {
 		IJavaElement jelem = null;
 
-		if ((selection != null) && !selection.isEmpty() && selection instanceof IStructuredSelection) {
+		if ((selection != null) && !selection.isEmpty() && (selection instanceof IStructuredSelection)) {
 			Object selectedElement = ((IStructuredSelection)selection).getFirstElement();
 
 			jelem = getJavaElement(selectedElement);

@@ -130,7 +130,7 @@ public class IvyUtil {
 
 			newEntries.add(cpeTagged);
 
-			entries = (IClasspathEntry[])newEntries.toArray(new IClasspathEntry[newEntries.size()]);
+			entries = (IClasspathEntry[])newEntries.toArray(new IClasspathEntry[0]);
 
 			javaProject.setRawClasspath(entries, javaProject.getOutputLocation(), monitor);
 

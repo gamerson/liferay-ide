@@ -218,73 +218,67 @@ public class LiferayGradleProject
 
 			return new Path(outputFile.getAbsolutePath());
 		}
-		else {
-			IPath outputPath = FileUtil.pathAppend(
-				gradleProject.getLocation(), "dist", gradleProject.getName() + ".war");
 
-			if (FileUtil.exists(outputPath)) {
-				return outputPath;
+		IPath outputPath = FileUtil.pathAppend(gradleProject.getLocation(), "dist", gradleProject.getName() + ".war");
+
+		if (FileUtil.exists(outputPath)) {
+			return outputPath;
+		}
+
+		// using CustomModel if can't find output
+
+		IPath retval = null;
+
+		CustomModel model = LiferayGradleCore.getToolingModel(CustomModel.class, gradleProject);
+
+		if (model == null) {
+			return retval;
+		}
+
+		Set<File> outputFiles = model.getOutputFiles();
+
+		if (ListUtil.isNotEmpty(outputFiles)) {
+
+			// first check to see if there are any outputfiles that are wars, if so use that
+			// one.
+
+			File bundleFile = null;
+
+			for (File outputFile : outputFiles) {
+				if (FileUtil.nameEndsWith(outputFile, ".war")) {
+					bundleFile = outputFile;
+
+					break;
+				}
 			}
-			else {
 
-				// using CustomModel if can't find output
+			if (bundleFile == null) {
+				for (File outputFile : outputFiles) {
+					String name = outputFile.getName();
 
-				IPath retval = null;
-
-				CustomModel model = LiferayGradleCore.getToolingModel(CustomModel.class, gradleProject);
-
-				if (model == null) {
-					return retval;
-				}
-
-				Set<File> outputFiles = model.getOutputFiles();
-
-				if (ListUtil.isNotEmpty(outputFiles)) {
-
-					// first check to see if there are any outputfiles that are wars, if so use that
-					// one.
-
-					File bundleFile = null;
-
-					for (File outputFile : outputFiles) {
-						if (FileUtil.nameEndsWith(outputFile, ".war")) {
-							bundleFile = outputFile;
-
-							break;
-						}
+					if (name.endsWith("javadoc.jar") || name.endsWith("jspc.jar") || name.endsWith("sources.jar")) {
+						continue;
 					}
 
-					if (bundleFile == null) {
-						for (File outputFile : outputFiles) {
-							String name = outputFile.getName();
+					if (name.endsWith(".jar")) {
+						bundleFile = outputFile;
 
-							if (name.endsWith("javadoc.jar") || name.endsWith("jspc.jar") ||
-								name.endsWith("sources.jar")) {
-
-								continue;
-							}
-
-							if (name.endsWith(".jar")) {
-								bundleFile = outputFile;
-
-								break;
-							}
-						}
-					}
-
-					if (bundleFile != null) {
-						retval = new Path(bundleFile.getAbsolutePath());
+						break;
 					}
 				}
-				else if (model.hasPlugin("com.liferay.gradle.plugins.gulp.GulpPlugin")) {
-					IPath location = gradleProject.getLocation();
+			}
 
-					retval = FileUtil.pathAppend(location, "dist", gradleProject.getName() + ".war");
-				}
-
-				return retval;
+			if (bundleFile != null) {
+				retval = new Path(bundleFile.getAbsolutePath());
 			}
 		}
+		else if (model.hasPlugin("com.liferay.gradle.plugins.gulp.GulpPlugin")) {
+			IPath location = gradleProject.getLocation();
+
+			retval = FileUtil.pathAppend(location, "dist", gradleProject.getName() + ".war");
+		}
+
+		return retval;
 	}
 
 	@Override

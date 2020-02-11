@@ -88,7 +88,7 @@ public class RenamePortalKernelImports extends JavaImportsMigrator {
 			catch (Exception e) {
 			}
 
-			String[] lineArray = lines.toArray(new String[lines.size()]);
+			String[] lineArray = lines.toArray(new String[0]);
 
 			String[][] results = new String[lineArray.length][2];
 

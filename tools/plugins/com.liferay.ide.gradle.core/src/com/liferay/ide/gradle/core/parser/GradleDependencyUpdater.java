@@ -163,7 +163,7 @@ public class GradleDependencyUpdater {
 
 		_gradleFileContents.set(startLineNumber - 1, dependencyBuilder.toString());
 
-		for (int i = endLineNumber - 1; i > startLineNumber - 1; i--) {
+		for (int i = endLineNumber - 1; i > (startLineNumber - 1); i--) {
 			_gradleFileContents.remove(i);
 		}
 	}

@@ -602,7 +602,7 @@ public class BuildHelper {
 					}
 
 					if (ListUtil.isNotEmpty(ignoreChildPaths)) {
-						ignoreChildren = ignoreChildPaths.toArray(new Path[ignoreChildPaths.size()]);
+						ignoreChildren = ignoreChildPaths.toArray(new Path[0]);
 					}
 				}
 
@@ -679,7 +679,7 @@ public class BuildHelper {
 
 		monitor = ProgressUtil.getMonitorFor(monitor);
 
-		if ((resources.length == 1) && resources[0] instanceof IFile) {
+		if ((resources.length == 1) && (resources[0] instanceof IFile)) {
 			try {
 				_copyFile((IFile)resources[0], path);
 			}

@@ -95,9 +95,8 @@ public class PortletColumnEditPart extends PortletRowLayoutEditPart {
 
 			return rect;
 		}
-		else {
-			throw new IllegalArgumentException();
-		}
+
+		throw new IllegalArgumentException();
 	}
 
 	@Override

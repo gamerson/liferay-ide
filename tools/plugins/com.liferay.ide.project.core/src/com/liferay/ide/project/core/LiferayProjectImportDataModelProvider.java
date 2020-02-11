@@ -153,9 +153,8 @@ public class LiferayProjectImportDataModelProvider
 				if (sdk != null) {
 					return Status.OK_STATUS;
 				}
-				else {
-					return ProjectCore.createErrorStatus(Msgs.projectNotLocated);
-				}
+
+				return ProjectCore.createErrorStatus(Msgs.projectNotLocated);
 			}
 
 			return ProjectCore.createErrorStatus(Msgs.invalidProjectLocation);
@@ -169,22 +168,18 @@ public class LiferayProjectImportDataModelProvider
 				if (CoreUtil.compareVersions(version, SDKManager.getLeastValidVersion()) >= 0) {
 					return Status.OK_STATUS;
 				}
-				else {
-					return ProjectCore.createErrorStatus(
-						Msgs.invalidPluginSDKVersion + SDKManager.getLeastValidVersion());
-				}
+
+				return ProjectCore.createErrorStatus(Msgs.invalidPluginSDKVersion + SDKManager.getLeastValidVersion());
 			}
-			else {
-				return locationStatus;
-			}
+
+			return locationStatus;
 		}
 		else if (PLUGIN_TYPE.equals(name)) {
 			if (ProjectUtil.isLiferayPluginType(getStringProperty(PLUGIN_TYPE))) {
 				return Status.OK_STATUS;
 			}
-			else {
-				return ProjectCore.createErrorStatus(Msgs.invalidLiferayPluginType);
-			}
+
+			return ProjectCore.createErrorStatus(Msgs.invalidLiferayPluginType);
 		}
 		else if (FACET_RUNTIME.equals(name)) {
 			Object runtime = getProperty(FACET_RUNTIME);
@@ -192,9 +187,8 @@ public class LiferayProjectImportDataModelProvider
 			if (!(runtime instanceof BridgedRuntime)) {
 				return ProjectCore.createErrorStatus(Msgs.validLiferayRuntimeSelected);
 			}
-			else {
-				return Status.OK_STATUS;
-			}
+
+			return Status.OK_STATUS;
 		}
 		else if (FACET_PROJECT_NAME.equals(name)) {
 

@@ -192,7 +192,7 @@ public class PropertiesFileChecker {
 			boolean precedingBackslash;
 			int lineNumber = 0;
 
-			while ((limit = lr.readLine())[0] >= 0) {
+			while (limit = lr.readLine()[0] >= 0) {
 				lineNumber++;
 				lineNumber += limit[2];
 				c = 0;
