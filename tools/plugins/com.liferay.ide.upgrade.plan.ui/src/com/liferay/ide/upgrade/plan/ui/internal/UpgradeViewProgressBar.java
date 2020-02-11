@@ -220,13 +220,13 @@ public class UpgradeViewProgressBar extends Canvas implements UpgradeListener {
 	}
 
 	private void _paint(PaintEvent paintEvent) {
-		GC gc = paintEvent.gc;
-
 		if (isDisposed()) {
 			return;
 		}
 
 		Rectangle rectangle = getClientArea();
+
+		GC gc = paintEvent.gc;
 
 		gc.fillRectangle(rectangle);
 

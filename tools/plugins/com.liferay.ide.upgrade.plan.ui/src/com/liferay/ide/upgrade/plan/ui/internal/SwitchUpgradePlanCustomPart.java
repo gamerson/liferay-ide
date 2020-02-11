@@ -288,13 +288,13 @@ public class SwitchUpgradePlanCustomPart extends FormComponentPart implements Up
 		ISelection selection = _tableViewer.getSelection();
 
 		if (selection != null) {
-			IStructuredSelection selected = (IStructuredSelection)selection;
-
-			UpgradePlan upgradePlan = (UpgradePlan)selected.getFirstElement();
-
 			if (_currentUpgradePlan == null) {
 				return;
 			}
+
+			IStructuredSelection selected = (IStructuredSelection)selection;
+
+			UpgradePlan upgradePlan = (UpgradePlan)selected.getFirstElement();
 
 			if (upgradePlan.equals(_currentUpgradePlan)) {
 				return;

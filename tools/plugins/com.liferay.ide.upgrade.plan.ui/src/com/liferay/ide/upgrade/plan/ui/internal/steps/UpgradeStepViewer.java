@@ -67,9 +67,7 @@ public class UpgradeStepViewer implements ISelectionProvider {
 		_updateFromSelection(upgradePlanViewer.getSelection());
 
 		upgradePlanViewer.addPostSelectionChangedListener(
-			selectionChangedEvent -> {
-				_updateFromSelection(selectionChangedEvent.getSelection());
-			});
+			selectionChangedEvent -> _updateFromSelection(selectionChangedEvent.getSelection()));
 	}
 
 	@Override

@@ -105,7 +105,7 @@ public class UpgradeStepsBuilder {
 
 				Element titleNextElement = titleElement.nextElementSibling();
 
-				if ((titleNextElement != null) && "p".equals(titleNextElement.nodeName())) {
+				if ((titleNextElement != null) && Objects.equals("p", titleNextElement.nodeName())) {
 					summary = titleNextElement.text();
 				}
 				else {

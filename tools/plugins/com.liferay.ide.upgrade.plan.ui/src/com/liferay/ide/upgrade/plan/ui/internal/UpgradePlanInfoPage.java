@@ -114,32 +114,28 @@ public class UpgradePlanInfoPage extends Page implements ISelectionChangedListen
 					Promise<String> detail = upgradeInfoProvider.getDetail(firstElement);
 
 					detail.onResolve(
-						() -> {
-							UIUtil.async(
-								() -> {
-									try {
-										if (detail.getFailure() != null) {
-											_browser.setText("about:blank");
+						() -> UIUtil.async(
+							() -> {
+								try {
+									if (detail.getFailure() != null) {
+										_browser.setText("about:blank");
+									}
+									else {
+										String detailValue = detail.getValue();
+
+										if (detailValue.startsWith("https://") || detailValue.equals("about:blank")) {
+											_browser.setUrl(detailValue);
 										}
 										else {
-											String detailValue = detail.getValue();
-
-											if (detailValue.startsWith("https://") ||
-												detailValue.equals("about:blank")) {
-
-												_browser.setUrl(detailValue);
-											}
-											else {
-												_browser.setText(detail.getValue(), true);
-											}
+											_browser.setText(detail.getValue(), true);
 										}
+									}
 
-										_composite.redraw();
-									}
-									catch (Exception e) {
-									}
-								});
-						});
+									_composite.redraw();
+								}
+								catch (Exception e) {
+								}
+							}));
 				}
 			);
 		}
