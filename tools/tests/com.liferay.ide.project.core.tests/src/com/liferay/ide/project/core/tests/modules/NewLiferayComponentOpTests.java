@@ -344,11 +344,20 @@ public class NewLiferayComponentOpTests extends BaseTests
 
         TestUtil.waitForBuildAndValidation();
 
+        IProject[] projects = CoreUtil.getAllProjects();
+
+        assertTrue(projects.length==0);
+
         NewLiferayComponentOp cop = NewLiferayComponentOp.TYPE.instantiate();
 
         Status projectValidationStatus = cop.getProjectName().validation();
 
         assertEquals( "No suitable Liferay module project", projectValidationStatus.message() );
+
+        for (int i=0; i<projects.length;i++) {
+            System.out.println("1111111111111111111111111");
+            System.out.println(projects[i]);
+        }
 
         NewLiferayModuleProjectOp pop = NewLiferayModuleProjectOp.TYPE.instantiate();
 
