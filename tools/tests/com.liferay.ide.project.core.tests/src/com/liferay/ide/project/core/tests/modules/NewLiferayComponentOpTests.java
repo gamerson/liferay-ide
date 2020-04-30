@@ -342,12 +342,7 @@ public class NewLiferayComponentOpTests extends BaseTests
     {
         deleteAllWorkspaceProjects();
 
-        IProject[] projects = CoreUtil.getAllProjects();
-
-        for (int i=0; i<projects.length;i++) {
-            System.out.println("1111111111111111111111111");
-            System.out.println(projects[i]);
-        }
+        TestUtil.waitForBuildAndValidation();
 
         NewLiferayComponentOp cop = NewLiferayComponentOp.TYPE.instantiate();
 
