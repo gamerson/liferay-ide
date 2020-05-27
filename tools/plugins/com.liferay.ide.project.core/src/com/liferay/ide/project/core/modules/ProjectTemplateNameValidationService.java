@@ -54,6 +54,7 @@ public class ProjectTemplateNameValidationService extends ValidationService impl
 
 		if (op != null) {
 			SapphireUtil.detachListener(op.property(NewLiferayModuleProjectOp.PROP_LIFERAY_VERSION), _listener);
+			SapphireUtil.detachListener(op.property(NewLiferayModuleProjectOp.PROP_PROJECT_PROVIDER), _listener);
 		}
 
 		super.dispose();
@@ -125,6 +126,7 @@ public class ProjectTemplateNameValidationService extends ValidationService impl
 		NewLiferayModuleProjectOp op = context(NewLiferayModuleProjectOp.class);
 
 		SapphireUtil.attachListener(op.property(NewLiferayModuleProjectOp.PROP_LIFERAY_VERSION), _listener);
+		SapphireUtil.attachListener(op.property(NewLiferayModuleProjectOp.PROP_PROJECT_PROVIDER), _listener);
 
 		_loadSupportedVersionRanges();
 	}
