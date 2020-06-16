@@ -15,16 +15,21 @@
 package com.liferay.ide.project.core.workspace;
 
 import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.BladeCLI;
+
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.sapphire.DefaultValueService;
+import org.eclipse.sapphire.Value;
 
 /**
  * @author Ethan Sun
+ * @author Simon Jiang
  */
 public class ProductCategoryDefaultValueService extends DefaultValueService {
 
@@ -34,7 +39,20 @@ public class ProductCategoryDefaultValueService extends DefaultValueService {
 			return null;
 		}
 
-		return "portal";
+		NewLiferayWorkspaceOp op = context(NewLiferayWorkspaceOp.class);
+
+		Value<String> productCategory = op.getProductCategory();
+
+		ProductCategoryPossibleValuesService possibleValuesService = productCategory.service(
+			ProductCategoryPossibleValuesService.class);
+
+		if (possibleValuesService == null) {
+			return null;
+		}
+
+		Set<String> categoryValues = possibleValuesService.values();
+
+		return categoryValues.toArray(new String[0])[0];
 	}
 
 	@Override
@@ -44,12 +62,12 @@ public class ProductCategoryDefaultValueService extends DefaultValueService {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					_workspaceProducts = BladeCLI.getInitPromotedWorkspaceProduct(true);
+					_workspaceProducts = BladeCLI.getWorkspaceProduct(true);
 
 					refresh();
 				}
-				catch (Exception e) {
-					e.printStackTrace();
+				catch (Exception exception) {
+					ProjectCore.logError("Failed to init workspace product cateogry default value.", exception);
 				}
 
 				return Status.OK_STATUS;

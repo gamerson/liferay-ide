@@ -15,9 +15,9 @@
 package com.liferay.ide.project.core.workspace;
 
 import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.project.core.ProjectCore;
 import com.liferay.ide.project.core.modules.BladeCLI;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +30,7 @@ import org.eclipse.sapphire.PossibleValuesService;
 
 /**
  * @author Ethan Sun
+ * @author Simon Jiang
  */
 public class ProductCategoryPossibleValuesService extends PossibleValuesService {
 
@@ -50,11 +51,9 @@ public class ProductCategoryPossibleValuesService extends PossibleValuesService 
 		if (ListUtil.isNotEmpty(categorySet)) {
 			values.addAll(categorySet);
 
-			String[] productCategoryValuesArr = categorySet.toArray(new String[0]);
+			String[] productCategoryValuesArr = values.toArray(new String[0]);
 
-			Arrays.sort(productCategoryValuesArr, String::compareTo);
-
-			_op.setProductCategory(productCategoryValuesArr[productCategoryValuesArr.length - 1]);
+			_op.setProductCategory(productCategoryValuesArr[0]);
 		}
 	}
 
@@ -67,12 +66,12 @@ public class ProductCategoryPossibleValuesService extends PossibleValuesService 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					_workspaceProducts = BladeCLI.getInitPromotedWorkspaceProduct(true);
+					_workspaceProducts = BladeCLI.getWorkspaceProduct(true);
 
 					refresh();
 				}
-				catch (Exception e) {
-					e.printStackTrace();
+				catch (Exception exception) {
+					ProjectCore.logError("Failed to init workspace product possible values.", exception);
 				}
 
 				return Status.OK_STATUS;
