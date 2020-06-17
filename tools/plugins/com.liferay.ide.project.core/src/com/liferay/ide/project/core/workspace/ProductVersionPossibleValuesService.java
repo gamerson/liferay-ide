@@ -14,6 +14,7 @@
 
 package com.liferay.ide.project.core.workspace;
 
+import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.SapphireContentAccessor;
 import com.liferay.ide.core.util.SapphireUtil;
 import com.liferay.ide.project.core.ProjectCore;
@@ -64,9 +65,20 @@ public class ProductVersionPossibleValuesService extends PossibleValuesService i
 
 		if (get(op.getShowAllVersionProduct())) {
 			values.addAll(_productVersions);
+			String[] productVersions = _productVersions.toArray(new String[0]);
+
+			if (!ListUtil.isEmpty(productVersions)) {
+				op.setProductVersion(productVersions[0]);
+			}
 		}
 		else {
 			values.addAll(_promotedProductVersions);
+
+			String[] productVersions = _promotedProductVersions.toArray(new String[0]);
+
+			if (!ListUtil.isEmpty(productVersions)) {
+				op.setProductVersion(productVersions[0]);
+			}
 		}
 	}
 
