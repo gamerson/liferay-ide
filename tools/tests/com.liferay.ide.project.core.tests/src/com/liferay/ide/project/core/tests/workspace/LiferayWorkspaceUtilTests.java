@@ -107,7 +107,7 @@ public class LiferayWorkspaceUtilTests extends ProjectCoreBase
 
         String warsValue = LiferayWorkspaceUtil.getWarsDirs( workspaceProject )[0];
 
-        assertTrue( warsValue.equals( "wars" ) );
+        assertTrue( warsValue.equals( "modules" ) );
 
         File propertiesFile = new File(workspaceLocation+"/gradle.properties");
 
@@ -122,7 +122,6 @@ public class LiferayWorkspaceUtilTests extends ProjectCoreBase
         workspaceProject.refreshLocal( IResource.DEPTH_INFINITE, new NullProgressMonitor() );
 
         homeValue = LiferayWorkspaceUtil.getHomeDir( workspaceLocation );
-
 
         assertTrue( homeValue.equals( "bundles1" ) );
 
@@ -140,7 +139,7 @@ public class LiferayWorkspaceUtilTests extends ProjectCoreBase
 
         warsValue = LiferayWorkspaceUtil.getWarsDirs( workspaceProject )[0];
 
-        assertTrue( warsValue.equals( "test1" ) );
+        assertTrue( warsValue.equals( "tests" ) );
 
         workspaceProject.delete(true,true,new NullProgressMonitor());
     }
