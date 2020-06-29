@@ -251,7 +251,7 @@ public class NewLiferayComponentOpTests extends BaseTests
         
         IProject modProject = CoreUtil.getProject( op.getProjectName().content() );
 
-        //CoreUtil.openProject(op.getProjectName().content(), PathBridge.create(op.getLocation().content()).append(op.getProjectName().content()), new NullProgressMonitor());
+        modProject.open( new NullProgressMonitor() );
         
         NewLiferayComponentOp cop = NewLiferayComponentOp.TYPE.instantiate();
 
