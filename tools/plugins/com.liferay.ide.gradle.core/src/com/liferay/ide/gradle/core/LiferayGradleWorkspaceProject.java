@@ -98,6 +98,13 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 	}
 
 	@Override
+	public String getBundleHome() {
+		_loadGradleWorkspaceProperties();
+
+		return getProperty(WorkspaceConstants.HOME_DIR_PROPERTY, WorkspaceConstants.DEFAULT_HOME_DIR);
+	}
+
+	@Override
 	public Set<IProject> getChildProjects() {
 		Set<IProject> childProjects = super.getChildProjects();
 
@@ -115,13 +122,6 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 		).collect(
 			Collectors.toSet()
 		);
-	}
-
-	@Override
-	public String getLiferayHome() {
-		_loadGradleWorkspaceProperties();
-
-		return getProperty(WorkspaceConstants.HOME_DIR_PROPERTY, WorkspaceConstants.DEFAULT_HOME_DIR);
 	}
 
 	@Override

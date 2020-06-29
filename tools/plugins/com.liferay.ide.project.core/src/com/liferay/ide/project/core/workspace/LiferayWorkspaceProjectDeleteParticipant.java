@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -64,13 +65,11 @@ public class LiferayWorkspaceProjectDeleteParticipant extends DeleteParticipant 
 
 		IPath projectLocation = _workspaceProject.getLocation();
 
-		String homeDir = workspaceProject.getLiferayHome();
+		String homeDir = workspaceProject.getBundleHome();
 
 		if (FileUtil.notExists(projectLocation) || CoreUtil.isNullOrEmpty(homeDir)) {
 			return null;
 		}
-
-		IPath bundleLocation = projectLocation.append(homeDir);
 
 		Stream.of(
 			ServerCore.getServers()
@@ -81,7 +80,13 @@ public class LiferayWorkspaceProjectDeleteParticipant extends DeleteParticipant 
 				IRuntime runtime = server.getRuntime();
 
 				if (runtime != null) {
-					return bundleLocation.equals(runtime.getLocation());
+					IPath bundleHomePath = Path.fromOSString(homeDir);
+
+					if (!bundleHomePath.isAbsolute()) {
+						bundleHomePath = projectLocation.append(homeDir);
+					}
+
+					return bundleHomePath.equals(runtime.getLocation());
 				}
 
 				return true;

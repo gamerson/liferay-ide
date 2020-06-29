@@ -62,7 +62,7 @@ public class LiferayMavenWorkspaceProject extends LiferayWorkspaceProject implem
 	}
 
 	@Override
-	public String getLiferayHome() {
+	public String getBundleHome() {
 		return getProperty(WorkspaceConstants.LIFERAY_HOME_PROPERTY, WorkspaceConstants.DEFAULT_HOME_DIR);
 	}
 

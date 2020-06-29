@@ -26,9 +26,9 @@ import org.eclipse.core.resources.IProject;
  */
 public interface IWorkspaceProject extends ILiferayProject {
 
-	public Set<IProject> getChildProjects();
+	public String getBundleHome();
 
-	public String getLiferayHome();
+	public Set<IProject> getChildProjects();
 
 	public default List<Artifact> getTargetPlatformArtifacts() {
 		return Collections.emptyList();
