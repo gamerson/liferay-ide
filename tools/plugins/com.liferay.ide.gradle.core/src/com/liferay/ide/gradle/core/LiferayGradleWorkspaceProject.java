@@ -366,6 +366,42 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 	}
 
 	@Override
+	public boolean isNewVersionLiferayWorkspace() {
+		IProject project = getProject();
+
+		IFile settingsGradleFile = project.getFile("settings.gradle");
+
+		GradleBuildScript gradleBuildScript = null;
+
+		try {
+			gradleBuildScript = new GradleBuildScript(FileUtil.getFile(settingsGradleFile));
+		}
+		catch (IOException ioe) {
+		}
+
+		return Optional.ofNullable(
+			gradleBuildScript
+		).flatMap(
+			buildScript -> {
+				List<GradleDependency> dependencies = buildScript.getBuildScriptDependencies();
+
+				return dependencies.stream(
+				).filter(
+					dep -> "com.liferay".equals(dep.getGroup())
+				).filter(
+					dep -> "com.liferay.gradle.plugins.workspace".equals(dep.getName())
+				).filter(
+					dep -> CoreUtil.isNotNullOrEmpty(dep.getVersion())
+				).map(
+					dep -> dep.getVersion()
+				).findFirst();
+			}
+		).filter(
+			pluginVersion -> CoreUtil.compareVersions(new Version(pluginVersion), new Version("2.5.0")) >= 0
+		).isPresent();
+	}
+
+	@Override
 	public boolean isStale() {
 		return _stale;
 	}
@@ -555,7 +591,7 @@ public class LiferayGradleWorkspaceProject extends LiferayWorkspaceProject imple
 
 			IPath gradleProperties = projectLocation.append("gradle.properties");
 
-			properties = PropertiesUtil.loadProperties(gradleProperties);
+			properties.putAll(PropertiesUtil.loadProperties(gradleProperties));
 		}
 	}
 

@@ -128,10 +128,7 @@ public class ProjectCoreBase extends ServerCoreBase
         
         waitForBuildAndValidation();
         
-        if( workspaceOp.validation().ok() )
-        {
-            NewLiferayWorkspaceOpMethods.execute( workspaceOp, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
-        }
+        NewLiferayWorkspaceOpMethods.execute( workspaceOp, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
 
         waitForBuildAndValidation();
 

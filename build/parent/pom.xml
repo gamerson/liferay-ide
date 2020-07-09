@@ -29,6 +29,8 @@
     <properties>
         <blade-latest-download-url>https://repository.liferay.com/nexus/content/repositories/liferay-public-snapshots/com/liferay/blade/com.liferay.blade.cli/4.0.0-SNAPSHOT/com.liferay.blade.cli-4.0.0-20200703.060929-24.jar</blade-latest-download-url>
         <blade-latest-md5>ccb5b7318cdabe26fd5fa221f76cf845</blade-latest-md5>
+        <blade-old-download-url>https://repository.liferay.com/nexus/content/repositories/liferay-public-snapshots/com/liferay/blade/com.liferay.blade.cli/3.9.3-SNAPSHOT/com.liferay.blade.cli-3.9.3-20200410.165338-3.jar</blade-old-download-url>
+        <blade-old-md5>c596482ede8fce4e717d78b599086573</blade-old-md5>
         <bndtools-site>https://bndtools.jfrog.io/bndtools/update-latest/</bndtools-site>
         <eclipse-site>https://download.eclipse.org/releases/2018-12/201812191000/</eclipse-site>
         <eclipse-xml-search-site>https://dl.bintray.com/gamerson/eclipse-wtp-xml-search/</eclipse-xml-search-site>

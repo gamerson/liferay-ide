@@ -120,7 +120,7 @@ public class NewLiferayComponentOpTests extends BaseTests
 
 
     @BeforeClass
-    public static void setupBladeCLIRepoUrl() throws Exception
+    public static void setupLiferayWorkspaceProject() throws Exception
     {
         NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
         
@@ -130,10 +130,7 @@ public class NewLiferayComponentOpTests extends BaseTests
         
         TestUtil.waitForBuildAndValidation();
 
-        if( op.validation().ok() )
-        {
-            NewLiferayWorkspaceOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
-        }
+        NewLiferayWorkspaceOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
 
         TestUtil.waitForBuildAndValidation();
     }

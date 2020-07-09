@@ -78,10 +78,7 @@ public class LiferayWorkspaceUtilTests extends ProjectCoreBase
         
         waitForBuildAndValidation();
 
-        if( op.validation().ok() )
-        {
-            NewLiferayWorkspaceOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
-        }
+        NewLiferayWorkspaceOpMethods.execute( op, ProgressMonitorBridge.create( new NullProgressMonitor() ) );
 
         waitForBuildAndValidation();
 
