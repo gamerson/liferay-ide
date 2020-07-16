@@ -507,7 +507,7 @@
     <parameterList>
         <fileParameter>
             <name>java_executable</name>
-            <title>Select a valid Java(tm) Runtime</title>
+            <title>Select a valid Java(tm) Executable</title>
             <description>Java(tm) Runtime</description>
             <explanation>Please select a valid Java(tm) Runtime</explanation>
             <value></value>
