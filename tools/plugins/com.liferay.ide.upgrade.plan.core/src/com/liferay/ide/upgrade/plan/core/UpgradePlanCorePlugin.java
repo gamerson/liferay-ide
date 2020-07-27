@@ -188,7 +188,7 @@ public class UpgradePlanCorePlugin extends Plugin {
 				offlineOutlineLists.add(new UpgradePlanOutline(offlineOutlineFileName, outlinePath.toOSString(), true));
 			}
 
-			String offlineOutlineString = StringUtil.objectToString(offlineOutlineLists.iterator(), "|");
+			String offlineOutlineString = StringUtil.objectToString(offlineOutlineLists, "|");
 
 			_prefstore.put(OFFLINE_OUTLINE_KEY, offlineOutlineString);
 
