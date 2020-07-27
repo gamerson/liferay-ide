@@ -16,5 +16,6 @@ Require-Bundle: com.google.guava,
  org.eclipse.core.runtime,
  org.eclipse.osgi.services,
  org.eclipse.sapphire.modeling,
- org.json
+ org.json,
+ org.jsoup
 Service-Component: OSGI-INF/com.liferay.ide.upgrade.plan.core.internal.UpgradePlannerService.xml
