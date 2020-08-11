@@ -550,26 +550,26 @@ around a single Editor to provide a more cohesive and comprehensive experience.
 
 ---------------------------------------
 
-### asset.vocabulary.default Now Holds a Language Key
+### asset.vocabulary.default Now Holds a Language Key [](id=asset-vocabulary-default-now-holds-language-key)
 - **Date:** 2020-Apr-28
 - **JIRA Ticket:** [LPS-112334](https://issues.liferay.com/browse/LPS-112334)
 
-### What changed?
+### What changed? [](id=what-changed-16)
 
 `asset.vocabulary.default` is now a language key and no longer has a fixed value
 of `Topic`.
 
-### Who is affected
+### Who is affected [](id=who-is-affected-16)
 
 This affects anyone who overwrites the property.
 
-### How should I update my code?
+### How should I update my code? [](id=how-should-i-update-my-code-16)
 
 There is no need to change the code if the property is not overwritten. If the
 property was overwritten and the specified key is not found, the provided text
 will be taken as the name of the default vocabulary.
 
-#### Why was this change made?
+#### Why was this change made? [](id=why-was-this-change-made-16)
 
 The change was made so users don't have to change the name for the default
 vocabulary in all languages.
