@@ -78,19 +78,19 @@ public class LiferayProjectProviderReader extends ExtensionReader<ILiferayProjec
 
 		int priorityValue = 10;
 
-		if ("lowest".equals(priority)) {
+		if (priority.equals("lowest")) {
 			priorityValue = 1;
 		}
-		else if ("low".equals(priority)) {
+		else if (priority.equals("low")) {
 			priorityValue = 2;
 		}
-		else if ("normal".equals(priority)) {
+		else if (priority.equals("normal")) {
 			priorityValue = 3;
 		}
-		else if ("high".equals(priority)) {
+		else if (priority.equals("high")) {
 			priorityValue = 4;
 		}
-		else if ("highest".equals(priority)) {
+		else if (priority.equals("highest")) {
 			priorityValue = 5;
 		}
 
