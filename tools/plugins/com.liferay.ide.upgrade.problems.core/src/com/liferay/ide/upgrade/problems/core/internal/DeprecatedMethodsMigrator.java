@@ -12,16 +12,13 @@
  * details.
  */
 
-package com.liferay.ide.upgrade.problems.core.internal.liferay70;
+package com.liferay.ide.upgrade.problems.core.internal;
 
 import com.liferay.ide.upgrade.plan.core.UpgradeProblem;
-import com.liferay.ide.upgrade.problems.core.FileMigrator;
 import com.liferay.ide.upgrade.problems.core.FileSearchResult;
 import com.liferay.ide.upgrade.problems.core.JavaFile;
-import com.liferay.ide.upgrade.problems.core.internal.JavaFileMigrator;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,18 +30,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.osgi.service.component.annotations.Component;
-
 /**
  * @author Gregory Amerson
  * @author Simon Jiang
  */
-@Component(property = "file.extensions=java,jsp,jspf", service = FileMigrator.class)
 public class DeprecatedMethodsMigrator extends JavaFileMigrator {
-
-	public DeprecatedMethodsMigrator() {
-		_deprecatedMethods = _getDeprecatedMethods();
-	}
 
 	@Override
 	public List<UpgradeProblem> analyze(File file) {
@@ -53,7 +43,7 @@ public class DeprecatedMethodsMigrator extends JavaFileMigrator {
 			file.getAbsolutePath()
 		).getFileExtension();
 
-		for (JSONArray deprecatedMethodsArray : _deprecatedMethods) {
+		for (JSONArray deprecatedMethodsArray : deprecatedMethods) {
 			for (int j = 0; j < deprecatedMethodsArray.length(); j++) {
 				try {
 					_tempMethod = deprecatedMethodsArray.getJSONObject(j);
@@ -65,14 +55,14 @@ public class DeprecatedMethodsMigrator extends JavaFileMigrator {
 						for (FileSearchResult searchResult : searchResults) {
 							int makerType = UpgradeProblem.MARKER_ERROR;
 
-							if (Objects.equals("7.0", _tempMethod.getString("deprecatedVersion"))) {
+							if (Objects.equals(version, _tempMethod.getString("deprecatedVersion"))) {
 								makerType = UpgradeProblem.MARKER_WARNING;
 							}
 
 							problems.add(
 								new UpgradeProblem(
 									_tempMethod.getString("javadoc"), _tempMethod.getString("javadoc"), fileExtension,
-									"", "7.0", file, searchResult.startLine, searchResult.startOffset,
+									"", version, file, searchResult.startLine, searchResult.startOffset,
 									searchResult.endOffset, _tempMethod.getString("javadoc"),
 									searchResult.autoCorrectContext, UpgradeProblem.STATUS_NOT_RESOLVED,
 									UpgradeProblem.DEFAULT_MARKER_ID, makerType));
@@ -118,38 +108,9 @@ public class DeprecatedMethodsMigrator extends JavaFileMigrator {
 		return searchResults;
 	}
 
-	private JSONArray[] _getDeprecatedMethods() {
-		if (_deprecatedMethods == null) {
-			List<JSONArray> deprecatedMethodsList = new ArrayList<>();
+	protected JSONArray[] deprecatedMethods;
+	protected String version;
 
-			String fqn = "/com/liferay/ide/upgrade/problems/core/internal/liferay70/";
-
-			String[] jsonFilePaths = {
-				fqn + "deprecatedMethods62.json", fqn + "deprecatedMethods61.json",
-				fqn + "deprecatedMethodsNoneVersionFile.json"
-			};
-
-			Class<? extends DeprecatedMethodsMigrator> class1 = DeprecatedMethodsMigrator.class;
-
-			for (String path : jsonFilePaths) {
-				try {
-					String jsonContent = readFully(class1.getResourceAsStream(path));
-
-					deprecatedMethodsList.add(new JSONArray(jsonContent));
-				}
-				catch (IOException ioe) {
-				}
-				catch (JSONException jsone) {
-				}
-			}
-
-			_deprecatedMethods = deprecatedMethodsList.toArray(new JSONArray[0]);
-		}
-
-		return _deprecatedMethods;
-	}
-
-	private JSONArray[] _deprecatedMethods;
 	private JSONObject _tempMethod = null;
 
 }
