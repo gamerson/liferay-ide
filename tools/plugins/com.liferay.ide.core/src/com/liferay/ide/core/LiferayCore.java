@@ -19,12 +19,9 @@ import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.workspace.ProjectChangeListener;
 
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,10 +37,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-
+import org.eclipse.osgi.framework.eventmgr.CopyOnWriteIdentityMap;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -503,17 +499,18 @@ public class LiferayCore extends Plugin {
 
 		Set<Entry<ProjectCacheKey<?>, ILiferayProject>> projectCachEentrySet = projectCache.entrySet();
 
-		for (Iterator<Map.Entry<ProjectCacheKey<?>, ILiferayProject>> entryItrator = projectCachEentrySet.iterator();
-			 entryItrator.hasNext();) {
+		projectCachEentrySet.stream(
+		).forEach(
+			entry -> {
+				ProjectCacheKey<?> projectCacheKey = entry.getKey();
 
-			Entry<ProjectCacheKey<?>, ILiferayProject> projectCachEentry = entryItrator.next();
+				ILiferayProject project = entry.getValue();
 
-			ILiferayProject project = projectCachEentry.getValue();
-
-			if (project.equals(liferayProject)) {
-				projectCache.remove(projectCachEentry.getKey());
+				if (project.equals(liferayProject)) {
+					projectCache.remove(projectCacheKey);
+				}
 			}
-		}
+		);
 	}
 
 	private <T> ServiceTracker<T, T> _createServiceTracker(BundleContext context, Class<T> clazz) {
@@ -531,7 +528,7 @@ public class LiferayCore extends Plugin {
 
 	private ServiceRegistration<?> _listenerRegistryService;
 	private ServiceTracker<ListenerRegistry, ListenerRegistry> _listenerRegistryServiceTracker;
-	private final Map<ProjectCacheKey<?>, ILiferayProject> _projectCache = new HashMap<>();
+	private final Map<ProjectCacheKey<?>, ILiferayProject> _projectCache = new CopyOnWriteIdentityMap<>();
 	private ProjectChangeListener _projectChangeListener;
 
 	private static class ProjectCacheKey<T extends ILiferayProject> {
