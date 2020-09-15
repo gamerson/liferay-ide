@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -502,18 +503,17 @@ public class LiferayCore extends Plugin {
 
 		Set<Entry<ProjectCacheKey<?>, ILiferayProject>> projectCachEentrySet = projectCache.entrySet();
 
-		projectCachEentrySet.stream(
-		).forEach(
-			entry -> {
-				ProjectCacheKey<?> projectCacheKey = entry.getKey();
+		for (Iterator<Map.Entry<ProjectCacheKey<?>, ILiferayProject>> entryItrator = projectCachEentrySet.iterator();
+			 entryItrator.hasNext();) {
 
-				ILiferayProject project = entry.getValue();
+			Entry<ProjectCacheKey<?>, ILiferayProject> projectCachEentry = entryItrator.next();
 
-				if (project.equals(liferayProject)) {
-					projectCache.remove(projectCacheKey);
-				}
+			ILiferayProject project = projectCachEentry.getValue();
+
+			if (project.equals(liferayProject)) {
+				projectCache.remove(projectCachEentry.getKey());
 			}
-		);
+		}
 	}
 
 	private <T> ServiceTracker<T, T> _createServiceTracker(BundleContext context, Class<T> clazz) {
