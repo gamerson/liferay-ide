@@ -20,17 +20,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.liferay.ide.core.ILiferayProjectImporter;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.PropertiesUtil;
-import com.liferay.ide.core.util.ZipUtil;
-import com.liferay.ide.core.workspace.LiferayWorkspaceUtil;
-import com.liferay.ide.core.workspace.WorkspaceConstants;
-import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
-import com.liferay.ide.project.core.tests.ProjectCoreBase;
-import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Properties;
@@ -45,6 +34,17 @@ import org.eclipse.sapphire.modeling.ProgressMonitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.liferay.ide.core.ILiferayProjectImporter;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.PropertiesUtil;
+import com.liferay.ide.core.util.ZipUtil;
+import com.liferay.ide.core.workspace.LiferayWorkspaceUtil;
+import com.liferay.ide.core.workspace.WorkspaceConstants;
+import com.liferay.ide.project.core.modules.NewLiferayModuleProjectOp;
+import com.liferay.ide.project.core.tests.ProjectCoreBase;
+import com.liferay.ide.project.core.workspace.NewLiferayWorkspaceOp;
 
 /**
  * @author Andy Wu
@@ -70,8 +70,12 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
 		IProject workspaceProject = CoreUtil.getProject( "test-liferay-workspace-new" );
 
 		IProject existingProject = CoreUtil.getProject( "existingProject" );
+		
+		IProject mavenWorkspaceProject = CoreUtil.getProject( "test-liferay-maven-workspace-new" );
 
 		workspaceProject.delete(true, null);
+		
+		mavenWorkspaceProject.delete(true, null);
 
 		existingProject.delete(true, null);
     }
@@ -88,7 +92,7 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
 
         final File projectZipFile = new File( FileLocator.toFileURL( projectZipUrl ).getFile() );
 
-        ZipUtil.unzip( projectZipFile, eclipseWorkspaceLocation );
+        ZipUtil.unzip( projectZipFile, eclipseWorkspaceLocation);
 
         File projectFolder = new File( eclipseWorkspaceLocation, "existingProject" );
 
@@ -177,5 +181,38 @@ public class NewLiferayWorkspaceOpTests extends ProjectCoreBase
         waitForBuildAndValidation();
 
         assertTrue( CoreUtil.getProject( "testThemeWar2" ).exists() );
+    }
+    
+    @Test
+    public void testNewLiferayMavenWorkspaceOp() throws Exception
+    {
+    	String projectName = "test-liferay-maven-workspace-new";
+    	
+    	IPath workspaceLocation = CoreUtil.getWorkspaceRoot().getLocation();
+    	
+    	NewLiferayWorkspaceOp op = NewLiferayWorkspaceOp.TYPE.instantiate();
+    	
+    	op.setProjectProvider("maven-liferay-workspace");
+        op.setWorkspaceName( projectName );
+        op.setUseDefaultLocation( false );
+        op.setLocation( workspaceLocation.toPortableString() );
+        op.setLiferayVersion("7.1");
+        op.setTargetPlatform("7.1.2");
+        
+        op.execute( new ProgressMonitor() );
+
+        waitForBuildAndValidation();
+        
+        String wsLocation = workspaceLocation.append( projectName ).toPortableString();
+
+        File wsFile = new File( wsLocation );
+        
+        assertTrue( wsFile.exists() );
+
+        assertTrue( LiferayWorkspaceUtil.isValidWorkspaceLocation( wsLocation ) );
+    	
+        String bundleUrlProperty = LiferayWorkspaceUtil.getMavenProperty( wsLocation, WorkspaceConstants.BUNDLE_URL_PROPERTY, "" );
+      
+        assertTrue( bundleUrlProperty.equals("https://releases-cdn.liferay.com/portal/7.1.2-ga3/liferay-ce-portal-tomcat-7.1.2-ga3-20190107144105508.tar.gz") );
     }
 }
