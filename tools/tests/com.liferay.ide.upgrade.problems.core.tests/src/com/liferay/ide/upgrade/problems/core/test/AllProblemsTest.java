@@ -42,7 +42,7 @@ public class AllProblemsTest {
 
 		FileMigration m = _context.getService(sr);
 
-		List<String> versions = Arrays.asList("7.0", "7.1", "7.2");
+		List<String> versions = Arrays.asList("7.0", "7.1", "7.2","7.3", "7.4");
 
 		List<UpgradeProblem> problems = m.findUpgradeProblems(
 			new File("projects/"), versions, new NullProgressMonitor());
