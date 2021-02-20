@@ -36,6 +36,7 @@ import com.liferay.ide.server.core.portal.PortalBundle;
 import com.liferay.ide.server.core.portal.PortalBundleFactory;
 import com.liferay.ide.server.core.portal.PortalRuntime;
 import com.liferay.ide.server.core.portal.PortalServer;
+import com.liferay.ide.server.core.portal.PortalServerConstants;
 import com.liferay.ide.server.remote.IRemoteServer;
 import com.liferay.ide.server.remote.IServerManagerConnection;
 
@@ -228,10 +229,19 @@ public class ServerUtil {
 		}
 	}
 
-	public static GogoBundleDeployer createBundleDeployer(PortalRuntime portalRuntime, IServer server)
-		throws Exception {
+	public static GogoBundleDeployer createBundleDeployer(IServer server) throws Exception {
+		int gogoPort;
 
-		return new GogoBundleDeployer(server.getHost(), 11311);
+		try {
+			PortalServer portalServer = (PortalServer)server.loadAdapter(PortalServer.class, null);
+
+			gogoPort = Integer.parseInt(portalServer.getGogoShellPort());
+		}
+		catch (NumberFormatException npe) {
+			gogoPort = Integer.parseInt(PortalServerConstants.DEFAULT_GOGOSHELL_PORT);
+		}
+
+		return new GogoBundleDeployer(server.getHost(), gogoPort);
 	}
 
 	public static IStatus createErrorStatus(String msg) {

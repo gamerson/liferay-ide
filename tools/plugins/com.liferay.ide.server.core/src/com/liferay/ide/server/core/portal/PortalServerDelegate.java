@@ -100,6 +100,10 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 		return getAttribute(PROPERTY_EXTERNAL_PROPERTIES, StringPool.EMPTY);
 	}
 
+	public String getGogoShellPort() {
+		return getAttribute(PROPERTY_GOGOSHELL_PORT, PortalServerConstants.DEFAULT_GOGOSHELL_PORT);
+	}
+
 	public String getHost() {
 		return getServer().getHost();
 	}
@@ -198,6 +202,11 @@ public class PortalServerDelegate extends ServerDelegate implements PortalServer
 
 	public void setExternalProperties(String externalProperties) {
 		setAttribute(PROPERTY_EXTERNAL_PROPERTIES, externalProperties);
+	}
+
+	@Override
+	public void setGogoShellPort(String gogoShellPort) {
+		setAttribute(PROPERTY_GOGOSHELL_PORT, gogoShellPort);
 	}
 
 	public void setHttpPort(String httpPort) {
