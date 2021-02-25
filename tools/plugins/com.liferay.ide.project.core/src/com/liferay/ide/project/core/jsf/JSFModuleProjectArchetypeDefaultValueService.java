@@ -70,7 +70,7 @@ public class JSFModuleProjectArchetypeDefaultValueService
 
 			connection = connection.timeout(10000);
 
-			connection = connection.validateTLSCertificates(false);
+			connection = connection.validateTLSCertificates(true);
 
 			Document document = connection.get();
 
