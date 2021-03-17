@@ -6,6 +6,7 @@ Bundle-Version: 3.9.2.qualifier
 Bundle-Activator: com.liferay.ide.core.LiferayCore
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.google.gson,
+ com.google.guava,
  org.apache.commons.codec,
  org.apache.commons.collections,
  org.apache.commons.io,
@@ -24,7 +25,7 @@ Require-Bundle: com.google.gson,
  org.eclipse.jdt.launching,
  org.eclipse.jface.text,
  org.eclipse.sapphire.modeling;bundle-version="[9,10)",
- org.json 
+ org.json
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.core,

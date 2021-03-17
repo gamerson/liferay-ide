@@ -14,6 +14,8 @@
 
 package com.liferay.ide.core;
 
+import com.google.common.primitives.Ints;
+
 import com.liferay.ide.core.util.FileUtil;
 import com.liferay.ide.core.util.ListUtil;
 import com.liferay.ide.core.util.PropertiesUtil;
@@ -348,17 +350,17 @@ public class LiferayCore extends Plugin {
 		try {
 			Properties gradleProperties = PropertiesUtil.loadProperties(gradlePropertyFile);
 
-			String httpProxyHost = gradleProperties.getProperty("systemProp.http.proxyHost", null);
+			String httpProxyHost = gradleProperties.getProperty("systemProp.http.proxyHost");
 
-			int httpProxyPort = Integer.valueOf(gradleProperties.getProperty("systemProp.http.proxyPort", "-1"));
+			Integer httpProxyPort = Ints.tryParse(gradleProperties.getProperty("systemProp.http.proxyPort", ""));
 
-			String httpsProxyHost = gradleProperties.getProperty("systemProp.https.proxyHost", null);
+			String httpsProxyHost = gradleProperties.getProperty("systemProp.https.proxyHost");
 
-			int httpsProxyPort = Integer.valueOf(gradleProperties.getProperty("systemProp.https.proxyPort", "-1"));
+			Integer httpsProxyPort = Ints.tryParse(gradleProperties.getProperty("systemProp.https.proxyPort", ""));
 
-			String socksProxyHost = gradleProperties.getProperty("systemProp.socks.proxyHost", null);
+			String socksProxyHost = gradleProperties.getProperty("systemProp.socks.proxyHost");
 
-			int socksProxyPort = Integer.valueOf(gradleProperties.getProperty("systemProp.socks.proxyPort", "-1"));
+			Integer socksProxyPort = Ints.tryParse(gradleProperties.getProperty("systemProp.socks.proxyPort", ""));
 
 			IProxyService proxyService = getProxyService();
 
@@ -367,7 +369,7 @@ public class LiferayCore extends Plugin {
 			for (IProxyData data : proxyData) {
 				switch (data.getType()) {
 					case IProxyData.HTTP_PROXY_TYPE:
-						if (httpProxyHost != null) {
+						if (Objects.nonNull(httpProxyHost) && Objects.nonNull(httpProxyPort)) {
 							data.setHost(httpProxyHost);
 
 							data.setPort(httpProxyPort);
@@ -376,7 +378,7 @@ public class LiferayCore extends Plugin {
 						break;
 
 					case IProxyData.HTTPS_PROXY_TYPE:
-						if (httpsProxyHost != null) {
+						if (Objects.nonNull(httpsProxyHost) && Objects.nonNull(httpsProxyPort)) {
 							data.setHost(httpsProxyHost);
 
 							data.setPort(httpsProxyPort);
@@ -385,7 +387,7 @@ public class LiferayCore extends Plugin {
 						break;
 
 					case IProxyData.SOCKS_PROXY_TYPE:
-						if (socksProxyHost != null) {
+						if (Objects.nonNull(socksProxyHost) && Objects.nonNull(socksProxyPort)) {
 							data.setHost(socksProxyHost);
 
 							data.setPort(socksProxyPort);
