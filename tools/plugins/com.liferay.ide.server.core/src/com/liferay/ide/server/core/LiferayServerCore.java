@@ -137,6 +137,24 @@ public class LiferayServerCore extends Plugin {
 		return _plugin;
 	}
 
+	public static IDockerSupporter getDockerSupporter() {
+		IDockerSupporter retval = null;
+
+		IDockerSupporter[] dockerSupporters = getDockerSupporters();
+
+		if (ListUtil.isNotEmpty(dockerSupporters)) {
+			for (IDockerSupporter dockerSupporter : dockerSupporters) {
+				if (dockerSupporter != null) {
+					retval = dockerSupporter;
+
+					break;
+				}
+			}
+		}
+
+		return retval;
+	}
+
 	public static IDockerSupporter[] getDockerSupporters() {
 		if (_dockerSupporters == null) {
 			IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();

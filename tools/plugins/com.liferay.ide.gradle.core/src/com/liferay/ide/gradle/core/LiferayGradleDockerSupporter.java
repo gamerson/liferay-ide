@@ -18,12 +18,14 @@ import com.liferay.ide.core.workspace.LiferayWorkspaceUtil;
 import com.liferay.ide.server.core.portal.docker.IDockerSupporter;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 
 /**
  * @author Simon Jiang
+ * @author Ethan Sun
  */
 public class LiferayGradleDockerSupporter implements IDockerSupporter {
 
@@ -46,6 +48,18 @@ public class LiferayGradleDockerSupporter implements IDockerSupporter {
 	}
 
 	@Override
+	public void createDockerContainer(IProgressMonitor monitor) {
+		try {
+			GradleUtil.runGradleTask(
+				LiferayWorkspaceUtil.getWorkspaceProject(), new String[] {"createDockerContainer"},
+				new String[] {"-x", "buildDockerImage"}, false, monitor);
+		}
+		catch (CoreException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
 	public void dockerDeploy(IProject project, IProgressMonitor monitor) {
 		try {
 			GradleUtil.runGradleTask(project, new String[] {"dockerDeploy"}, monitor);
@@ -56,15 +70,50 @@ public class LiferayGradleDockerSupporter implements IDockerSupporter {
 	}
 
 	@Override
-	public void startDockerContainer(String dockerContainerId) {
-		// TODO Auto-generated method stub
-		
+	public void logDockerContainer(IProgressMonitor monitor) {
+		try {
+			GradleUtil.runGradleTask(
+				LiferayWorkspaceUtil.getWorkspaceProject(), new String[] {"logDockerContainer"}, new String[0], false,
+				monitor);
+		}
+		catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void stopDockerContainer(String dockerContainerId) {
-		// TODO Auto-generated method stub
-		
+	public void removeDockerContainer(IProgressMonitor monitor) {
+		try {
+			GradleUtil.runGradleTask(
+				LiferayWorkspaceUtil.getWorkspaceProject(), new String[] {"removeDockerContainer"}, new String[0],
+				false, monitor);
+		}
+		catch (CoreException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void startDockerContainer(IProgressMonitor monitor) {
+		try {
+			GradleUtil.runGradleTask(
+				LiferayWorkspaceUtil.getWorkspaceProject(), new String[] {"startDockerContainer"},
+				new String[] {"-x", "createDockerContainer", "-x", "buildDockerImage"}, false, monitor);
+		}
+		catch (CoreException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void stopDockerContainer(IProgressMonitor monitor) {
+		try {
+			GradleUtil.runGradleTask(
+				LiferayWorkspaceUtil.getWorkspaceProject(), new String[] {"stopDockerContainer"}, monitor);
+		}
+		catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

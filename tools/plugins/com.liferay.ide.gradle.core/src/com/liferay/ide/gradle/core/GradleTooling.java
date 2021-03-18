@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.Optional;
 
 import org.eclipse.buildship.core.GradleBuild;
@@ -30,7 +31,9 @@ import org.eclipse.buildship.core.GradleWorkspace;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
+
 import org.gradle.tooling.ModelBuilder;
+
 import org.osgi.framework.Bundle;
 
 /**
@@ -103,11 +106,9 @@ public class GradleTooling {
 
 		for (File file : files) {
 			if (file.isFile() && StringUtil.startsWith(file.getName(), jarName) &&
-				!StringUtil.equals(file.getName(), fullFileName)) {
+				!StringUtil.equals(file.getName(), fullFileName) && !file.delete()) {
 
-				if (!file.delete()) {
-					LiferayGradleCore.logError("Error: delete file " + file.getAbsolutePath() + " fail");
-				}
+				LiferayGradleCore.logError("Error: delete file " + file.getAbsolutePath() + " fail");
 			}
 		}
 
@@ -119,10 +120,8 @@ public class GradleTooling {
 
 		File jarFile = new File(depsDir, fullFileName);
 
-		if (FileUtil.exists(jarFile)) {
-			if (!jarFile.delete()) {
-				LiferayGradleCore.logError("Error: delete file " + jarFile.getAbsolutePath() + " fail");
-			}
+		if (FileUtil.exists(jarFile) && !jarFile.delete()) {
+			LiferayGradleCore.logError("Error: delete file " + jarFile.getAbsolutePath() + " fail");
 		}
 
 		if (FileUtil.notExists(jarFile)) {

@@ -28,10 +28,16 @@ public interface IDockerSupporter {
 
 	public boolean canPublishModule(IServer server, IModule module);
 
+	public void createDockerContainer(IProgressMonitor monitor);
+
 	public void dockerDeploy(IProject project, IProgressMonitor monitor);
-	
-	public void startDockerContainer(String dockerContainerId);
-	
-	public void stopDockerContainer(String dockerContainerId);
+
+	public void logDockerContainer(IProgressMonitor monitor);
+
+	public void removeDockerContainer(IProgressMonitor monitor);
+
+	public void startDockerContainer(IProgressMonitor monitor);
+
+	public void stopDockerContainer(IProgressMonitor monitor);
 
 }
