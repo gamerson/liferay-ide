@@ -11,7 +11,6 @@ buildscript {
 apply plugin: "nu.studer.credentials"
 
 task deployToBintray(type:Exec) {
-	args = ["target/repository", "gamerson", "eclipse", "liferay-ide", "snapshots"]
-	environment << ["BINTRAY_USER" : "gamerson", "BINTRAY_API_KEY" : credentials.bintrayApiKey]
+	args = ["target/repository", "eclipse", "liferay-ide", "snapshots"]
 	executable = "./deployToBintray.sh"
 }
