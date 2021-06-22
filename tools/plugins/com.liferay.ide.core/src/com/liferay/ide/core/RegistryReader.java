@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IPluginRegistry;
 import org.eclipse.core.runtime.Platform;
 
 import org.osgi.framework.Bundle;
@@ -27,7 +26,6 @@ import org.osgi.framework.Bundle;
 /**
  * @author Gregory Amerson
  */
-@SuppressWarnings("deprecation")
 public abstract class RegistryReader {
 
 	public static boolean canCreateExecutableExtension(IConfigurationElement element) {
@@ -59,10 +57,6 @@ public abstract class RegistryReader {
 		}
 
 		return null;
-	}
-
-	public RegistryReader(IPluginRegistry registry, String pluginID, String extensionPoint) {
-		this(pluginID, extensionPoint);
 	}
 
 	public RegistryReader(String pluginID, String extensionPoint) {
