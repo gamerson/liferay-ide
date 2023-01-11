@@ -14,10 +14,6 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.server.core.IPluginPublisher;
-import com.liferay.ide.server.core.LiferayServerCore;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -28,6 +24,10 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.server.core.IPluginPublisher;
+import com.liferay.ide.server.core.LiferayServerCore;
 
 /**
  * @author Gregory Amerson

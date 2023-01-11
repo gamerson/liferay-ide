@@ -14,14 +14,9 @@
 
 package com.liferay.ide.maven.core.aether;
 
-import com.liferay.ide.core.util.StringUtil;
-import com.liferay.ide.maven.core.LiferayMavenCore;
-import com.liferay.ide.maven.core.MavenUtil;
-
 import java.util.List;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -36,7 +31,12 @@ import org.eclipse.aether.resolution.VersionRangeRequest;
 import org.eclipse.aether.resolution.VersionRangeResolutionException;
 import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.version.Version;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.core.internal.MavenPluginActivator;
+
+import com.liferay.ide.core.util.StringUtil;
+import com.liferay.ide.maven.core.LiferayMavenCore;
+import com.liferay.ide.maven.core.MavenUtil;
 
 /**
  * A helper to boot the repository system and a repository system session.
@@ -158,9 +158,14 @@ public class AetherUtil {
 	}
 
 	public static RepositorySystem newRepositorySystem() {
-		MavenPluginActivator activator = MavenPluginActivator.getDefault();
+		try {
+			MavenPluginActivator activator = MavenPluginActivator.getDefault();
 
-		return activator.getRepositorySystem();
+			return activator.getRepositorySystem();
+		}
+		catch(CoreException exception) {
+			return null;
+		}
 	}
 
 	public static DefaultRepositorySystemSession newRepositorySystemSession(RepositorySystem system) {

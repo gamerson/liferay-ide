@@ -7,7 +7,6 @@ Bundle-Activator: com.liferay.ide.server.tomcat.ui.LiferayTomcatUIPlugin
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.liferay.ide.core,
  com.liferay.ide.project.ui,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  com.liferay.ide.server.tomcat.core,
  com.liferay.ide.server.ui,

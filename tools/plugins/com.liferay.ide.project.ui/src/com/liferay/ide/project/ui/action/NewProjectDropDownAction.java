@@ -179,24 +179,6 @@ public class NewProjectDropDownAction extends Action implements IMenuCreator, IW
 
 			case LiferayPerspectiveFactory.ID:
 
-				NewWizardAction[] pluginProjectActions = getActionFromDescriptors(_getPluginProjectTypeAttribute());
-
-				for (NewWizardAction action : pluginProjectActions) {
-					action.setShell(fWizardShell);
-
-					ActionContributionItem pluginProjectitem = new ActionContributionItem(action);
-
-					pluginProjectitem.fill(fMenu, -1);
-				}
-
-				NewWizardAction importAction = new ImportLiferayProjectsWizardAction();
-
-				importAction.setShell(fWizardShell);
-
-				ActionContributionItem item = new ActionContributionItem(importAction);
-
-				item.fill(fMenu, -1);
-
 				new Separator().fill(fMenu, -1);
 
 				NewWizardAction[] pluginNonProjectActions = getActionFromDescriptors(

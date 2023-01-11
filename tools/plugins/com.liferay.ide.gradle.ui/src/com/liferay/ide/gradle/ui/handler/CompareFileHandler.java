@@ -14,10 +14,6 @@
 
 package com.liferay.ide.gradle.ui.handler;
 
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.gradle.core.LiferayGradleCore;
-import com.liferay.ide.project.ui.handlers.AbstractCompareFileHandler;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,6 +23,10 @@ import java.io.InputStreamReader;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.gradle.core.LiferayGradleCore;
+import com.liferay.ide.project.ui.handlers.AbstractCompareFileHandler;
 
 /**
  * @author Lovett Li

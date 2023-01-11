@@ -14,13 +14,10 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.LiferayNature;
-
 import java.util.Objects;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,6 +27,8 @@ import org.eclipse.m2e.core.project.configurator.AbstractProjectConfigurator;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.m2e.jdt.IClasspathDescriptor;
 import org.eclipse.m2e.jdt.IJavaProjectConfigurator;
+
+import com.liferay.ide.core.LiferayNature;
 
 /**
  * @author Gregory Amerson
@@ -46,7 +45,7 @@ public class BundleProjectConfigurator extends AbstractProjectConfigurator imple
 			monitor = new NullProgressMonitor();
 		}
 
-		IProject project = request.getProject();
+		IProject project = MavenUtil.getProject(request);
 
 		if (_isMavenBundlePlugin(project)) {
 			LiferayNature.addLiferayNature(project, monitor);

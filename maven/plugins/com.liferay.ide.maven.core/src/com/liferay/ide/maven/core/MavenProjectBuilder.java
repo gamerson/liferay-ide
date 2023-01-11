@@ -14,23 +14,11 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.Artifact;
-import com.liferay.ide.core.ILiferayConstants;
-import com.liferay.ide.core.IWorkspaceProjectBuilder;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.LaunchHelper;
-import com.liferay.ide.core.util.MultiStatusBuilder;
-import com.liferay.ide.core.workspace.WorkspaceConstants;
-import com.liferay.ide.project.core.AbstractProjectBuilder;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.OutputStream;
-
 import java.nio.file.Files;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,9 +32,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
-
 import org.codehaus.plexus.util.xml.Xpp3Dom;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -69,12 +55,23 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.ICallable;
 import org.eclipse.m2e.core.embedder.IMaven;
 import org.eclipse.m2e.core.embedder.IMavenExecutionContext;
+import org.eclipse.m2e.core.embedder.MavenModelManager;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectRegistry;
+import org.eclipse.m2e.core.project.IProjectConfiguration;
 import org.eclipse.m2e.core.project.IProjectConfigurationManager;
-import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.osgi.util.NLS;
+
+import com.liferay.ide.core.Artifact;
+import com.liferay.ide.core.ILiferayConstants;
+import com.liferay.ide.core.IWorkspaceProjectBuilder;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.LaunchHelper;
+import com.liferay.ide.core.util.MultiStatusBuilder;
+import com.liferay.ide.core.workspace.WorkspaceConstants;
+import com.liferay.ide.project.core.AbstractProjectBuilder;
 
 /**
  * @author Gregory Amerson
@@ -202,16 +199,13 @@ public class MavenProjectBuilder extends AbstractProjectBuilder implements IWork
 					mavenProject = projectFacade.getMavenProject(monitor);
 				}
 
-				IMaven maven = MavenPlugin.getMaven();
-
-				MavenExecutionPlan plan = maven.calculateExecutionPlan(
-					mavenProject, Arrays.asList("jar:jar"), true, monitor);
+				MavenExecutionPlan plan = projectFacade.calculateExecutionPlan(Arrays.asList("jar:jar"), monitor);
 
 				List<MojoExecution> mojoExecutions = plan.getMojoExecutions();
 
 				if (mojoExecutions != null) {
 					for (MojoExecution mojoExecution : mojoExecutions) {
-						maven.execute(mavenProject, mojoExecution, monitor);
+						context.execute(mavenProject, mojoExecution, monitor);
 					}
 				}
 
@@ -406,7 +400,9 @@ public class MavenProjectBuilder extends AbstractProjectBuilder implements IWork
 
 			File pomFile = new File(FileUtil.getLocationOSString(project), IMavenConstants.POM_FILE_NAME);
 
-			Model model = maven.readModel(pomFile);
+			MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
+			
+			Model model = mavenModelManager.readMavenModel(pomFile);
 
 			for (Artifact artifact : dependencies) {
 				Dependency dependency = new Dependency();
@@ -479,8 +475,10 @@ public class MavenProjectBuilder extends AbstractProjectBuilder implements IWork
 			}
 
 		};
-
-		return this.maven.execute(status, monitor);
+		
+		IMavenExecutionContext context = maven.createExecutionContext();
+		
+		return context.execute(status, monitor);
 	}
 
 	protected IMaven maven = MavenPlugin.getMaven();
@@ -526,7 +524,7 @@ public class MavenProjectBuilder extends AbstractProjectBuilder implements IWork
 		workingCopy.setAttribute(_attrWorkspaceResolution, Boolean.TRUE);
 
 		if (facade != null) {
-			ResolverConfiguration configuration = facade.getResolverConfiguration();
+			IProjectConfiguration configuration = facade.getConfiguration();
 
 			String selectedProfiles = configuration.getSelectedProfiles();
 

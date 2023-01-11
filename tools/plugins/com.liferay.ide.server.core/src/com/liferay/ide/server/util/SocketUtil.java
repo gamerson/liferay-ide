@@ -14,12 +14,8 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.server.core.LiferayServerCore;
-
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,6 +27,9 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
+
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.server.core.LiferayServerCore;
 
 /**
  * @author Gregory Amerson

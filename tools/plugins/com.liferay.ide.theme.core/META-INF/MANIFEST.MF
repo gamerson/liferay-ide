@@ -7,7 +7,6 @@ Bundle-Activator: com.liferay.ide.theme.core.ThemeCore
 Bundle-Vendor: %bundle.vendor
 Require-Bundle: com.liferay.ide.core,
  com.liferay.ide.project.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  org.apache.commons.io,
  org.eclipse.core.resources,

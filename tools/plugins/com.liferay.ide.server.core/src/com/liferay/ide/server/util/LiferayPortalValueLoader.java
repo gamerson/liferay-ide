@@ -14,28 +14,24 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
-
 import java.io.File;
 import java.io.FilenameFilter;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
-
 import org.osgi.framework.Version;
+
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.server.core.LiferayServerCore;
 
 /**
  * @author Simon Jiang

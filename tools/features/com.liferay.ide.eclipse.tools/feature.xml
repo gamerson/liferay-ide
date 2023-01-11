@@ -33,6 +33,7 @@
 	</license>
 
 	<requires>
+		<!--
 		<import feature="bndtools.main.feature" match="perfect" version="5.2.0.REL-202010142003-gc979114" />
 		<import feature="org.apache.ivy.feature" match="greaterOrEqual" version="2.3.0" />
 		<import feature="org.apache.ivyde.feature" match="greaterOrEqual" version="2.2.0" />
@@ -60,6 +61,7 @@
 		<import feature="org.eclipse.wst.xml.search.core-feature" match="greaterOrEqual" version="1.0.0" />
 		<import feature="org.eclipse.tm.terminal.connector.telnet.feature" match="greaterOrEqual" version="4.0.0" />
 		<import feature="org.eclipse.tm.terminal.view.feature" match="greaterOrEqual" version="4.0.0" />
+		-->
 	</requires>
 
 	<plugin
@@ -72,20 +74,6 @@
 	<plugin
 		download-size="0"
 		id="com.liferay.ide.ui"
-		install-size="0"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.portlet.core"
-		install-size="0"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.portlet.ui"
 		install-size="0"
 		version="0.0.0"
 	/>
@@ -113,7 +101,7 @@
 		unpack="false"
 		version="0.0.0"
 	/>
-
+<!--
 	<plugin
 		download-size="0"
 		id="com.liferay.ide.server.tomcat.core"
@@ -129,90 +117,10 @@
 		unpack="false"
 		version="0.0.0"
 	/>
-
+-->
 	<plugin
 		download-size="0"
 		id="com.liferay.ide.server.ui"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.layouttpl.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.layouttpl.ui"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.theme.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.service.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.service.ui"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.hook.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.hook.ui"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.sdk.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.ui.snippets"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.xml.search.ui"
 		install-size="0"
 		unpack="false"
 		version="0.0.0"
@@ -229,54 +137,6 @@
 	<plugin
 		download-size="0"
 		id="com.liferay.ide.gradle.ui"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.upgrade.plan.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.upgrade.plan.ui"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.upgrade.problems.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.upgrade.problems.ui"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.upgrade.commands.core"
-		install-size="0"
-		unpack="false"
-		version="0.0.0"
-	/>
-
-	<plugin
-		download-size="0"
-		id="com.liferay.ide.upgrade.commands.ui"
 		install-size="0"
 		unpack="false"
 		version="0.0.0"

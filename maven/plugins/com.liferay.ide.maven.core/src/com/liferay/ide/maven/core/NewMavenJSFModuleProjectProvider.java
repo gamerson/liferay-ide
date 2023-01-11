@@ -14,17 +14,8 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.StringUtil;
-import com.liferay.ide.maven.core.aether.AetherUtil;
-import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.jsf.NewLiferayJSFModuleProjectOp;
-import com.liferay.ide.project.core.modules.BaseModuleOp;
-
 import java.io.File;
-
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -34,7 +25,6 @@ import org.apache.maven.archetype.ArchetypeManager;
 import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
-
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -43,11 +33,24 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.m2e.core.embedder.IMaven;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.internal.MavenPluginActivator;
 import org.eclipse.m2e.core.internal.embedder.MavenImpl;
 import org.eclipse.sapphire.Value;
 import org.eclipse.sapphire.platform.PathBridge;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
+
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.StringUtil;
+import com.liferay.ide.maven.core.aether.AetherUtil;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.jsf.NewLiferayJSFModuleProjectOp;
+import com.liferay.ide.project.core.modules.BaseModuleOp;
 
 /**
  * @author Simon Jiang
@@ -158,9 +161,11 @@ public class NewMavenJSFModuleProjectProvider
 
 			ArchetypeGenerationRequest request = new ArchetypeGenerationRequest();
 
-			MavenImpl mavenImpl = pluginActivator.getMaven();
-
-			request.setTransferListener(mavenImpl.createTransferListener(monitor));
+			MavenImpl mavenImpl = (MavenImpl)pluginActivator.getMaven();
+			
+			IMaven maven = pluginActivator.getMaven();
+			
+			//request.setTransferListener(mavenImpl.createTransferListener(monitor));
 
 			request.setArchetypeGroupId(artifact.getGroupId());
 			request.setArchetypeArtifactId(artifact.getArtifactId());
@@ -204,11 +209,24 @@ public class NewMavenJSFModuleProjectProvider
 	}
 
 	private ArchetypeManager _getArchetyper() {
-		MavenPluginActivator plugin = MavenPluginActivator.getDefault();
+		try {
+			Collection<ServiceReference<ArchetypeManager>> serviceReferences = _context.getServiceReferences(ArchetypeManager.class, null);
+			
+			ArchetypeManager archtypeManager = null;
+			
+			for (ServiceReference<ArchetypeManager> mref : serviceReferences) {
+				archtypeManager = _context.getService(mref);
 
-		org.eclipse.m2e.core.internal.archetype.ArchetypeManager archetypeManager = plugin.getArchetypeManager();
+				return archtypeManager;
+			}			
+		}
+		catch(Exception exception) {
+		}
 
-		return archetypeManager.getArchetyper();
+		
+		return null;
 	}
 
+	private final BundleContext _context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+	
 }

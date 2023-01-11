@@ -5,13 +5,10 @@ Bundle-SymbolicName: com.liferay.ide.maven.core;singleton:=true
 Bundle-Version: 3.9.8.qualifier
 Bundle-Activator: com.liferay.ide.maven.core.LiferayMavenCore
 Bundle-Vendor: %bundle.vendor
-Require-Bundle: biz.aQute.bndlib;bundle-version="[5,6]",
+Require-Bundle: biz.aQute.bndlib,
  com.liferay.ide.core,
- com.liferay.ide.hook.core,
- com.liferay.ide.layouttpl.core,
  com.liferay.ide.project.core,
  com.liferay.ide.server.core,
- com.liferay.ide.theme.core,
  org.apache.commons.io,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
@@ -21,11 +18,11 @@ Require-Bundle: biz.aQute.bndlib;bundle-version="[5,6]",
  org.eclipse.jdt.launching,
  org.eclipse.jst.j2ee,
  org.eclipse.ltk.core.refactoring,
- org.eclipse.m2e.archetype.common;bundle-version="[1.13,2.0)",
- org.eclipse.m2e.core;bundle-version="[1.13,2.0)",
- org.eclipse.m2e.jdt;bundle-version="[1.13,2.0)",
- org.eclipse.m2e.maven.runtime;bundle-version="[1.13,2.0)",
- org.eclipse.m2e.wtp;bundle-version="[1.4,2.0)",
+ org.eclipse.m2e.archetype.common,
+ org.eclipse.m2e.core,
+ org.eclipse.m2e.jdt,
+ org.eclipse.m2e.maven.runtime,
+ org.eclipse.m2e.wtp,
  org.eclipse.sapphire.modeling;bundle-version="[9,10)",
  org.eclipse.sapphire.platform;bundle-version="[9,10)",
  org.eclipse.wst.common.frameworks,
@@ -40,6 +37,5 @@ Bundle-ClassPath: .,
  lib/maven-portal-support.jar
 Export-Package: com.liferay.ide.maven,
  com.liferay.ide.maven.core,
- com.liferay.ide.maven.core.aether,
- com.liferay.ide.maven.core.model
+ com.liferay.ide.maven.core.aether
 Service-Component: OSGI-INF/com.liferay.ide.maven.core.LiferayMavenLegacyProjectUpdater.xml

@@ -14,21 +14,15 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.ILiferayProjectProvider;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -50,10 +44,8 @@ import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.settings.Settings;
-
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -73,6 +65,7 @@ import org.eclipse.m2e.core.embedder.IMavenConfiguration;
 import org.eclipse.m2e.core.embedder.IMavenExecutionContext;
 import org.eclipse.m2e.core.embedder.MavenModelManager;
 import org.eclipse.m2e.core.internal.IMavenConstants;
+import org.eclipse.m2e.core.internal.embedder.MavenImpl;
 import org.eclipse.m2e.core.project.AbstractProjectScanner;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectImportResult;
@@ -82,10 +75,15 @@ import org.eclipse.m2e.core.project.LocalProjectScanner;
 import org.eclipse.m2e.core.project.MavenProjectInfo;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
+import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.m2e.wtp.ProjectUtils;
 import org.eclipse.m2e.wtp.WarPluginConfiguration;
-
 import org.osgi.framework.Version;
+
+import com.liferay.ide.core.ILiferayProjectProvider;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
 
 /**
  * @author Gregory Amerson
@@ -94,23 +92,29 @@ import org.osgi.framework.Version;
 @SuppressWarnings("restriction")
 public class MavenUtil {
 
+	public static IProject getProject(ProjectConfigurationRequest request) {
+	
+		IMavenProjectFacade mavenProjectFacade = request.mavenProjectFacade();
+		
+		return mavenProjectFacade.getProject();
+	}
+	
 	public static IStatus executeGoals(
 			IMavenProjectFacade facade, IMavenExecutionContext context, List<String> goals, IProgressMonitor monitor)
 		throws CoreException {
 
-		IMaven maven = MavenPlugin.getMaven();
 		MavenProject mavenProject = facade.getMavenProject(monitor);
 
-		MavenExecutionPlan plan = maven.calculateExecutionPlan(mavenProject, goals, true, monitor);
+		MavenExecutionPlan plan = facade.calculateExecutionPlan(goals, monitor);
 
 		List<MojoExecution> mojos = plan.getMojoExecutions();
 
 		ResolverConfiguration configuration = facade.getResolverConfiguration();
 
 		configuration.setResolveWorkspaceProjects(true);
-
+		
 		for (MojoExecution mojo : mojos) {
-			maven.execute(mavenProject, mojo, monitor);
+			context.execute(mavenProject, mojo, monitor);
 		}
 
 		return Status.OK_STATUS;
@@ -121,12 +125,11 @@ public class MavenUtil {
 		throws CoreException {
 
 		IStatus retval = null;
-		IMaven maven = MavenPlugin.getMaven();
 
 		List<String> goals = Collections.singletonList(goal);
 		MavenProject mavenProject = facade.getMavenProject(monitor);
 
-		MavenExecutionPlan plan = maven.calculateExecutionPlan(mavenProject, goals, true, monitor);
+		MavenExecutionPlan plan = facade.calculateExecutionPlan(goals, monitor);
 
 		Plugin plugin6x = getPlugin(facade, ILiferayMavenConstants.LIFERAY_MAVEN_PLUGIN_KEY, monitor);
 
@@ -150,7 +153,7 @@ public class MavenUtil {
 
 			configuration.setResolveWorkspaceProjects(true);
 
-			maven.execute(mavenProject, liferayMojoExecution, monitor);
+			context.execute(mavenProject, liferayMojoExecution, monitor);
 		}
 
 		MavenSession session = context.getSession();
@@ -442,7 +445,7 @@ public class MavenUtil {
 		File root = CoreUtil.getWorkspaceRootFile();
 
 		AbstractProjectScanner<MavenProjectInfo> scanner = new LocalProjectScanner(
-			root, location, false, mavenModelManager);
+			Arrays.asList(root.toString()), false, mavenModelManager);
 
 		scanner.run(monitor);
 
@@ -518,7 +521,7 @@ public class MavenUtil {
 
 				IMaven maven = MavenPlugin.getMaven();
 
-				MavenProject parentProject = maven.resolveParentProject(mavenProject, monitor);
+				MavenProject parentProject = ((MavenImpl) maven).resolveParentProject(mavenProject, monitor);
 
 				if (parentProject != null) {
 					mavenProject.setParent(parentProject);
@@ -562,7 +565,7 @@ public class MavenUtil {
 		File root = CoreUtil.getWorkspaceRootFile();
 
 		AbstractProjectScanner<MavenProjectInfo> scanner = new LocalProjectScanner(
-			root, location, false, mavenModelManager);
+			Arrays.asList(root.toString()), false, mavenModelManager);
 
 		scanner.run(monitor);
 

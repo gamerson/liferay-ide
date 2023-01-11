@@ -14,15 +14,14 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.server.core.portal.PortalServerBehavior;
-
 import java.io.FileNotFoundException;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
 import org.eclipse.wst.server.core.IServer;
+
+import com.liferay.ide.server.core.portal.PortalServerBehavior;
 
 /**
  * @author Gregory Amerson

@@ -1,14 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: com.liferay.ide.project.core
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: com.liferay.ide.project.core;singleton:=true
 Bundle-Version: 3.9.8.qualifier
 Bundle-Activator: com.liferay.ide.project.core.ProjectCore
 Bundle-Vendor: %bundle.vendor
-Require-Bundle: biz.aQute.bndlib;bundle-version="[5,6)",
+Require-Bundle: biz.aQute.bndlib,
  com.google.gson,
  com.liferay.ide.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  org.apache.ant,
  org.apache.commons.io,
@@ -41,7 +41,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.project.core,
  com.liferay.ide.project.core.descriptor,
- com.liferay.ide.project.core.facet,
  com.liferay.ide.project.core.jobs,
  com.liferay.ide.project.core.jsf,
  com.liferay.ide.project.core.library,

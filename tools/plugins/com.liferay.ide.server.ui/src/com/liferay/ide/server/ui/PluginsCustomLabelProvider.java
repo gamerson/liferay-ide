@@ -74,11 +74,6 @@ public class PluginsCustomLabelProvider extends LabelProvider {
 							imageKey = id.substring(id.indexOf('.') + 1, id.length());
 						}
 					}
-					else {
-						IPath projectLocation = project.getLocation();
-
-						imageKey = ProjectUtil.getLiferayPluginType(projectLocation.toOSString());
-					}
 
 					LiferayServerUI serverUIPlugin = LiferayServerUI.getDefault();
 

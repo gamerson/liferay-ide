@@ -14,13 +14,8 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
-
 import java.io.IOException;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.server.core.LiferayServerCore;
 
 /**
  * @author Gregory Amerson

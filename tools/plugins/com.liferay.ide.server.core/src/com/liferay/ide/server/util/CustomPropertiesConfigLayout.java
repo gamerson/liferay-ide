@@ -16,7 +16,6 @@ package com.liferay.ide.server.util;
 
 import java.io.IOException;
 import java.io.Writer;
-
 import java.util.Iterator;
 import java.util.List;
 

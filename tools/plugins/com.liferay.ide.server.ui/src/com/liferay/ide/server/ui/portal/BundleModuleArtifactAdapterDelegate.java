@@ -56,7 +56,7 @@ public class BundleModuleArtifactAdapterDelegate extends ModuleArtifactAdapterDe
 			project = (IProject)adaptableObj.getAdapter(IProject.class);
 		}
 
-		if ((project != null) && ProjectUtil.is7xServerDeployableProject(project)) {
+		if (project != null) {
 			return new WebResource(_getModule(project), project.getProjectRelativePath());
 		}
 

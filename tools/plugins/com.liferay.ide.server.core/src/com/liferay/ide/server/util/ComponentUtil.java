@@ -14,11 +14,6 @@
 
 package com.liferay.ide.server.util;
 
-import com.liferay.ide.core.IWebProject;
-import com.liferay.ide.core.LiferayCore;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.server.core.LiferayServerCore;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +48,11 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.validation.internal.ValType;
 import org.eclipse.wst.validation.internal.ValidationRunner;
+
+import com.liferay.ide.core.IWebProject;
+import com.liferay.ide.core.LiferayCore;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.server.core.LiferayServerCore;
 
 /**
  * @author Gregory Amerson

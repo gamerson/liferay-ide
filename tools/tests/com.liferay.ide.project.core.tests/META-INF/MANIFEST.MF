@@ -4,12 +4,10 @@ Bundle-Name: Liferay Project Core Tests
 Bundle-SymbolicName: com.liferay.ide.project.core.tests
 Bundle-Version: 3.9.8.qualifier
 Bundle-Vendor: Liferay, Inc.
-Require-Bundle: biz.aQute.bndlib;bundle-version="[5,6)",
+Require-Bundle: biz.aQute.bndlib,
  com.liferay.ide.core,
  com.liferay.ide.core.tests,
- com.liferay.ide.layouttpl.core,
  com.liferay.ide.project.core,
- com.liferay.ide.sdk.core,
  com.liferay.ide.server.core,
  com.liferay.ide.server.core.tests,
  org.apache.commons.io,

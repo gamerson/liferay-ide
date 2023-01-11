@@ -73,10 +73,6 @@ public class BundleFactoryDelegate extends ProjectModuleFactoryDelegate implemen
 
 	@Override
 	protected IModule[] createModules(IProject project) {
-		if (!ProjectUtil.is7xServerDeployableProject(project)) {
-			return new IModule[0];
-		}
-
 		return new IModule[] {createSimpleModule(project)};
 	}
 

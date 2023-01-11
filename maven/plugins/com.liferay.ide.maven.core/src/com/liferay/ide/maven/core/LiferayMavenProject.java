@@ -14,26 +14,12 @@
 
 package com.liferay.ide.maven.core;
 
-import com.liferay.ide.core.BaseLiferayProject;
-import com.liferay.ide.core.Event;
-import com.liferay.ide.core.EventListener;
-import com.liferay.ide.core.IProjectBuilder;
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.FileUtil;
-import com.liferay.ide.core.util.ListUtil;
-import com.liferay.ide.core.util.StringUtil;
-import com.liferay.ide.core.workspace.ProjectChangedEvent;
-import com.liferay.ide.core.workspace.ProjectDeletedEvent;
-import com.liferay.ide.project.core.util.ProjectUtil;
-import com.liferay.ide.server.remote.IRemoteServerPublisher;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
-
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -46,6 +32,18 @@ import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 import org.eclipse.m2e.jdt.IClasspathManager;
 import org.eclipse.m2e.jdt.MavenJdtPlugin;
+
+import com.liferay.ide.core.BaseLiferayProject;
+import com.liferay.ide.core.Event;
+import com.liferay.ide.core.EventListener;
+import com.liferay.ide.core.IProjectBuilder;
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.FileUtil;
+import com.liferay.ide.core.util.ListUtil;
+import com.liferay.ide.core.util.StringUtil;
+import com.liferay.ide.core.workspace.ProjectChangedEvent;
+import com.liferay.ide.core.workspace.ProjectDeletedEvent;
+import com.liferay.ide.server.remote.IRemoteServerPublisher;
 
 /**
  * @author Gregory Amerson
@@ -131,30 +129,6 @@ public abstract class LiferayMavenProject extends BaseLiferayProject implements 
 	}
 
 	@Override
-	public String getProperty(String key, String defaultValue) {
-		String retval = defaultValue;
-
-		if ((key.equals("theme.type") || key.equals("theme.parent")) && ProjectUtil.isThemeProject(getProject())) {
-			IMavenProjectFacade projectFacade = MavenUtil.getProjectFacade(getProject());
-
-			if (projectFacade != null) {
-				MavenProject mavenProject = projectFacade.getMavenProject();
-
-				if (key.equals("theme.type")) {
-					retval = MavenUtil.getLiferayMavenPluginConfig(
-						mavenProject, ILiferayMavenConstants.PLUGIN_CONFIG_THEME_TYPE);
-				}
-				else {
-					retval = MavenUtil.getLiferayMavenPluginConfig(
-						mavenProject, ILiferayMavenConstants.PLUGIN_CONFIG_PARENT_THEME);
-				}
-			}
-		}
-
-		return retval;
-	}
-
-	@Override
 	public IFolder getSourceFolder(String classification) {
 		IFolder retval = super.getSourceFolder(classification);
 
@@ -171,6 +145,11 @@ public abstract class LiferayMavenProject extends BaseLiferayProject implements 
 		return retval;
 	}
 
+	@Override
+	public String getProperty(String key, String defaultValue) {
+		return defaultValue;
+	}
+	
 	@Override
 	public IPath[] getUserLibs() {
 		List<IPath> libs = new ArrayList<>();
