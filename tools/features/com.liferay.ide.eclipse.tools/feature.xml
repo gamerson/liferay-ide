@@ -33,18 +33,8 @@
 	</license>
 
 	<requires>
-		<!--
-		<import feature="bndtools.main.feature" match="perfect" version="5.2.0.REL-202010142003-gc979114" />
-		<import feature="org.apache.ivy.feature" match="greaterOrEqual" version="2.3.0" />
-		<import feature="org.apache.ivyde.feature" match="greaterOrEqual" version="2.2.0" />
+		<!-- <import feature="bndtools.main.feature" match="greaterOrEqual" version="5.2.0.REL-202010142003-gc979114" /> -->
 		<import feature="org.eclipse.buildship" match="greaterOrEqual" version="2.1.1" />
-		<import feature="org.eclipse.jsf.feature" match="greaterOrEqual" version="3.2.0" />
-		<import feature="org.eclipse.jst.common.fproj.enablement.jdt" match="greaterOrEqual" version="3.2.0" />
-		<import feature="org.eclipse.jst.enterprise_ui.feature" match="greaterOrEqual" version="3.2.0" />
-		<import feature="org.eclipse.jst.server_adapters.ext.feature" match="greaterOrEqual" version="3.2.0" />
-		<import feature="org.eclipse.jst.server_adapters.feature" match="greaterOrEqual" version="3.2.0" />
-		<import feature="org.eclipse.jst.server_ui.feature" match="greaterOrEqual" version="3.2.0" />
-		<import feature="org.eclipse.jst.web_ui.feature" match="greaterOrEqual" version="3.2.0" />
 		<import feature="org.eclipse.sapphire" match="compatible" version="9.1.0" />
 		<import feature="org.eclipse.sapphire.java" match="compatible" version="9.1.0" />
 		<import feature="org.eclipse.sapphire.java.jdt" match="compatible" version="9.1.0" />
@@ -54,14 +44,19 @@
 		<import feature="org.eclipse.sapphire.ui" match="compatible" version="9.1.0" />
 		<import feature="org.eclipse.sapphire.ui.swt.gef" match="compatible" version="9.1.0" />
 		<import feature="org.eclipse.sapphire.ui.swt.xml.editor" match="compatible" version="9.1.0" />
+		<import feature="org.eclipse.jsf.feature" match="greaterOrEqual" version="3.2.0" />
+		<import feature="org.eclipse.jst.common.fproj.enablement.jdt" match="greaterOrEqual" version="3.2.0" />
+		<import feature="org.eclipse.jst.enterprise_ui.feature" match="greaterOrEqual" version="3.2.0" />
+		<import feature="org.eclipse.jst.server_adapters.ext.feature" match="greaterOrEqual" version="3.2.0" />
+		<import feature="org.eclipse.jst.server_adapters.feature" match="greaterOrEqual" version="3.2.0" />
+		<import feature="org.eclipse.jst.server_ui.feature" match="greaterOrEqual" version="3.2.0" />
+		<import feature="org.eclipse.jst.web_ui.feature" match="greaterOrEqual" version="3.2.0" />
 		<import feature="org.eclipse.wst.common.fproj" match="greaterOrEqual" version="3.2.0" />
 		<import feature="org.eclipse.wst.common_ui.feature" match="greaterOrEqual" version="3.2.0" />
 		<import feature="org.eclipse.wst.server_adapters.feature" match="greaterOrEqual" version="3.2.0" />
 		<import feature="org.eclipse.wst.xml_ui.feature" match="greaterOrEqual" version="3.2.0" />
-		<import feature="org.eclipse.wst.xml.search.core-feature" match="greaterOrEqual" version="1.0.0" />
 		<import feature="org.eclipse.tm.terminal.connector.telnet.feature" match="greaterOrEqual" version="4.0.0" />
 		<import feature="org.eclipse.tm.terminal.view.feature" match="greaterOrEqual" version="4.0.0" />
-		-->
 	</requires>
 
 	<plugin

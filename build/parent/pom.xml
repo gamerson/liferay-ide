@@ -31,7 +31,9 @@
         <blade-latest-md5>e1dd9c78f8413901241b6ad040511641</blade-latest-md5>
         <blade-392-download-url>https://repository.liferay.com/nexus/content/repositories/public/com/liferay/blade/com.liferay.blade.cli/3.9.2/com.liferay.blade.cli-3.9.2.jar</blade-392-download-url>
         <blade-392-md5>08aedcb6bacc3166060d0032f9489dd1</blade-392-md5>
-        <eclipse-site>https://download.eclipse.org/releases/2022-12/</eclipse-site>
+        <!-- <bndtools-site>https://bndtools.jfrog.io/bndtools/update-snapshot</bndtools-site> -->
+        <gradle-site>https://download.eclipse.org/buildship/updates/latest-snapshot/</gradle-site>
+        <eclipse-site>https://download.eclipse.org/releases/2022-12/202212071000/</eclipse-site>
         <liferay-ide-tag>ga9</liferay-ide-tag>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <sapphire-site>https://us-east-1.linodeobjects.com/devtools-s3.liferay.com/eclipse/sapphire/9.1.1/</sapphire-site>
@@ -48,6 +50,18 @@
             <layout>p2</layout>
             <url>${eclipse-site}</url>
         </repository>
+        <!--
+        <repository>
+            <id>bndtools</id>
+            <layout>p2</layout>
+            <url>${bndtools-site}</url>
+        </repository>
+        -->
+        <repository>
+            <id>gradle</id>
+            <layout>p2</layout>
+            <url>${gradle-site}</url>
+        </repository>          
         <repository>
             <id>tm</id>
             <layout>p2</layout>
@@ -102,6 +116,11 @@
 
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-p2-repository-plugin</artifactId>
+                    <version>${tycho-version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
