@@ -34,7 +34,6 @@ import org.apache.maven.cli.configuration.SettingsXmlConfigurationProcessor;
 import org.apache.maven.execution.MavenExecutionResult;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.lifecycle.MavenExecutionPlan;
-import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -47,15 +46,12 @@ import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
@@ -76,8 +72,6 @@ import org.eclipse.m2e.core.project.MavenProjectInfo;
 import org.eclipse.m2e.core.project.ProjectImportConfiguration;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
-import org.eclipse.m2e.wtp.ProjectUtils;
-import org.eclipse.m2e.wtp.WarPluginConfiguration;
 import org.osgi.framework.Version;
 
 import com.liferay.ide.core.ILiferayProjectProvider;
@@ -198,14 +192,6 @@ public class MavenUtil {
 		return null;
 	}
 
-	public static IFolder getGeneratedThemeResourcesFolder(MavenProject mavenProject, IProject project) {
-		IPath m2eLiferayFolderPath = getM2eLiferayFolder(mavenProject, project);
-
-		IFolder m2eLiferayFolder = project.getFolder(m2eLiferayFolderPath);
-
-		return m2eLiferayFolder.getFolder(ILiferayMavenConstants.THEME_RESOURCES_FOLDER);
-	}
-
 	public static Xpp3Dom getLiferayMavenPluginConfig(MavenProject mavenProject) {
 		Xpp3Dom retval = null;
 
@@ -269,20 +255,6 @@ public class MavenUtil {
 		}
 
 		return retval;
-	}
-
-	public static IPath getM2eLiferayFolder(MavenProject mavenProject, IProject project) {
-		Build build = mavenProject.getBuild();
-
-		String buildOutputDir = build.getDirectory();
-
-		String relativeBuildOutputDir = ProjectUtils.getRelativePath(project, buildOutputDir);
-
-		return new Path(
-			relativeBuildOutputDir
-		).append(
-			ILiferayMavenConstants.M2E_LIFERAY_FOLDER
-		);
 	}
 
 	public static String getMajorMinorVersionOnly(String version) {
@@ -384,23 +356,6 @@ public class MavenUtil {
 		}
 		catch (Exception e) {
 			retval = "0.0.0";
-		}
-
-		return retval;
-	}
-
-	public static String getWarSourceDirectory(IMavenProjectFacade facade) {
-		String retval = null;
-
-		try {
-			MavenProject mavenProject = facade.getMavenProject(new NullProgressMonitor());
-
-			retval = new WarPluginConfiguration(
-				mavenProject, facade.getProject()
-			).getWarSourceDirectory();
-		}
-		catch (CoreException ce) {
-			LiferayMavenCore.logError("Unable to get war source directory", ce);
 		}
 
 		return retval;

@@ -45,6 +45,7 @@ import org.eclipse.buildship.core.GradleBuild;
 import org.eclipse.buildship.core.GradleCore;
 import org.eclipse.buildship.core.GradleDistribution;
 import org.eclipse.buildship.core.GradleWorkspace;
+import org.eclipse.buildship.core.SynchronizationResult;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -408,9 +409,9 @@ public class GradleUtil {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				gradleBuild.synchronize(monitor);
+				SynchronizationResult synchronizeResult = gradleBuild.synchronize(monitor);
 
-				return Status.OK_STATUS;
+				return synchronizeResult.getStatus();
 			}
 
 		};

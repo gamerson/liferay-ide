@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: com.liferay.ide.maven.core
 Bundle-Name: %bundle.name
 Bundle-SymbolicName: com.liferay.ide.maven.core;singleton:=true
 Bundle-Version: 3.9.8.qualifier
@@ -22,7 +23,6 @@ Require-Bundle: biz.aQute.bndlib,
  org.eclipse.m2e.core,
  org.eclipse.m2e.jdt,
  org.eclipse.m2e.maven.runtime,
- org.eclipse.m2e.wtp,
  org.eclipse.sapphire.modeling;bundle-version="[9,10)",
  org.eclipse.sapphire.platform;bundle-version="[9,10)",
  org.eclipse.wst.common.frameworks,
@@ -31,7 +31,7 @@ Require-Bundle: biz.aQute.bndlib,
  org.eclipse.wst.sse.core,
  org.eclipse.wst.xml.core,
  org.json
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/maven-portal-support.jar

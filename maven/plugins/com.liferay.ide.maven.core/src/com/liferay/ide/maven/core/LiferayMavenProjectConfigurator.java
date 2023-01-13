@@ -64,13 +64,6 @@ import com.liferay.ide.core.util.ListUtil;
  */
 @SuppressWarnings("restriction")
 public class LiferayMavenProjectConfigurator extends AbstractProjectConfigurator implements IJavaProjectConfigurator {
-
-	public static IPath getThemeTargetFolder(MavenProject mavenProject, IProject project) {
-		IPath m2eLiferayFolder = MavenUtil.getM2eLiferayFolder(mavenProject, project);
-
-		return m2eLiferayFolder.append(ILiferayMavenConstants.THEME_RESOURCES_FOLDER);
-	}
-
 	public LiferayMavenProjectConfigurator() {
 		MavenPluginActivator mavenPluginActivator = MavenPluginActivator.getDefault();
 

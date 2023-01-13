@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: com.liferay.ide.core.tests
 Bundle-Name: Liferay Core Tests
 Bundle-SymbolicName: com.liferay.ide.core.tests
 Bundle-Version: 3.9.8.qualifier
@@ -11,6 +12,6 @@ Require-Bundle: com.liferay.ide.core,
  org.eclipse.sapphire.modeling;bundle-version="[9,10)",
  org.eclipse.wst.validation,
  org.junit
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.core.tests

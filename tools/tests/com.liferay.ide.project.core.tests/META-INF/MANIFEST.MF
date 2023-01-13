@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: com.liferay.ide.project.core.tests
 Bundle-Name: Liferay Project Core Tests
 Bundle-SymbolicName: com.liferay.ide.project.core.tests
 Bundle-Version: 3.9.8.qualifier
@@ -26,6 +27,6 @@ Require-Bundle: biz.aQute.bndlib,
  org.eclipse.wst.validation,
  org.eclipse.wst.xml.core,
  org.junit
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: com.liferay.ide.project.core.tests
