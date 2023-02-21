@@ -34,7 +34,7 @@
         <upgrade-plan-content-zip-url>https://us-east-1.linodeobjects.com/devtools-s3.liferay.com/liferay-ide-files/docs/code-upgrade-docs-20210312.zip</upgrade-plan-content-zip-url>
         <upgrade-plan-content-zip-md5>c4bce64c362ecffcce300f31e88b2e63</upgrade-plan-content-zip-md5>
         <bndtools-site>https://bndtools.jfrog.io/bndtools/update-latest/libs-release-local/org/bndtools/org.bndtools.p2/5.2.0/org.bndtools.p2-5.2.0.jar!</bndtools-site>
-        <eclipse-site>https://download.eclipse.org/releases/2021-12/202112081000/</eclipse-site>
+        <eclipse-site>https://download.eclipse.org/releases/2021-12/202112081000</eclipse-site>
         <eclipse-xml-search-site>https://us-east-1.linodeobjects.com/devtools-s3.liferay.com/eclipse/eclipse-wtp-xml-search/</eclipse-xml-search-site>
         <gradle-site>https://download.eclipse.org/buildship/updates/e410/releases/3.x/3.1.2.v20190903-1732</gradle-site>
         <ivy-site>https://dist.apache.org/repos/dist/release/ant/ivyde/updatesite/ivy-2.4.0.final_20141213170938/</ivy-site>
@@ -46,7 +46,7 @@
         <m2e-archiver-site>https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-mavenarchiver/0.17.2/N/0.17.2.201606141937/</m2e-archiver-site>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <maven-deps-plugin-site>https://us-east-1.linodeobjects.com/devtools-s3.liferay.com/eclipse/m2e-maven-dependency-plugin/0.0.4/</maven-deps-plugin-site>
-        <orbit-site>https://download.eclipse.org/tools/orbit/downloads/drops/R20190602212107/repository/</orbit-site>
+        <orbit-site>https://download.eclipse.org/tools/orbit/downloads/drops/R20211213173813/repository</orbit-site>
         <osgi-bundles-site>https://us-east-1.linodeobjects.com/devtools-s3.liferay.com/eclipse/liferay-ide-deps/201904221700/</osgi-bundles-site>
         <sapphire-site>https://us-east-1.linodeobjects.com/devtools-s3.liferay.com/eclipse/sapphire/9.1.1/</sapphire-site>
         <sign-apps>false</sign-apps>
@@ -248,16 +248,6 @@
                                 <ws>gtk</ws>
                                 <arch>x86_64</arch>
                             </environment>
-                            <environment>
-                                <os>macosx</os>
-                                <ws>cocoa</ws>
-                                <arch>aarch64</arch>
-                            </environment>
-                            <environment>
-                                <os>linux</os>
-                                <ws>gtk</ws>
-                                <arch>aarch64</arch>
-                            </environment>                            
                         </environments>
                     </configuration>
                 </plugin>
@@ -284,16 +274,6 @@
                                 <ws>gtk</ws>
                                 <arch>x86_64</arch>
                             </environment>
-                            <environment>
-                                <os>macosx</os>
-                                <ws>cocoa</ws>
-                                <arch>aarch64</arch>
-                            </environment>
-                            <environment>
-                                <os>linux</os>
-                                <ws>gtk</ws>
-                                <arch>aarch64</arch>
-                            </environment>                            
                         </environments>
                     </configuration>
                 </plugin>
