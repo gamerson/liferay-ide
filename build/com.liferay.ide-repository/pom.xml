@@ -44,9 +44,9 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <version>1.4</version>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>2.1.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.groovy</groupId>
@@ -58,13 +58,13 @@
                         <artifactId>groovy-all</artifactId>
                         <version>4.0.7</version>
                         <type>pom</type>
-                        <scope>runtime</scope>
+                        <scope>runtime</scope>                        
                     </dependency>
                      <dependency>
                         <groupId>org.apache.groovy</groupId>
                         <artifactId>groovy-xml</artifactId>
                         <version>4.0.7</version>
-                    </dependency>
+                    </dependency>                   
                 </dependencies>
                 <executions>
                     <execution>
@@ -76,7 +76,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>${pom.basedir}/src/main/assembly/RemoveUnwantedInstallUnits.groovy</source>
+                    <scripts>
+                        <script>${pom.basedir}/src/main/assembly/RemoveUnwantedInstallUnits.groovy</script>
+                    </scripts>
                 </configuration>
             </plugin>
             <plugin>
