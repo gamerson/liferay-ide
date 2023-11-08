@@ -46,7 +46,15 @@ public class BundleProjectConfigurator extends AbstractProjectConfigurator imple
 			monitor = new NullProgressMonitor();
 		}
 
-		IProject project = request.getProject();
+		IProject project = MavenUtil.getProject(request);
+
+		if (Objects.isNull(project)) {
+			throw new CoreException(
+				LiferayMavenCore.createErrorStatus(
+					"Can not get correct eclipse project for " +
+						request.mavenProject(
+						).getName()));
+		}
 
 		if (_isMavenBundlePlugin(project)) {
 			LiferayNature.addLiferayNature(project, monitor);

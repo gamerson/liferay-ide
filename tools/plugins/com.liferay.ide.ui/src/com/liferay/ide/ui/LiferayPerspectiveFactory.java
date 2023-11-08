@@ -23,7 +23,6 @@ import org.eclipse.ui.progress.IProgressConstants;
  * @author Gregory Amerson
  * @author Lovett Li
  */
-@SuppressWarnings("deprecation")
 public class LiferayPerspectiveFactory extends AbstractPerspectiveFactory {
 
 	public static final String ID = "com.liferay.ide.eclipse.ui.perspective.liferay";
@@ -66,7 +65,6 @@ public class LiferayPerspectiveFactory extends AbstractPerspectiveFactory {
 		topLeft.addView(ID_PACKAGE_EXPLORER_VIEW);
 
 		topLeft.addPlaceholder(ID_J2EE_HIERARCHY_VIEW);
-		topLeft.addPlaceholder(IPageLayout.ID_RES_NAV);
 		topLeft.addPlaceholder(JavaUI.ID_TYPE_HIERARCHY);
 		topLeft.addPlaceholder(JavaUI.ID_PACKAGES_VIEW);
 
