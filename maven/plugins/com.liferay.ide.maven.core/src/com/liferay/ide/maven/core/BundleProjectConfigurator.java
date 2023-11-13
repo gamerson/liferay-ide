@@ -15,21 +15,38 @@
 package com.liferay.ide.maven.core;
 
 import com.liferay.ide.core.LiferayNature;
+import com.liferay.ide.server.util.JavaUtil;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Map.Entry;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.IVMInstall2;
+import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.configurator.AbstractProjectConfigurator;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.m2e.jdt.IClasspathDescriptor;
+import org.eclipse.m2e.jdt.IClasspathEntryDescriptor;
 import org.eclipse.m2e.jdt.IJavaProjectConfigurator;
+import org.eclipse.m2e.jdt.internal.MavenClasspathHelpers;
+import org.osgi.framework.Version;
 
 /**
  * @author Gregory Amerson
@@ -40,6 +57,7 @@ public class BundleProjectConfigurator extends AbstractProjectConfigurator imple
 	public BundleProjectConfigurator() {
 	}
 
+	@SuppressWarnings("restriction")
 	@Override
 	public void configure(ProjectConfigurationRequest request, IProgressMonitor monitor) throws CoreException {
 		if (monitor == null) {
@@ -59,18 +77,131 @@ public class BundleProjectConfigurator extends AbstractProjectConfigurator imple
 		if (_isMavenBundlePlugin(project)) {
 			LiferayNature.addLiferayNature(project, monitor);
 		}
+		
+		if (JavaProject.hasJavaNature(project)) {
 
+			IJavaProject javaProject = JavaCore.create(project);
+			
+           // String currentVersion = JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE);
+
+            IVMInstall defaultVMInstall = JavaRuntime.getDefaultVMInstall();
+            
+            
+            String javaVersion;
+            
+            if (defaultVMInstall instanceof IVMInstall2) {
+    			IVMInstall2 vmInstall2 = (IVMInstall2)defaultVMInstall;
+
+    			javaVersion = vmInstall2.getJavaVersion();
+    		}
+            else {
+            	 Version version = Version.parseVersion(JavaUtil.getJDKVersion(defaultVMInstall));
+            	 
+            	 javaVersion = version.toString();
+            }
+            
+            // 检查是否需要更新兼容级别
+            if (JavaCore.compareJavaVersions(javaVersion, JavaCore.VERSION_1_8) != 0) {
+                // 设置新的兼容级别
+            	String vmCompliance = getVmCompliance(defaultVMInstall);
+            	
+            	updateComplianceSettings(javaProject, vmCompliance);
+            }			
+		}
+		
+		
 		monitor.worked(100);
 		monitor.done();
 	}
-
+	
+	private void updateComplianceSettings(IJavaProject project, String compliance) {
+		HashMap<String, String> defaultOptions= new HashMap<>();
+		JavaCore.setComplianceOptions(compliance, defaultOptions);
+		Iterator<Map.Entry<String, String>> it= defaultOptions.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<String, String> pair= it.next();
+			project.setOption(pair.getKey(), pair.getValue());
+		}
+	}
+	
+	private String getVmCompliance( IVMInstall defaultVMInstall) {
+       if (defaultVMInstall instanceof IVMInstall2) {
+            String javaVersion = ((IVMInstall2)defaultVMInstall).getJavaVersion();
+            if (javaVersion != null) {
+            	String compliance = null;
+            	if (javaVersion.startsWith(JavaCore.VERSION_1_5)) {
+            		compliance = JavaCore.VERSION_1_5;
+            	} else if (javaVersion.startsWith(JavaCore.VERSION_1_6)) {
+            		compliance = JavaCore.VERSION_1_6;
+            	} else if (javaVersion.startsWith(JavaCore.VERSION_1_7)) {
+            		compliance = JavaCore.VERSION_1_7;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_1_8)) {
+					compliance = JavaCore.VERSION_1_8;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_9)
+						&& (javaVersion.length() == JavaCore.VERSION_9.length() || javaVersion.charAt(JavaCore.VERSION_9.length()) == '.')) {
+					compliance = JavaCore.VERSION_9;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_10)
+						&& (javaVersion.length() == JavaCore.VERSION_10.length() || javaVersion.charAt(JavaCore.VERSION_10.length()) == '.')) {
+					compliance = JavaCore.VERSION_10;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_11)
+						&& (javaVersion.length() == JavaCore.VERSION_11.length() || javaVersion.charAt(JavaCore.VERSION_11.length()) == '.')) {
+					compliance = JavaCore.VERSION_11;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_12)
+						&& (javaVersion.length() == JavaCore.VERSION_12.length() || javaVersion.charAt(JavaCore.VERSION_12.length()) == '.')) {
+					compliance = JavaCore.VERSION_12;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_13)
+						&& (javaVersion.length() == JavaCore.VERSION_13.length() || javaVersion.charAt(JavaCore.VERSION_13.length()) == '.')) {
+					compliance = JavaCore.VERSION_13;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_14)
+						&& (javaVersion.length() == JavaCore.VERSION_14.length() || javaVersion.charAt(JavaCore.VERSION_14.length()) == '.')) {
+					compliance = JavaCore.VERSION_14;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_15)
+						&& (javaVersion.length() == JavaCore.VERSION_15.length() || javaVersion.charAt(JavaCore.VERSION_15.length()) == '.')) {
+					compliance = JavaCore.VERSION_15;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_16)
+						&& (javaVersion.length() == JavaCore.VERSION_16.length() || javaVersion.charAt(JavaCore.VERSION_16.length()) == '.')) {
+					compliance = JavaCore.VERSION_16;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_17)
+						&& (javaVersion.length() == JavaCore.VERSION_17.length() || javaVersion.charAt(JavaCore.VERSION_17.length()) == '.')) {
+					compliance = JavaCore.VERSION_17;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_18)
+						&& (javaVersion.length() == JavaCore.VERSION_18.length() || javaVersion.charAt(JavaCore.VERSION_18.length()) == '.')) {
+					compliance = JavaCore.VERSION_18;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_19)
+						&& (javaVersion.length() == JavaCore.VERSION_19.length() || javaVersion.charAt(JavaCore.VERSION_19.length()) == '.')) {
+					compliance = JavaCore.VERSION_19;
+				} else if (javaVersion.startsWith(JavaCore.VERSION_20)
+						&& (javaVersion.length() == JavaCore.VERSION_20.length() || javaVersion.charAt(JavaCore.VERSION_20.length()) == '.')) {
+					compliance = JavaCore.VERSION_20;
+				} else {
+					compliance = JavaCore.VERSION_20; // use latest by default
+				}
+            	
+            	return compliance;
+            }
+       }
+       
+       return JavaCore.VERSION_1_8;
+	}
+	
+	
 	public void configureClasspath(IMavenProjectFacade facade, IClasspathDescriptor classpath, IProgressMonitor monitor)
 		throws CoreException {
 	}
 
+	@SuppressWarnings("restriction")
 	public void configureRawClasspath(
 			ProjectConfigurationRequest request, IClasspathDescriptor classpath, IProgressMonitor monitor)
 		throws CoreException {
+		IMavenProjectFacade mavenProjectFacade = request.mavenProjectFacade();
+		
+		IProject project = mavenProjectFacade.getProject();
+		
+		classpath.removeEntry(MavenClasspathHelpers.getJREContainerEntry(JavaCore.create(project)).getPath());
+		
+		IClasspathEntry defaultJREContainerEntry = JavaCore.newContainerEntry(JavaRuntime.newJREContainerPath(JavaRuntime.getDefaultVMInstall()));
+		
+		classpath.addEntry(defaultJREContainerEntry);
 	}
 
 	private boolean _isMavenBundlePlugin(IProject project) {

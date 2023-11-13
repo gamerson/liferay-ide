@@ -55,6 +55,8 @@ Export-Package: com.liferay.ide.project.core,
  com.liferay.ide.project.core.util,
  com.liferay.ide.project.core.workspace,
  org.apache.commons.validator.routines
+Import-Package: org.eclipse.jdt.launching,
+ org.eclipse.wst.jsdt.launching
 Bundle-ClassPath: lib/commons-validator-1.6.jar,
  lib/jackson-core-asl-1.9.13.jar,
  lib/jackson-mapper-asl-1.9.13.jar,

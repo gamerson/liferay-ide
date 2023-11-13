@@ -75,7 +75,6 @@ public class WorkflowDesignerPerspectiveFactory extends LiferayPerspectiveFactor
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	protected void createLayout(IPageLayout layout) {
 		String editorArea = layout.getEditorArea();
 
