@@ -148,6 +148,7 @@ public class LiferayMavenCore extends Plugin {
 		synchronized (this) {
 			if (_archetypeManager == null) {
 				_archetypeManager = new ServiceTracker<>(_context, LiferayArchetypePlugin.class, null);
+
 				_archetypeManager.open();
 			}
 		}

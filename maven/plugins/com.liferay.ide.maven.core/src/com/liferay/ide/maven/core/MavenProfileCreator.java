@@ -94,11 +94,13 @@ public interface MavenProfileCreator extends SapphireContentAccessor {
 				NodeUtil.appendTextNode(newProfile, "\n\t");
 
 				Element activationElement = NodeUtil.appendChildElement(newProfile, "activation");
+
 				NodeUtil.appendTextNode(activationElement, "\n\t\t");
 				NodeUtil.appendChildElement(activationElement, "activeByDefault", "true");
 				NodeUtil.appendTextNode(activationElement, "\n\t");
+
 				NodeUtil.appendTextNode(newProfile, "\n\t");
-				
+
 				Element propertiesElement = NodeUtil.appendChildElement(newProfile, "properties");
 
 				NodeUtil.appendTextNode(newProfile, "\n\t");
@@ -107,15 +109,15 @@ public interface MavenProfileCreator extends SapphireContentAccessor {
 				NodeUtil.appendTextNode(propertiesElement, "\n\t\t");
 				NodeUtil.appendChildElement(propertiesElement, "liferay.maven.plugin.version", liferayVersion);
 				NodeUtil.appendTextNode(propertiesElement, "\n\t\t");
-				
+
 				IPath serverDir = liferayRuntime.getAppServerDir();
 
 				IPath rootPath = serverDir.removeLastSegments(1);
 
 				IPath autoDeployDir = rootPath.append("deploy");
-				
-				
+
 				NodeUtil.appendChildElement(propertiesElement, "liferay.auto.deploy.dir", autoDeployDir.toOSString());
+
 				NodeUtil.appendTextNode(propertiesElement, "\n\t\t");
 				NodeUtil.appendChildElement(
 					propertiesElement, "liferay.app.server.deploy.dir",

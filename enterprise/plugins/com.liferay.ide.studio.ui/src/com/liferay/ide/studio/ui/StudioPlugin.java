@@ -15,6 +15,7 @@
 package com.liferay.ide.studio.ui;
 
 import java.io.File;
+
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -30,6 +31,7 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
 import org.osgi.framework.BundleContext;
 
 /**
@@ -136,9 +138,6 @@ public class StudioPlugin extends AbstractUIPlugin implements IStartup {
 	}
 
 	public void earlyStartup() {
-		if (!isProductRunning()) {
-			return;
-		}
 	}
 
 	public IEclipsePreferences getPreferences() {
@@ -155,6 +154,7 @@ public class StudioPlugin extends AbstractUIPlugin implements IStartup {
 		_plugin = null;
 		super.stop(context);
 	}
+
 	private static StudioPlugin _plugin;
 
 }

@@ -25,24 +25,24 @@ import org.eclipse.m2e.core.project.IArchetype;
 public class LiferayMavenArchetype implements IArchetype {
 
 	public LiferayMavenArchetype(Archetype archetype) {
-		this.archetype = archetype;
+		_archetype = archetype;
 	}
 
 	@Override
 	public String getArtifactId() {
-		return archetype.getArtifactId();
+		return _archetype.getArtifactId();
 	}
 
 	@Override
 	public String getGroupId() {
-		return archetype.getGroupId();
+		return _archetype.getGroupId();
 	}
 
 	@Override
 	public String getVersion() {
-		return archetype.getVersion();
+		return _archetype.getVersion();
 	}
 
-	private Archetype archetype;
+	private Archetype _archetype;
 
 }

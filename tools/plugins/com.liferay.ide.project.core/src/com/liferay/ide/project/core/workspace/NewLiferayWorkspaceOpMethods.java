@@ -14,6 +14,12 @@
 
 package com.liferay.ide.project.core.workspace;
 
+import com.liferay.ide.core.util.CoreUtil;
+import com.liferay.ide.core.util.SapphireContentAccessor;
+import com.liferay.ide.core.util.SapphireUtil;
+import com.liferay.ide.project.core.NewLiferayProjectProvider;
+import com.liferay.ide.project.core.ProjectCore;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -29,12 +35,6 @@ import org.eclipse.sapphire.modeling.Status;
 import org.eclipse.sapphire.platform.ProgressMonitorBridge;
 import org.eclipse.sapphire.platform.StatusBridge;
 
-import com.liferay.ide.core.util.CoreUtil;
-import com.liferay.ide.core.util.SapphireContentAccessor;
-import com.liferay.ide.core.util.SapphireUtil;
-import com.liferay.ide.project.core.NewLiferayProjectProvider;
-import com.liferay.ide.project.core.ProjectCore;
-
 /**
  * @author Andy Wu
  */
@@ -48,7 +48,7 @@ public class NewLiferayWorkspaceOpMethods {
 		Status retval = Status.createOkStatus();
 
 		Throwable errorStack = null;
-		
+
 		try {
 			NewLiferayProjectProvider<NewLiferayWorkspaceOp> provider = _getter.get(op.getProjectProvider());
 

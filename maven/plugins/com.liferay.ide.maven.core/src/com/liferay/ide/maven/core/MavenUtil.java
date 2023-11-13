@@ -73,7 +73,6 @@ import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.IMaven;
 import org.eclipse.m2e.core.embedder.IMavenConfiguration;
 import org.eclipse.m2e.core.embedder.IMavenExecutionContext;
-import org.eclipse.m2e.core.embedder.MavenModelManager;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.AbstractProjectScanner;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
@@ -452,10 +451,8 @@ public class MavenUtil {
 	public static List<IMavenProjectImportResult> importProject(String location, IProgressMonitor monitor)
 		throws CoreException, InterruptedException {
 
-		MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
-
 		AbstractProjectScanner<MavenProjectInfo> scanner = new LocalProjectScanner(
-			Arrays.asList(location), false, mavenModelManager);
+			Arrays.asList(location), false, MavenPlugin.getMavenModelManager());
 
 		scanner.run(monitor);
 
@@ -568,10 +565,8 @@ public class MavenUtil {
 	public static void updateProjectConfiguration(String projectName, String location, IProgressMonitor monitor)
 		throws InterruptedException {
 
-		MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
-
 		AbstractProjectScanner<MavenProjectInfo> scanner = new LocalProjectScanner(
-			Arrays.asList(location), false, mavenModelManager);
+			Arrays.asList(location), false, MavenPlugin.getMavenModelManager());
 
 		scanner.run(monitor);
 

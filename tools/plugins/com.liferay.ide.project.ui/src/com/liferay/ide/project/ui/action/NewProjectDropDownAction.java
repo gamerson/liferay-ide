@@ -175,7 +175,6 @@ public class NewProjectDropDownAction extends Action implements IMenuCreator, IW
 				}
 
 				break;
-
 		}
 
 		new Separator().fill(fMenu, -1);

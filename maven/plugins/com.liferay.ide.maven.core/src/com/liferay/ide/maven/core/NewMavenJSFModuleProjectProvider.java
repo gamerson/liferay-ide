@@ -125,8 +125,6 @@ public class NewMavenJSFModuleProjectProvider
 
 		String archetypeArtifactId = get(op.getArchetype());
 
-		//String archetypeArtifactId = "com.liferay.faces.archetype:com.liferay.faces.archetype.richfaces.portlet:8.0.0";
-
 		Archetype archetype = new Archetype();
 
 		String[] gav = archetypeArtifactId.split(":");
