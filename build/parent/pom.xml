@@ -207,6 +207,16 @@
                                 <ws>gtk</ws>
                                 <arch>x86_64</arch>
                             </environment>
+                            <environment>
+                                <os>linux</os>
+                                <ws>gtk</ws>
+                                <arch>aarch64</arch>
+                            </environment>
+                            <environment>
+                                <os>macosx</os>
+                                <ws>cocoa</ws>
+                                <arch>aarch64</arch>
+                            </environment>                                                      
                         </environments>
                     </configuration>
                 </plugin>
@@ -233,6 +243,16 @@
                                 <ws>gtk</ws>
                                 <arch>x86_64</arch>
                             </environment>
+                            <environment>
+                                <os>linux</os>
+                                <ws>gtk</ws>
+                                <arch>aarch64</arch>
+                            </environment>
+                            <environment>
+                                <os>macosx</os>
+                                <ws>cocoa</ws>
+                                <arch>aarch64</arch>
+                            </environment>                              
                         </environments>
                     </configuration>
                 </plugin>
