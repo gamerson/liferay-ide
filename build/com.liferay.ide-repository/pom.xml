@@ -48,16 +48,20 @@
                 <artifactId>gmavenplus-plugin</artifactId>
                 <version>3.0.2</version>
                 <dependencies>
+                    <!-- <dependency>
+                        <groupId>org.apache.groovy</groupId>
+                        <artifactId>groovy</artifactId>
+                        <version>4.0.7</version>
+                    </dependency>                
                     <dependency>
                         <groupId>org.apache.groovy</groupId>
                         <artifactId>groovy-ant</artifactId>
                         <version>4.0.7</version>
                     </dependency>
-                   <dependency>
+                    <dependency>
                         <groupId>org.apache.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
+                        <artifactId>groovy-astbuilder</artifactId>
                         <version>4.0.7</version>
-                        <type>pom</type>
                     </dependency>
                      <dependency>
                         <groupId>org.apache.groovy</groupId>
@@ -68,7 +72,13 @@
                         <groupId>com.github.groovy-wslite</groupId>
                         <artifactId>groovy-wslite</artifactId>
                         <version>1.1.2</version>
-                    </dependency>                    
+                    </dependency> -->
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <version>3.0.19</version>
+                        <type>pom</type>
+                    </dependency>
                 </dependencies>
                 <executions>
                     <execution>
@@ -187,14 +197,18 @@
                         <dependencies>
                             <dependency>
                                 <groupId>org.apache.groovy</groupId>
+                                <artifactId>groovy</artifactId>
+                                <version>4.0.7</version>
+                            </dependency>                
+                            <dependency>
+                                <groupId>org.apache.groovy</groupId>
                                 <artifactId>groovy-ant</artifactId>
                                 <version>4.0.7</version>
                             </dependency>
-                        <dependency>
+                            <dependency>
                                 <groupId>org.apache.groovy</groupId>
-                                <artifactId>groovy-all</artifactId>
+                                <artifactId>groovy-astbuilder</artifactId>
                                 <version>4.0.7</version>
-                                <type>pom</type>
                             </dependency>
                             <dependency>
                                 <groupId>org.apache.groovy</groupId>
@@ -205,7 +219,7 @@
                                 <groupId>com.github.groovy-wslite</groupId>
                                 <artifactId>groovy-wslite</artifactId>
                                 <version>1.1.2</version>
-                            </dependency>                    
+                            </dependency>                  
                         </dependencies>
                         <executions>
                             <execution>
@@ -238,7 +252,7 @@
                                         <certificate>Developer+ID+Application%3A+Liferay%2C+Inc.+%287H3SPU5TB9%29</certificate>
                                         <createDmg>false</createDmg>
                                     </properties>
-                                    <source>${pom.basedir}/../installers/shared/scripts/SignApp.groovy</source>
+                                    <!-- <source>${pom.basedir}/../installers/shared/scripts/SignApp.groovy</source> -->
                                 </configuration>
                             </execution>
                         </executions>
