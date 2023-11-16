@@ -1,0 +1,34 @@
+{
+	"activationEvents": [
+		"onLanguage:properties"
+	],
+	"categories": [
+		"Other"
+	],
+	"dependencies": {
+		"vscode-languageclient": "^4.1.4"
+	},
+	"description": "Liferay VS Code LSP",
+	"devDependencies": {
+		"@types/mocha": "^5.2.0",
+		"@types/node": "^8.10.25",
+		"@types/vscode": "^1.34.0",
+		"tslint": "^5.16.0",
+		"typescript": "^3.5.1",
+		"vscode": "^1.1.35"
+	},
+	"displayName": "liferay-vscode-lsp",
+	"engines": {
+		"vscode": "^1.34.0"
+	},
+	"main": "./out/extension.js",
+	"name": "liferay-vscode-lsp",
+	"publisher": "liferay",
+	"scripts": {
+		"compile": "tsc -p ./",
+		"lint": "tslint -p ./",
+		"vscode:prepublish": "npm run compile",
+		"watch": "tsc -watch -p ./"
+	},
+	"version": "0.0.1"
+}
