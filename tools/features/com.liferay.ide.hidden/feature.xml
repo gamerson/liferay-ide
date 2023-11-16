@@ -31,6 +31,11 @@
 	  Liferay IDE is free software distributed under the terms of the Lesser GNU Public License. See URL for full license text. http://www.gnu.org/licenses/lgpl-2.1.html
 	</license>
 
+	<!--includes
+		id="org.eclipse.justj.epp.feature"
+		version="0.0.0"
+	/-->
+
 	<includes
 		id="bndtools.main.feature"
 		version="0.0.0"
