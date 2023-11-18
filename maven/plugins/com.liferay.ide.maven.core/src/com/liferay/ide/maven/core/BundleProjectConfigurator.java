@@ -96,7 +96,6 @@ public class BundleProjectConfigurator extends AbstractProjectConfigurator imple
 			}
 
 			if (JavaCore.compareJavaVersions(javaVersion, JavaCore.VERSION_1_8) != 0) {
-
 				String vmCompliance = _getVmCompliance(defaultVMInstall);
 
 				_updateComplianceSettings(javaProject, vmCompliance);
