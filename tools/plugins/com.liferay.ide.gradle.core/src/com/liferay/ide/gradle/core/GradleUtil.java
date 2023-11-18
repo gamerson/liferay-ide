@@ -347,6 +347,7 @@ public class GradleUtil {
 				gradleBuild.withConnection(
 					connection -> {
 						connection.newBuild(
+						).setJavaHome(JavaRuntime.getDefaultVMInstall().getInstallLocation()
 						).addArguments(
 							arguments
 						).forTasks(
@@ -367,6 +368,7 @@ public class GradleUtil {
 			gradleBuild.withConnection(
 				connection -> {
 					connection.newBuild(
+					).setJavaHome(JavaRuntime.getDefaultVMInstall().getInstallLocation()
 					).addArguments(
 						arguments
 					).forTasks(
